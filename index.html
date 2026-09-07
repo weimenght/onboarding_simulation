@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeloitteLand Hub - Action Plan</title>
+    <title>Project Sunrise</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
@@ -55,6 +55,7 @@
             position: fixed;
             width: 800px;
             height: 800px;
+            max-width: 100vw;
             background: radial-gradient(circle, rgba(134, 188, 37, 0.08) 0%, transparent 70%);
             top: 50%;
             left: 50%;
@@ -89,61 +90,425 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect } = React;
 
-        // DATA REQUIRED FOR ACTION PLAN
+        // BILINGUAL DICTIONARY
+        const dict = {
+            en: {
+                projectSunrise: "Project Sunrise",
+                investigationHub: "Investigation Hub",
+                directory: "Directory",
+                security: "Security",
+                vendors: "Vendors",
+                encryptedNodes: "Encrypted Nodes",
+                n1Logs: "N1: Logs",
+                n2Ledger: "N2: Ledger",
+                n3Protocol: "N3: Protocol",
+                haltTxn: "Halt Transaction",
+                decryptionStatus: "Decryption Status",
+                searchPlaceholderOrg: "Search (e.g. EMP012)",
+                targetAcquired: "Target Match Acquired",
+                targetLocated: "Employee ID EMP004 located.",
+                id: "ID",
+                dept: "Dept",
+                ext: "Ext",
+                ip: "IP",
+                n1Title: "Node 1: Server Logs",
+                n1Hint: "Enter the 4-digit Whistleblower Protocol PIN from Station 1.",
+                n2Title: "Node 2: Offshore Ledger",
+                n2Hint: "Enter the exact missing capital amount flagged in Station 3.",
+                n3Title: "Node 3: Emergency Action Protocol",
+                n3Hint: "Identify the high-risk offshore jurisdiction flagged in Station 2.",
+                enterKey: "ENTER KEY",
+                decryptBtn: "Decrypt Node",
+                time: "Time",
+                user: "User",
+                event: "Event",
+                status: "Status",
+                ticket: "Ticket",
+                txnId: "TXN ID",
+                vendorName: "Vendor Name",
+                approvedBy: "Approved By",
+                amount: "Amount",
+                riskTier: "Risk Tier",
+                capThreshold: "Capital Threshold",
+                jurisdiction: "Jurisdiction",
+                anomalyFlag: "Anomaly Flag",
+                actionCode: "Action Code",
+                missionAccomplished: "Mission Accomplished. Marcus Bergstrom has been identified. The $22M transfer to APEX Shell Logistics is frozen. Summit & Co. is protected.",
+                ptsAwarded: "+50 D.POINTS AWARDED",
+                sysOverride: "System Override Terminal",
+                sysOverrideDesc: "Scrutinize the decrypted nodes. Identify the rogue identity, flag the illegal transaction, and execute the action code to halt the transfer.",
+                identityMatch: "Identity Match",
+                empIdHint: "Employee ID (e.g. EMP001)",
+                auditFlag: "Audit Flag",
+                suspiciousTxn: "Suspicious TXN ID",
+                executeAction: "Execute Action",
+                haltActionCode: "Halt Action Code",
+                verified: "VERIFIED",
+                enter: "ENTER",
+                privActivities: "Privileged Activities (ISS-04)",
+                privDesc: "The following activities are classified as privileged and require prior written approval from a Vice President or above. A privileged activity performed without prior VP approval is a reportable High Control Breach.",
+                dbExport: "Database Export:",
+                dbExportDesc: "Any export of production data exceeding 10,000 records.",
+                privEsc: "Privilege Escalation:",
+                privEscDesc: "Any elevation of an account's access rights.",
+                custData: "Customer Data Removal:",
+                custDataDesc: "Deletion or transfer of customer records.",
+                dataScrub: "Data Scrubbing:",
+                dataScrubDesc: "Any process that overwrites, masks, or irreversibly alters production data.",
+                auditLogMod: "Audit Log Modification:",
+                auditLogModDesc: "Editing or truncating audit logs.",
+                infraMap: "Infrastructure Map",
+                infraDesc: "Access Management System extract for the FTV-PROD-01 environment showing current standing permissions.",
+                employee: "Employee",
+                system: "System",
+                accessLevel: "Access Level",
+                infraNote: "Note: Marcus Bergstrom (EMP004) is the only account in the reviewed access list with standing administrator rights spanning all three systems.",
+                compWatchlist: "Compliance Watchlist (EDD)",
+                compDesc: "Any vendor payment routed to or through an Enhanced Due Diligence (EDD) jurisdiction requires Compliance sign-off before closing.",
+                poTitle: "Purchase Orders (Q2 2026)",
+                searchPO: "Search POs...",
+                poDesc: "Every payment made against a vendor should be traceable to an approved purchase order for the exact vendor name. A PO for a similarly named vendor does not satisfy this.",
+                poNum: "PO Number",
+                project: "Project",
+                approver: "Approver",
+                vmTitle: "Vendor Master Database",
+                searchVendor: "Search Vendors...",
+                legalName: "Legal Name",
+                country: "Country",
+                risk: "Risk",
+                emergencyDesc: "Cross-reference the flagged transaction details against the Global Banking Protocol matrix below to determine the correct system override code. All criteria in a row must be met to authorize the execution code.",
+                // Protocol Matrix terms
+                pTier1: "Low", pTier2: "Elevated", pTier3: "High", pTier4: "Severe", pTier5: "Critical",
+                pJur1: "Standard", pJur2: "EDD Watchlist", pJur3: "Sanctioned List",
+                pAnom1: "Routine / No Flag", pAnom2: "Missing Purchase Order", pAnom3: "Unauthorized Signatory",
+                pAnom4: "Velocity Flag", pAnom5: "Vendor Mismatch / Shell", pAnom6: "Regulatory Breach", pCapAny: "Any"
+            },
+            zh: {
+                projectSunrise: "旭日计划",
+                investigationHub: "调查中心",
+                directory: "员工目录",
+                security: "安全合规",
+                vendors: "供应商控制",
+                encryptedNodes: "加密节点",
+                n1Logs: "N1：日志",
+                n2Ledger: "N2：账本",
+                n3Protocol: "N3：协议",
+                haltTxn: "终止交易",
+                decryptionStatus: "解密状态",
+                searchPlaceholderOrg: "搜索 (例如 EMP012)",
+                targetAcquired: "发现目标匹配",
+                targetLocated: "已定位员工 ID EMP004。",
+                id: "工号",
+                dept: "部门",
+                ext: "分机",
+                ip: "IP地址",
+                n1Title: "节点 1：服务器日志",
+                n1Hint: "请输入第 1 站点的 4 位举报人协议 PIN 码。",
+                n2Title: "节点 2：离岸账本",
+                n2Hint: "请输入在第 3 站点标记的缺失资金准确金额。",
+                n3Title: "节点 3：紧急行动协议",
+                n3Hint: "识别在第 2 站点标记的高风险离岸管辖区。",
+                enterKey: "输入密钥",
+                decryptBtn: "解密节点",
+                time: "时间",
+                user: "用户",
+                event: "事件",
+                status: "状态",
+                ticket: "工单",
+                txnId: "交易ID",
+                vendorName: "供应商名称",
+                approvedBy: "审批人",
+                amount: "金额",
+                riskTier: "风险等级",
+                capThreshold: "资金阈值",
+                jurisdiction: "管辖区",
+                anomalyFlag: "异常标记",
+                actionCode: "行动代码",
+                missionAccomplished: "任务完成。已确认 Marcus Bergstrom 的身份。向 APEX Shell Logistics 转账的 2,200 万美元已被冻结。Summit & Co. 得到保护。",
+                ptsAwarded: "获得 +50 德勤积分",
+                sysOverride: "系统覆盖终端",
+                sysOverrideDesc: "审查解密节点。识别违规人员身份，标记非法交易，并执行操作代码以阻止转账。",
+                identityMatch: "身份匹配",
+                empIdHint: "员工 ID (例如 EMP001)",
+                auditFlag: "审计标记",
+                suspiciousTxn: "可疑交易ID",
+                executeAction: "执行行动",
+                haltActionCode: "终止行动代码",
+                verified: "已验证",
+                enter: "输入",
+                privActivities: "特权活动 (ISS-04)",
+                privDesc: "以下活动被归类为特权活动，需事先获得副总裁（VP）或以上级别的书面批准。未经书面批准执行特权活动属于需上报的高风险控制违规行为。",
+                dbExport: "数据库导出：",
+                dbExportDesc: "导出超过 10,000 条记录的生产数据。",
+                privEsc: "权限提升：",
+                privEscDesc: "任何提升账户访问权限的操作。",
+                custData: "客户数据移除：",
+                custDataDesc: "在生产环境之外删除或传输客户记录。",
+                dataScrub: "数据清洗：",
+                dataScrubDesc: "任何覆盖、屏蔽或不可逆更改生产数据的操作。",
+                auditLogMod: "审计日志修改：",
+                auditLogModDesc: "编辑或截断审计日志。",
+                infraMap: "基础设施映射",
+                infraDesc: "针对 FTV-PROD-01 环境的访问管理系统摘要，显示当前的常驻权限。",
+                employee: "员工",
+                system: "系统",
+                accessLevel: "访问级别",
+                infraNote: "注：Marcus Bergstrom (EMP004) 是所审查访问列表中唯一拥有横跨所有三个系统的常驻管理员权限的账户。",
+                compWatchlist: "合规观察名单 (EDD)",
+                compDesc: "任何路由至或途经增强尽职调查 (EDD) 管辖区的供应商付款，在结账前均需合规部门签字批准。",
+                poTitle: "采购订单 (Q2 2026)",
+                searchPO: "搜索采购订单...",
+                poDesc: "每一笔针对供应商的付款都必须追溯至针对该确切供应商名称的已批准采购订单。名称相似的供应商采购订单不符合要求。",
+                poNum: "订单编号",
+                project: "项目",
+                approver: "审批人",
+                vmTitle: "供应商主数据库",
+                searchVendor: "搜索供应商...",
+                legalName: "法定名称",
+                country: "国家/地区",
+                risk: "风险",
+                emergencyDesc: "将标记的交易明细与下方的全球银行协议矩阵进行交叉比对，以确定正确的系统覆盖代码。必须满足该行中的所有条件才能授权执行代码。",
+                // Protocol Matrix terms
+                pTier1: "低", pTier2: "提升", pTier3: "高", pTier4: "严重", pTier5: "极危",
+                pJur1: "标准", pJur2: "EDD 观察名单", pJur3: "制裁名单",
+                pAnom1: "常规 / 无标记", pAnom2: "缺失采购订单", pAnom3: "未经授权的签字人",
+                pAnom4: "频率异常标记", pAnom5: "供应商不匹配 / 空壳", pAnom6: "违反合规规定", pCapAny: "任何"
+            }
+        };
+
+        // RAW DATA PIPELINES (With Injected Distractors)
+        const rawLogs = `02:30|Backup Started|SYSTEM|OK|—^02:31|Backup Running|SYSTEM|OK|—^02:32|Backup Completed|SYSTEM|OK|—^02:33|Login|EMP002|OK|—^02:34|API Authentication|EMP002|OK|—^02:35|Report Export|EMP002|OK|—^02:36|Logout|EMP002|OK|—^02:37|Security Scan|SYSTEM|OK|—^02:38|Health Check|SYSTEM|OK|—^02:39|Cache Cleanup|SYSTEM|OK|—^02:40|Memory Allocation|SYSTEM|OK|—^02:41|Database Optimization|SYSTEM|OK|—^02:42|Email Sync|SYSTEM|OK|—^02:43|Session Renewed|SYSTEM|OK|—^02:44|Backup Validation|SYSTEM|OK|—^02:45|Disk Usage Check|SYSTEM|OK|—^02:46|Routine Scan|SYSTEM|OK|—^02:47|Connection Pool Refresh|SYSTEM|OK|—^02:48|DNS Cache Refresh|SYSTEM|OK|—^02:49|Firewall Rule Sync|SYSTEM|OK|—^02:50|Load Balancer Check|SYSTEM|OK|—^02:51|Login|EMP004|OK|—^02:52|Privilege Escalation|EMP004|WARNING|CHG-4471^02:53|Model_Output_Export|EMP004|WARNING|CHG-4471^02:54|Audit_Log_Archive|SYSTEM|OK|—^02:55|Database Compression|SYSTEM|OK|—^02:56|Health Check|SYSTEM|OK|—^02:57|Memory Optimization|SYSTEM|OK|—^02:58|Email Queue Refresh|SYSTEM|OK|—^02:59|Cache Cleanup|SYSTEM|OK|—^03:00|DATA_SCRUB_EXECUTED|EMP004|CRITICAL|CHG-4471^03:01|Log Archive|SYSTEM|OK|—^03:02|Logout|EMP004|OK|—^03:03|Backup Validation|SYSTEM|OK|—^03:04|Routine Scan|SYSTEM|OK|—^03:05|Memory Allocation|SYSTEM|OK|—^03:06|Index Rebuild|SYSTEM|OK|—^03:07|Login|EMP009|OK|—^03:08|Login|EMP005|OK|—^03:09|Backup Running|SYSTEM|OK|—^03:10|Index Rebuild|SYSTEM|OK|—^03:11|Queue Processed|SYSTEM|OK|—^03:12|Backup Started|SYSTEM|OK|—^03:13|Database Optimization|SYSTEM|OK|—^03:14|Patch Verification|SYSTEM|OK|—^03:15|Audit_Log_Archive|EMP021|WARNING|—^03:16|Patch Verification|SYSTEM|OK|—^03:17|Login|EMP009|OK|—^03:18|Certificate Renewal Check|SYSTEM|OK|—^03:19|Backup Completed|SYSTEM|OK|—^03:20|Index Rebuild|SYSTEM|OK|—^03:21|Login|EMP009|OK|—^03:22|Routine Scan|SYSTEM|OK|—^03:23|API Request|SYSTEM|OK|—^03:24|Password Reset|EMP005|OK|—^03:25|API Authentication|SYSTEM|OK|—^03:26|Cache Cleanup|SYSTEM|OK|—^03:27|Connection Pool Refresh|SYSTEM|OK|—^03:28|Routine Scan|SYSTEM|OK|—^03:29|Login|EMP007|OK|—^03:30|API Request|SYSTEM|OK|—^03:31|Database Optimization|SYSTEM|OK|—^03:32|Email Queue Refresh|SYSTEM|OK|—^03:33|Logout|EMP009|OK|—^03:34|Replication Sync|SYSTEM|OK|—^03:35|Disk Usage Check|SYSTEM|OK|—^03:36|Health Check|SYSTEM|OK|—^03:37|Backup Completed|SYSTEM|OK|—^03:38|Backup Validation|SYSTEM|OK|—^03:39|Log Rotation|SYSTEM|OK|—^03:40|Database Export|EMP017|WARNING|—^03:41|Disk Usage Check|SYSTEM|OK|—^03:42|DNS Cache Refresh|SYSTEM|OK|—^03:43|Connection Pool Refresh|SYSTEM|OK|—^03:44|Login|EMP003|OK|—^03:45|Index Rebuild|SYSTEM|OK|—^03:46|Load Balancer Check|SYSTEM|OK|—^03:47|Backup Validation|SYSTEM|OK|—^03:48|Memory Allocation|SYSTEM|OK|—^03:49|API Authentication|SYSTEM|OK|—^03:50|Cache Refresh|SYSTEM|OK|—^03:51|Logout|EMP003|OK|—^03:52|Security Scan|SYSTEM|OK|—^03:53|Connection Pool Refresh|SYSTEM|OK|—^03:54|Replication Sync|SYSTEM|OK|—^03:55|Backup Started|SYSTEM|OK|—^03:56|Cache Refresh|SYSTEM|OK|—^03:57|Index Rebuild|SYSTEM|OK|—^03:58|Patch Verification|SYSTEM|OK|—^03:59|Login|EMP009|OK|—^04:00|Report Export|SYSTEM|OK|—^04:01|Database Compression|SYSTEM|OK|—^04:02|Cache Cleanup|SYSTEM|OK|—^04:03|Session Renewed|SYSTEM|OK|—^04:04|Scheduled Job Completed|SYSTEM|OK|—^04:05|Memory Optimization|SYSTEM|OK|—^04:06|Database Optimization|SYSTEM|OK|—^04:07|Temp File Cleanup|SYSTEM|OK|—^04:08|Disk Usage Check|SYSTEM|OK|—^04:09|Cache Refresh|SYSTEM|OK|—^04:10|Customer_Data_Export|EMP006|WARNING|—^04:11|Session Renewed|SYSTEM|OK|—^04:12|Email Queue Refresh|SYSTEM|OK|—^04:13|API Authentication|SYSTEM|OK|—^04:14|Login|EMP011|OK|—^04:15|Index Rebuild|SYSTEM|OK|—^04:16|Memory Allocation|SYSTEM|OK|—^04:17|Replication Sync|SYSTEM|OK|—^04:18|Logout|EMP013|OK|—^04:19|Index Rebuild|SYSTEM|OK|—^04:20|Log Archive|SYSTEM|OK|—^04:21|Backup Validation|SYSTEM|OK|—^04:22|Routine Scan|SYSTEM|OK|—^04:23|Temp File Cleanup|SYSTEM|OK|—^04:24|Email Queue Refresh|SYSTEM|OK|—^04:25|Patch Verification|SYSTEM|OK|—^04:26|Database Export|EMP009|OK|—^04:27|Email Sync|SYSTEM|OK|—^04:28|Login|EMP021|OK|—^04:29|Backup Completed|SYSTEM|OK|—^04:30|API Request|SYSTEM|OK|—^04:31|Report Generated|SYSTEM|OK|—^04:32|Log Rotation|SYSTEM|OK|—^04:33|Firewall Rule Sync|SYSTEM|OK|—^04:34|Firewall Rule Sync|SYSTEM|OK|—^04:35|Privilege Escalation|EMP012|WARNING|—^04:36|Cache Cleanup|SYSTEM|OK|—^04:37|Certificate Renewal Check|SYSTEM|OK|—^04:38|Connection Pool Refresh|SYSTEM|OK|—^04:39|Health Check|SYSTEM|OK|—^04:40|Cache Cleanup|SYSTEM|OK|—^04:41|Logout|EMP021|OK|—^04:42|Cache Cleanup|SYSTEM|OK|—^04:43|Log Archive|SYSTEM|OK|—^04:44|Memory Allocation|SYSTEM|OK|—^04:45|Report Generated|SYSTEM|OK|—^04:46|API Request|SYSTEM|OK|—^04:47|Replication Sync|SYSTEM|OK|—^04:48|Login|EMP018|OK|—^04:49|Email Queue Refresh|SYSTEM|OK|—^02:26|ROOT_LOGIN_ATTEMPT|EMP042|CRITICAL|—^03:25|MASS_RECORD_DELETION|EMP009|WARNING|CHG-4450^04:12|FIREWALL_BYPASS_ATTEMPT|EMP012|CRITICAL|—`;
+        const rawLedger = `TXN8801|03:05|Delta Point Services Ltd|V8825|298,596.42 KRW|VP, Finance|CLEARED^TXN8802|03:49|Anchor Systems Ltd|V8813|433,778.67 AED|Controller, AP|CLEARED^TXN8803|02:53|Apex Solutions Holdings|V8805|278,826.07 EUR|Finance Manager|CLEARED^TXN8804|03:03|Everline Holdings Holdings|V8842|359,169.59 DKK|AP Supervisor|CLEARED^TXN8805|03:12|Prescott Trading LLC|V8847|255,512.86 AED|Finance Manager|CLEARED^TXN8806|03:56|Bellwood Services Co|V8862|464,393.28 USD|Controller, AP|CLEARED^TXN8807|03:27|Anchor Services Solutions|V8860|462,244.44 NOK|VP, Finance|CLEARED^TXN8808|04:03|Redwood Trading Partners|V8851|464,338.57 EUR|Controller, AP|CLEARED^TXN8809|04:26|Redwood Trading Partners|V8851|8,160.08 EUR|Finance Manager|CLEARED^TXN8810|04:05|Falcon Holdings Co|V8834|281,212.00 USD|Controller, AP|CLEARED^TXN8811|04:53|Union Holdings Group|V8830|227,101.68 EUR|Finance Manager|CLEARED^TXN8812|04:28|Concord Solutions Ltd|V8879|107,424.21 ZAR|VP, Finance|CLEARED^TXN8813|02:41|Kingsbridge Solutions & Co.|V8839|312,161.08 SEK|Controller, AP|CLEARED^TXN8814|03:30|Kingsbridge Solutions & Co.|V8839|478,051.25 SEK|AP Supervisor|CLEARED^TXN8815|04:48|Ashford Systems & Co.|V8818|187,467.03 USD|Controller, AP|CLEARED^TXN8816|04:16|Beacon Logistics Co|V8876|356,675.72 EUR|VP, Finance|CLEARED^TXN8817|03:41|Anchor Systems Ltd|V8813|400,422.14 AED|Controller, AP|CLEARED^TXN8818|03:30|Cliffside Solutions Ltd|V8848|105,463.54 EUR|Finance Manager|CLEARED^TXN8819|04:01|Anchor Systems Ltd|V8813|470,873.91 AED|Controller, AP|CLEARED^TXN8820|04:26|Redwood Trading Partners|V8851|133,509.27 EUR|Controller, AP|CLEARED^TXN8821|02:35|Ashford Holdings & Co.|V8828|308,555.59 EUR|Controller, AP|CLEARED^TXN8822|04:54|Cobalt Systems & Co.|V8843|118,047.72 EUR|VP, Finance|CLEARED^TXN8823|05:00|Northbridge Logistics Inc|V8809|398,567.84 CAD|VP, Finance|CLEARED^TXN8824|03:00|APEX Shell Logistics|V8824|22,000,000.00 USD|V. Vance|CLEARED^TXN8825|03:14|Vireo Trading Partners|V8819|474,031.82 EUR|Controller, AP|CLEARED^TXN8826|03:30|Waverly Systems & Co.|V8804|64,567.85 DKK|AP Supervisor|CLEARED^TXN8827|03:02|Everline Holdings Holdings|V8842|9,051.25 DKK|VP, Finance|CLEARED^TXN8828|04:31|Vireo Trading Inc|V8854|253,231.92 GBP|Controller, AP|CLEARED^TXN8829|04:38|Prescott Trading LLC|V8847|247,084.36 AED|VP, Finance|CLEARED^TXN8830|04:43|Concord Solutions Ltd|V8879|22,250.17 ZAR|Finance Manager|CLEARED^TXN8831|04:32|Delta Point Trading Co|V8859|309,338.52 INR|Controller, AP|CLEARED^TXN8832|04:23|Kingsbridge Systems Ltd|V8855|329,797.65 EUR|Controller, AP|CLEARED^TXN8833|03:02|Cobalt Systems LLC|V8811|155,630.51 INR|Finance Manager|CLEARED^TXN8834|03:53|Prescott Systems Holdings|V8880|304,427.21 EUR|Controller, AP|CLEARED^TXN8835|04:20|Cobalt Trading Holdings|V8877|255,371.45 EUR|Controller, AP|CLEARED^TXN8836|04:51|Cliffside Holdings LLC|V8815|409,561.32 EUR|VP, Finance|CLEARED^TXN8837|04:15|Ashford Holdings & Co.|V8828|207,288.47 EUR|Finance Manager|CLEARED^TXN8838|03:50|Delta Point Trading Co|V8859|192,292.39 INR|Controller, AP|CLEARED^TXN8839|03:09|Apex Trading Co|V8841|319,754.11 DKK|VP, Finance|CLEARED^TXN8840|02:53|Sterling Systems Solutions|V8861|33,623.29 JPY|Controller, AP|CLEARED^TXN8841|03:03|Anchor Systems Ltd|V8813|357,785.82 AED|AP Supervisor|CLEARED^TXN8842|03:54|Norwood Consulting & Co.|V8808|282,123.54 MXN|VP, Finance|CLEARED^TXN8843|04:18|Northbridge Solutions & Co.|V8816|198,071.93 EUR|VP, Finance|CLEARED^TXN8844|04:00|Prescott Logistics Inc|V8807|464,878.74 EUR|Controller, AP|CLEARED^TXN8845|04:33|Larkspur Trading & Co.|V8874|244,296.90 CAD|VP, Finance|CLEARED^TXN8846|02:59|Union Services Group|V8814|169,029.55 BRL|Finance Manager|CLEARED^TXN8847|04:53|Larkspur Trading & Co.|V8874|109,717.13 CAD|AP Supervisor|CLEARED^TXN8848|03:38|Concord Solutions Ltd|V8879|324,476.36 ZAR|Controller, AP|CLEARED^TXN8849|03:56|APEX Logistics Ltd|V8824|132,259.88 USD|Finance Manager|CLEARED^TXN8850|04:12|Vantage Holdings Holdings|V8801|88,302.56 EUR|Controller, AP|CLEARED^TXN8851|02:53|Vireo Trading Partners|V8819|356,053.69 EUR|VP, Finance|PENDING^TXN8852|03:57|Oakmont Systems Holdings|V8868|104,441.08 EUR|VP, Finance|CLEARED^TXN8853|04:55|Cliffside Solutions Ltd|V8848|150,618.48 EUR|AP Supervisor|CLEARED^TXN8854|02:42|Cobalt Systems LLC|V8811|424,179.24 INR|VP, Finance|CLEARED^TXN8855|04:34|Cobalt Systems LLC|V8811|131,701.21 INR|AP Supervisor|CLEARED^TXN8856|04:41|Ashford Services Ltd|V8857|199,686.92 MXN|Controller, AP|CLEARED^TXN8857|04:34|Beacon Systems Holdings|V8845|207,213.67 AED|AP Supervisor|CLEARED^TXN8858|02:44|Summit Peak Solutions LLC|V8840|23,232.21 AUD|Controller, AP|CLEARED^TXN8859|03:05|Prescott Trading Ltd|V8827|145,729.16 EUR|Finance Manager|CLEARED^TXN8860|04:20|Fairmont Services & Co.|V8838|158,506.55 USD|VP, Finance|CLEARED^TXN8861|04:38|Anchor Logistics & Co.|V8817|183,429.26 DKK|AP Supervisor|CLEARED^TXN8862|02:40|Union Trading Holdings|V8846|35,988.13 DKK|Controller, AP|CLEARED^TXN8863|03:50|Fairmont Trading Partners|V8803|221,492.41 MXN|AP Supervisor|CLEARED^TXN8864|04:16|Kingsbridge Systems Ltd|V8855|275,871.75 EUR|Finance Manager|CLEARED^TXN8865|03:13|Cliffside Holdings LLC|V8815|195,307.96 EUR|AP Supervisor|CLEARED^TXN8866|02:52|Delta Point Trading Co|V8859|399,624.40 INR|Controller, AP|CLEARED^TXN8867|04:44|Union Services Group|V8814|117,926.93 BRL|Controller, AP|CLEARED^TXN8868|03:26|Redwood Trading Partners|V8851|418,045.93 EUR|Finance Manager|CLEARED^TXN8869|04:45|Delta Point Solutions Group|V8822|38,047.53 USD|AP Supervisor|CLEARED^TXN8870|03:07|Delta Point Services Ltd|V8825|434,984.03 KRW|VP, Finance|CLEARED^TXN8871|03:09|Union Services Group|V8814|71,573.56 BRL|VP, Finance|CLEARED^TXN8872|04:36|Waverly Solutions Group|V8810|86,264.42 BRL|Controller, AP|CLEARED^TXN8873|04:54|Wellspring Consulting GmbH|V8873|365,101.22 EUR|VP, Finance|CLEARED^TXN8874|03:50|Prescott Systems Holdings|V8880|156,155.14 EUR|VP, Finance|PENDING^TXN8875|03:47|Ashford Services Ltd|V8857|34,174.97 MXN|Finance Manager|CLEARED^TXN8876|03:49|Beacon Logistics Co|V8876|28,378.36 EUR|Controller, AP|CLEARED^TXN8877|03:43|Union Holdings GmbH|V8858|19,495.07 INR|Controller, AP|CLEARED^TXN8878|04:28|Ironwood Holdings LLC|V8812|295,781.51 EUR|AP Supervisor|CLEARED^TXN8879|02:40|Kingsbridge Consulting Holdings|V8871|458,099.76 EUR|Controller, AP|CLEARED^TXN8880|04:31|Larkspur Trading & Co.|V8874|313,404.22 CAD|AP Supervisor|CLEARED^TXN8881|03:57|Pinehurst Holdings Co|V8820|459,770.15 DKK|VP, Finance|CLEARED^TXN8882|03:33|Cobalt Systems LLC|V8811|242,926.70 INR|VP, Finance|CLEARED^TXN8883|03:10|Ashford Services Ltd|V8857|475,686.81 MXN|Finance Manager|CLEARED^TXN8884|03:56|Cliffside Solutions Ltd|V8848|440,732.75 EUR|VP, Finance|CLEARED^TXN8885|03:55|Cobalt Trading Holdings|V8877|26,556.90 EUR|Controller, AP|CLEARED^TXN8886|03:42|Cobalt Systems & Co.|V8843|46,721.10 EUR|Finance Manager|CLEARED^TXN8887|04:59|Waverly Services Partners|V8878|419,364.32 ZAR|VP, Finance|CLEARED^TXN8888|04:10|Vireo Trading Partners|V8819|440,163.18 EUR|VP, Finance|CLEARED^TXN8889|04:53|Cobalt Trading Holdings|V8877|340,677.08 EUR|Controller, AP|CLEARED^TXN8890|04:44|Cobalt Systems & Co.|V8843|390,608.92 EUR|Controller, AP|CLEARED^TXN8891|04:15|APEX Global Logistics|V8824|1,500,000.00 USD|Controller, AP|CLEARED^TXN8892|02:45|Summit Peak Holdings|V8840|21,500,000.00 EUR|VP, Finance|CLEARED^TXN8893|04:22|Vireo Shell Partners|V8819|18,000,000.00 USD|VP, Finance|CLEARED`;
+        const rawVM = `V8801|Vantage Holdings Holdings|Netherlands|Approved|Low|National Bank|EUR^V8802|Falcon Consulting Group|Italy|Approved|High|Continental Bank|EUR^V8803|Fairmont Trading Partners|Mexico|Approved|Low|Continental Trust|MXN^V8804|Waverly Systems & Co.|Denmark|Approved|Medium|Meridian Trust|DKK^V8805|Apex Solutions Holdings|Portugal|Approved|Medium|National Financial|EUR^V8806|Vireo Systems & Co.|Malta|Approved|Low|Pacific Trust|EUR^V8807|Prescott Logistics Inc|Ireland|Approved|Medium|Union Bank|EUR^V8808|Norwood Consulting & Co.|Mexico|Approved|Medium|National Financial|MXN^V8809|Northbridge Logistics Inc|Canada|Approved|Low|First Trust|CAD^V8810|Waverly Solutions Group|Brazil|Approved|Medium|Pacific Trust|BRL^V8811|Cobalt Systems LLC|India|Approved|Medium|First Trust|INR^V8812|Ironwood Holdings LLC|Portugal|Under Review|Low|First Bank|EUR^V8813|Anchor Systems Ltd|United Arab Emirates|Approved|Low|Meridian Financial|AED^V8814|Union Services Group|Brazil|Approved|Low|Continental Financial|BRL^V8815|Cliffside Holdings LLC|Portugal|Approved|Low|First Financial|EUR^V8816|Northbridge Solutions & Co.|Belgium|Approved|Medium|Meridian Financial|EUR^V8817|Anchor Logistics & Co.|Denmark|Approved|Low|First Financial|DKK^V8818|Ashford Systems & Co.|Cayman Islands|Approved|Medium|First Trust|USD^V8819|Vireo Trading Partners|Germany|Approved|Low|First Trust|EUR^V8820|Pinehurst Holdings Co|Denmark|Approved|Low|Union Financial|DKK^V8821|Delta Point Services Solutions|Portugal|Approved|Medium|Union Financial|EUR^V8822|Delta Point Solutions Group|British Virgin Islands|Approved|Low|Meridian Bank|USD^V8823|Norwood Services & Co.|Belgium|Approved|Low|Meridian Trust|EUR^V8824|APEX Logistics Ltd|Singapore|Approved|Low|Pacific Trust|USD^V8825|Delta Point Services Ltd|South Korea|Approved|Low|Continental Financial|KRW^V8826|Fairmont Trading Solutions|Portugal|Approved|Medium|Union Financial|EUR^V8827|Prescott Trading Ltd|Germany|Approved|Medium|Union Bank|EUR^V8828|Ashford Holdings & Co.|Spain|Approved|Medium|Pacific Trust|EUR^V8829|Wickham Solutions Partners|Denmark|Approved|Low|Pacific Bank|DKK^V8830|Union Holdings Group|Ireland|Approved|Medium|Union Bank|EUR^V8831|Anchor Consulting Co|Japan|Approved|Medium|National Trust|JPY^V8832|Harbor Systems Group|Switzerland|Approved|Low|Pacific Bank|CHF^V8833|Vireo Consulting Holdings|United Kingdom|Under Review|Medium|Pacific Financial|GBP^V8834|Falcon Holdings Co|Singapore|Approved|Medium|Pacific Trust|USD^V8835|Oakmont Trading Partners|Australia|Under Review|Low|Meridian Bank|AUD^V8836|Vantage Trading Co|Germany|Approved|High|First Bank|EUR^V8837|Granite Systems & Co.|Switzerland|Approved|Low|First Financial|CHF^V8838|Fairmont Services & Co.|Cayman Islands|Approved|Medium|Meridian Trust|USD^V8839|Kingsbridge Solutions & Co.|Sweden|Approved|Medium|First Financial|SEK^V8840|Summit Peak Solutions LLC|Australia|Approved|Medium|First Bank|AUD^V8841|Apex Trading Co|Denmark|Approved|Low|First Bank|DKK^V8842|Everline Holdings Holdings|Denmark|Approved|Low|Union Bank|DKK^V8843|Cobalt Systems & Co.|Belgium|Approved|Low|Meridian Bank|EUR^V8844|Vireo Consulting GmbH|Luxembourg|Approved|Low|First Bank|EUR^V8845|Beacon Systems Holdings|United Arab Emirates|Approved|Medium|Pacific Trust|AED^V8846|Union Trading Holdings|Denmark|Approved|Low|National Financial|DKK^V8847|Prescott Trading LLC|United Arab Emirates|Approved|Medium|Union Trust|AED^V8848|Cliffside Solutions Ltd|Germany|Approved|High|National Financial|EUR^V8849|Northbridge Systems Holdings|South Africa|Approved|Low|Meridian Financial|ZAR^V8850|Kingsbridge Solutions GmbH|South Africa|Approved|Medium|First Trust|ZAR^V8851|Redwood Trading Partners|Ireland|Approved|Low|Pacific Trust|EUR^V8852|Prescott Solutions Inc|British Virgin Islands|Approved|Low|Meridian Bank|USD^V8853|Marlowe Solutions Partners|Singapore|Under Review|Medium|National Bank|USD^V8854|Vireo Trading Inc|United Kingdom|Approved|Low|National Trust|GBP^V8855|Kingsbridge Systems Ltd|France|Approved|Low|Pacific Trust|EUR^V8856|Prescott Logistics Ltd|Poland|Approved|Low|Union Bank|PLN^V8857|Ashford Services Ltd|Mexico|Approved|Low|First Trust|MXN^V8858|Union Holdings GmbH|India|Approved|Low|National Financial|INR^V8859|Delta Point Trading Co|India|Approved|Medium|Continental Trust|INR^V8860|Anchor Services Solutions|Norway|Approved|Low|Pacific Trust|NOK^V8861|Sterling Systems Solutions|Japan|Approved|Low|Union Trust|JPY^V8862|Bellwood Services Co|Panama|Approved|Medium|Meridian Trust|USD^V8863|Sterling Services Solutions|Italy|Approved|Low|Continental Financial|EUR^V8864|Larkspur Services Inc|Netherlands|Approved|Medium|First Trust|EUR^V8865|Oakmont Holdings Inc|Italy|Pending|High|Continental Trust|EUR^V8866|Silverline Consulting Solutions|South Africa|Approved|Low|Meridian Bank|ZAR^V8867|Thackeray Trading Ltd|Norway|Approved|High|Continental Bank|NOK^V8868|Oakmont Systems Holdings|Ireland|Approved|Medium|Union Bank|EUR^V8869|Waverly Solutions Co|Panama|Approved|Medium|First Bank|USD^V8870|Everline Consulting LLC|Sweden|Under Review|High|Union Bank|SEK^V8871|Kingsbridge Consulting Holdings|Malta|Approved|Low|First Trust|EUR^V8872|Redwood Solutions Inc|Canada|Approved|Medium|National Financial|CAD^V8873|Wellspring Consulting GmbH|Germany|Approved|Medium|National Financial|EUR^V8874|Larkspur Trading & Co.|Canada|Approved|High|Pacific Trust|CAD^V8875|Cobalt Holdings Ltd|Malta|Approved|Low|Union Financial|EUR^V8876|Beacon Logistics Co|Spain|Pending|Low|Union Trust|EUR^V8877|Cobalt Trading Holdings|France|Pending|Medium|First Bank|EUR^V8878|Waverly Services Partners|South Africa|Approved|High|Pacific Bank|ZAR^V8879|Concord Solutions Ltd|South Africa|Approved|High|First Financial|ZAR^V8880|Prescott Systems Holdings|Portugal|Approved|Medium|Pacific Bank|EUR`;
+        const rawPO = `PO4401|Kingsbridge Systems Ltd|Telecom Contract Renewal|Controller, AP^PO4402|Fairmont Trading Partners|Legal Advisory Retainer|Controller, AP^PO4403|APEX Logistics Ltd|Cloud Infrastructure Migration|Controller, AP^PO4404|Sterling Services Solutions|Cloud Infrastructure Migration|VP, Finance^PO4405|Ashford Systems & Co.|Facilities Refresh — HQ|Procurement Manager^PO4406|Fairmont Services & Co.|Vendor Consolidation Initiative|Procurement Manager^PO4407|Oakmont Holdings Inc|Customer Data Warehouse Expansion|Procurement Manager^PO4408|Vireo Consulting GmbH|Try-On Rendering Pipeline|VP, Finance^PO4409|Cobalt Trading Holdings|Model Training Data Licensing|VP, Finance^PO4410|Delta Point Services Solutions|Facilities Refresh — HQ|VP, Finance^PO4411|Ashford Services Ltd|GPU Compute Capacity — Q3|Procurement Manager^PO4412|Prescott Trading LLC|Software License Renewal|VP, Finance^PO4413|Ashford Services Ltd|Equipment Lease Renewal|Controller, AP^PO4414|Union Holdings GmbH|Cloud Infrastructure Migration|VP, Finance^PO4415|Summit Peak Solutions LLC|Customer Data Warehouse Expansion|Procurement Manager^PO4416|Delta Point Services Ltd|Legal Advisory Retainer|Procurement Manager^PO4417|Anchor Services Solutions|Customer Data Warehouse Expansion|Controller, AP^PO4418|Northbridge Systems Holdings|Telecom Contract Renewal|Procurement Manager^PO4419|Delta Point Services Solutions|Vendor Consolidation Initiative|VP, Finance^PO4420|Waverly Services Partners|Facilities Refresh — HQ|Controller, AP^PO4421|Prescott Logistics Inc|Software License Renewal|Procurement Manager^PO4422|Cliffside Solutions Ltd|Telecom Contract Renewal|Procurement Manager^PO4423|Thackeray Trading Ltd|Vendor Consolidation Initiative|Procurement Manager^PO4424|Granite Systems & Co.|Customer Onboarding Platform|VP, Finance^PO4425|Oakmont Trading Partners|Staff Augmentation — Q2|VP, Finance^PO4426|Prescott Logistics Ltd|Customer Onboarding Platform|VP, Finance^PO4427|Union Holdings GmbH|Try-On Rendering Pipeline|Controller, AP^PO4428|Waverly Systems & Co.|Model Training Data Licensing|Procurement Manager^PO4429|Redwood Trading Partners|Telecom Contract Renewal|Controller, AP^PO4430|Anchor Consulting Co|Model Training Data Licensing|Procurement Manager^PO4431|Cliffside Solutions Ltd|Cloud Infrastructure Migration|Procurement Manager^PO4432|Apex Trading Co|Try-On Rendering Pipeline|Procurement Manager^PO4433|Cobalt Systems & Co.|Customer Data Warehouse Expansion|VP, Finance^PO4434|Ashford Systems & Co.|GPU Compute Capacity — Q3|Controller, AP^PO4435|Sterling Systems Solutions|Catering Services — HQ|VP, Finance^PO4436|Sterling Systems Solutions|Staff Augmentation — Q2|Procurement Manager^PO4437|Cobalt Systems LLC|GPU Compute Capacity — Q3|Controller, AP^PO4438|Ashford Holdings & Co.|Vendor Consolidation Initiative|VP, Finance^PO4439|Kingsbridge Consulting Holdings|Catering Services — HQ|Procurement Manager^PO4440|Cliffside Holdings LLC|Customer Data Warehouse Expansion|Controller, AP`;
+
         const orgData = [
-            { id: "#004", name: "Victoria Vance", role: "Chief Executive Officer", pronouns: "She/Her", traits: ["Strategic Visionary", "Women in STEM Mentor", "Neurodiversity Advocate"], ip: "10.45.99.201", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200", status: "Active" },
-            { id: "#007", name: "Aisha Johnson", role: "Chief Operating Officer", pronouns: "She/They", traits: ["Operational Excellence", "Accessibility Champion", "BIPOC Leadership Sponsor"], ip: "10.45.99.202", img: "https://images.unsplash.com/photo-1531123897727-8f129e1bf98c?auto=format&fit=crop&q=80&w=200&h=200", status: "Active" },
-            { id: "#012", name: "Marcus Chen", role: "Chief Financial Officer", pronouns: "He/Him", traits: ["Risk Mitigation", "First-Gen Corporate Sponsor", "Working Parents Network"], ip: "10.45.99.203", img: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?auto=format&fit=crop&q=80&w=200&h=200", status: "Active" },
-            { id: "#002", name: "Dr. Alex Thorne", role: "Chief Technology Officer", pronouns: "He/Him", traits: ["AI Architect", "Mental Health Advocate", "Ethical Tech Lead"], ip: "10.45.99.204", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=200&h=200", status: "Leave of Absence" },
-            { id: "#045", name: "Elena Rodriguez", role: "Chief People Officer", pronouns: "She/Her", traits: ["Cultural Transformation", "LGBTQ+ Ally", "Pay Equity Taskforce"], ip: "10.45.99.205", img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200&h=200", status: "Active" },
-            { id: "#088", name: "David Kim", role: "VP of Engineering", pronouns: "He/Him", traits: ["Agile Coach", "Veteran Sponsor", "Inclusive Hiring Chair"], ip: "10.45.99.210", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200", status: "Active" }
+            { id: "EMP001", name: "Victoria Vance", dept: "Executive", role: "Chief Executive Officer", ext: "2885", ip: "10.45.99.201", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200" },
+            { id: "EMP002", name: "Daniel Reyes", dept: "AI / Machine Learning", role: "ML Team Lead", ext: "2271", ip: "10.45.99.204", img: "https://i.pravatar.cc/200?u=EMP002" },
+            { id: "EMP003", name: "Samuel Sorensen", dept: "Product", role: "Product Designer", ext: "2677", ip: "10.45.10.03", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP003" },
+            { id: "EMP004", name: "Marcus Bergstrom", dept: "AI / Machine Learning", role: "Senior ML Engineer", ext: "2593", ip: "10.45.10.04", img: "https://robohash.org/EMP004.png?set=set4" },
+            { id: "EMP005", name: "Fatima Mokoena", dept: "Executive", role: "Executive Assistant", ext: "2598", ip: "10.45.10.05", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP005" },
+            { id: "EMP006", name: "Ivan Castillo", dept: "People & Talent", role: "Generalist", ext: "2082", ip: "10.45.10.06", img: "https://robohash.org/EMP006.png?set=set2" },
+            { id: "EMP007", name: "Liam Berg", dept: "Growth & Marketing", role: "Coordinator", ext: "2413", ip: "10.45.10.07", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP007" },
+            { id: "EMP008", name: "Victor Andersen", dept: "Customer Success", role: "Account Manager", ext: "2634", ip: "10.45.10.08", img: "https://i.pravatar.cc/200?u=EMP008" },
+            { id: "EMP009", name: "Priya Castillo", dept: "Finance", role: "Senior Manager", ext: "2685", ip: "10.45.99.203", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP009" },
+            { id: "EMP010", name: "Chloe Reyes", dept: "Operations", role: "Ops Manager", ext: "2660", ip: "10.45.10.10", img: "https://robohash.org/EMP010.png?set=set4" },
+            { id: "EMP011", name: "Zara Moreno", dept: "AI / Machine Learning", role: "ML Engineer", ext: "2636", ip: "10.45.10.11", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP011" },
+            { id: "EMP012", name: "Noah Nguyen", dept: "Engineering", role: "Senior Engineer", ext: "2135", ip: "10.45.99.210", img: "https://robohash.org/EMP012.png?set=set2" },
+            { id: "EMP013", name: "Liam Andersen", dept: "Product", role: "Senior Product Manager", ext: "2448", ip: "10.45.10.13", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP013" },
+            { id: "EMP014", name: "Talia Adeyemi", dept: "Finance", role: "Analyst", ext: "2961", ip: "10.45.10.14", img: "https://i.pravatar.cc/200?u=EMP014" },
+            { id: "EMP015", name: "Kenji Larsson", dept: "Executive", role: "Chief of Staff", ext: "2159", ip: "10.45.10.15", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP015" },
+            { id: "EMP016", name: "Samuel Berg", dept: "People & Talent", role: "Generalist", ext: "2208", ip: "10.45.10.16", img: "https://robohash.org/EMP016.png?set=set4" },
+            { id: "EMP017", name: "Kenji Ibrahim", dept: "Growth & Marketing", role: "Specialist", ext: "2094", ip: "10.45.10.17", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP017" },
+            { id: "EMP018", name: "Mei Kim", dept: "Customer Success", role: "Representative", ext: "2652", ip: "10.45.10.18", img: "https://robohash.org/EMP018.png?set=set2" },
+            { id: "EMP019", name: "Omar Mokoena", dept: "Legal & Compliance", role: "General Counsel", ext: "2437", ip: "10.45.10.19", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP019" },
+            { id: "EMP020", name: "James Larsson", dept: "Operations", role: "Coordinator", ext: "2854", ip: "10.45.10.20", img: "https://i.pravatar.cc/200?u=EMP020" },
+            { id: "EMP021", name: "Leila Abara", dept: "AI / Machine Learning", role: "Senior ML Engineer", ext: "2042", ip: "10.45.10.21", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP021" },
+            { id: "EMP022", name: "Layla Okafor", dept: "Engineering", role: "Systems Administrator", ext: "2255", ip: "10.45.10.22", img: "https://robohash.org/EMP022.png?set=set4" },
+            { id: "EMP023", name: "Noah Halim", dept: "Product", role: "Product Designer", ext: "2158", ip: "10.45.10.23", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP023" },
+            { id: "EMP024", name: "Omar Osei", dept: "Finance", role: "Controller", ext: "2946", ip: "10.45.10.24", img: "https://robohash.org/EMP024.png?set=set2" },
+            { id: "EMP025", name: "Naledi Andersen", dept: "Executive", role: "Executive Assistant", ext: "2110", ip: "10.45.10.25", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP025" },
+            { id: "EMP026", name: "Wei Weiss", dept: "People & Talent", role: "Generalist", ext: "2358", ip: "10.45.10.26", img: "https://i.pravatar.cc/200?u=EMP026" },
+            { id: "EMP027", name: "Thomas Dubois", dept: "Growth & Marketing", role: "Coordinator", ext: "2408", ip: "10.45.10.27", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP027" },
+            { id: "EMP028", name: "Ana Nguyen", dept: "Customer Success", role: "Senior Representative", ext: "2409", ip: "10.45.10.28", img: "https://robohash.org/EMP028.png?set=set4" },
+            { id: "EMP029", name: "Adam Bergstrom", dept: "Legal & Compliance", role: "Associate", ext: "2182", ip: "10.45.10.29", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP029" },
+            { id: "EMP030", name: "Kenji Okafor", dept: "Operations", role: "Coordinator", ext: "2805", ip: "10.45.10.30", img: "https://robohash.org/EMP030.png?set=set2" },
+            { id: "EMP031", name: "Mei Berg", dept: "AI / Machine Learning", role: "ML Engineer", ext: "2194", ip: "10.45.10.31", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP031" },
+            { id: "EMP032", name: "Wei Girard", dept: "Engineering", role: "DevOps Engineer", ext: "2947", ip: "10.45.10.32", img: "https://i.pravatar.cc/200?u=EMP032" },
+            { id: "EMP033", name: "Elif Lund", dept: "Product", role: "Product Designer", ext: "2071", ip: "10.45.10.33", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP033" },
+            { id: "EMP034", name: "Yuki Odhiambo", dept: "Finance", role: "Senior Manager", ext: "2519", ip: "10.45.10.34", img: "https://robohash.org/EMP034.png?set=set4" },
+            { id: "EMP035", name: "Karim Baptiste", dept: "Executive", role: "Executive Assistant", ext: "2302", ip: "10.45.10.35", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP035" },
+            { id: "EMP036", name: "Lucas Volkov", dept: "People & Talent", role: "People Partner", ext: "2693", ip: "10.45.10.36", img: "https://robohash.org/EMP036.png?set=set2" },
+            { id: "EMP037", name: "Nia Marchetti", dept: "Growth & Marketing", role: "Specialist", ext: "2853", ip: "10.45.10.37", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP037" },
+            { id: "EMP038", name: "Nadia Novak", dept: "Customer Success", role: "Representative", ext: "2670", ip: "10.45.10.38", img: "https://i.pravatar.cc/200?u=EMP038" },
+            { id: "EMP039", name: "Zara Malik", dept: "Legal & Compliance", role: "General Counsel", ext: "2523", ip: "10.45.10.39", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP039" },
+            { id: "EMP040", name: "Naledi Fischer", dept: "Operations", role: "Senior Ops Manager", ext: "2679", ip: "10.45.10.40", img: "https://robohash.org/EMP040.png?set=set4" },
+            { id: "EMP041", name: "Nia Bergstrom", dept: "AI / Machine Learning", role: "ML Engineer", ext: "2317", ip: "10.45.10.41", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP041" },
+            { id: "EMP042", name: "Daniel Patel", dept: "Engineering", role: "Software Engineer", ext: "2486", ip: "10.45.10.42", img: "https://robohash.org/EMP042.png?set=set2" },
+            { id: "EMP043", name: "Amina Nguyen", dept: "Product", role: "Senior Product Manager", ext: "2199", ip: "10.45.10.43", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP043" },
+            { id: "EMP044", name: "Amara Yamamoto", dept: "Finance", role: "Manager", ext: "2005", ip: "10.45.10.44", img: "https://i.pravatar.cc/200?u=EMP044" },
+            { id: "EMP045", name: "Amina Sorensen", dept: "Executive", role: "Chief of Staff", ext: "2530", ip: "10.45.10.45", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP045" },
+            { id: "EMP046", name: "Fatima Abara", dept: "People & Talent", role: "Generalist", ext: "2136", ip: "10.45.10.46", img: "https://robohash.org/EMP046.png?set=set4" },
+            { id: "EMP047", name: "Karim Castillo", dept: "Growth & Marketing", role: "Growth Manager", ext: "2972", ip: "10.45.10.47", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP047" },
+            { id: "EMP048", name: "Nia Lund", dept: "Customer Success", role: "Account Manager", ext: "2918", ip: "10.45.10.48", img: "https://robohash.org/EMP048.png?set=set2" },
+            { id: "EMP049", name: "Naledi Weiss", dept: "Legal & Compliance", role: "General Counsel", ext: "2860", ip: "10.45.10.49", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP049" },
+            { id: "EMP050", name: "Ana Farah", dept: "Operations", role: "Senior Ops Manager", ext: "2281", ip: "10.45.10.50", img: "https://i.pravatar.cc/200?u=EMP050" }
         ];
 
-        const logsData = [
-            { time: "01:15:22", ip: "10.45.99.203", event: "ROUTINE_BACKUP_INIT", status: "SUCCESS" },
-            { time: "01:45:10", ip: "10.45.99.210", event: "API_GATEWAY_SYNC", status: "SUCCESS" },
-            { time: "02:30:05", ip: "10.45.99.204", event: "FAILED_LOGIN_ATTEMPT", status: "WARNING" },
-            { time: "03:00:12", ip: "10.45.99.201", event: "UNAUTHORIZED_LEDGER_ACCESS", status: "CRITICAL" },
-            { time: "03:01:45", ip: "10.45.99.201", event: "DATA_SCRUB_EXECUTED", status: "CRITICAL" },
-            { time: "03:02:10", ip: "10.45.99.201", event: "AUDIT_TRAIL_DELETED", status: "CRITICAL" },
-            { time: "04:15:00", ip: "SYSTEM", event: "AUTO_REBOOT_TRIGGERED", status: "INFO" }
-        ];
+        // DYNAMIC DATA PARSING
+        const parsedLogs = rawLogs.split('^').map(r => {
+            const p = r.split('|');
+            return { time: p[0], event: p[1], user: p[2], status: p[3], ticket: p[4] };
+        }).sort((a, b) => a.time.localeCompare(b.time));
 
-        const ledgerData = [
-            { id: "TXN-8821", date: "08/10", vendor: "AWS Cloud Services", amount: "$145,000", status: "CLEARED" },
-            { id: "TXN-8822", date: "08/12", vendor: "WeWork Real Estate", amount: "$85,000", status: "CLEARED" },
-            { id: "TXN-8823", date: "08/13", vendor: "Global Legal Partners", amount: "$400,000", status: "CLEARED" },
-            { id: "TXN-8824", date: "08/14", vendor: "APEX Shell Logistics", amount: "$22,000,000", status: "PENDING_WIRE" },
-            { id: "TXN-8825", date: "08/15", vendor: "Salesforce CRM", amount: "$120,000", status: "CLEARED" }
-        ];
+        const parsedLedger = rawLedger.split('^').map(r => {
+            const p = r.split('|');
+            return { id: p[0], time: p[1], vendor: p[2], vendor_id: p[3], amount: p[4], approved: p[5], status: p[6] };
+        }).sort((a, b) => a.id.localeCompare(b.id));
 
-        // ACTION PLAN COMPONENTS
-        function QuestNavBtn({ icon, label, isActive, onClick, locked = false, className = "", disabled = false }) {
+        const parsedVM = rawVM.split('^').map(r => {
+            const p = r.split('|');
+            return { id: p[0], name: p[1], country: p[2], status: p[3], risk: p[4], bank: p[5], currency: p[6] };
+        });
+
+        const parsedPO = rawPO.split('^').map(r => {
+            const p = r.split('|');
+            return { po: p[0], vendor: p[1], project: p[2], approver: p[3] };
+        });
+
+        // COMPONENTS
+        function QuestNavBtn({ icon, label, isActive, onClick, locked = false, className = "", disabled = false, isCritical = false }) {
+            const baseStyle = "flex items-center justify-center md:justify-between whitespace-nowrap shrink-0 md:shrink md:w-full p-3 rounded-lg text-xs md:text-sm font-medium transition-all duration-200";
+            let activeStyle = isActive ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-inner' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent';
+            
+            if (isCritical) {
+                activeStyle = disabled ? 'opacity-50 border border-slate-700 bg-slate-900 text-slate-500 cursor-not-allowed' 
+                                       : isActive ? 'bg-red-600 text-white border border-red-400 shadow-[0_0_15px_rgba(220,38,38,0.6)]'
+                                                  : 'bg-red-950/40 text-red-400 border border-red-500 hover:bg-red-600 hover:text-white animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]';
+            }
+
             return (
-                <button onClick={disabled ? undefined : onClick} className={`flex items-center justify-between w-full p-3 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-inner' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent'} ${className}`}>
-                    <div className="flex items-center gap-3"><i className={`fa-solid ${icon} w-5 text-center`}></i> {label}</div>
-                    {locked && <i className="fa-solid fa-lock text-slate-600 text-xs"></i>}
+                <button onClick={disabled ? undefined : onClick} className={`${baseStyle} ${activeStyle} ${className}`}>
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <i className={`fa-solid ${icon} w-4 md:w-5 text-center`}></i> 
+                        <span className={isCritical ? 'font-bold tracking-widest uppercase' : ''}>{label}</span>
+                    </div>
+                    {locked && <i className="fa-solid fa-lock text-slate-600 text-[10px] md:text-xs ml-2"></i>}
                 </button>
             );
+        }
+
+        function SnakeGame({ onClose }) {
+            const [snake, setSnake] = useState([[10, 10]]);
+            const [food, setFood] = useState([15, 15]);
+            const [dir, setDir] = useState([0, -1]);
+            const [gameOver, setGameOver] = useState(false);
+            const [score, setScore] = useState(0);
+
+            useEffect(() => {
+                if (gameOver) return;
+                const moveSnake = () => {
+                    setSnake(prev => {
+                        const head = prev[0];
+                        const newHead = [head[0] + dir[0], head[1] + dir[1]];
+                        
+                        if (newHead[0] < 0 || newHead[0] >= 20 || newHead[1] < 0 || newHead[1] >= 20) {
+                            setGameOver(true); return prev;
+                        }
+                        if (prev.some(segment => segment[0] === newHead[0] && segment[1] === newHead[1])) {
+                            setGameOver(true); return prev;
+                        }
+
+                        const newSnake = [newHead, ...prev];
+                        if (newHead[0] === food[0] && newHead[1] === food[1]) {
+                            setScore(s => s + 10);
+                            setFood([Math.floor(Math.random() * 20), Math.floor(Math.random() * 20)]);
+                        } else {
+                            newSnake.pop();
+                        }
+                        return newSnake;
+                    });
+                };
+                const interval = setInterval(moveSnake, 120);
+                return () => clearInterval(interval);
+            }, [dir, food, gameOver]);
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    switch (e.key) {
+                        case 'ArrowUp': if (dir[1] !== 1) setDir([0, -1]); break;
+                        case 'ArrowDown': if (dir[1] !== -1) setDir([0, 1]); break;
+                        case 'ArrowLeft': if (dir[0] !== 1) setDir([-1, 0]); break;
+                        case 'ArrowRight': if (dir[0] !== -1) setDir([1, 0]); break;
+                    }
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [dir]);
+
+            return (
+                <div className="absolute inset-0 z-50 bg-black/90 flex flex-col items-center justify-center fade-in backdrop-blur-sm p-4">
+                    <div className="bg-slate-900 border-2 border-amber-500 p-4 md:p-6 rounded-xl shadow-[0_0_30px_rgba(245,158,11,0.2)]">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-amber-500 font-bold uppercase tracking-widest text-sm md:text-base"><i className="fa-solid fa-gamepad"></i> RETRO OVERRIDE</h2>
+                            <span className="text-white font-mono text-sm md:text-base">SCORE: {score}</span>
+                        </div>
+                        <div className="relative w-[280px] h-[280px] md:w-[350px] md:h-[350px] bg-slate-950 border border-slate-700 grid" style={{ gridTemplateColumns: 'repeat(20, 1fr)', gridTemplateRows: 'repeat(20, 1fr)' }}>
+                            {Array.from({ length: 400 }).map((_, i) => {
+                                const x = i % 20; const y = Math.floor(i / 20);
+                                const isSnake = snake.some(s => s[0] === x && s[1] === y);
+                                const isFood = food[0] === x && food[1] === y;
+                                return <div key={i} className={`w-full h-full ${isSnake ? 'bg-amber-500 shadow-[0_0_5px_#f59e0b]' : isFood ? 'bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_#ef4444]' : ''}`} />
+                            })}
+                            {gameOver && (
+                                <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center">
+                                    <span className="text-red-500 font-bold text-xl md:text-2xl mb-4 tracking-widest">SYSTEM FAILURE</span>
+                                    <button onClick={() => {setSnake([[10,10]]); setDir([0,-1]); setScore(0); setGameOver(false);}} className="text-amber-500 hover:text-white border border-amber-500 px-6 py-2 rounded font-bold tracking-widest text-sm transition-colors hover:bg-amber-500/20">REBOOT</button>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="mt-6 flex justify-center md:hidden">
+                            <div className="grid grid-cols-3 gap-2">
+                                <div></div>
+                                <button className="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 p-4 rounded-lg shadow" onClick={() => dir[1] !== 1 && setDir([0, -1])}><i className="fa-solid fa-arrow-up text-amber-500"></i></button>
+                                <div></div>
+                                <button className="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 p-4 rounded-lg shadow" onClick={() => dir[0] !== 1 && setDir([-1, 0])}><i className="fa-solid fa-arrow-left text-amber-500"></i></button>
+                                <button className="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 p-4 rounded-lg shadow" onClick={() => dir[1] !== -1 && setDir([0, 1])}><i className="fa-solid fa-arrow-down text-amber-500"></i></button>
+                                <button className="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 p-4 rounded-lg shadow" onClick={() => dir[0] !== -1 && setDir([1, 0])}><i className="fa-solid fa-arrow-right text-amber-500"></i></button>
+                            </div>
+                        </div>
+
+                        <button onClick={onClose} className="mt-6 w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded transition-colors text-sm tracking-widest uppercase">EXIT TERMINAL</button>
+                    </div>
+                </div>
+            )
         }
 
         function QuestView() {
             const [activeTab, setActiveTab] = useState('org');
             const [unlockedNodes, setUnlockedNodes] = useState({ logs: false, ledger: false, banking: false });
             const [solvedPuzzles, setSolvedPuzzles] = useState({ puzzle1: false, puzzle2: false, puzzle3: false });
+            const [lang, setLang] = useState('en');
+            const [showMinigame, setShowMinigame] = useState(false);
+            const [clickCount, setClickCount] = useState(0);
             
-            // Sub-States for Org Chart Search
+            const t = dict[lang];
+
             const [search, setSearch] = useState('');
-            const isHacked = search === '#004' || search === '004';
+            const [poSearch, setPoSearch] = useState('');
+            const [vendorSearch, setVendorSearch] = useState('');
+            const isHacked = search.toUpperCase() === 'EMP004' || search === '004';
             
-            // Sub-States for Unlocks
             const [unlockInput, setUnlockInput] = useState('');
             const [unlockError, setUnlockError] = useState(false);
 
             const allNodesUnlocked = unlockedNodes.logs && unlockedNodes.ledger && unlockedNodes.banking;
             const allPuzzlesSolved = solvedPuzzles.puzzle1 && solvedPuzzles.puzzle2 && solvedPuzzles.puzzle3;
+
+            const protocolData = [
+                { tier: t.pTier1, cap: "< $1,000,000", jur: t.pJur1, anomaly: t.pAnom1, code: "PROCEED-00" },
+                { tier: t.pTier2, cap: "$1M - $5M", jur: t.pJur1, anomaly: t.pAnom2, code: "HOLD-ASSET" },
+                { tier: t.pTier3, cap: "> $5,000,000", jur: t.pJur1, anomaly: t.pAnom3, code: "FREEZE-FUNDS" },
+                { tier: t.pTier3, cap: "< $10,000,000", jur: t.pJur2, anomaly: t.pAnom4, code: "REVIEW-EDD" },
+                { tier: t.pTier4, cap: "> $20,000,000", jur: t.pJur1, anomaly: t.pAnom5, code: "HOLD-FUNDS" },
+                { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, anomaly: t.pAnom2, code: "REJECT-WIRE" },
+                { tier: t.pTier4, cap: "< $10,000,000", jur: t.pJur2, anomaly: t.pAnom5, code: "FLAG-ACCOUNT" },
+                { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, anomaly: t.pAnom5, code: "VOID-WIRE" },
+                { tier: t.pTier5, cap: t.pCapAny, jur: t.pJur3, anomaly: t.pAnom6, code: "LOCKDOWN-ALL" }
+            ];
+
+            const handleSecretClick = () => {
+                setClickCount(prev => {
+                    if (prev + 1 >= 5) {
+                        setShowMinigame(true);
+                        return 0;
+                    }
+                    return prev + 1;
+                });
+            };
 
             const handleUnlock = (e, nodeKey, expected) => {
                 e.preventDefault();
@@ -158,68 +523,181 @@
             };
 
             const renderUnlock = (title, hint, nodeKey, expected) => (
-                <div className="flex flex-col items-center justify-center h-full fade-in">
-                    <div className="max-w-lg w-full p-8 glass-panel border border-slate-700 rounded-xl shadow-2xl text-center relative overflow-hidden">
+                <div className="flex flex-col items-center justify-center h-full fade-in p-4 md:p-0">
+                    <div className="max-w-lg w-full p-6 md:p-8 glass-panel border border-slate-700 rounded-xl shadow-2xl text-center relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500"></div>
-                        <i className="fa-solid fa-lock text-5xl mb-6 text-slate-500"></i>
-                        <h2 className="text-2xl font-bold mb-2 tracking-widest text-white uppercase">{title}</h2>
-                        <p className="text-slate-400 mb-8 text-sm px-4 leading-relaxed">{hint}</p>
+                        <i className="fa-solid fa-lock text-4xl md:text-5xl mb-6 text-slate-500"></i>
+                        <h2 className="text-xl md:text-2xl font-bold mb-2 tracking-widest text-white uppercase">{title}</h2>
+                        <p className="text-slate-400 mb-8 text-xs md:text-sm px-2 md:px-4 leading-relaxed">{hint}</p>
                         <form onSubmit={(e) => handleUnlock(e, nodeKey, expected)}>
-                            <input type="text" value={unlockInput} onChange={(e) => setUnlockInput(e.target.value)} className={`w-full bg-slate-950 border ${unlockError ? 'border-red-500 text-red-400' : 'border-slate-700 text-amber-400'} rounded p-4 text-center text-lg tracking-widest outline-none transition-all mb-6 uppercase`} placeholder="ENTER KEY" autoFocus />
-                            <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold py-3 px-4 rounded transition-colors uppercase tracking-wider flex items-center justify-center gap-2"><i className="fa-solid fa-key"></i> Decrypt Node</button>
+                            <input type="text" value={unlockInput} onChange={(e) => setUnlockInput(e.target.value)} className={`w-full bg-slate-950 border ${unlockError ? 'border-red-500 text-red-400' : 'border-slate-700 text-amber-400'} rounded p-3 md:p-4 text-center text-base md:text-lg tracking-widest outline-none transition-all mb-6 uppercase`} placeholder={t.enterKey} autoFocus />
+                            <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold py-3 px-4 rounded transition-colors uppercase tracking-wider flex items-center justify-center gap-2 text-sm"><i className="fa-solid fa-key"></i> {t.decryptBtn}</button>
                         </form>
                     </div>
                 </div>
             );
 
             return (
-                <div className="h-screen w-screen flex flex-col md:flex-row p-4 gap-4 box-border max-w-[1600px] mx-auto fade-in">
-                    <nav className="w-full md:w-64 glass-panel border border-slate-700 p-4 rounded-xl flex flex-col gap-2 shrink-0 z-10 overflow-y-auto custom-scrollbar">
-                        <div className="mb-4 pb-4 border-b border-slate-800">
-                            <h1 className="text-xl font-bold text-amber-400 tracking-wider flex items-center gap-2 uppercase"><i className="fa-solid fa-fingerprint text-2xl"></i> Action Plan</h1>
+                <div className="h-[100dvh] w-full flex flex-col md:flex-row p-2 md:p-4 gap-4 box-border max-w-[1600px] mx-auto fade-in relative">
+                    {showMinigame && <SnakeGame onClose={() => setShowMinigame(false)} />}
+                    
+                    <nav className="w-full md:w-64 glass-panel border border-slate-700 p-2 md:p-4 rounded-xl flex flex-row md:flex-col gap-2 shrink-0 z-20 overflow-x-auto md:overflow-y-auto custom-scrollbar items-center md:items-stretch">
+                        <div className="hidden md:flex mb-4 pb-4 border-b border-slate-800 justify-between items-center">
+                            <h1 className="text-lg md:text-xl font-bold text-amber-400 tracking-wider flex items-center gap-2 uppercase select-none cursor-pointer" onClick={handleSecretClick}><i className="fa-solid fa-fingerprint text-2xl"></i> {t.projectSunrise}</h1>
+                            <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="bg-slate-800 hover:bg-slate-700 text-white text-[10px] px-2 py-1 rounded border border-slate-600 font-bold transition-colors">
+                                {lang === 'en' ? '中文' : 'EN'}
+                            </button>
                         </div>
-                        <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1 mt-1">Investigation Hub</div>
-                        <QuestNavBtn icon="fa-users" label="Corporate Directory" isActive={activeTab === 'org'} onClick={() => {setActiveTab('org'); setUnlockInput('');}} />
-                        <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1 mt-4">Encrypted Nodes</div>
-                        <QuestNavBtn icon="fa-terminal" label="Node 1: Logs" isActive={activeTab === 'logs'} onClick={() => {setActiveTab('logs'); setUnlockInput('');}} locked={!unlockedNodes.logs} />
-                        <QuestNavBtn icon="fa-database" label="Node 2: Ledger" isActive={activeTab === 'ledger'} onClick={() => {setActiveTab('ledger'); setUnlockInput('');}} locked={!unlockedNodes.ledger} />
-                        <QuestNavBtn icon="fa-file-lines" label="Node 3: Protocol" isActive={activeTab === 'banking'} onClick={() => {setActiveTab('banking'); setUnlockInput('');}} locked={!unlockedNodes.banking} />
-                        <div className="flex-grow"></div>
-                        <QuestNavBtn icon="fa-shield-halved" label="Halt Transaction" isActive={activeTab === 'mystery'} onClick={() => {setActiveTab('mystery'); setUnlockInput('');}} className={`border mt-4 ${allNodesUnlocked ? 'text-red-400 border-red-500/50 bg-red-500/10' : 'opacity-50'}`} disabled={!allNodesUnlocked} />
+                        
+                        <div className="hidden md:block text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1 mt-1">{t.investigationHub}</div>
+                        <QuestNavBtn icon="fa-users" label={t.directory} isActive={activeTab === 'org'} onClick={() => {setActiveTab('org'); setUnlockInput('');}} />
+                        <QuestNavBtn icon="fa-file-shield" label={t.security} isActive={activeTab === 'security'} onClick={() => {setActiveTab('security'); setUnlockInput('');}} />
+                        <QuestNavBtn icon="fa-file-invoice-dollar" label={t.vendors} isActive={activeTab === 'vendor'} onClick={() => {setActiveTab('vendor'); setUnlockInput('');}} />
+                        
+                        <div className="hidden md:block text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-1 mt-4">{t.encryptedNodes}</div>
+                        <div className="md:hidden w-px h-8 bg-slate-700 mx-1 shrink-0"></div>
+                        
+                        <QuestNavBtn icon="fa-terminal" label={t.n1Logs} isActive={activeTab === 'logs'} onClick={() => {setActiveTab('logs'); setUnlockInput('');}} locked={!unlockedNodes.logs} />
+                        <QuestNavBtn icon="fa-database" label={t.n2Ledger} isActive={activeTab === 'ledger'} onClick={() => {setActiveTab('ledger'); setUnlockInput('');}} locked={!unlockedNodes.ledger} />
+                        <QuestNavBtn icon="fa-file-lines" label={t.n3Protocol} isActive={activeTab === 'banking'} onClick={() => {setActiveTab('banking'); setUnlockInput('');}} locked={!unlockedNodes.banking} />
+                        
+                        <div className="flex-grow hidden md:block"></div>
+                        <div className="md:hidden w-px h-8 bg-slate-700 mx-1 shrink-0"></div>
+                        
+                        <QuestNavBtn icon="fa-shield-halved" label={t.haltTxn} isActive={activeTab === 'mystery'} onClick={() => {setActiveTab('mystery'); setUnlockInput('');}} disabled={!allNodesUnlocked} isCritical={true} />
                     </nav>
 
                     <main className="flex-grow h-full overflow-hidden relative z-10 flex flex-col min-w-0">
-                        <div className="flex flex-wrap items-center gap-4 mb-4 glass-panel p-3 border border-slate-700 rounded-lg shrink-0">
-                            <span className="text-xs text-slate-500 uppercase font-bold"><i className="fa-solid fa-chart-line text-amber-500"></i> Decryption Status:</span>
-                            <div className="flex gap-2">
-                                {['Logs', 'Ledger', 'Protocol'].map((l, i) => {
-                                    const isActive = Object.values(unlockedNodes)[i];
-                                    return <div key={l} className={`px-2 py-1 border text-[10px] rounded uppercase font-bold flex items-center gap-1 ${isActive ? 'bg-amber-950/40 border-amber-500/50 text-amber-400' : 'bg-slate-950 border-slate-800 text-slate-600'}`}><i className={`fa-solid ${isActive ? 'fa-lock-open' : 'fa-lock'}`}></i> N{i+1}</div>
+                        {/* Mobile Header */}
+                        <div className="md:hidden flex justify-between items-center w-full shrink-0 mb-3 px-1">
+                            <h1 className="text-base font-bold text-amber-400 tracking-wider flex items-center gap-2 uppercase select-none cursor-pointer" onClick={handleSecretClick}><i className="fa-solid fa-fingerprint"></i> {t.projectSunrise}</h1>
+                            <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="bg-slate-800 hover:bg-slate-700 text-white text-[10px] px-2 py-1 rounded border border-slate-600 font-bold">
+                                {lang === 'en' ? '中文' : 'EN'}
+                            </button>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-4 glass-panel p-2 md:p-3 border border-slate-700 rounded-lg shrink-0">
+                            <span className="text-[10px] md:text-xs text-slate-500 uppercase font-bold"><i className="fa-solid fa-chart-line text-amber-500"></i> {t.decryptionStatus}</span>
+                            <div className="flex flex-wrap gap-2">
+                                {[{k:'logs', l:t.n1Logs}, {k:'ledger', l:t.n2Ledger}, {k:'banking', l:t.n3Protocol}].map((obj, i) => {
+                                    const isActive = unlockedNodes[obj.k];
+                                    return <div key={obj.k} className={`px-2 py-1 border text-[10px] rounded uppercase font-bold flex items-center gap-1 ${isActive ? 'bg-amber-950/40 border-amber-500/50 text-amber-400' : 'bg-slate-950 border-slate-800 text-slate-600'}`}><i className={`fa-solid ${isActive ? 'fa-lock-open' : 'fa-lock'}`}></i> {obj.l}</div>
                                 })}
                             </div>
                         </div>
 
-                        <div className="flex-grow overflow-y-auto custom-scrollbar relative">
+                        <div className="flex-grow overflow-y-auto custom-scrollbar relative pr-1 md:pr-2">
+                            {/* SECURITY POLICY */}
+                            {activeTab === 'security' && (
+                                <div className="fade-in pb-12 flex flex-col gap-4 md:gap-6">
+                                    <h2 className="text-xl md:text-2xl font-bold text-white mb-2"><i className="fa-solid fa-shield-halved text-amber-500"></i> {t.security}</h2>
+                                    
+                                    <div className="glass-panel p-4 md:p-6 border border-slate-700 rounded-xl">
+                                        <h3 className="text-base md:text-lg font-bold text-amber-400 border-b border-slate-800 pb-2 mb-4">{t.privActivities}</h3>
+                                        <p className="text-xs md:text-sm text-slate-300 mb-4">{t.privDesc}</p>
+                                        <ul className="list-disc pl-5 text-xs md:text-sm text-slate-400 space-y-2 mb-4 md:mb-6">
+                                            <li><strong className="text-slate-200">{t.dbExport}</strong> {t.dbExportDesc}</li>
+                                            <li><strong className="text-slate-200">{t.privEsc}</strong> {t.privEscDesc}</li>
+                                            <li><strong className="text-slate-200">{t.custData}</strong> {t.custDataDesc}</li>
+                                            <li><strong className="text-slate-200">{t.dataScrub}</strong> {t.dataScrubDesc}</li>
+                                            <li><strong className="text-slate-200">{t.auditLogMod}</strong> {t.auditLogModDesc}</li>
+                                        </ul>
+                                    </div>
+
+                                    <div className="glass-panel p-4 md:p-6 border border-slate-700 rounded-xl">
+                                        <h3 className="text-base md:text-lg font-bold text-amber-400 border-b border-slate-800 pb-2 mb-4">{t.infraMap}</h3>
+                                        <p className="text-xs md:text-sm text-slate-300 mb-4">{t.infraDesc}</p>
+                                        <div className="overflow-x-auto custom-scrollbar">
+                                            <table className="w-full text-left text-xs md:text-sm min-w-[500px]"><thead className="bg-slate-900 text-slate-400 border-b border-slate-800"><tr><th className="p-2">{t.employee}</th><th className="p-2">{t.system}</th><th className="p-2">{t.accessLevel}</th></tr></thead>
+                                            <tbody className="divide-y divide-slate-800 text-slate-300">
+                                                <tr><td className="p-2">Marcus Bergstrom (EMP004)</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Administrator</td></tr>
+                                                <tr><td className="p-2">Marcus Bergstrom (EMP004)</td><td className="p-2">Model Training DB</td><td className="p-2">Administrator</td></tr>
+                                                <tr><td className="p-2">Marcus Bergstrom (EMP004)</td><td className="p-2">Customer Data Warehouse</td><td className="p-2">Administrator</td></tr>
+                                                <tr><td className="p-2">Daniel Reyes (EMP002)</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Standard User</td></tr>
+                                                <tr><td className="p-2">Priya Castillo (EMP009)</td><td className="p-2">Model Training DB</td><td className="p-2">Standard User</td></tr>
+                                                <tr><td className="p-2">Karim Castillo (EMP042)</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Administrator</td></tr>
+                                                <tr><td className="p-2">Elena Petrov (VP, Finance)</td><td className="p-2">Model Training DB</td><td className="p-2">Administrator</td></tr>
+                                            </tbody></table>
+                                        </div>
+                                        <p className="text-[10px] md:text-xs text-slate-500 mt-4 border-t border-slate-800 pt-3"><i className="fa-solid fa-circle-exclamation text-amber-500"></i> {t.infraNote}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PROCUREMENT POLICY */}
+                            {activeTab === 'vendor' && (
+                                <div className="fade-in pb-12 flex flex-col gap-4 md:gap-6">
+                                    <h2 className="text-xl md:text-2xl font-bold text-white mb-2"><i className="fa-solid fa-file-invoice-dollar text-amber-500"></i> {t.vendors}</h2>
+                                    
+                                    <div className="glass-panel p-4 md:p-6 border border-slate-700 rounded-xl">
+                                        <h3 className="text-base md:text-lg font-bold text-amber-400 border-b border-slate-800 pb-2 mb-4">{t.compWatchlist}</h3>
+                                        <p className="text-xs md:text-sm text-slate-300 mb-4">{t.compDesc}</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {['British Virgin Islands', 'Cayman Islands', 'Cyprus', 'Isle of Man', 'Malta', 'Panama', 'United Arab Emirates'].map(j => (
+                                                <span key={j} className="bg-red-950/40 border border-red-500/50 text-red-400 text-[10px] md:text-xs px-3 py-1 rounded-full font-bold">{j}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="glass-panel p-4 md:p-6 border border-slate-700 rounded-xl">
+                                        <div className="flex flex-col md:flex-row md:justify-between items-start md:items-end border-b border-slate-800 pb-2 mb-4 gap-3">
+                                            <h3 className="text-base md:text-lg font-bold text-amber-400">{t.poTitle}</h3>
+                                            <input type="text" placeholder={t.searchPO} value={poSearch} onChange={(e) => setPoSearch(e.target.value)} className="bg-slate-900 border border-slate-700 rounded py-1 px-3 text-sm text-white focus:outline-none focus:border-amber-500 w-full md:w-48" />
+                                        </div>
+                                        <p className="text-[10px] md:text-sm text-slate-400 mb-4 bg-slate-900/50 p-3 rounded border border-slate-800"><i className="fa-solid fa-circle-info text-amber-500"></i> {t.poDesc}</p>
+                                        <div className="overflow-x-auto custom-scrollbar">
+                                            <div className="max-h-64 overflow-y-auto custom-scrollbar">
+                                                <table className="w-full text-left text-xs md:text-sm min-w-[600px]"><thead className="bg-slate-900 text-slate-400 sticky top-0 shadow-lg"><tr><th className="p-2">{t.poNum}</th><th className="p-2">{t.vendorName}</th><th className="p-2">{t.project}</th><th className="p-2">{t.approver}</th></tr></thead>
+                                                <tbody className="divide-y divide-slate-800 text-slate-300">
+                                                    {parsedPO.filter(p => p.vendor.toLowerCase().includes(poSearch.toLowerCase()) || p.po.toLowerCase().includes(poSearch.toLowerCase())).map(p => (
+                                                        <tr key={p.po} className="hover:bg-slate-800/50"><td className="p-2 font-mono text-slate-400">{p.po}</td><td className="p-2 text-slate-200">{p.vendor}</td><td className="p-2 text-[10px] md:text-xs">{p.project}</td><td className="p-2 text-[10px] md:text-xs">{p.approver}</td></tr>
+                                                    ))}
+                                                </tbody></table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="glass-panel p-4 md:p-6 border border-slate-700 rounded-xl">
+                                        <div className="flex flex-col md:flex-row md:justify-between items-start md:items-end border-b border-slate-800 pb-2 mb-4 gap-3">
+                                            <h3 className="text-base md:text-lg font-bold text-amber-400">{t.vmTitle}</h3>
+                                            <input type="text" placeholder={t.searchVendor} value={vendorSearch} onChange={(e) => setVendorSearch(e.target.value)} className="bg-slate-900 border border-slate-700 rounded py-1 px-3 text-sm text-white focus:outline-none focus:border-amber-500 w-full md:w-48" />
+                                        </div>
+                                        <div className="overflow-x-auto custom-scrollbar">
+                                            <div className="max-h-64 overflow-y-auto custom-scrollbar">
+                                                <table className="w-full text-left text-xs md:text-sm min-w-[500px]"><thead className="bg-slate-900 text-slate-400 sticky top-0 shadow-lg"><tr><th className="p-2">{t.id}</th><th className="p-2">{t.legalName}</th><th className="p-2">{t.country}</th><th className="p-2">{t.risk}</th></tr></thead>
+                                                <tbody className="divide-y divide-slate-800 text-slate-300">
+                                                    {parsedVM.filter(v => v.name.toLowerCase().includes(vendorSearch.toLowerCase()) || v.id.toLowerCase().includes(vendorSearch.toLowerCase())).map(v => (
+                                                        <tr key={v.id} className="hover:bg-slate-800/50"><td className="p-2 font-mono text-slate-400">{v.id}</td><td className="p-2 text-slate-200">{v.name}</td><td className="p-2 text-[10px] md:text-xs">{v.country}</td><td className="p-2 text-[10px] md:text-xs font-bold text-slate-400">{v.risk}</td></tr>
+                                                    ))}
+                                                </tbody></table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* ORG CHART */}
                             {activeTab === 'org' && (
                                 <div className="fade-in pb-12">
-                                    <div className="flex justify-between items-end mb-6">
-                                        <h2 className="text-2xl font-bold text-white">Corporate Directory</h2>
-                                        <div className="relative w-64">
+                                    <div className="flex flex-col md:flex-row md:justify-between items-start md:items-end mb-6 gap-3">
+                                        <h2 className="text-xl md:text-2xl font-bold text-white">{t.directory}</h2>
+                                        <div className="relative w-full md:w-64">
                                             <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-                                            <input type="text" placeholder="Search (e.g. #012)" value={search} onChange={(e) => setSearch(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-full py-1.5 pl-9 pr-4 text-sm text-white focus:outline-none focus:border-amber-500" />
+                                            <input type="text" placeholder={t.searchPlaceholderOrg} value={search} onChange={(e) => setSearch(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-full py-1.5 pl-9 pr-4 text-sm text-white focus:outline-none focus:border-amber-500" />
                                         </div>
                                     </div>
-                                    {isHacked && <div className="mb-4 bg-red-950/40 border border-red-500/50 rounded-lg p-3 flex items-center gap-3"><i className="fa-solid fa-triangle-exclamation text-red-500 text-2xl"></i><div><h3 className="text-red-400 font-bold uppercase text-sm">Target Match Acquired</h3><p className="text-red-300/80 text-xs">Employee ID #004 located.</p></div></div>}
+                                    {isHacked && <div className="mb-4 bg-red-950/40 border border-red-500/50 rounded-lg p-3 flex items-center gap-3"><i className="fa-solid fa-triangle-exclamation text-red-500 text-xl md:text-2xl"></i><div><h3 className="text-red-400 font-bold uppercase text-xs md:text-sm">{t.targetAcquired}</h3><p className="text-red-300/80 text-[10px] md:text-xs">{t.targetLocated}</p></div></div>}
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                        {orgData.filter(m => m.name.toLowerCase().includes(search.toLowerCase()) || m.id.includes(search)).map(member => (
-                                            <div key={member.id} className={`glass-panel border rounded-xl p-5 ${isHacked && member.id === '#004' ? 'border-red-500 bg-red-950/20' : 'border-slate-800'}`}>
+                                        {orgData.filter(m => m.name.toLowerCase().includes(search.toLowerCase()) || m.id.toLowerCase().includes(search.toLowerCase())).map(member => (
+                                            <div key={member.id} className="glass-panel border rounded-xl p-4 md:p-5 border-slate-800">
                                                 <div className="flex items-center gap-4 mb-3">
-                                                    <img src={member.img} className="w-12 h-12 rounded-full object-cover border-2 border-slate-700" />
-                                                    <div><h3 className="text-lg font-bold text-white">{member.name}</h3><p className="text-amber-400 text-xs">{member.role}</p></div>
+                                                    <img src={member.img} className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-slate-700" />
+                                                    <div><h3 className="text-base md:text-lg font-bold text-white">{member.name}</h3><p className="text-amber-400 text-[10px] md:text-xs">{member.role}</p></div>
                                                 </div>
-                                                <div className="flex justify-between text-xs border-b border-slate-800 pb-1 mb-1"><span className="text-slate-400">ID</span><span className="font-mono text-slate-200">{member.id}</span></div>
-                                                <div className="flex justify-between text-xs border-b border-slate-800 pb-1 mb-2"><span className="text-slate-400">IP</span><span className="font-mono text-slate-200">{member.ip}</span></div>
+                                                <div className="flex justify-between text-[10px] md:text-xs border-b border-slate-800 pb-1 mb-1"><span className="text-slate-400">{t.id}</span><span className="font-mono text-slate-200">{member.id}</span></div>
+                                                <div className="flex justify-between text-[10px] md:text-xs border-b border-slate-800 pb-1 mb-1"><span className="text-slate-400">{t.dept}</span><span className="text-slate-200">{member.dept}</span></div>
+                                                <div className="flex justify-between text-[10px] md:text-xs border-b border-slate-800 pb-1 mb-1"><span className="text-slate-400">{t.ext}</span><span className="font-mono text-slate-200">{member.ext}</span></div>
+                                                <div className="flex justify-between text-[10px] md:text-xs border-b border-slate-800 pb-1 mb-2"><span className="text-slate-400">{t.ip}</span><span className="font-mono text-slate-200">{member.ip}</span></div>
                                             </div>
                                         ))}
                                     </div>
@@ -227,66 +705,118 @@
                             )}
 
                             {/* LOGS */}
-                            {activeTab === 'logs' && (!unlockedNodes.logs ? renderUnlock("Node 1: Server Logs", "Enter the 4-digit Whistleblower Protocol PIN from Station 1.", "logs", ["0814"]) : (
-                                <div className="fade-in">
-                                    <h3 className="text-amber-400 font-bold uppercase mb-4"><i className="fa-solid fa-server"></i> Node 1: Security Logs</h3>
-                                    <div className="bg-black/90 border border-slate-800 rounded-lg p-4 font-mono text-sm overflow-x-auto">
-                                        <table className="w-full text-left min-w-[500px]"><thead className="text-slate-500 border-b border-slate-800"><tr><th className="pb-2">Time</th><th>Origin IP</th><th>Event</th><th>Status</th></tr></thead>
-                                        <tbody className="text-slate-300">{logsData.map((l,i)=><tr key={i} className="hover:bg-slate-900"><td className="py-2 text-slate-500">{l.time}</td><td>{l.ip}</td><td>{l.event}</td><td className="text-xs">[{l.status}]</td></tr>)}</tbody></table>
+                            {activeTab === 'logs' && (!unlockedNodes.logs ? renderUnlock(t.n1Title, t.n1Hint, "logs", ["0814"]) : (
+                                <div className="fade-in h-full flex flex-col pb-4">
+                                    <h3 className="text-amber-400 font-bold uppercase mb-4 text-sm md:text-base"><i className="fa-solid fa-server"></i> {t.n1Title}</h3>
+                                    <div className="bg-black/90 border border-slate-800 rounded-lg p-0 font-mono text-xs md:text-sm overflow-auto custom-scrollbar flex-grow">
+                                        <table className="w-full text-left min-w-[500px]"><thead className="bg-slate-900 text-slate-400 sticky top-0 shadow-lg border-b border-slate-800"><tr><th className="p-3">{t.time}</th><th className="p-3">{t.user}</th><th className="p-3">{t.event}</th><th className="p-3">{t.status}</th><th className="p-3">{t.ticket}</th></tr></thead>
+                                        <tbody className="divide-y divide-slate-800 text-slate-300">{parsedLogs.map((l,i)=><tr key={i} className="hover:bg-slate-800/50"><td className="p-3 text-slate-500">{l.time}</td><td className="p-3">{l.user}</td><td className="p-3">{l.event}</td><td className="p-3 text-[10px] md:text-xs text-slate-400">[{l.status}]</td><td className="p-3 text-slate-500 text-[10px] md:text-xs">{l.ticket}</td></tr>)}</tbody></table>
                                     </div>
                                 </div>
                             ))}
 
                             {/* LEDGER */}
-                            {activeTab === 'ledger' && (!unlockedNodes.ledger ? renderUnlock("Node 2: Offshore Ledger", "Enter the exact missing capital amount flagged in Station 3.", "ledger", ["22000000"]) : (
-                                <div className="fade-in">
-                                    <h3 className="text-amber-400 font-bold uppercase mb-4"><i className="fa-solid fa-database"></i> Node 2: Offshore Ledger</h3>
-                                    <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-x-auto">
-                                        <table className="w-full text-left text-sm min-w-[600px]"><thead className="bg-slate-950 text-slate-400 border-b border-slate-800"><tr><th className="p-3">TXN ID</th><th className="p-3">Vendor</th><th className="p-3 text-right">Amount</th></tr></thead>
-                                        <tbody className="divide-y divide-slate-800">{ledgerData.map((r,i)=><tr key={i} className="hover:bg-slate-800/50"><td className="p-3 font-mono text-slate-500">{r.id}</td><td className="p-3 text-slate-200">{r.vendor}</td><td className="p-3 text-right font-mono">{r.amount}</td></tr>)}</tbody></table>
+                            {activeTab === 'ledger' && (!unlockedNodes.ledger ? renderUnlock(t.n2Title, t.n2Hint, "ledger", ["22000000"]) : (
+                                <div className="fade-in h-full flex flex-col pb-4">
+                                    <h3 className="text-amber-400 font-bold uppercase mb-4 text-sm md:text-base"><i className="fa-solid fa-database"></i> {t.n2Title}</h3>
+                                    <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-auto custom-scrollbar flex-grow">
+                                        <table className="w-full text-left text-xs md:text-sm min-w-[600px] md:min-w-[800px]">
+                                            <thead className="bg-slate-950 text-slate-400 sticky top-0 shadow-lg border-b border-slate-800">
+                                                <tr>
+                                                    <th className="p-3">{t.time}</th>
+                                                    <th className="p-3">{t.txnId}</th>
+                                                    <th className="p-3">{t.vendorName}</th>
+                                                    <th className="p-3">{t.approvedBy}</th>
+                                                    <th className="p-3 text-right">{t.amount}</th>
+                                                    <th className="p-3 text-right">{t.status}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-800">
+                                                {parsedLedger.map((r,i) => (
+                                                    <tr key={i} className="hover:bg-slate-800/50 transition-colors">
+                                                        <td className="p-3 text-slate-500">{r.time}</td>
+                                                        <td className="p-3 font-mono text-slate-500">{r.id}</td>
+                                                        <td className="p-3 text-slate-200">{r.vendor}</td>
+                                                        <td className="p-3 text-slate-400">{r.approved}</td>
+                                                        <td className="p-3 text-right font-mono text-slate-300">{r.amount}</td>
+                                                        <td className="p-3 text-right text-[10px] md:text-xs">
+                                                            <span className="px-2 py-1 rounded tracking-wider bg-slate-800 text-slate-300">{r.status}</span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             ))}
 
                             {/* PROTOCOL */}
-                            {activeTab === 'banking' && (!unlockedNodes.banking ? renderUnlock("Node 3: Protocol", "Identify the high-risk offshore jurisdiction flagged in Station 2.", "banking", ["BRITISH VIRGIN ISLANDS", "BVI"]) : (
-                                <div className="fade-in">
-                                    <h3 className="text-amber-400 font-bold uppercase mb-4"><i className="fa-solid fa-file-lines"></i> Node 3: Banking Protocol</h3>
-                                    <div className="bg-slate-100 text-slate-900 p-8 rounded-lg font-serif max-w-2xl">
-                                        <h2 className="text-xl font-bold mb-4 font-sans border-b pb-2">Emergency Wire Interception</h2>
-                                        <p className="mb-4">To initiate an immediate system-wide lockdown of moving capital, operators must utilize standard terminal syntax. The primary action code to void the transaction is:</p>
-                                        <div className="text-2xl font-mono font-bold bg-slate-200 p-3 inline-block rounded border border-slate-300">VOID-WIRE</div>
+                            {activeTab === 'banking' && (!unlockedNodes.banking ? renderUnlock(t.n3Title, t.n3Hint, "banking", ["BRITISH VIRGIN ISLANDS", "BVI", "英属维尔京群岛", "英屬維爾京群島"]) : (
+                                <div className="fade-in pb-12 flex flex-col gap-4 md:gap-6">
+                                    <h2 className="text-xl md:text-2xl font-bold text-white mb-2"><i className="fa-solid fa-file-lines text-amber-500"></i> {t.n3Title}</h2>
+                                    
+                                    <div className="glass-panel p-4 md:p-6 border border-slate-700 rounded-xl">
+                                        <p className="text-xs md:text-sm text-slate-300 mb-6">{t.emergencyDesc}</p>
+                                        
+                                        <div className="overflow-x-auto custom-scrollbar">
+                                            <table className="w-full text-left text-xs md:text-sm min-w-[600px]">
+                                                <thead className="bg-slate-900 text-slate-400 border-b border-slate-800">
+                                                    <tr>
+                                                        <th className="p-2 md:p-3">{t.riskTier}</th>
+                                                        <th className="p-2 md:p-3">{t.capThreshold}</th>
+                                                        <th className="p-2 md:p-3">{t.jurisdiction}</th>
+                                                        <th className="p-2 md:p-3">{t.anomalyFlag}</th>
+                                                        <th className="p-2 md:p-3 text-right">{t.actionCode}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-800 text-slate-300">
+                                                    {protocolData.map((row, i) => (
+                                                        <tr key={i} className="hover:bg-slate-800/50">
+                                                            <td className="p-2 md:p-3 font-bold text-slate-300">{row.tier}</td>
+                                                            <td className="p-2 md:p-3">{row.cap}</td>
+                                                            <td className="p-2 md:p-3">{row.jur}</td>
+                                                            <td className="p-2 md:p-3">{row.anomaly}</td>
+                                                            <td className="p-2 md:p-3 text-right">
+                                                                <span className="font-mono bg-slate-950 border border-slate-700 text-slate-300 px-2 py-1 md:px-3 rounded text-[10px] md:text-xs">
+                                                                    {row.code}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
 
                             {/* FINAL MYSTERY */}
                             {activeTab === 'mystery' && (allNodesUnlocked ? (allPuzzlesSolved ? (
-                                <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 p-8 text-center fade-in">
-                                    <i className="fa-solid fa-shield-halved text-7xl text-amber-500 mb-6"></i>
-                                    <h1 className="text-5xl font-bold text-white tracking-widest mb-4 uppercase">Transaction <span className="text-amber-500">Halted</span></h1>
-                                    <p className="text-slate-300 max-w-xl mb-6">Mission Accomplished. Victoria Vance has been identified. The $22M transfer to APEX Shell Logistics is frozen. Summit & Co. is protected.</p>
-                                    <div className="bg-amber-500/10 text-amber-400 px-6 py-2 rounded-full text-xl font-bold tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.2)]">+50 D.POINTS AWARDED</div>
+                                <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 p-6 md:p-8 text-center fade-in">
+                                    <i className="fa-solid fa-shield-halved text-6xl md:text-7xl text-amber-500 mb-6"></i>
+                                    <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest mb-4 uppercase">{t.haltTxn}</h1>
+                                    <p className="text-sm md:text-base text-slate-300 max-w-xl mb-6">{t.missionAccomplished}</p>
+                                    <div className="bg-amber-500/10 text-amber-400 px-4 md:px-6 py-2 rounded-full text-base md:text-xl font-bold tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.2)]">{t.ptsAwarded}</div>
                                 </div>
                             ) : (
                                 <div className="fade-in">
-                                    <h2 className="text-2xl font-bold text-red-400 mb-2 uppercase"><i className="fa-solid fa-triangle-exclamation"></i> System Override Terminal</h2>
-                                    <p className="text-slate-400 text-sm mb-6 max-w-2xl">Scrutinize the decrypted nodes. Identify the rogue identity, flag the illegal transaction, and execute the action code to halt the transfer.</p>
+                                    <h2 className="text-xl md:text-2xl font-bold text-red-400 mb-2 uppercase"><i className="fa-solid fa-triangle-exclamation"></i> {t.sysOverride}</h2>
+                                    <p className="text-xs md:text-sm text-slate-400 mb-6 max-w-2xl">{t.sysOverrideDesc}</p>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         {[
-                                            { k: 'puzzle1', t: "Identity Match", p: "Employee ID (e.g. #004)", e: ["#004", "004"] },
-                                            { k: 'puzzle2', t: "Audit Flag", p: "Suspicious TXN ID", e: ["TXN-8824"] },
-                                            { k: 'puzzle3', t: "Execute Action", p: "Halt Action Code", e: ["VOID-WIRE", "VOID WIRE"] }
+                                            { k: 'puzzle1', t: t.identityMatch, p: t.empIdHint, e: ["EMP004", "004"] },
+                                            { k: 'puzzle2', t: t.auditFlag, p: t.suspiciousTxn, e: ["TXN-8824", "TXN8824"] },
+                                            { k: 'puzzle3', t: t.executeAction, p: t.haltActionCode, e: ["VOID-WIRE", "VOID WIRE"] }
                                         ].map(puz => {
                                             const isSolved = solvedPuzzles[puz.k];
                                             return (
-                                                <div key={puz.k} className={`glass-panel border p-4 rounded-xl flex flex-col h-48 ${isSolved ? 'border-lime-500 bg-lime-950/20' : 'border-slate-700'}`}>
-                                                    <h3 className="font-bold uppercase text-sm mb-2 text-white">{puz.t}</h3>
-                                                    <p className="text-xs text-slate-400 mb-auto">{puz.p}</p>
+                                                <div key={puz.k} className={`glass-panel border p-4 rounded-xl flex flex-col h-40 md:h-48 ${isSolved ? 'border-lime-500 bg-lime-950/20' : 'border-slate-700'}`}>
+                                                    <h3 className="font-bold uppercase text-xs md:text-sm mb-2 text-white">{puz.t}</h3>
+                                                    <p className="text-[10px] md:text-xs text-slate-400 mb-auto">{puz.p}</p>
                                                     {isSolved ? (
-                                                        <div className="text-lime-500 font-bold text-center mt-2 tracking-widest border border-lime-900 py-1 bg-slate-950 rounded">VERIFIED</div>
+                                                        <div className="text-lime-500 font-bold text-center mt-2 tracking-widest border border-lime-900 py-1 bg-slate-950 rounded text-xs md:text-sm">{t.verified}</div>
                                                     ) : (
-                                                        <input type="text" placeholder="ENTER" className="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-sm uppercase text-white focus:outline-none focus:border-red-400 mt-2" onKeyDown={(e) => {
+                                                        <input type="text" placeholder={t.enter} className="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-xs md:text-sm uppercase text-white focus:outline-none focus:border-red-400 mt-2" onKeyDown={(e) => {
                                                             if(e.key === 'Enter') {
                                                                 const v = e.target.value.trim().toUpperCase();
                                                                 if(puz.e.includes(v)) { setSolvedPuzzles(prev => ({...prev, [puz.k]: true})); }
