@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D.Signal 信号解密</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for web audio sound effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            deloitte: {
+              green: '#86BC25',
+              darkgreen: '#568819',
+              teal: '#004F59',
+              navy: '#002776',
+              black: '#0a0d14',
+              charcoal: '#1E232A',
+              slate: '#2B313A',
+              cardbg: '#171B21',
+              lightgray: '#E6E8EA',
+              gray: '#868D96'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif'],
+            cn: ['"Noto Sans SC"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #0d1117;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(134, 188, 37, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(0, 79, 89, 0.15) 0%, transparent 45%);
+      min-height: 100vh;
+    }
+    
+    .deloitte-dot {
+      display: inline-block;
+      width: 0.6em;
+      height: 0.6em;
+      background-color: #86BC25;
+      border-radius: 50%;
+      margin-left: 0.1em;
+      vertical-align: baseline;
+      box-shadow: 0 0 14px rgba(134, 188, 37, 0.7);
+    }
+
+    .card-shadow {
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.07);
+    }
+
+    .button-press {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .button-press:active {
+      transform: scale(0.95) translateY(2px);
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.92) translateY(12px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop-in {
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.85; }
+    }
+    .glow-pulse {
+      animation: pulseGlow 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+
+  <!-- Top Navigation Bar -->
+  <header class="w-full border-b border-white/10 bg-deloitte-black/70 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goToHome()">
+        <span class="font-extrabold text-2xl tracking-tight">D.Signal<span class="deloitte-dot"></span></span>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button id="audioToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 flex items-center space-x-2 transition-all">
+          <i id="audioIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
+          <span id="audioText" class="text-gray-300">SFX</span>
+        </button>
+        <button id="adminToggleBtn" onclick="openAdminModal()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 hover:border-deloitte-green/40 flex items-center space-x-2 transition-all text-gray-300 hover:text-white">
+          <i class="fa-solid fa-gear text-deloitte-green"></i>
+          <span>Admin</span>
+        </button>
+        <button id="navHomeBtn" onclick="goToHome()" class="hidden px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 transition-all">
+          <i class="fa-solid fa-grid-2 mr-1.5"></i> Rounds
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="flex-grow flex items-center justify-center p-4 sm:p-6 md:p-8">
+    <div class="w-full max-w-3xl">
+
+      <!-- VIEW 1: Round Selection Dashboard -->
+      <section id="roundSelectView" class="space-y-10 animate-pop-in">
+        <div class="text-center space-y-2">
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">
+            D.Signal 信号解密<span class="deloitte-dot"></span>
+          </h1>
+        </div>
+
+        <!-- 3 Round Selection Panels (Strictly round titles only) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Round 1 Card -->
+          <button onclick="startRound(1)" class="group p-8 rounded-2xl bg-gradient-to-b from-deloitte-cardbg to-[#12161c] border border-white/10 hover:border-deloitte-green/60 card-shadow transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex items-center justify-center min-h-[170px]">
+            <div class="absolute -right-8 -top-8 w-24 h-24 bg-deloitte-green/10 rounded-full blur-xl group-hover:bg-deloitte-green/20 transition-all"></div>
+            <span class="text-2xl sm:text-3xl font-extrabold group-hover:text-deloitte-green transition-colors tracking-tight">Round 1</span>
+          </button>
+
+          <!-- Round 2 Card -->
+          <button onclick="startRound(2)" class="group p-8 rounded-2xl bg-gradient-to-b from-deloitte-cardbg to-[#12161c] border border-white/10 hover:border-emerald-400/50 card-shadow transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex items-center justify-center min-h-[170px]">
+            <div class="absolute -right-8 -top-8 w-24 h-24 bg-deloitte-teal/30 rounded-full blur-xl group-hover:bg-deloitte-teal/50 transition-all"></div>
+            <span class="text-2xl sm:text-3xl font-extrabold group-hover:text-emerald-300 transition-colors tracking-tight">Round 2</span>
+          </button>
+
+          <!-- Round 3 Card -->
+          <button onclick="startRound(3)" class="group p-8 rounded-2xl bg-gradient-to-b from-deloitte-cardbg to-[#12161c] border border-white/10 hover:border-blue-400/50 card-shadow transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex items-center justify-center min-h-[170px]">
+            <div class="absolute -right-8 -top-8 w-24 h-24 bg-deloitte-navy/30 rounded-full blur-xl group-hover:bg-deloitte-navy/50 transition-all"></div>
+            <span class="text-2xl sm:text-3xl font-extrabold group-hover:text-blue-300 transition-colors tracking-tight">Round 3</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- VIEW 2: Word Gameplay Card View -->
+      <section id="wordPlayView" class="hidden space-y-5 animate-pop-in">
+        
+        <!-- Header & Stats Bar -->
+        <div class="flex items-center justify-between bg-white/[0.04] border border-white/10 p-3.5 rounded-2xl backdrop-blur-sm">
+          <div class="flex items-center space-x-3">
+            <button onclick="goToHome()" class="text-xs text-deloitte-gray hover:text-white px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-all flex items-center gap-1.5">
+              <i class="fa-solid fa-chevron-left text-[10px]"></i> Back
+            </button>
+            <div class="h-4 w-px bg-white/20"></div>
+            <div>
+              <span id="activeRoundBadge" class="text-xs font-bold uppercase tracking-wider text-deloitte-green">Round 1</span>
+            </div>
+          </div>
+
+          <!-- Counter Indicators -->
+          <div class="flex items-center space-x-3 text-xs font-semibold">
+            <span class="flex items-center gap-1.5 text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-full">
+              <i class="fa-solid fa-check text-[10px]"></i> <span id="statCorrect">0</span>
+            </span>
+            <span class="flex items-center gap-1.5 text-amber-300 bg-amber-950/40 border border-amber-800/40 px-2.5 py-1 rounded-full">
+              <i class="fa-solid fa-forward text-[10px]"></i> <span id="statPass">0</span>
+            </span>
+            <span class="flex items-center gap-1.5 text-rose-400 bg-rose-950/40 border border-rose-800/40 px-2.5 py-1 rounded-full">
+              <i class="fa-solid fa-xmark text-[10px]"></i> <span id="statIncorrect">0</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Adjustable Timer Bar (Default 1 Minute with Alarm Trigger) -->
+        <div class="flex flex-wrap items-center justify-between bg-white/[0.04] border border-white/10 px-4 sm:px-6 py-3 rounded-2xl gap-3">
+          <div class="flex items-center space-x-2">
+            <button onclick="adjustTimer(-15)" class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-xs font-bold text-gray-300 transition-all">
+              -15s
+            </button>
+            <button onclick="adjustTimer(15)" class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-xs font-bold text-gray-300 transition-all">
+              +15s
+            </button>
+            <button id="timerToggleBtn" onclick="toggleTimer()" class="px-3 py-1.5 rounded-lg bg-deloitte-green text-black font-bold text-xs hover:bg-emerald-400 transition-all flex items-center gap-1.5">
+              <i id="timerToggleIcon" class="fa-solid fa-pause text-[10px]"></i>
+              <span id="timerToggleText">Pause</span>
+            </button>
+            <button onclick="resetTimer()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-xs text-gray-400 hover:text-white transition-all">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center space-x-3 ml-auto">
+            <div id="timerDisplay" class="font-mono text-2xl font-black text-deloitte-green tracking-widest px-4 py-1 rounded-xl bg-black/50 border border-white/10 shadow-inner">
+              01:00
+            </div>
+          </div>
+        </div>
+
+        <!-- Central Flashcard (Clean word display only) -->
+        <div id="wordCardElement" onclick="handleCardClick()" class="cursor-pointer group relative bg-gradient-to-b from-deloitte-cardbg to-[#12151b] border-2 border-white/10 hover:border-deloitte-green/40 p-10 sm:p-16 rounded-3xl card-shadow transition-all duration-300 text-center flex flex-col items-center justify-center min-h-[300px] sm:min-h-[360px] select-none">
+          <div class="space-y-5 max-w-xl">
+            <!-- Chinese Word -->
+            <div class="overflow-hidden">
+              <h2 id="cardWordChinese" class="text-4xl sm:text-6xl font-black font-cn tracking-wide text-white transition-all duration-200">
+                加载中...
+              </h2>
+            </div>
+
+            <!-- English Meaning -->
+            <div>
+              <p id="cardWordEnglish" class="text-xl sm:text-2xl font-bold tracking-normal text-deloitte-green transition-all duration-200">
+                Loading...
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Control Buttons: Incorrect, Pass, Correct -->
+        <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-1">
+          <!-- Button: Incorrect -->
+          <button id="btnIncorrect" onclick="handleAction('incorrect')" class="button-press flex flex-col items-center justify-center p-4 rounded-2xl bg-[#1d161a] border border-rose-900/50 hover:border-rose-500 text-rose-300 hover:text-white hover:bg-rose-950/50 shadow-lg shadow-rose-950/20 transition-all group">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center mb-1 group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-black transition-all">
+              <i class="fa-solid fa-xmark text-lg"></i>
+            </div>
+            <span class="text-sm font-bold tracking-wide">Incorrect</span>
+          </button>
+
+          <!-- Button: Pass -->
+          <button id="btnPass" onclick="handleAction('pass')" class="button-press flex flex-col items-center justify-center p-4 rounded-2xl bg-deloitte-slate/40 border border-white/15 hover:border-amber-400/80 text-amber-200 hover:text-white hover:bg-white/10 shadow-lg shadow-black/40 transition-all group">
+            <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-1 group-hover:scale-110 group-hover:bg-amber-400 group-hover:text-black transition-all">
+              <i class="fa-solid fa-forward text-base"></i>
+            </div>
+            <span class="text-sm font-bold tracking-wide">Pass</span>
+          </button>
+
+          <!-- Button: Correct -->
+          <button id="btnCorrect" onclick="handleAction('correct')" class="button-press flex flex-col items-center justify-center p-4 rounded-2xl bg-deloitte-green/15 border-2 border-deloitte-green hover:border-emerald-300 text-deloitte-green hover:text-white hover:bg-deloitte-green/25 shadow-lg shadow-deloitte-green/10 transition-all group">
+            <div class="w-10 h-10 rounded-xl bg-deloitte-green text-black flex items-center justify-center mb-1 group-hover:scale-110 shadow-md shadow-deloitte-green/30 transition-all">
+              <i class="fa-solid fa-check text-lg font-black"></i>
+            </div>
+            <span class="text-sm font-extrabold tracking-wide text-white">Correct</span>
+          </button>
+        </div>
+
+        <!-- Quick Switch Between Rounds Bar -->
+        <div class="flex items-center justify-center space-x-2 pt-2 text-xs text-deloitte-gray">
+          <button onclick="startRound(1)" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 hover:text-white transition-all font-semibold">Round 1</button>
+          <button onclick="startRound(2)" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 hover:text-white transition-all font-semibold">Round 2</button>
+          <button onclick="startRound(3)" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 hover:text-white transition-all font-semibold">Round 3</button>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Alarm Modal (Appears when timer expires) -->
+  <div id="alarmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="bg-deloitte-cardbg border-2 border-rose-500 rounded-3xl p-8 max-w-sm w-full text-center space-y-6 animate-pop-in card-shadow shadow-rose-950/60">
+      <div class="w-16 h-16 rounded-full bg-rose-500/20 text-rose-500 border border-rose-500/40 flex items-center justify-center mx-auto text-3xl animate-pulse">
+        <i class="fa-solid fa-bell"></i>
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-2xl font-black text-white">Time's Up!</h3>
+        <p class="text-sm font-mono text-rose-400">00:00</p>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="dismissAlarmAndRestart()" class="flex-1 py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-bold text-sm transition-all">
+          Restart
+        </button>
+        <button onclick="stopAlarm()" class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-all">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Word List Modal -->
+  <div id="adminModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="bg-deloitte-cardbg border border-white/15 rounded-3xl p-6 sm:p-8 max-w-2xl w-full card-shadow flex flex-col max-h-[90vh] animate-pop-in space-y-5">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green">
+            <i class="fa-solid fa-sliders text-base"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
+              词库管理 <span class="text-xs font-semibold text-deloitte-gray">Word Lists Admin</span>
+            </h3>
+            <p class="text-xs text-deloitte-gray">
+              Format: <code class="text-deloitte-green font-mono">word1_zh word1_en word2_zh word2_en ...</code>
+            </p>
+          </div>
+        </div>
+        <button onclick="closeAdminModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Round Selector Tabs -->
+      <div class="flex items-center gap-2 p-1.5 bg-black/40 rounded-2xl border border-white/10 overflow-x-auto">
+        <button id="adminTabBtn1" onclick="switchAdminTab(1)" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all bg-deloitte-green text-black whitespace-nowrap">
+          Round 1 (Animals) <span id="tabCount1" class="opacity-75 text-[11px]">(16)</span>
+        </button>
+        <button id="adminTabBtn2" onclick="switchAdminTab(2)" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all bg-white/5 text-gray-300 hover:bg-white/10 whitespace-nowrap">
+          Round 2 (Buzzwords) <span id="tabCount2" class="opacity-75 text-[11px]">(16)</span>
+        </button>
+        <button id="adminTabBtn3" onclick="switchAdminTab(3)" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all bg-white/5 text-gray-300 hover:bg-white/10 whitespace-nowrap">
+          Round 3 (Business) <span id="tabCount3" class="opacity-75 text-[11px]">(16)</span>
+        </button>
+      </div>
+
+      <!-- Tab Content Panels -->
+      <div class="flex-grow flex flex-col min-h-0 space-y-2">
+        <!-- Panel 1 -->
+        <div id="adminTabPanel1" class="flex-grow flex flex-col space-y-2">
+          <div class="flex items-center justify-between text-xs text-deloitte-gray">
+            <span>Round 1 Words (Animals)</span>
+            <span id="panelWordCount1" class="text-deloitte-green font-semibold">16 words</span>
+          </div>
+          <textarea id="adminInputRound1" rows="7" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-2xl p-4 text-xs font-mono text-gray-200 placeholder-gray-500 leading-relaxed resize-none shadow-inner" placeholder="e.g. 大熊猫 Giant Panda 金丝猴 Golden Monkey 长颈鹿 Giraffe..."></textarea>
+        </div>
+
+        <!-- Panel 2 -->
+        <div id="adminTabPanel2" class="hidden flex-grow flex flex-col space-y-2">
+          <div class="flex items-center justify-between text-xs text-deloitte-gray">
+            <span>Round 2 Words (Deloitte Buzzwords)</span>
+            <span id="panelWordCount2" class="text-deloitte-green font-semibold">16 words</span>
+          </div>
+          <textarea id="adminInputRound2" rows="7" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-2xl p-4 text-xs font-mono text-gray-200 placeholder-gray-500 leading-relaxed resize-none shadow-inner" placeholder="e.g. 赋能 Empower 抓手 Leverage 闭环 Closed-Loop..."></textarea>
+        </div>
+
+        <!-- Panel 3 -->
+        <div id="adminTabPanel3" class="hidden flex-grow flex flex-col space-y-2">
+          <div class="flex items-center justify-between text-xs text-deloitte-gray">
+            <span>Round 3 Words (Deloitte Business)</span>
+            <span id="panelWordCount3" class="text-deloitte-green font-semibold">16 words</span>
+          </div>
+          <textarea id="adminInputRound3" rows="7" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-2xl p-4 text-xs font-mono text-gray-200 placeholder-gray-500 leading-relaxed resize-none shadow-inner" placeholder="e.g. 审计及鉴证 Audit & Assurance 管理咨询 Consulting..."></textarea>
+        </div>
+
+        <p class="text-[11px] text-deloitte-gray italic">
+          * Note: Entering new words will overwrite that round's word list. Leaving a box blank keeps its current list intact.
+        </p>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="flex items-center justify-between pt-3 border-t border-white/10 gap-2">
+        <button onclick="restoreDefaultDatasets()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-300 hover:text-rose-200 hover:bg-rose-950/40 border border-rose-900/40 transition-all">
+          <i class="fa-solid fa-rotate-left mr-1"></i> Reset Defaults
+        </button>
+        <div class="flex items-center space-x-2">
+          <button onclick="closeAdminModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 transition-all">
+            Cancel
+          </button>
+          <button onclick="saveAdminWords()" class="px-5 py-2 rounded-xl text-xs font-bold text-black bg-deloitte-green hover:bg-emerald-400 transition-all shadow-lg shadow-deloitte-green/20">
+            <i class="fa-solid fa-check mr-1"></i> Save & Apply
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w-full border-t border-white/10 py-4 bg-deloitte-black/40 text-center text-xs text-deloitte-gray/80">
+    <div class="max-w-5xl mx-auto px-4 flex items-center justify-center">
+      <span class="font-bold text-gray-300">D.Signal 信号解密</span>
+    </div>
+  </footer>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 pointer-events-none transform translate-y-16 opacity-0 transition-all duration-300 z-50 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2">
+  </div>
+
+  <script>
+    /* ==========================================================
+       1. SOUND ENGINE (Tone.js Synthesis)
+       ========================================================== */
+    let audioEnabled = true;
+    let audioContextReady = false;
+
+    // Synths for buttons
+    let correctSynth = null;
+    let passSynth = null;
+    let incorrectSynth = null;
+    let alarmSynth = null;
+    let alarmInterval = null;
+    let isAlarmPlaying = false;
+
+    async function initAudioEngine() {
+      if (audioContextReady) return;
+      try {
+        await Tone.start();
+        
+        correctSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.005, decay: 0.15, sustain: 0.05, release: 0.6 }
+        }).toDestination();
+        correctSynth.volume.value = -4;
+
+        passSynth = new Tone.MonoSynth({
+          oscillator: { type: "sine" },
+          filter: { Q: 2, type: "lowpass", rolloff: -24 },
+          envelope: { attack: 0.02, decay: 0.25, sustain: 0.0, release: 0.2 },
+          filterEnvelope: { attack: 0.01, decay: 0.2, sustain: 0, min: 400, max: 2200 }
+        }).toDestination();
+        passSynth.volume.value = -5;
+
+        incorrectSynth = new Tone.Synth({
+          oscillator: { type: "sawtooth" },
+          envelope: { attack: 0.01, decay: 0.3, sustain: 0.0, release: 0.1 }
+        }).toDestination();
+        incorrectSynth.volume.value = -6;
+
+        alarmSynth = new Tone.Synth({
+          oscillator: { type: "square" },
+          envelope: { attack: 0.01, decay: 0.15, sustain: 0.1, release: 0.1 }
+        }).toDestination();
+        alarmSynth.volume.value = -2;
+
+        audioContextReady = true;
+      } catch (err) {
+        console.warn("Audio initialization waiting for user gesture:", err);
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById("audioIcon");
+      if (audioEnabled) {
+        icon.className = "fa-solid fa-volume-high text-deloitte-green";
+        initAudioEngine();
+      } else {
+        icon.className = "fa-solid fa-volume-xmark text-deloitte-gray";
+      }
+    }
+
+    function playSound(type) {
+      if (!audioEnabled) return;
+      initAudioEngine();
+
+      const now = Tone.now();
+      if (type === 'correct' && correctSynth) {
+        correctSynth.triggerAttackRelease(["E5", "G#5", "B5"], "16n", now);
+        correctSynth.triggerAttackRelease(["E6"], "8n", now + 0.09);
+      } else if (type === 'pass' && passSynth) {
+        passSynth.triggerAttackRelease("C4", "16n", now);
+        passSynth.setNote("G3", now + 0.08);
+      } else if (type === 'incorrect' && incorrectSynth) {
+        incorrectSynth.triggerAttackRelease("Db3", "16n", now);
+        incorrectSynth.triggerAttackRelease("C3", "12n", now + 0.12);
+      }
+    }
+
+    function triggerAlarmAudio() {
+      if (!audioEnabled) return;
+      initAudioEngine();
+      isAlarmPlaying = true;
+      let tick = 0;
+
+      if (alarmInterval) clearInterval(alarmInterval);
+      alarmInterval = setInterval(() => {
+        if (!isAlarmPlaying) {
+          clearInterval(alarmInterval);
+          return;
+        }
+        if (alarmSynth) {
+          const now = Tone.now();
+          const pitch = (tick % 2 === 0) ? "A5" : "E5";
+          alarmSynth.triggerAttackRelease(pitch, "16n", now);
+        }
+        tick++;
+        if (tick > 50) stopAlarm(); // auto stop after ~20 seconds
+      }, 350);
+    }
+
+    function stopAlarm() {
+      isAlarmPlaying = false;
+      if (alarmInterval) {
+        clearInterval(alarmInterval);
+        alarmInterval = null;
+      }
+      document.getElementById("alarmModal").classList.add("hidden");
+    }
+
+    function dismissAlarmAndRestart() {
+      stopAlarm();
+      resetTimer();
+      toggleTimer(true); // resume running
+      advanceToNextWord();
+    }
+
+    /* ==========================================================
+       2. TIMER LOGIC (Default 1 minute, adjustable, triggers alarm)
+       ========================================================== */
+    let defaultTimeSeconds = 60; // 1 minute default
+    let timeRemaining = 60;
+    let timerInterval = null;
+    let isTimerRunning = false;
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimerUI() {
+      const display = document.getElementById("timerDisplay");
+      display.textContent = formatTime(timeRemaining);
+
+      if (timeRemaining <= 10 && timeRemaining > 0) {
+        display.className = "font-mono text-2xl font-black text-rose-400 tracking-widest px-4 py-1 rounded-xl bg-rose-950/40 border border-rose-500/50 shadow-inner animate-pulse";
+      } else {
+        display.className = "font-mono text-2xl font-black text-deloitte-green tracking-widest px-4 py-1 rounded-xl bg-black/50 border border-white/10 shadow-inner";
+      }
+    }
+
+    function adjustTimer(delta) {
+      timeRemaining = Math.max(10, timeRemaining + delta);
+      defaultTimeSeconds = timeRemaining;
+      updateTimerUI();
+    }
+
+    function startTimerCountdown() {
+      if (timerInterval) clearInterval(timerInterval);
+      isTimerRunning = true;
+      updateTimerControlButtons();
+
+      timerInterval = setInterval(() => {
+        if (timeRemaining > 0) {
+          timeRemaining--;
+          updateTimerUI();
+          if (timeRemaining === 0) {
+            handleTimeUp();
+          }
+        }
+      }, 1000);
+    }
+
+    function pauseTimerCountdown() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      isTimerRunning = false;
+      updateTimerControlButtons();
+    }
+
+    function toggleTimer(forceStart = false) {
+      if (forceStart || !isTimerRunning) {
+        if (timeRemaining <= 0) timeRemaining = defaultTimeSeconds;
+        startTimerCountdown();
+      } else {
+        pauseTimerCountdown();
+      }
+    }
+
+    function resetTimer() {
+      pauseTimerCountdown();
+      timeRemaining = defaultTimeSeconds;
+      updateTimerUI();
+    }
+
+    function updateTimerControlButtons() {
+      const icon = document.getElementById("timerToggleIcon");
+      const text = document.getElementById("timerToggleText");
+      if (isTimerRunning) {
+        icon.className = "fa-solid fa-pause text-[10px]";
+        text.textContent = "Pause";
+      } else {
+        icon.className = "fa-solid fa-play text-[10px]";
+        text.textContent = "Start";
+      }
+    }
+
+    function handleTimeUp() {
+      pauseTimerCountdown();
+      document.getElementById("alarmModal").classList.remove("hidden");
+      triggerAlarmAudio();
+    }
+
+    /* ==========================================================
+       3. VOCABULARY DATASETS & RANDOMIZATION
+       ========================================================== */
+    const DEFAULT_ROUND_DATA = {
+      1: {
+        title: "Round 1",
+        category: "Animals",
+        words: [
+          { cn: "大熊猫", en: "Giant Panda" },
+          { cn: "金丝猴", en: "Golden Monkey" },
+          { cn: "长颈鹿", en: "Giraffe" },
+          { cn: "企鹅", en: "Penguin" },
+          { cn: "考拉", en: "Koala" },
+          { cn: "北极熊", en: "Polar Bear" },
+          { cn: "海豚", en: "Dolphin" },
+          { cn: "非洲狮", en: "African Lion" },
+          { cn: "大象", en: "Elephant" },
+          { cn: "袋鼠", en: "Kangaroo" },
+          { cn: "火烈鸟", en: "Flamingo" },
+          { cn: "变色龙", en: "Chameleon" },
+          { cn: "梅花鹿", en: "Sika Deer" },
+          { cn: "斑马", en: "Zebra" },
+          { cn: "猎豹", en: "Cheetah" },
+          { cn: "海獭", en: "Sea Otter" }
+        ]
+      },
+      2: {
+        title: "Round 2",
+        category: "Deloitte Buzzwords",
+        words: [
+          { cn: "赋能", en: "Empower" },
+          { cn: "抓手", en: "Leverage" },
+          { cn: "闭环", en: "Closed-Loop" },
+          { cn: "颗粒度", en: "Granularity" },
+          { cn: "底层逻辑", en: "First Principles" },
+          { cn: "沉淀", en: "Precipitate" },
+          { cn: "复盘", en: "Retrospective" },
+          { cn: "对齐", en: "Alignment" },
+          { cn: "护城河", en: "Moat" },
+          { cn: "赛道", en: "Track" },
+          { cn: "痛点", en: "Pain Point" },
+          { cn: "打法", en: "Playbook" },
+          { cn: "顶层设计", en: "Blueprint" },
+          { cn: "破局", en: "Breakthrough" },
+          { cn: "壁垒", en: "Barrier" },
+          { cn: "落地", en: "Execution" }
+        ]
+      },
+      3: {
+        title: "Round 3",
+        category: "Deloitte Business",
+        words: [
+          { cn: "审计及鉴证", en: "Audit & Assurance" },
+          { cn: "管理咨询", en: "Consulting" },
+          { cn: "财务咨询", en: "Financial Advisory" },
+          { cn: "风险咨询", en: "Risk Advisory" },
+          { cn: "税务与商务咨询", en: "Tax & Legal" },
+          { cn: "并购重组", en: "M&A" },
+          { cn: "数字化转型", en: "Digital Transformation" },
+          { cn: "可持续发展", en: "ESG & Sustainability" },
+          { cn: "战略与运营", en: "Strategy & Operations" },
+          { cn: "人力资本", en: "Human Capital" },
+          { cn: "企业技术与绩效", en: "Tech & Performance" },
+          { cn: "法证咨询", en: "Forensic Services" },
+          { cn: "供应链优化", en: "Supply Chain" },
+          { cn: "云服务", en: "Cloud Engineering" },
+          { cn: "网络安全", en: "Cyber & Privacy" },
+          { cn: "数据与人工智能", en: "Data & AI" }
+        ]
+      }
+    };
+
+    // Active round data (deep copy of defaults)
+    let ROUND_DATA = JSON.parse(JSON.stringify(DEFAULT_ROUND_DATA));
+
+    /* ==========================================================
+       4. ADMIN WORD LIST PARSING & MANAGEMENT
+       ========================================================== */
+    let currentAdminTab = 1;
+
+    /**
+     * Parses word input formatted as `word1_zh word1_en word2_zh word2_en ...`
+     * Supports both single-word and multi-word English definitions intelligently
+     * based on Chinese character boundaries and whitespace tokens.
+     */
+    function parseWordListInput(inputStr) {
+      if (!inputStr) return null;
+      const trimmed = inputStr.trim();
+      if (trimmed === "") return null;
+
+      const tokens = trimmed.split(/\s+/).filter(t => t.length > 0);
+      if (tokens.length === 0) return null;
+
+      const parsedList = [];
+      const hasChinese = /[\u4e00-\u9fa5]/;
+
+      if (hasChinese.test(trimmed)) {
+        // Smart parser: Chinese token opens a new word entry; consecutive non-Chinese tokens are appended to en
+        let currentCn = null;
+        let currentEnParts = [];
+
+        for (let i = 0; i < tokens.length; i++) {
+          const token = tokens[i];
+          if (hasChinese.test(token)) {
+            if (currentCn) {
+              parsedList.push({
+                cn: currentCn,
+                en: currentEnParts.length > 0 ? currentEnParts.join(" ") : currentCn
+              });
+            }
+            currentCn = token;
+            currentEnParts = [];
+          } else {
+            if (currentCn) {
+              currentEnParts.push(token);
+            } else {
+              // Leading non-Chinese token fallback
+              currentCn = token;
+            }
+          }
+        }
+
+        if (currentCn) {
+          parsedList.push({
+            cn: currentCn,
+            en: currentEnParts.length > 0 ? currentEnParts.join(" ") : currentCn
+          });
+        }
+      } else {
+        // Generic alternating pairs: [token1, token2], [token3, token4]
+        for (let i = 0; i < tokens.length; i += 2) {
+          if (i + 1 < tokens.length) {
+            parsedList.push({ cn: tokens[i], en: tokens[i + 1] });
+          } else {
+            parsedList.push({ cn: tokens[i], en: tokens[i] });
+          }
+        }
+      }
+
+      return parsedList.length > 0 ? parsedList : null;
+    }
+
+    function formatWordsForTextarea(wordList) {
+      return wordList.map(w => `${w.cn} ${w.en}`).join("\n");
+    }
+
+    function updateAdminUI() {
+      for (let r = 1; r <= 3; r++) {
+        const count = ROUND_DATA[r].words.length;
+        const tabCountEl = document.getElementById(`tabCount${r}`);
+        const panelCountEl = document.getElementById(`panelWordCount${r}`);
+        if (tabCountEl) tabCountEl.textContent = `(${count})`;
+        if (panelCountEl) panelCountEl.textContent = `${count} words`;
+      }
+    }
+
+    function switchAdminTab(tabNum) {
+      currentAdminTab = tabNum;
+      for (let r = 1; r <= 3; r++) {
+        const btn = document.getElementById(`adminTabBtn${r}`);
+        const panel = document.getElementById(`adminTabPanel${r}`);
+        if (btn && panel) {
+          if (r === tabNum) {
+            btn.className = "flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all bg-deloitte-green text-black whitespace-nowrap";
+            panel.classList.remove("hidden");
+          } else {
+            btn.className = "flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all bg-white/5 text-gray-300 hover:bg-white/10 whitespace-nowrap";
+            panel.classList.add("hidden");
+          }
+        }
+      }
+    }
+
+    function openAdminModal() {
+      for (let r = 1; r <= 3; r++) {
+        const textarea = document.getElementById(`adminInputRound${r}`);
+        if (textarea) {
+          textarea.value = formatWordsForTextarea(ROUND_DATA[r].words);
+        }
+      }
+      updateAdminUI();
+      switchAdminTab(currentRoundId || 1);
+      const modal = document.getElementById("adminModal");
+      if (modal) modal.classList.remove("hidden");
+    }
+
+    function closeAdminModal() {
+      const modal = document.getElementById("adminModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.className = `fixed bottom-6 right-6 pointer-events-none transform transition-all duration-300 z-50 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2 ${
+        isSuccess ? "bg-deloitte-green text-black translate-y-0 opacity-100" : "bg-rose-600 text-white translate-y-0 opacity-100"
+      }`;
+      setTimeout(() => {
+        toast.classList.add("translate-y-16", "opacity-0");
+      }, 2500);
+    }
+
+    function saveAdminWords() {
+      let updatedRounds = [];
+
+      for (let r = 1; r <= 3; r++) {
+        const textarea = document.getElementById(`adminInputRound${r}`);
+        if (textarea) {
+          const rawValue = textarea.value;
+          // If the textarea has text, parse it; if blank/empty, retain original
+          if (rawValue.trim() !== "") {
+            const parsed = parseWordListInput(rawValue);
+            if (parsed && parsed.length > 0) {
+              ROUND_DATA[r].words = parsed;
+              updatedRounds.push(`Round ${r} (${parsed.length})`);
+            }
+          }
+        }
+      }
+
+      updateAdminUI();
+      closeAdminModal();
+
+      // If active game view is open, refresh current word
+      const playView = document.getElementById("wordPlayView");
+      if (!playView.classList.contains("hidden")) {
+        advanceToNextWord();
+      }
+
+      if (updatedRounds.length > 0) {
+        showToast(`Saved: ${updatedRounds.join(", ")}`);
+      } else {
+        showToast("Word lists remained unchanged");
+      }
+    }
+
+    function restoreDefaultDatasets() {
+      ROUND_DATA = JSON.parse(JSON.stringify(DEFAULT_ROUND_DATA));
+      for (let r = 1; r <= 3; r++) {
+        const textarea = document.getElementById(`adminInputRound${r}`);
+        if (textarea) {
+          textarea.value = formatWordsForTextarea(ROUND_DATA[r].words);
+        }
+      }
+      updateAdminUI();
+      showToast("Reset all word lists to defaults");
+    }
+
+    let currentRoundId = 1;
+    let currentWordIndex = -1;
+    let roundStats = { correct: 0, pass: 0, incorrect: 0 };
+
+    function getRandomNextWordIndex() {
+      const words = ROUND_DATA[currentRoundId].words;
+      if (words.length <= 1) return 0;
+
+      let nextIndex;
+      do {
+        nextIndex = Math.floor(Math.random() * words.length);
+      } while (nextIndex === currentWordIndex);
+
+      return nextIndex;
+    }
+
+    function renderWord(wordObj, triggerEffect = true) {
+      const cnEl = document.getElementById("cardWordChinese");
+      const enEl = document.getElementById("cardWordEnglish");
+
+      if (triggerEffect) {
+        cnEl.classList.remove("animate-pop-in");
+        enEl.classList.remove("animate-pop-in");
+        void cnEl.offsetWidth;
+        cnEl.classList.add("animate-pop-in");
+        enEl.classList.add("animate-pop-in");
+      }
+
+      cnEl.textContent = wordObj.cn;
+      enEl.textContent = wordObj.en;
+    }
+
+    function advanceToNextWord() {
+      currentWordIndex = getRandomNextWordIndex();
+      const wordObj = ROUND_DATA[currentRoundId].words[currentWordIndex];
+      renderWord(wordObj, true);
+    }
+
+    function startRound(roundNum) {
+      initAudioEngine();
+      currentRoundId = roundNum;
+      currentWordIndex = -1;
+
+      roundStats = { correct: 0, pass: 0, incorrect: 0 };
+      updateStatsUI();
+
+      document.getElementById("activeRoundBadge").textContent = ROUND_DATA[roundNum].title;
+
+      document.getElementById("roundSelectView").classList.add("hidden");
+      document.getElementById("wordPlayView").classList.remove("hidden");
+      document.getElementById("navHomeBtn").classList.remove("hidden");
+
+      // Reset and start timer (1 minute default)
+      resetTimer();
+      toggleTimer(true);
+
+      advanceToNextWord();
+    }
+
+    function goToHome() {
+      pauseTimerCountdown();
+      stopAlarm();
+      document.getElementById("wordPlayView").classList.add("hidden");
+      document.getElementById("roundSelectView").classList.remove("hidden");
+      document.getElementById("navHomeBtn").classList.add("hidden");
+    }
+
+    function handleCardClick() {
+      playSound('pass');
+      advanceToNextWord();
+    }
+
+    function handleAction(actionType) {
+      playSound(actionType);
+
+      if (actionType === 'correct') {
+        roundStats.correct++;
+        flashCardBorder("border-deloitte-green");
+      } else if (actionType === 'pass') {
+        roundStats.pass++;
+        flashCardBorder("border-amber-400");
+      } else if (actionType === 'incorrect') {
+        roundStats.incorrect++;
+        flashCardBorder("border-rose-500");
+      }
+      updateStatsUI();
+      advanceToNextWord();
+    }
+
+    function flashCardBorder(colorClass) {
+      const card = document.getElementById("wordCardElement");
+      card.classList.add(colorClass);
+      setTimeout(() => {
+        card.classList.remove(colorClass);
+      }, 300);
+    }
+
+    function updateStatsUI() {
+      document.getElementById("statCorrect").innerText = roundStats.correct;
+      document.getElementById("statPass").innerText = roundStats.pass;
+      document.getElementById("statIncorrect").innerText = roundStats.incorrect;
+    }
+
+    /* Keyboard Shortcuts */
+    window.addEventListener("keydown", (e) => {
+      // Don't trigger shortcuts if modal is open or user is typing in textarea/input
+      const adminModal = document.getElementById("adminModal");
+      if (adminModal && !adminModal.classList.contains("hidden")) return;
+      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+
+      const playView = document.getElementById("wordPlayView");
+      if (playView.classList.contains("hidden")) return;
+
+      if (e.key === "1") {
+        handleAction('incorrect');
+      } else if (e.key === "2") {
+        handleAction('pass');
+      } else if (e.key === "3") {
+        handleAction('correct');
+      } else if (e.key === " " || e.key === "ArrowRight") {
+        e.preventDefault();
+        handleCardClick();
+      }
+    });
+
+    document.addEventListener("click", () => {
+      if (!audioContextReady && audioEnabled) {
+        initAudioEngine();
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>
