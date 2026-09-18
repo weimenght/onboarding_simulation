@@ -4,11 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Deloitte Event Hub · Admin Portal 管理控制台</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome 6 for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts: Plus Jakarta Sans & Noto Sans SC -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -37,13 +34,13 @@
           }
         }
       }
-    }
+    };
   </script>
 
   <style>
     body {
       background-color: #080b11;
-      background-image: 
+      background-image:
         radial-gradient(circle at 15% 15%, rgba(134, 188, 37, 0.08) 0%, transparent 45%),
         radial-gradient(circle at 85% 85%, rgba(0, 79, 89, 0.15) 0%, transparent 50%),
         radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.06) 0%, transparent 60%);
@@ -65,293 +62,158 @@
       box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.07);
     }
 
-    .button-press {
-      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .button-press:active {
-      transform: scale(0.97) translateY(2px);
-    }
+    .button-press { transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1); }
+    .button-press:active { transform: scale(0.97) translateY(2px); }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-8px); }
       40%, 80% { transform: translateX(8px); }
     }
-    .shake-error {
-      animation: shake 0.4s ease-in-out;
-    }
+    .shake-error { animation: shake 0.4s ease-in-out; }
 
     @keyframes fadeIn {
       0% { opacity: 0; transform: translateY(8px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-    .animate-fade-in {
-      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
+    .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   </style>
 </head>
 
 <body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
-
-  <!-- 1. FULL-SCREEN PASSWORD AUTHENTICATION GATE -->
   <div id="passwordGate" class="fixed inset-0 z-50 flex items-center justify-center bg-[#080b11] p-4">
     <div id="gateCard" class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center animate-fade-in relative overflow-hidden">
-      
-      <!-- Subtle top decorative gradient glow -->
       <div class="absolute -right-12 -top-12 w-32 h-32 bg-deloitte-green/15 rounded-full blur-2xl pointer-events-none"></div>
 
-      <!-- Icon & Branding -->
       <div class="space-y-3 relative z-10">
         <div class="w-16 h-16 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-2xl mx-auto shadow-lg shadow-deloitte-green/20">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <div>
-          <h1 class="text-2xl sm:text-3xl font-black text-white">
-            Deloitte<span class="deloitte-dot"></span> Admin
-          </h1>
-          <p class="text-xs text-gray-400 mt-1 font-cn">
-            请输入管理密码以访问控制台<br>
-            <span class="text-[11px] text-gray-500">Please enter password to unlock</span>
-          </p>
+          <h1 class="text-2xl sm:text-3xl font-black text-white">Deloitte<span class="deloitte-dot"></span> Admin</h1>
+          <p class="text-xs text-gray-400 mt-1 font-cn">请输入管理密码以访问控制台<br><span class="text-[11px] text-gray-500">Please enter password to unlock</span></p>
         </div>
       </div>
 
-      <!-- Password Input Form -->
       <form onsubmit="handlePasswordSubmit(event)" class="space-y-4 relative z-10">
         <div class="relative">
-          <input 
-            id="passwordInput" 
-            type="password" 
-            placeholder="••••••••••" 
-            autocomplete="current-password"
-            class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-2xl py-3.5 px-4 text-center font-mono text-lg text-white placeholder-gray-600 transition-colors shadow-inner"
-            required 
-          />
-          <button 
-            type="button" 
-            onclick="togglePasswordVisibility()" 
-            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs transition-colors"
-            title="显示/隐藏密码"
-          >
+          <input id="passwordInput" type="password" placeholder="••••••••••" autocomplete="current-password" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-2xl py-3.5 px-4 text-center font-mono text-lg text-white placeholder-gray-600 transition-colors" required>
+          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs transition-colors" title="显示/隐藏密码" aria-label="显示/隐藏密码">
             <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
           </button>
         </div>
 
-        <!-- Error Message Feedback -->
         <p id="errorMessage" class="hidden text-xs text-rose-400 font-semibold font-cn flex items-center justify-center gap-1.5">
           <i class="fa-solid fa-circle-exclamation text-rose-500"></i>
           <span>密码错误，请重新输入 / Incorrect password</span>
         </p>
 
-        <!-- Unlock Button -->
-        <button 
-          type="submit" 
-          class="button-press w-full py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2 cursor-pointer"
-        >
+        <button type="submit" class="button-press w-full py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
           <i class="fa-solid fa-lock-open text-xs"></i>
           <span>验证并进入 · Unlock Portal</span>
         </button>
       </form>
 
-      <!-- Footer Note -->
-      <p class="text-[11px] text-gray-500 font-mono relative z-10 pt-2 border-t border-white/10">
-        Security Access Verification
-      </p>
+      <p class="text-[11px] text-gray-500 font-mono relative z-10 pt-2 border-t border-white/10">Security Access Verification</p>
     </div>
   </div>
 
-  <!-- 2. MAIN ADMIN PORTAL CONTENT (Locked by default) -->
   <div id="mainAdminContent" class="hidden flex-col justify-between min-h-screen">
-
-    <!-- Top Navigation Header -->
     <header class="w-full border-b border-white/10 bg-deloitte-black/80 backdrop-blur-md sticky top-0 z-40">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        
         <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-sm">
-            <i class="fa-solid fa-layer-group"></i>
-          </div>
-          <div>
-            <span class="font-black text-lg text-white">Deloitte<span class="deloitte-dot"></span></span>
-            <span class="ml-1 text-xs text-gray-400 font-bold">Admin Portal</span>
-          </div>
+          <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-sm"><i class="fa-solid fa-layer-group"></i></div>
+          <div><span class="font-black text-lg text-white">Deloitte<span class="deloitte-dot"></span></span><span class="ml-1 text-xs text-gray-400 font-bold">Admin Portal</span></div>
         </div>
-
-        <!-- Re-lock Button -->
-        <button onclick="lockPortal()" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white transition-all flex items-center gap-1.5">
-          <i class="fa-solid fa-lock text-deloitte-green text-xs"></i>
-          <span>锁定 · Lock</span>
+        <button type="button" onclick="lockPortal()" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white transition-all flex items-center gap-2">
+          <i class="fa-solid fa-lock text-deloitte-green text-xs"></i><span>锁定 · Lock</span>
         </button>
       </div>
     </header>
 
-    <!-- Main Navigation List -->
     <main class="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12 space-y-8 animate-fade-in">
-
-      <!-- Portal Title & Description Text -->
       <div class="text-center sm:text-left space-y-2 border-b border-white/10 pb-6">
-        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
-          项目链接控制台
-        </h1>
-        <p class="text-sm text-gray-400 font-cn">
-          点击下方各个页面的跳转按钮进入对应的应用系统。<br>
-          <span class="text-xs text-gray-500">Click any button below to navigate to the corresponding web application.</span>
-        </p>
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">项目链接控制台</h1>
+        <p class="text-sm text-gray-400 font-cn">点击下方各个页面的跳转按钮进入对应的应用系统。<br><span class="text-xs text-gray-500">Click any button below to navigate to the corresponding web application.</span></p>
       </div>
 
-      <!-- Simple Buttons & Descriptive Text List -->
       <div class="space-y-4">
-
-        <!-- Button 1: D.Signal 信号解密 -->
         <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">01</span>
-              <h2 class="text-lg sm:text-xl font-black text-white">D.Signal 信号解密</h2>
-          <a href="https://www.projectsunrise.win/signal" class="button-press px-6 py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-deloitte-green/20 flex-shrink-0">
-            <span>打开 D.Signal</span>
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </a>
+          <div class="space-y-1"><div class="flex items-center gap-2"><span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">01</span><h2 class="text-lg sm:text-xl font-black text-white">D.Signal 信号解密</h2></div><p class="text-xs text-gray-500">Signal decoding experience</p></div>
+          <a href="https://www.projectsunrise.win/signal" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"><span>打开 D.Signal</span><i class="fa-solid fa-arrow-right text-xs"></i></a>
         </div>
 
-        <!-- Button 2: Knowledge Clash 勤业智库 -->
         <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">02</span>
-              <h2 class="text-lg sm:text-xl font-black text-white">勤业智库 Knowledge Clash</h2>
-          <a href="https://www.projectsunrise.win/knowledge" class="button-press px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-500/20 flex-shrink-0">
-            <span>打开 勤业智库</span>
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </a>
+          <div class="space-y-1"><div class="flex items-center gap-2"><span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">02</span><h2 class="text-lg sm:text-xl font-black text-white">勤业智库 Knowledge Clash</h2></div><p class="text-xs text-gray-500">Knowledge challenge</p></div>
+          <a href="https://www.projectsunrise.win/knowledge" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"><span>打开 勤业智库</span><i class="fa-solid fa-arrow-right text-xs"></i></a>
         </div>
 
-        <!-- Button 3: Deloitte FastPass 快速通行证 -->
         <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">03</span>
-              <h2 class="text-lg sm:text-xl font-black text-white">Deloitte FastPass 快速通行证</h2>
-          <a href="https://www.projectsunrise.win/fastpass" class="button-press px-6 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-lime-400/20 flex-shrink-0">
-            <span>打开 FastPass</span>
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </a>
+          <div class="space-y-1"><div class="flex items-center gap-2"><span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">03</span><h2 class="text-lg sm:text-xl font-black text-white">Deloitte FastPass 快速通行证</h2></div><p class="text-xs text-gray-500">Fast access pass</p></div>
+          <a href="https://www.projectsunrise.win/fastpass" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"><span>打开 FastPass</span><i class="fa-solid fa-arrow-right text-xs"></i></a>
         </div>
 
-        <!-- Button 4: Business Chemistry 商业化学指南 -->
         <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">04</span>
-              <h2 class="text-lg sm:text-xl font-black text-white">Business Chemistry 商业化学指南</h2>
-          <a href="https://www.projectsunrise.win/bc" class="button-press px-6 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-cyan-400/20 flex-shrink-0">
-            <span>打开 Chemistry</span>
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </a>
+          <div class="space-y-1"><div class="flex items-center gap-2"><span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">04</span><h2 class="text-lg sm:text-xl font-black text-white">Business Chemistry 商业化学指南</h2></div><p class="text-xs text-gray-500">Business chemistry guide</p></div>
+          <a href="https://www.projectsunrise.win/bc" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"><span>打开 Chemistry</span><i class="fa-solid fa-arrow-right text-xs"></i></a>
         </div>
 
-        <!-- Button 5: D-Pixel Rush -->
         <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">05</span>
-              <h2 class="text-lg sm:text-xl font-black text-white">D-Pixel Rush: Green Dot Odyssey</h2>
-          <a href="https://www.projectsunrise.win/game" class="button-press px-6 py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-deloitte-green/20 flex-shrink-0">
-            <span>进入 PixelRush</span>
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </a>
+          <div class="space-y-1"><div class="flex items-center gap-2"><span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">05</span><h2 class="text-lg sm:text-xl font-black text-white">D-Pixel Rush: Green Dot Odyssey</h2></div><p class="text-xs text-gray-500">Interactive pixel game</p></div>
+          <a href="https://www.projectsunrise.win/game" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"><span>进入 PixelRush</span><i class="fa-solid fa-arrow-right text-xs"></i></a>
         </div>
 
-        <!-- Button 6: Project Sunrise -->
         <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">06</span>
-              <h2 class="text-lg sm:text-xl font-black text-white">Project Sunrise</h2>
-          <a href="https://www.projectsunrise.win" class="button-press px-6 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-400/20 flex-shrink-0">
-            <span>打开 Project Sunrise</span>
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </a>
+          <div class="space-y-1"><div class="flex items-center gap-2"><span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">06</span><h2 class="text-lg sm:text-xl font-black text-white">Project Sunrise</h2></div><p class="text-xs text-gray-500">Event hub home page</p></div>
+          <a href="https://www.projectsunrise.win" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"><span>打开 Project Sunrise</span><i class="fa-solid fa-arrow-right text-xs"></i></a>
         </div>
-
       </div>
-
     </main>
-
   </div>
 
   <script>
-    // The exact required password
     const REQUIRED_PASSWORD = "!@#$%^&*()";
 
-    function handlePasswordSubmit(e) {
-      if (e) e.preventDefault();
-      
-      const input = document.getElementById("passwordInput");
-      const errorMsg = document.getElementById("errorMessage");
-      const gateCard = document.getElementById("gateCard");
-      
-      const entered = input.value;
+    function handlePasswordSubmit(event) {
+      event.preventDefault();
+      const input = document.getElementById('passwordInput');
+      const errorMessage = document.getElementById('errorMessage');
+      const gateCard = document.getElementById('gateCard');
 
-      if (entered === REQUIRED_PASSWORD) {
-        // Unlock portal
-        errorMsg.classList.add("hidden");
-        
-        // Hide lock screen gate completely
-        const gate = document.getElementById("passwordGate");
-        gate.classList.add("hidden");
-
-        // Reveal main content
-        const main = document.getElementById("mainAdminContent");
-        main.classList.remove("hidden");
-        main.classList.add("flex");
+      if (input.value === REQUIRED_PASSWORD) {
+        errorMessage.classList.add('hidden');
+        document.getElementById('passwordGate').classList.add('hidden');
+        document.getElementById('mainAdminContent').classList.remove('hidden');
+        document.getElementById('mainAdminContent').classList.add('flex');
       } else {
-        // Show error and trigger shake animation
-        errorMsg.classList.remove("hidden");
-        gateCard.classList.remove("shake-error");
-        void gateCard.offsetWidth; // retrigger reflow
-        gateCard.classList.add("shake-error");
-
-        input.value = "";
+        errorMessage.classList.remove('hidden');
+        gateCard.classList.remove('shake-error');
+        void gateCard.offsetWidth;
+        gateCard.classList.add('shake-error');
+        input.value = '';
         input.focus();
       }
     }
 
     function togglePasswordVisibility() {
-      const input = document.getElementById("passwordInput");
-      const icon = document.getElementById("toggleEyeIcon");
-      if (input.type === "password") {
-        input.type = "text";
-        icon.className = "fa-solid fa-eye-slash";
-      } else {
-        input.type = "password";
-        icon.className = "fa-solid fa-eye";
-      }
+      const input = document.getElementById('passwordInput');
+      const icon = document.getElementById('toggleEyeIcon');
+      const visible = input.type === 'password';
+      input.type = visible ? 'text' : 'password';
+      icon.className = visible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
     }
 
     function lockPortal() {
-      const gate = document.getElementById("passwordGate");
-      const main = document.getElementById("mainAdminContent");
-      const input = document.getElementById("passwordInput");
-      const errorMsg = document.getElementById("errorMessage");
-
-      errorMsg.classList.add("hidden");
-      input.value = "";
-
-      main.classList.add("hidden");
-      main.classList.remove("flex");
-
-      gate.classList.remove("hidden");
+      const input = document.getElementById('passwordInput');
+      document.getElementById('errorMessage').classList.add('hidden');
+      input.value = '';
+      document.getElementById('mainAdminContent').classList.add('hidden');
+      document.getElementById('mainAdminContent').classList.remove('flex');
+      document.getElementById('passwordGate').classList.remove('hidden');
       input.focus();
     }
 
-    // Auto-focus input when page loads
-    window.onload = function() {
-      const input = document.getElementById("passwordInput");
-      if (input) {
-        input.focus();
-      }
-    };
+    window.addEventListener('load', () => document.getElementById('passwordInput').focus());
   </script>
 </body>
 </html>
