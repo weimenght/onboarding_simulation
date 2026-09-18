@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deloitte FastPass 快速通行证 | Team Schedule</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for clean feedback SFX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- FontAwesome 6 for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Plus Jakarta Sans & Noto Sans SC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            deloitte: {
+              green: '#86BC25',
+              darkgreen: '#568819',
+              teal: '#004F59',
+              navy: '#002776',
+              black: '#090c12',
+              cardbg: '#131720',
+              cardborder: '#232a3b',
+              slate: '#1e2433',
+              gray: '#868D96',
+              lightgray: '#DCE0E5'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif'],
+            cn: ['"Noto Sans SC"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #090c12;
+      background-image: 
+        radial-gradient(circle at 18% 12%, rgba(134, 188, 37, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 82% 88%, rgba(0, 79, 89, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.08) 0%, transparent 60%);
+      min-height: 100vh;
+    }
+
+    .deloitte-dot {
+      display: inline-block;
+      width: 0.58em;
+      height: 0.58em;
+      background-color: #86BC25;
+      border-radius: 50%;
+      margin-left: 0.12em;
+      vertical-align: baseline;
+      box-shadow: 0 0 14px rgba(134, 188, 37, 0.8);
+    }
+
+    .card-shadow {
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .button-press {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .button-press:active {
+      transform: scale(0.96) translateY(2px);
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.96) translateY(12px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop-in {
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Authentic 8x5cm Sticker Ribbon Flag in Top Right */
+    .sticker-ribbon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 52px;
+      height: 54px;
+      background: linear-gradient(135deg, #bef264 0%, #86BC25 100%);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 76%, 0 100%);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 6px;
+      color: #0b0e14;
+      font-weight: 900;
+      font-size: 1.25rem;
+      font-family: monospace;
+      box-shadow: 0 4px 14px rgba(134, 188, 37, 0.45);
+    }
+
+    /* Print-ready formatting for genuine 80mm x 50mm physical sticker */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableStickerArea, #printableStickerArea * {
+        visibility: visible;
+      }
+      #printableStickerArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm;
+        height: 50mm;
+        margin: 0;
+        padding: 4.5mm;
+        background: #ecfccb !important;
+        color: #14532d !important;
+        border: 1px dashed #65a30d !important;
+        box-shadow: none !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* Sleek scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090c12;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+
+<body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+
+  <!-- Top Navigation Bar -->
+  <header class="w-full border-b border-white/10 bg-deloitte-black/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Title -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="scrollToTop()">
+        <div class="w-9 h-9 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-sm">
+          FP
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center">
+            <span class="font-black text-xl tracking-tight text-white">Deloitte<span class="deloitte-dot"></span></span>
+            <span class="ml-1.5 font-bold text-sm text-gray-200">FastPass</span>
+          </div>
+          <span class="text-[10px] text-deloitte-green font-bold tracking-wider uppercase">
+            快速通行证 · Team Schedule
+          </span>
+        </div>
+      </div>
+
+      <!-- Quick Audio & Print Controls -->
+      <div class="flex items-center space-x-2.5 text-xs">
+        <button onclick="window.print()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-print text-deloitte-green"></i>
+          <span class="hidden sm:inline">打印贴纸 / Print</span>
+        </button>
+
+        <button id="audioToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 flex items-center space-x-1.5 transition-all text-gray-300">
+          <i id="audioIcon" class="fa-solid fa-volume-high text-deloitte-green text-xs"></i>
+          <span id="audioText" class="hidden sm:inline">SFX</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+    <!-- Team Number Query Box -->
+    <section class="p-5 sm:p-7 rounded-3xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-deloitte-green/15 border border-deloitte-green/30 text-deloitte-green text-[11px] font-bold mb-1">
+            <span class="w-2 h-2 rounded-full bg-deloitte-green animate-ping"></span>
+            <span>36组快速通行系统 · Fast Pass Checker</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-black text-white">
+            查询小组快速通行证
+          </h1>
+          <p class="text-xs text-gray-400 mt-0.5 font-cn">
+            请输入或选择小组编号 (1 - 36) · Select or enter your team number
+          </p>
+        </div>
+
+        <!-- Quick Stepper and Direct Input Box -->
+        <div class="flex items-center space-x-2 bg-black/50 p-1.5 rounded-2xl border border-white/15 self-start sm:self-auto">
+          <button onclick="changeGroup(-1)" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/15 active:scale-95 text-white flex items-center justify-center transition-all">
+            <i class="fa-solid fa-minus text-xs"></i>
+          </button>
+          
+          <div class="flex items-center px-1">
+            <span class="text-xs font-bold text-deloitte-green font-mono mr-1">#</span>
+            <input id="teamInput" type="number" min="1" max="36" value="1"
+              class="w-14 text-center font-mono font-black text-lg text-white bg-transparent outline-none"
+              oninput="handleTeamInput(this.value)" />
+          </div>
+
+          <button onclick="changeGroup(1)" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/15 active:scale-95 text-white flex items-center justify-center transition-all">
+            <i class="fa-solid fa-plus text-xs"></i>
+          </button>
+
+          <button onclick="pickRandomTeam()" title="Random Pick 随机选组" class="w-9 h-9 rounded-xl bg-deloitte-green/15 hover:bg-deloitte-green/25 text-deloitte-green flex items-center justify-center transition-all ml-1">
+            <i class="fa-solid fa-dice text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick 1 to 36 Selector Grid -->
+      <div class="pt-3 border-t border-white/10 space-y-2">
+        <div class="flex items-center justify-between text-xs text-gray-400">
+          <span class="font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-users text-deloitte-green"></i>
+            快速点击直达 / Quick Tap (1 - 36):
+          </span>
+          <span id="selectedTeamLabel" class="text-deloitte-green font-mono font-bold">
+            当前: 第 1 组
+          </span>
+        </div>
+
+        <!-- Responsive Numbers Grid -->
+        <div id="teamPillsGrid" class="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-12 gap-1.5 sm:gap-2 pt-1">
+          <!-- Dynamically populated 1 to 36 pills -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Authentic 8x5cm Schedule Sticker Card -->
+    <section class="space-y-4">
+      
+      <!-- Live Session Time Tracker Bar -->
+      <div class="flex items-center justify-between bg-white/[0.03] border border-white/10 px-4 py-2.5 rounded-2xl text-xs">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-deloitte-green animate-pulse"></span>
+          <span class="font-bold text-gray-300">环节进度追踪 · Session Tracker</span>
+        </div>
+        <div class="flex items-center space-x-2 font-mono text-[11px] text-gray-400">
+          <span>活动时间: 13:50 - 17:40</span>
+          <span>•</span>
+          <span id="liveClockBadge" class="text-deloitte-green font-bold">LIVE</span>
+        </div>
+      </div>
+
+      <!-- The Exact Physical 8x5cm Timetable Sticker Recreation -->
+      <div id="printableStickerArea" class="relative rounded-3xl bg-[#ecfccb] text-[#1e293b] p-6 sm:p-8 shadow-2xl border-4 border-[#bef264] overflow-hidden transition-all duration-300 min-h-[380px] flex flex-col justify-between">
+        
+        <!-- Top Right Corner Sticker Ribbon Bookmark with Team Number -->
+        <div class="sticker-ribbon">
+          <span id="stickerRibbonNum">1</span>
+        </div>
+
+        <!-- Sticker Header -->
+        <div class="pr-14">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#65a30d]"></span>
+            <span class="text-xs font-black tracking-wider uppercase text-[#4d7c0f]">
+              时间表贴纸 8x5cm · Timetable Sticker
+            </span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-[#14532d] mt-1">
+            第 <span id="stickerTeamNumberTitle">1</span> 组 · 活动日程表
+          </h2>
+          <p class="text-[11px] font-semibold text-[#4d7c0f]/90 mt-0.5">
+            Team <span id="stickerTeamNumberEn">1</span> Fast Pass Schedule
+          </p>
+        </div>
+
+        <!-- The Table: 开始 (Start), 结束 (End), 项目 (Activity / Station) -->
+        <div class="mt-4 mb-2 overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b-2 border-[#a3e635] text-xs font-black text-[#3f6212] uppercase tracking-wider">
+                <th class="py-2 px-2.5 w-20">开始 <span class="font-normal text-[10px] opacity-75">Start</span></th>
+                <th class="py-2 px-2.5 w-20">结束 <span class="font-normal text-[10px] opacity-75">End</span></th>
+                <th class="py-2 px-2.5">项目 <span class="font-normal text-[10px] opacity-75">Activity / Station</span></th>
+                <th class="py-2 px-2.5 text-right">状态 <span class="font-normal text-[10px] opacity-75">Status</span></th>
+              </tr>
+            </thead>
+            <tbody id="stickerTableBody" class="divide-y divide-[#d9f99d] text-xs sm:text-sm font-bold text-[#1e293b]">
+              <!-- Dynamically Populated 6 Rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Sticker Footer -->
+        <div class="pt-3 border-t border-[#bef264] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#4d7c0f] font-semibold gap-1">
+          <div class="flex items-center gap-1.5">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>每个环节30分钟 · 间隔10分钟轮转 (30m session / 10m rotation)</span>
+          </div>
+          <span class="font-bold text-[#14532d]">Deloitte Digital FastPass</span>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="w-full border-t border-white/10 py-5 bg-deloitte-black/80 text-center text-xs text-deloitte-gray mt-8">
+    <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-gray-300">Deloitte FastPass 快速通行系统</span>
+        <span class="text-deloitte-green">●</span>
+        <span class="text-gray-400">时间表贴纸 8x5cm 数字化平台</span>
+      </div>
+      <p class="text-[11px] text-gray-500">
+        Make an impact that matters. 36组循环无冲突轮转调度
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    let audioEnabled = true;
+    let audioReady = false;
+    let switchSynth = null;
+
+    async function initAudioEngine() {
+      if (audioReady) return;
+      try {
+        await Tone.start();
+        switchSynth = new Tone.MembraneSynth({
+          pitchDecay: 0.02,
+          octaves: 2,
+          envelope: { attack: 0.001, decay: 0.1, sustain: 0.01, release: 0.1 }
+        }).toDestination();
+        switchSynth.volume.value = -9;
+        audioReady = true;
+      } catch (err) {
+        console.warn("Audio waiting for user gesture:", err);
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById("audioIcon");
+      const text = document.getElementById("audioText");
+      if (audioEnabled) {
+        if (icon) icon.className = "fa-solid fa-volume-high text-deloitte-green text-xs";
+        if (text) text.className = "hidden sm:inline text-gray-300";
+        initAudioEngine();
+      } else {
+        if (icon) icon.className = "fa-solid fa-volume-xmark text-gray-500 text-xs";
+        if (text) text.className = "hidden sm:inline text-gray-500";
+      }
+    }
+
+    function playSwitchSound() {
+      if (!audioEnabled) return;
+      initAudioEngine();
+      try {
+        if (switchSynth) {
+          switchSynth.triggerAttackRelease("C3", "32n", Tone.now());
+        }
+      } catch (e) {}
+    }
+
+    // Exact 6 Time Slots matching the physical 8x5cm sticker photo
+    const TIME_SLOTS = [
+      { start: '13:50', end: '14:20', startMin: 13 * 60 + 50, endMin: 14 * 60 + 20 },
+      { start: '14:30', end: '15:00', startMin: 14 * 60 + 30, endMin: 15 * 60 + 0 },
+      { start: '15:10', end: '15:40', startMin: 15 * 60 + 10, endMin: 15 * 60 + 40 },
+      { start: '15:50', end: '16:20', startMin: 15 * 60 + 50, endMin: 16 * 60 + 20 },
+      { start: '16:30', end: '17:00', startMin: 16 * 60 + 30, endMin: 17 * 60 + 0 },
+      { start: '17:10', end: '17:40', startMin: 17 * 60 + 10, endMin: 17 * 60 + 40 },
+    ];
+
+    // The 6 Official Deloitte Event Stations with bilingual titles and icons
+    const STATIONS = {
+      0: { 
+        nameCn: '人才价值主张 EVP', 
+        nameEn: 'Talent Value Proposition EVP', 
+        icon: 'fa-id-card-clip'
+      },
+      1: { 
+        nameCn: '职业道德森林 Ethics Woodland', 
+        nameEn: 'Ethics Woodland', 
+        icon: 'fa-tree'
+      },
+      2: { 
+        nameCn: '信号解密 D.Signal', 
+        nameEn: 'D.Signal', 
+        icon: 'fa-tower-broadcast'
+      },
+      3: { 
+        nameCn: '勤业智库 Knowledge Clash', 
+        nameEn: 'Knowledge Clash', 
+        icon: 'fa-brain'
+      },
+      4: { 
+        nameCn: '情商罗盘 EQ Matrix', 
+        nameEn: 'EQ Matrix', 
+        icon: 'fa-compass'
+      },
+      5: { 
+        nameCn: 'AI纪元 The AI Era', 
+        nameEn: 'The AI Era', 
+        icon: 'fa-microchip'
+      }
+    };
+
+    /**
+     * Exact 6 row permutation bases decoded directly from the 36-group sticker photo:
+     * Row 1 (Groups 1-6):   [0, 1, 2, 3, 4, 5]
+     * Row 2 (Groups 7-12):  [0, 2, 4, 1, 3, 5]
+     * Row 3 (Groups 13-18): [0, 3, 5, 4, 2, 1]
+     * Row 4 (Groups 19-24): [0, 4, 1, 2, 5, 3]
+     * Row 5 (Groups 25-30): [0, 5, 3, 4, 1, 2]
+     * Row 6 (Groups 31-36): [0, 2, 5, 1, 4, 3]
+     */
+    const ROW_BASES = [
+      [0, 1, 2, 3, 4, 5],
+      [0, 2, 4, 1, 3, 5],
+      [0, 3, 5, 4, 2, 1],
+      [0, 4, 1, 2, 5, 3],
+      [0, 5, 3, 4, 1, 2],
+      [0, 2, 5, 1, 4, 3]
+    ];
+
+    function getGroupSchedule(groupNum) {
+      const g = Math.max(1, Math.min(36, parseInt(groupNum, 10) || 1));
+      const rowIndex = Math.floor((g - 1) / 6);
+      const colIndex = (g - 1) % 6;
+      const base = ROW_BASES[rowIndex];
+      return base.map(actId => (actId + colIndex) % 6);
+    }
+
+    let currentTeam = 1;
+
+    // Load saved team selection from localStorage
+    const savedTeam = localStorage.getItem('deloitte_fastpass_team');
+    if (savedTeam) {
+      const parsed = parseInt(savedTeam, 10);
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 36) {
+        currentTeam = parsed;
+      }
+    }
+
+    function selectTeam(teamNum) {
+      playSwitchSound();
+      currentTeam = Math.max(1, Math.min(36, teamNum));
+      localStorage.setItem('deloitte_fastpass_team', currentTeam.toString());
+
+      const input = document.getElementById("teamInput");
+      if (input) input.value = currentTeam;
+
+      renderTeamPills();
+      renderStickerCard();
+    }
+
+    function changeGroup(delta) {
+      let next = currentTeam + delta;
+      if (next < 1) next = 36;
+      if (next > 36) next = 1;
+      selectTeam(next);
+    }
+
+    function handleTeamInput(val) {
+      const num = parseInt(val, 10);
+      if (!isNaN(num) && num >= 1 && num <= 36) {
+        selectTeam(num);
+      }
+    }
+
+    function pickRandomTeam() {
+      const rand = Math.floor(Math.random() * 36) + 1;
+      selectTeam(rand);
+    }
+
+    function getActiveSlotIndex() {
+      const now = new Date();
+      const currentMin = now.getHours() * 60 + now.getMinutes();
+
+      for (let i = 0; i < TIME_SLOTS.length; i++) {
+        const slot = TIME_SLOTS[i];
+        if (currentMin >= slot.startMin && currentMin <= slot.endMin) {
+          return i;
+        }
+      }
+
+      if (currentMin < TIME_SLOTS[0].startMin) return -1; // Not started yet
+      if (currentMin > TIME_SLOTS[TIME_SLOTS.length - 1].endMin) return 99; // Event concluded
+
+      // In break between slots
+      for (let i = 0; i < TIME_SLOTS.length - 1; i++) {
+        if (currentMin > TIME_SLOTS[i].endMin && currentMin < TIME_SLOTS[i + 1].startMin) {
+          return i + 1;
+        }
+      }
+
+      return -1;
+    }
+
+    function renderTeamPills() {
+      const container = document.getElementById("teamPillsGrid");
+      if (!container) return;
+
+      let html = "";
+      for (let i = 1; i <= 36; i++) {
+        const isSelected = (i === currentTeam);
+        const activeClass = isSelected
+          ? "bg-deloitte-green text-black font-black shadow-md shadow-deloitte-green/40 scale-105 border-deloitte-green"
+          : "bg-white/5 text-gray-300 hover:bg-white/15 border-white/10 hover:text-white";
+
+        html += `
+          <button onclick="selectTeam(${i})" class="button-press py-1.5 px-1 rounded-xl text-xs font-bold border transition-all flex items-center justify-center font-mono ${activeClass}">
+            ${i}
+          </button>
+        `;
+      }
+      container.innerHTML = html;
+
+      const label = document.getElementById("selectedTeamLabel");
+      if (label) label.textContent = `当前: 第 ${currentTeam} 组 · Team ${currentTeam}`;
+    }
+
+    function renderStickerCard() {
+      const gNum = currentTeam;
+      const schedule = getGroupSchedule(gNum);
+      const activeSlot = getActiveSlotIndex();
+
+      document.getElementById("stickerRibbonNum").textContent = gNum;
+      document.getElementById("stickerTeamNumberTitle").textContent = gNum;
+      document.getElementById("stickerTeamNumberEn").textContent = gNum;
+
+      const tbody = document.getElementById("stickerTableBody");
+      if (!tbody) return;
+
+      let rowsHtml = "";
+      for (let i = 0; i < 6; i++) {
+        const slot = TIME_SLOTS[i];
+        const stationId = schedule[i];
+        const station = STATIONS[stationId];
+        const isCurrent = (i === activeSlot);
+
+        let rowBgClass = "";
+        let statusBadge = "";
+
+        if (isCurrent) {
+          rowBgClass = "bg-[#bef264]/80 font-black";
+          statusBadge = `
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#65a30d] text-white text-[10px] font-extrabold uppercase shadow-sm">
+              <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+              进行中 · NOW
+            </span>
+          `;
+        } else if (i === activeSlot + 1) {
+          statusBadge = `
+            <span class="px-2 py-0.5 rounded-full bg-[#d9f99d] text-[#3f6212] text-[10px] font-bold">
+              下一环节 · NEXT
+            </span>
+          `;
+        } else if (activeSlot !== -1 && i < activeSlot) {
+          statusBadge = `
+            <span class="text-gray-500 text-[10px] flex items-center gap-1 justify-end font-semibold">
+              <i class="fa-solid fa-check text-[#65a30d]"></i> 已完成
+            </span>
+          `;
+        } else {
+          statusBadge = `
+            <span class="text-gray-400 text-[10px] font-semibold">待开始</span>
+          `;
+        }
+
+        rowsHtml += `
+          <tr class="hover:bg-[#d9f99d]/60 transition-colors ${rowBgClass}">
+            <td class="py-2.5 px-2.5 font-mono text-xs sm:text-sm text-[#14532d]">${slot.start}</td>
+            <td class="py-2.5 px-2.5 font-mono text-xs sm:text-sm text-[#14532d]">${slot.end}</td>
+            <td class="py-2.5 px-2.5">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid ${station.icon} text-xs text-[#4d7c0f]"></i>
+                <div class="flex flex-col leading-tight">
+                  <span class="font-extrabold text-[#14532d] text-xs sm:text-sm">${station.nameCn}</span>
+                  <span class="text-[10px] text-[#4d7c0f] font-semibold">${station.nameEn}</span>
+                </div>
+              </div>
+            </td>
+            <td class="py-2.5 px-2.5 text-right">${statusBadge}</td>
+          </tr>
+        `;
+      }
+
+      tbody.innerHTML = rowsHtml;
+    }
+
+    function scrollToTop() {
+      playSwitchSound();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Initialize application on load
+    window.onload = function() {
+      const input = document.getElementById("teamInput");
+      if (input) input.value = currentTeam;
+      renderTeamPills();
+      renderStickerCard();
+
+      // Refresh live active session badge every 30 seconds
+      setInterval(() => {
+        renderStickerCard();
+      }, 30000);
+    };
+
+    document.addEventListener("click", () => {
+      if (!audioReady && audioEnabled) {
+        initAudioEngine();
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>
