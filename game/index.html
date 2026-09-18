@@ -117,6 +117,23 @@
     .glow-anim {
       animation: pulseGlow 2s infinite;
     }
+
+    /* Interactive Loader Mini-Dot Bounce Animation */
+    @keyframes loaderBounce {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.15) translateY(-6px); }
+    }
+    .loader-dot-bounce {
+      animation: loaderBounce 1.2s infinite ease-in-out;
+    }
+
+    @keyframes floatUpFade {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-30px) scale(1.2); }
+    }
+    .float-feedback {
+      animation: floatUpFade 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
   </style>
 </head>
 
@@ -199,8 +216,73 @@
         <!-- Retro Scanline Overlay (Toggleable) -->
         <div id="crtOverlay" class="crt-scanlines pointer-events-none absolute inset-0 z-10 opacity-70"></div>
 
-        <!-- START SCREEN OVERLAY -->
-        <div id="startOverlay" class="absolute inset-0 z-20 bg-deloitte-midnight/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <!-- INTERACTIVE RETRO DELOITTE BOOT & LOADING SCREEN -->
+        <div id="loaderOverlay" class="absolute inset-0 z-30 bg-[#06080d] flex flex-col items-center justify-between p-4 sm:p-6 text-center select-none font-pixel">
+          <!-- Top Bios Header -->
+          <div class="w-full flex items-center justify-between text-[9px] sm:text-[10px] text-deloitte-gray/80 border-b border-white/10 pb-2">
+            <div class="flex items-center space-x-2">
+              <span class="w-2 h-2 bg-deloitte-green inline-block animate-ping"></span>
+              <span class="text-deloitte-green">DELOITTE-OS v18.45</span>
+            </div>
+            <span class="text-gray-400">MEM CHECK: 640KB OK</span>
+          </div>
+
+          <!-- Central Interactive Mini Experience -->
+          <div class="flex flex-col items-center justify-center space-y-3 my-auto max-w-sm w-full relative">
+            <div class="text-[10px] sm:text-xs text-deloitte-lightgray tracking-wider flex items-center gap-1.5">
+              <span>INITIALIZING CONSULTANT ENGINE</span>
+              <span class="animate-pulse text-deloitte-green">_</span>
+            </div>
+
+            <!-- Clickable Interactive Green Dot Widget -->
+            <div class="relative py-2">
+              <button id="loaderInteractiveDot" onclick="boostLoaderSpeed()" title="Click to accelerate load speed!" class="relative group outline-none cursor-pointer">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-deloitte-green/20 border-2 border-deloitte-green flex items-center justify-center loader-dot-bounce shadow-lg shadow-deloitte-green/40 group-hover:scale-110 group-active:scale-95 transition-transform">
+                  <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-deloitte-green shadow-inner"></div>
+                </div>
+                <!-- Mini click indicator badge -->
+                <div class="absolute -bottom-2 -right-2 bg-[#0c1824] border border-deloitte-green/60 text-deloitte-green px-1.5 py-0.5 rounded text-[8px] font-pixel shadow">
+                  TAP ME!
+                </div>
+              </button>
+              <!-- Container for floating synergy points on click -->
+              <div id="loaderFloatContainer" class="pointer-events-none absolute inset-0 overflow-visible"></div>
+            </div>
+
+            <p class="text-[9px] font-sans text-gray-400">
+              💡 <span class="text-deloitte-green font-semibold">Pro-Tip:</span> Click the Green Dot to supercharge load speed!
+            </p>
+
+            <!-- Dynamic Witty Consulting Console Log Line -->
+            <div class="bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 w-full text-left min-h-[32px] flex items-center">
+              <span class="text-deloitte-green mr-1.5">&gt;</span>
+              <span id="loaderStatusText" class="text-[9px] sm:text-[10px] text-cyan-300 truncate">Synthesizing core deliverables...</span>
+            </div>
+
+            <!-- Pixel Segmented Progress Bar -->
+            <div class="w-full space-y-1 pt-1">
+              <div class="w-full bg-white/10 h-3 sm:h-3.5 rounded p-0.5 border border-white/20">
+                <div id="loaderProgressBar" class="bg-gradient-to-r from-deloitte-darkgreen via-deloitte-green to-emerald-300 h-full rounded transition-all duration-150" style="width: 12%;"></div>
+              </div>
+              <div class="flex justify-between items-center text-[9px] text-gray-400">
+                <span id="loaderPercentText" class="text-deloitte-green font-bold">12%</span>
+                <span id="loaderClicksStat" class="text-gray-400">EFFICIENCY BOOST: 0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Actions / Skip -->
+          <div class="w-full flex items-center justify-between pt-2 border-t border-white/10 text-[9px]">
+            <span class="text-deloitte-gray/70 hidden sm:inline">Press any key or space to speed up</span>
+            <button onclick="finishLoader()" class="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-colors flex items-center gap-1.5 ml-auto">
+              <span>FAST-BOOT [SKIP]</span>
+              <i class="fa-solid fa-forward-step text-[8px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- START SCREEN OVERLAY (Appears after loader finishes) -->
+        <div id="startOverlay" class="hidden absolute inset-0 z-20 bg-deloitte-midnight/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-4">
           <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green text-[10px] sm:text-xs font-pixel mb-1">
             <i class="fa-solid fa-sparkles"></i>
             <span>RETRO DELOITTE ARCADE</span>
@@ -464,6 +546,101 @@
     const V_WIDTH = 480;
     const V_HEIGHT = 270;
     const FLOOR_Y = 222;
+
+    let isGameLoaded = false;
+    let loaderProgress = 10;
+    let loaderBoostClicks = 0;
+    let loaderInterval = null;
+
+    const LOADER_MESSAGES = [
+      "Establishing Core Principles (1845)...",
+      "Brewing War Room Double Espresso...",
+      "Calibrating Green Dot Matrix...",
+      "Synthesizing Synergies & Alignment...",
+      "Deprecating Scope Creep Hazards...",
+      "Defending Against Urgent Email Drones...",
+      "Polishing Briefcase Leather...",
+      "Synchronizing AI Copilot Chipsets...",
+      "Ready to Make an Impact that Matters!"
+    ];
+
+    function boostLoaderSpeed() {
+      initAudio();
+      loaderBoostClicks++;
+      loaderProgress = Math.min(100, loaderProgress + 14);
+
+      // Play soft blip if audio ready
+      if (audioReady && dotSynth) {
+        try {
+          dotSynth.triggerAttackRelease(["C6"], "32n", Tone.now());
+        } catch(e) {}
+      }
+
+      // Spawn floating feedback text over the interactive dot
+      spawnLoaderFloatingText();
+      updateLoaderUI();
+
+      if (loaderProgress >= 100) {
+        setTimeout(finishLoader, 250);
+      }
+    }
+
+    function spawnLoaderFloatingText() {
+      const container = document.getElementById("loaderFloatContainer");
+      if (!container) return;
+
+      const perks = ["+100 IMPACT", "EFFICIENCY UP!", "+50 SPEED", "COFFEE SHOT!", "SYNERGY +1"];
+      const chosen = perks[Math.floor(Math.random() * perks.length)];
+
+      const el = document.createElement("div");
+      el.className = "absolute font-pixel text-[9px] text-deloitte-green font-bold float-feedback pointer-events-none whitespace-nowrap";
+      el.style.left = `${10 + Math.random() * 40}%`;
+      el.style.top = `${Math.random() * 20}%`;
+      el.textContent = chosen;
+      container.appendChild(el);
+
+      setTimeout(() => el.remove(), 750);
+    }
+
+    function updateLoaderUI() {
+      const bar = document.getElementById("loaderProgressBar");
+      const pct = document.getElementById("loaderPercentText");
+      const status = document.getElementById("loaderStatusText");
+      const clicksEl = document.getElementById("loaderClicksStat");
+
+      if (bar) bar.style.width = `${loaderProgress}%`;
+      if (pct) pct.textContent = `${Math.floor(loaderProgress)}%`;
+      if (clicksEl) clicksEl.textContent = `EFFICIENCY BOOST: +${loaderBoostClicks * 25}`;
+
+      const msgIndex = Math.min(
+        LOADER_MESSAGES.length - 1,
+        Math.floor((loaderProgress / 100) * LOADER_MESSAGES.length)
+      );
+      if (status) status.textContent = LOADER_MESSAGES[msgIndex];
+    }
+
+    function startLoaderSequence() {
+      loaderInterval = setInterval(() => {
+        if (loaderProgress < 100) {
+          loaderProgress += 1.8;
+          updateLoaderUI();
+        } else {
+          clearInterval(loaderInterval);
+          setTimeout(finishLoader, 300);
+        }
+      }, 70);
+    }
+
+    function finishLoader() {
+      if (isGameLoaded) return;
+      isGameLoaded = true;
+      if (loaderInterval) clearInterval(loaderInterval);
+
+      const loader = document.getElementById("loaderOverlay");
+      const start = document.getElementById("startOverlay");
+      if (loader) loader.classList.add("hidden");
+      if (start) start.classList.remove("hidden");
+    }
 
     let gameState = 'START'; // 'START', 'PLAYING', 'PAUSED', 'GAMEOVER'
     let score = 0;
@@ -1242,6 +1419,19 @@
        STREAMING_CHUNK:Binding Keyboard, Mouse, and Touch Controls
        ========================================================== */
     window.addEventListener("keydown", (e) => {
+      // If still on the loader screen, pressing Space or Enter accelerates / finishes loading
+      if (!isGameLoaded) {
+        if (e.code === "Space" || e.code === "Enter") {
+          e.preventDefault();
+          boostLoaderSpeed();
+          return;
+        } else if (e.code === "Escape") {
+          e.preventDefault();
+          finishLoader();
+          return;
+        }
+      }
+
       // Space or Enter on Start/Game Over
       if (gameState === 'START' || gameState === 'GAMEOVER') {
         if (e.code === "Space" || e.code === "Enter") {
@@ -1307,6 +1497,7 @@
 
     // Boot the main animation loop on load
     window.onload = function () {
+      startLoaderSequence();
       requestAnimationFrame(gameLoop);
     };
   </script>
