@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>D-Pixel Rush: Deloitte Green Dot Odyssey</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for retro 8-bit Chiptune SFX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- FontAwesome for iconography -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Press Start 2P for authentic pixel typography & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            deloitte: {
+              green: '#86BC25',
+              darkgreen: '#568819',
+              teal: '#004F59',
+              navy: '#002776',
+              midnight: '#070a0f',
+              cardbg: '#11151c',
+              slate: '#1E232A',
+              lightgray: '#D9DDE2',
+              gray: '#868D96'
+            }
+          },
+          fontFamily: {
+            pixel: ['"Press Start 2P"', 'monospace'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    body {
+      background-color: #070a0f;
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(134, 188, 37, 0.08) 0%, transparent 55%),
+        radial-gradient(circle at 85% 85%, rgba(0, 79, 89, 0.16) 0%, transparent 60%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Crisp retro pixel rendering across all browsers */
+    canvas {
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-crisp-edges;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    /* CRT Arcade Scanline Effect Overlay */
+    .crt-scanlines {
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0, 0, 0, 0.28) 50%,
+        rgba(0, 0, 0, 0.28)
+      );
+      background-size: 100% 4px;
+    }
+
+    /* Pixel button bevel styles */
+    .pixel-box {
+      box-shadow: 
+        inset -3px -3px 0px 0px rgba(0,0,0,0.55),
+        inset 3px 3px 0px 0px rgba(255,255,255,0.25),
+        0 6px 0 0 rgba(0,0,0,0.65);
+    }
+
+    .pixel-box-green {
+      box-shadow: 
+        inset -3px -3px 0px 0px #3f680f,
+        inset 3px 3px 0px 0px #b6f047,
+        0 5px 0 0 #05080b;
+    }
+
+    .pixel-btn-press:active {
+      transform: translateY(3px);
+      box-shadow: 
+        inset -2px -2px 0px 0px rgba(0,0,0,0.55),
+        inset 2px 2px 0px 0px rgba(255,255,255,0.25),
+        0 2px 0 0 rgba(0,0,0,0.65);
+    }
+
+    .deloitte-dot-pixel {
+      display: inline-block;
+      width: 0.65em;
+      height: 0.65em;
+      background-color: #86BC25;
+      margin-left: 0.12em;
+      box-shadow: 0 0 10px rgba(134, 188, 37, 0.85);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 4px rgba(134, 188, 37, 0.4)); }
+      50% { filter: drop-shadow(0 0 14px rgba(134, 188, 37, 0.9)); }
+    }
+    .glow-anim {
+      animation: pulseGlow 2s infinite;
+    }
+  </style>
+</head>
+
+<body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+
+  <!-- Top Arcade Header Bar -->
+  <header class="w-full border-b border-white/10 bg-deloitte-midnight/90 backdrop-blur-md sticky top-0 z-40 py-2.5 px-4 sm:px-6">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <!-- Title Branding -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="restartGame()">
+        <div class="w-8 h-8 rounded-lg bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-pixel text-xs font-black shadow-md shadow-deloitte-green/20">
+          D.
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center">
+            <span class="font-pixel text-xs sm:text-sm text-white tracking-wider">D-PIXEL RUSH</span>
+            <span class="deloitte-dot-pixel"></span>
+          </div>
+          <span class="text-[10px] font-bold text-deloitte-green tracking-widest uppercase">Consultant Green Dot Dash</span>
+        </div>
+      </div>
+
+      <!-- Controls & Audio Toggles -->
+      <div class="flex items-center space-x-2.5">
+        <button id="sfxToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-pixel flex items-center space-x-2 transition-all text-gray-300">
+          <i id="sfxIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
+          <span class="hidden sm:inline">SFX</span>
+        </button>
+        <button onclick="toggleCRT()" id="crtToggleBtn" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-pixel flex items-center space-x-2 transition-all text-gray-300">
+          <i class="fa-solid fa-tv text-cyan-400"></i>
+          <span class="hidden sm:inline">CRT</span>
+        </button>
+        <button onclick="openHelpModal()" class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-pixel text-deloitte-lightgray hover:text-white transition-all">
+          <i class="fa-solid fa-circle-question"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 max-w-5xl mx-auto w-full">
+    
+    <!-- Outer Arcade Bezel / Cabinet Card -->
+    <div class="w-full bg-[#0e1219] border-2 border-white/10 rounded-2xl sm:rounded-3xl p-2 sm:p-4 shadow-2xl relative flex flex-col items-center">
+      
+      <!-- Top HUD Banner within Canvas Frame -->
+      <div class="w-full flex items-center justify-between px-2 sm:px-4 py-2 mb-2 bg-[#090c12] border border-white/10 rounded-xl font-pixel text-[10px] sm:text-xs">
+        <!-- Score & Combo -->
+        <div class="flex items-center space-x-3 sm:space-x-5">
+          <div class="flex flex-col">
+            <span class="text-gray-400 text-[9px] uppercase tracking-wider">SCORE</span>
+            <span id="hudScore" class="text-deloitte-green font-bold text-xs sm:text-sm tracking-wider">000000</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-400 text-[9px] uppercase tracking-wider">HIGH</span>
+            <span id="hudHighScore" class="text-white font-bold text-xs sm:text-sm tracking-wider">000000</span>
+          </div>
+          <div class="flex flex-col hidden sm:flex">
+            <span class="text-gray-400 text-[9px] uppercase tracking-wider">COMBO</span>
+            <span id="hudCombo" class="text-amber-400 font-bold text-xs sm:text-sm">x1</span>
+          </div>
+        </div>
+
+        <!-- Role / Level & Distance -->
+        <div class="flex items-center space-x-4">
+          <div class="flex flex-col text-right">
+            <span class="text-gray-400 text-[9px] uppercase tracking-wider">STAGE</span>
+            <span id="hudStage" class="text-cyan-400 font-bold text-[10px] sm:text-xs">WAR ROOM</span>
+          </div>
+          <div class="flex flex-col text-right">
+            <span class="text-gray-400 text-[9px] uppercase tracking-wider">METERS</span>
+            <span id="hudMeters" class="text-deloitte-green font-bold text-xs sm:text-sm">0m</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative w-full aspect-[16/9] max-h-[70vh] rounded-xl overflow-hidden border border-white/15 bg-black flex items-center justify-center shadow-inner">
+        <!-- The Game Canvas (Internal native 480x270 pixel buffer) -->
+        <canvas id="gameCanvas" width="480" height="270" class="w-full h-full object-contain block"></canvas>
+
+        <!-- Retro Scanline Overlay (Toggleable) -->
+        <div id="crtOverlay" class="crt-scanlines pointer-events-none absolute inset-0 z-10 opacity-70"></div>
+
+        <!-- START SCREEN OVERLAY -->
+        <div id="startOverlay" class="absolute inset-0 z-20 bg-deloitte-midnight/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-4">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green text-[10px] sm:text-xs font-pixel mb-1">
+            <i class="fa-solid fa-sparkles"></i>
+            <span>RETRO DELOITTE ARCADE</span>
+          </div>
+
+          <h1 class="font-pixel text-lg sm:text-3xl md:text-4xl text-white tracking-wide glow-anim leading-relaxed">
+            D-PIXEL RUSH<span class="deloitte-dot-pixel"></span>
+          </h1>
+
+          <p class="font-sans text-xs sm:text-sm text-deloitte-lightgray max-w-md">
+            Guide our pixel consultant! Dash across the Deloitte skyscraper rooftops, gather Green Dots & Coffee, and leap over Scope Creep & Tight Deadlines!
+          </p>
+
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <button onclick="startGame()" class="pixel-btn-press pixel-box-green px-6 py-3 rounded-lg bg-deloitte-green text-black font-pixel text-xs sm:text-sm font-black transition-all hover:bg-emerald-400 cursor-pointer flex items-center space-x-2">
+              <i class="fa-solid fa-play text-xs"></i>
+              <span>START ODYSSEY</span>
+            </button>
+            <button onclick="openHelpModal()" class="pixel-btn-press pixel-box px-4 py-3 rounded-lg bg-white/10 text-white font-pixel text-xs transition-all hover:bg-white/20 cursor-pointer">
+              <span>HOW TO PLAY</span>
+            </button>
+          </div>
+
+          <div class="text-[10px] font-pixel text-gray-500 pt-2 flex items-center space-x-3">
+            <span>[SPACE] / [▲] JUMP</span>
+            <span>•</span>
+            <span>[▼] SLIDE</span>
+            <span>•</span>
+            <span>[P] PAUSE</span>
+          </div>
+        </div>
+
+        <!-- PAUSE OVERLAY -->
+        <div id="pauseOverlay" class="hidden absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center space-y-4 font-pixel">
+          <div class="text-2xl sm:text-3xl text-deloitte-green tracking-widest">PAUSED</div>
+          <p class="text-xs text-gray-300 font-sans">Strategic alignment in progress...</p>
+          <button onclick="togglePause()" class="pixel-btn-press pixel-box-green px-5 py-2.5 bg-deloitte-green text-black text-xs font-bold rounded-md">
+            RESUME [P]
+          </button>
+        </div>
+
+        <!-- GAME OVER OVERLAY -->
+        <div id="gameOverOverlay" class="hidden absolute inset-0 z-20 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-4 font-pixel">
+          <div class="w-12 h-12 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-400 text-xl mx-auto mb-1">
+            <i class="fa-solid fa-skull"></i>
+          </div>
+
+          <div class="text-xl sm:text-2xl text-rose-400 tracking-wider">PROJECT DELAYED!</div>
+          <p id="gameOverReason" class="font-sans text-xs text-gray-300 max-w-sm">Hit by Scope Creep during sprint deliverables.</p>
+
+          <!-- Score Card -->
+          <div class="bg-white/5 border border-white/15 rounded-xl p-4 w-full max-w-xs space-y-2 text-xs">
+            <div class="flex justify-between items-center text-gray-400">
+              <span>DISTANCE:</span>
+              <span id="finalDistance" class="text-white font-bold">0m</span>
+            </div>
+            <div class="flex justify-between items-center text-gray-400">
+              <span>GREEN DOTS:</span>
+              <span id="finalDots" class="text-deloitte-green font-bold">0</span>
+            </div>
+            <div class="flex justify-between items-center border-t border-white/10 pt-2 text-deloitte-green font-bold">
+              <span>FINAL SCORE:</span>
+              <span id="finalScore" class="text-sm">000000</span>
+            </div>
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button onclick="restartGame()" class="pixel-btn-press pixel-box-green px-6 py-3 rounded-lg bg-deloitte-green text-black text-xs font-bold flex items-center space-x-2">
+              <i class="fa-solid fa-rotate-right"></i>
+              <span>RETRY ROUND</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full mt-3 flex items-center justify-between gap-3 select-none">
+        <!-- Touch SLIDE button -->
+        <button id="btnTouchSlide" class="flex-1 pixel-btn-press pixel-box bg-deloitte-slate/80 hover:bg-deloitte-slate active:bg-deloitte-teal border border-white/15 py-3 rounded-xl flex items-center justify-center space-x-2 font-pixel text-xs text-cyan-300 transition-all">
+          <i class="fa-solid fa-arrow-down"></i>
+          <span>SLIDE [▼]</span>
+        </button>
+
+        <!-- Quick Pause Button -->
+        <button onclick="togglePause()" class="w-12 pixel-btn-press pixel-box bg-white/5 hover:bg-white/10 border border-white/15 py-3 rounded-xl flex items-center justify-center font-pixel text-xs text-gray-300">
+          <i id="pauseBtnIcon" class="fa-solid fa-pause"></i>
+        </button>
+
+        <!-- Touch JUMP button -->
+        <button id="btnTouchJump" class="flex-1 pixel-btn-press pixel-box-green bg-deloitte-green/90 hover:bg-deloitte-green active:bg-emerald-400 border border-deloitte-green py-3 rounded-xl flex items-center justify-center space-x-2 font-pixel text-xs text-black font-black transition-all shadow-lg shadow-deloitte-green/20">
+          <i class="fa-solid fa-arrow-up"></i>
+          <span>JUMP [▲ / SPACE]</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Power-Up Active Status Badge Bar -->
+    <div id="powerupStatusBar" class="hidden w-full max-w-md mt-2 flex items-center justify-center gap-3 text-[10px] font-pixel text-deloitte-green bg-black/60 border border-deloitte-green/30 py-1.5 px-4 rounded-full animate-pulse">
+      <i id="powerupIcon" class="fa-solid fa-bolt"></i>
+      <span id="powerupText">COFFEE TURBO BOOST: 5s</span>
+    </div>
+  </main>
+
+  <div id="helpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 font-sans">
+    <div class="bg-deloitte-cardbg border border-white/20 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5 animate-pop-in">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3 font-pixel">
+        <h3 class="text-sm sm:text-base text-deloitte-green flex items-center gap-2">
+          <i class="fa-solid fa-gamepad"></i> MISSION BRIEFING
+        </h3>
+        <button onclick="closeHelpModal()" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+
+      <!-- Controls Guide -->
+      <div class="space-y-3 text-xs text-gray-300">
+        <p class="font-bold text-white text-sm">Keyboard & Touch Controls:</p>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 font-pixel text-[10px]">
+            <span class="text-deloitte-green block mb-1">▲ JUMP / HOP</span>
+            <span class="text-gray-400 font-sans">Press [SPACE], [W], [▲] or Tap Right Screen</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 font-pixel text-[10px]">
+            <span class="text-cyan-300 block mb-1">▼ DUCK / SLIDE</span>
+            <span class="text-gray-400 font-sans">Press [S], [▼] or Tap Left Screen</span>
+          </div>
+        </div>
+
+        <!-- Collectibles & Hazards -->
+        <p class="font-bold text-white text-sm pt-2">Collectibles & Deliverables:</p>
+        <ul class="space-y-2 text-xs">
+          <li class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full bg-deloitte-green inline-block shadow-sm shadow-deloitte-green"></span>
+            <span><strong class="text-deloitte-green">Green Dot (+100 pts):</strong> Collect to charge your insight multiplier.</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fa-solid fa-mug-hot text-amber-400 text-sm w-4 text-center"></i>
+            <span><strong class="text-amber-300">Espresso Boost:</strong> 5s Invincibility & Turbo Speed through obstacles!</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fa-solid fa-microchip text-cyan-400 text-sm w-4 text-center"></i>
+            <span><strong class="text-cyan-300">AI Copilot:</strong> Double points multiplier bonus!</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm w-4 text-center"></i>
+            <span><strong class="text-rose-400">Scope Creep & Red Tape:</strong> Avoid colliding by jumping over or sliding underneath!</span>
+          </li>
+        </ul>
+      </div>
+
+      <button onclick="closeHelpModal()" class="w-full py-3 rounded-xl bg-deloitte-green text-black font-pixel text-xs font-bold hover:bg-emerald-400 transition-all">
+        READY TO DELIVER
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Footer -->
+  <footer class="w-full border-t border-white/10 py-2.5 bg-deloitte-midnight/60 text-center text-[11px] text-deloitte-gray flex-shrink-0">
+    <div class="max-w-5xl mx-auto px-4 flex items-center justify-between">
+      <span class="font-pixel text-[9px] text-deloitte-green">Deloitte Digital Arcade</span>
+      <span class="text-gray-400">Make an impact that matters.</span>
+    </div>
+  </footer>
+
+  <script>
+    let audioEnabled = true;
+    let audioReady = false;
+
+    let jumpSynth = null;
+    let slideSynth = null;
+    let dotSynth = null;
+    let powerupSynth = null;
+    let hitSynth = null;
+
+    async function initAudio() {
+      if (audioReady) return;
+      try {
+        await Tone.start();
+        
+        // 8-Bit Jump Chime
+        jumpSynth = new Tone.Synth({
+          oscillator: { type: "square" },
+          envelope: { attack: 0.005, decay: 0.12, sustain: 0, release: 0.05 }
+        }).toDestination();
+        jumpSynth.volume.value = -7;
+
+        // Slide Whoosh
+        slideSynth = new Tone.NoiseSynth({
+          noise: { type: "pink" },
+          envelope: { attack: 0.01, decay: 0.15, sustain: 0 }
+        }).toDestination();
+        slideSynth.volume.value = -12;
+
+        // Deloitte Green Dot Pickup Sound
+        dotSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.005, decay: 0.08, sustain: 0.02, release: 0.1 }
+        }).toDestination();
+        dotSynth.volume.value = -6;
+
+        // Power-Up Fanfare
+        powerupSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "square" },
+          envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.3 }
+        }).toDestination();
+        powerupSynth.volume.value = -6;
+
+        // Game Over Hit Sound
+        hitSynth = new Tone.Synth({
+          oscillator: { type: "sawtooth" },
+          envelope: { attack: 0.01, decay: 0.35, sustain: 0, release: 0.1 }
+        }).toDestination();
+        hitSynth.volume.value = -5;
+
+        audioReady = true;
+      } catch (e) {
+        console.warn("Audio init gesture waiting:", e);
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById("sfxIcon");
+      if (audioEnabled) {
+        icon.className = "fa-solid fa-volume-high text-deloitte-green";
+        initAudio();
+      } else {
+        icon.className = "fa-solid fa-volume-xmark text-gray-500";
+      }
+    }
+
+    function playSfx(type) {
+      if (!audioEnabled) return;
+      initAudio();
+      const now = Tone.now();
+      try {
+        if (type === 'jump' && jumpSynth) {
+          jumpSynth.triggerAttackRelease("E4", "32n", now);
+          jumpSynth.triggerAttackRelease("B4", "16n", now + 0.04);
+        } else if (type === 'slide' && slideSynth) {
+          slideSynth.triggerAttackRelease("16n", now);
+        } else if (type === 'dot' && dotSynth) {
+          dotSynth.triggerAttackRelease(["E5", "G#5"], "32n", now);
+        } else if (type === 'powerup' && powerupSynth) {
+          powerupSynth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "16n", now);
+        } else if (type === 'hit' && hitSynth) {
+          hitSynth.triggerAttackRelease("C3", "16n", now);
+          hitSynth.triggerAttackRelease("F#2", "8n", now + 0.08);
+        }
+      } catch (e) {}
+    }
+
+    /* ==========================================================
+       STREAMING_CHUNK:Configuring Canvas and Global Game State
+       ========================================================== */
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+
+    // Fixed Internal Virtual Pixel Resolution
+    const V_WIDTH = 480;
+    const V_HEIGHT = 270;
+    const FLOOR_Y = 222;
+
+    let gameState = 'START'; // 'START', 'PLAYING', 'PAUSED', 'GAMEOVER'
+    let score = 0;
+    let highScore = parseInt(localStorage.getItem('d_pixel_highscore') || '0', 10);
+    let distance = 0;
+    let comboMultiplier = 1;
+    let gameSpeed = 3.6;
+    let baseSpeed = 3.6;
+    let frameCount = 0;
+    let dotsCollected = 0;
+
+    // Powerup Timers
+    let coffeeTimer = 0;
+    let aiMultiplierTimer = 0;
+
+    // High score HUD init
+    document.getElementById("hudHighScore").textContent = highScore.toString().padStart(6, '0');
+
+    /* ==========================================================
+       STREAMING_CHUNK:Defining Pixel Consultant Player Character
+       ========================================================== */
+    const player = {
+      x: 52,
+      y: FLOOR_Y - 34,
+      width: 20,
+      height: 34,
+      normalHeight: 34,
+      slideHeight: 18,
+      velocityY: 0,
+      gravity: 0.52,
+      jumpForce: -9.8,
+      isGrounded: true,
+      isSliding: false,
+      slideTimer: 0,
+      slideDuration: 36, // frames
+      runFrame: 0,
+      animSpeed: 0.18,
+
+      reset() {
+        this.y = FLOOR_Y - this.normalHeight;
+        this.height = this.normalHeight;
+        this.velocityY = 0;
+        this.isGrounded = true;
+        this.isSliding = false;
+        this.slideTimer = 0;
+        this.runFrame = 0;
+      },
+
+      jump() {
+        if (this.isGrounded && !this.isSliding) {
+          this.velocityY = this.jumpForce;
+          this.isGrounded = false;
+          playSfx('jump');
+        }
+      },
+
+      slide() {
+        if (this.isGrounded && !this.isSliding) {
+          this.isSliding = true;
+          this.slideTimer = this.slideDuration;
+          this.height = this.slideHeight;
+          this.y = FLOOR_Y - this.slideHeight;
+          playSfx('slide');
+        }
+      },
+
+      update() {
+        // Gravity & Vertical Movement
+        if (!this.isGrounded) {
+          this.velocityY += this.gravity;
+          this.y += this.velocityY;
+
+          if (this.y >= FLOOR_Y - this.height) {
+            this.y = FLOOR_Y - this.height;
+            this.velocityY = 0;
+            this.isGrounded = true;
+          }
+        }
+
+        // Sliding Timing
+        if (this.isSliding) {
+          this.slideTimer--;
+          if (this.slideTimer <= 0) {
+            this.isSliding = false;
+            this.height = this.normalHeight;
+            this.y = FLOOR_Y - this.normalHeight;
+          }
+        } else {
+          this.runFrame += this.animSpeed;
+        }
+      },
+
+      draw() {
+        ctx.save();
+        const px = Math.floor(this.x);
+        const py = Math.floor(this.y);
+
+        // Invincibility or Coffee Glow
+        if (coffeeTimer > 0) {
+          ctx.shadowColor = '#86BC25';
+          ctx.shadowBlur = 10;
+        }
+
+        if (this.isSliding) {
+          // SLIDING PIXEL POSE (horizontal consultant with briefcase sliding)
+          // Body/Dark Suit
+          ctx.fillStyle = "#1E232A";
+          ctx.fillRect(px, py + 6, 26, 8);
+          // White Shirt Collar
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(px + 4, py + 5, 5, 4);
+          // Deloitte Green Tie
+          ctx.fillStyle = "#86BC25";
+          ctx.fillRect(px + 7, py + 7, 6, 3);
+          // Head / Hair
+          ctx.fillStyle = "#f3c299"; // Face skin
+          ctx.fillRect(px + 18, py + 2, 8, 7);
+          ctx.fillStyle = "#2d1d14"; // Hair
+          ctx.fillRect(px + 20, py, 7, 4);
+          // Legs sliding behind
+          ctx.fillStyle = "#0c1015";
+          ctx.fillRect(px - 6, py + 8, 8, 6);
+          // Leather Briefcase
+          ctx.fillStyle = "#8b4513";
+          ctx.fillRect(px + 10, py + 11, 8, 6);
+          ctx.fillStyle = "#d4af37"; // gold buckle
+          ctx.fillRect(px + 13, py + 13, 2, 2);
+
+          // Sparks underneath slide
+          if (frameCount % 2 === 0) {
+            ctx.fillStyle = "#86BC25";
+            ctx.fillRect(px - 8 + Math.random() * 8, FLOOR_Y - 2, 2, 2);
+          }
+        } else {
+          // RUNNING / JUMPING PIXEL CONSULTANT
+          const legPhase = Math.floor(this.runFrame) % 4;
+
+          // Head & Hair
+          ctx.fillStyle = "#2d1d14"; // Hair
+          ctx.fillRect(px + 4, py, 11, 5);
+          ctx.fillStyle = "#f3c299"; // Skin
+          ctx.fillRect(px + 5, py + 4, 10, 8);
+          // Pixel Eye
+          ctx.fillStyle = "#0a0e14";
+          ctx.fillRect(px + 12, py + 6, 2, 2);
+          // Deloitte Green Eyewear/Smart Glasses
+          ctx.fillStyle = "#86BC25";
+          ctx.fillRect(px + 10, py + 5, 5, 2);
+
+          // Charcoal Blazer & White Shirt
+          ctx.fillStyle = "#1E232A";
+          ctx.fillRect(px + 3, py + 12, 13, 11);
+          ctx.fillStyle = "#FFFFFF"; // Shirt
+          ctx.fillRect(px + 7, py + 12, 5, 7);
+
+          // Signature Deloitte Green Tie
+          ctx.fillStyle = "#86BC25";
+          ctx.fillRect(px + 8, py + 13, 3, 7);
+          ctx.fillStyle = "#568819";
+          ctx.fillRect(px + 9, py + 15, 2, 4);
+
+          // Briefcase in Hand
+          ctx.fillStyle = "#78350f"; // Brown leather
+          const caseY = this.isGrounded ? (py + 14 + (legPhase % 2)) : (py + 10);
+          ctx.fillRect(px - 4, caseY, 8, 9);
+          ctx.fillStyle = "#d97706"; // Buckle
+          ctx.fillRect(px - 1, caseY + 3, 2, 2);
+
+          // Legs & Shoes (Animated 4-step run cycle)
+          ctx.fillStyle = "#0c1015"; // Slacks
+          if (!this.isGrounded) {
+            // Jump pose: legs tucked / bent
+            ctx.fillRect(px + 2, py + 23, 5, 7);
+            ctx.fillRect(px + 10, py + 21, 6, 6);
+            ctx.fillStyle = "#111"; // Shoes
+            ctx.fillRect(px + 1, py + 29, 6, 3);
+            ctx.fillRect(px + 12, py + 26, 5, 3);
+          } else {
+            if (legPhase === 0) {
+              ctx.fillRect(px + 4, py + 23, 4, 8);
+              ctx.fillRect(px + 10, py + 23, 4, 7);
+            } else if (legPhase === 1) {
+              ctx.fillRect(px + 1, py + 23, 4, 7);
+              ctx.fillRect(px + 12, py + 23, 4, 9);
+            } else if (legPhase === 2) {
+              ctx.fillRect(px + 4, py + 23, 4, 7);
+              ctx.fillRect(px + 9, py + 23, 4, 8);
+            } else {
+              ctx.fillRect(px + 7, py + 23, 4, 9);
+              ctx.fillRect(px + 2, py + 23, 4, 6);
+            }
+            // Oxford Shoes
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(px + 2, py + 30, 5, 3);
+            ctx.fillRect(px + 9, py + 30, 5, 3);
+          }
+        }
+        ctx.restore();
+      }
+    };
+
+    /* ==========================================================
+       STREAMING_CHUNK:Defining Procedural Obstacles and Collectibles
+       ========================================================== */
+    const obstacles = [];
+    const collectibles = [];
+    const particles = [];
+    let nextObstacleDistance = 50;
+    let nextCollectibleDistance = 25;
+
+    class Obstacle {
+      constructor(type, x) {
+        this.type = type; // 'SCOPE_CREEP', 'RED_TAPE', 'SERVER_GLITCH', 'EMAIL_DRONE'
+        this.x = x;
+        this.markedForDeletion = false;
+
+        if (this.type === 'SCOPE_CREEP') {
+          // Ground jumping pixel slime monster
+          this.width = 22;
+          this.height = 20;
+          this.y = FLOOR_Y - this.height;
+        } else if (this.type === 'RED_TAPE') {
+          // Low barrier / traffic hazard
+          this.width = 18;
+          this.height = 26;
+          this.y = FLOOR_Y - this.height;
+        } else if (this.type === 'SERVER_GLITCH') {
+          // Tall server rack to leap over
+          this.width = 20;
+          this.height = 30;
+          this.y = FLOOR_Y - this.height;
+        } else if (this.type === 'EMAIL_DRONE') {
+          // High flying urgency alert - MUST SLIDE UNDER!
+          this.width = 26;
+          this.height = 16;
+          this.y = FLOOR_Y - 44; // elevated!
+        }
+      }
+
+      update() {
+        this.x -= gameSpeed;
+        if (this.x < -40) this.markedForDeletion = true;
+      }
+
+      draw() {
+        const ox = Math.floor(this.x);
+        const oy = Math.floor(this.y);
+
+        if (this.type === 'SCOPE_CREEP') {
+          // Spiky crimson scope creep
+          ctx.fillStyle = "#E11D48";
+          ctx.fillRect(ox + 3, oy + 4, 16, 14);
+          ctx.fillStyle = "#9F1239";
+          ctx.fillRect(ox + 5, oy + 7, 12, 10);
+          // Spikes on top
+          ctx.fillStyle = "#FDA4AF";
+          ctx.fillRect(ox + 4, oy + 1, 3, 4);
+          ctx.fillRect(ox + 10, oy, 3, 5);
+          ctx.fillRect(ox + 16, oy + 2, 3, 4);
+          // Angry pixel eyes
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(ox + 6, oy + 8, 3, 3);
+          ctx.fillRect(ox + 13, oy + 8, 3, 3);
+          ctx.fillStyle = "#000000";
+          ctx.fillRect(ox + 7, oy + 9, 2, 2);
+          ctx.fillRect(ox + 14, oy + 9, 2, 2);
+        } else if (this.type === 'RED_TAPE') {
+          // Striped red-tape barrier
+          ctx.fillStyle = "#DC2626";
+          ctx.fillRect(ox + 2, oy, 14, this.height);
+          ctx.fillStyle = "#FBBF24"; // warning yellow stripes
+          ctx.fillRect(ox + 3, oy + 4, 12, 4);
+          ctx.fillRect(ox + 3, oy + 12, 12, 4);
+          ctx.fillRect(ox + 3, oy + 20, 12, 4);
+        } else if (this.type === 'SERVER_GLITCH') {
+          // Server stack with blinking error lights
+          ctx.fillStyle = "#1E293B";
+          ctx.fillRect(ox, oy, this.width, this.height);
+          ctx.fillStyle = "#0F172A";
+          ctx.fillRect(ox + 2, oy + 2, this.width - 4, this.height - 4);
+          // Server LED bars
+          ctx.fillStyle = (frameCount % 20 < 10) ? "#F43F5E" : "#86BC25";
+          ctx.fillRect(ox + 4, oy + 6, 4, 2);
+          ctx.fillRect(ox + 11, oy + 6, 5, 2);
+          ctx.fillRect(ox + 4, oy + 14, 4, 2);
+          ctx.fillRect(ox + 11, oy + 14, 5, 2);
+          ctx.fillRect(ox + 4, oy + 22, 12, 2);
+        } else if (this.type === 'EMAIL_DRONE') {
+          // High flying urgency notification / drone
+          ctx.fillStyle = "#0284C7";
+          ctx.fillRect(ox + 2, oy + 2, 22, 12);
+          // Envelope flap
+          ctx.fillStyle = "#38BDF8";
+          ctx.fillRect(ox + 4, oy + 4, 18, 3);
+          ctx.fillRect(ox + 8, oy + 7, 10, 2);
+          // Red exclamation notification dot
+          ctx.fillStyle = "#EF4444";
+          ctx.fillRect(ox + 18, oy - 2, 6, 6);
+          ctx.fillStyle = "#FFF";
+          ctx.fillRect(ox + 20, oy, 2, 2);
+          // Rotor blades spinning on top
+          ctx.fillStyle = "#94A3B8";
+          const rotorX = (frameCount % 4 < 2) ? ox - 2 : ox + 4;
+          ctx.fillRect(rotorX, oy - 4, 20, 2);
+        }
+      }
+    }
+
+    class Collectible {
+      constructor(type, x, y) {
+        this.type = type; // 'DOT', 'COFFEE', 'AI_CHIP'
+        this.x = x;
+        this.y = y;
+        this.width = 12;
+        this.height = 12;
+        this.markedForDeletion = false;
+        this.floatOffset = Math.random() * Math.PI * 2;
+      }
+
+      update() {
+        this.x -= gameSpeed;
+        if (this.x < -30) this.markedForDeletion = true;
+      }
+
+      draw() {
+        const cy = Math.floor(this.y + Math.sin(frameCount * 0.08 + this.floatOffset) * 3);
+        const cx = Math.floor(this.x);
+
+        if (this.type === 'DOT') {
+          // ICONIC DELOITTE GREEN DOT
+          ctx.fillStyle = "#86BC25";
+          ctx.beginPath();
+          ctx.arc(cx + 6, cy + 6, 5, 0, Math.PI * 2);
+          ctx.fill();
+          // Inner pixel shine
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(cx + 4, cy + 3, 2, 2);
+        } else if (this.type === 'COFFEE') {
+          // Espresso Cup
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(cx + 2, cy + 3, 8, 8);
+          ctx.fillStyle = "#86BC25"; // Deloitte green stripe
+          ctx.fillRect(cx + 2, cy + 6, 8, 2);
+          ctx.fillStyle = "#78350f"; // Coffee liquid
+          ctx.fillRect(cx + 3, cy + 4, 6, 2);
+          // Cup handle
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(cx + 9, cy + 5, 3, 4);
+          // Pixel Steam
+          ctx.fillStyle = "rgba(255,255,255,0.6)";
+          ctx.fillRect(cx + 4 + (frameCount % 4), cy, 2, 2);
+        } else if (this.type === 'AI_CHIP') {
+          // AI Copilot Glowing Silicon Microchip
+          ctx.fillStyle = "#004F59";
+          ctx.fillRect(cx + 1, cy + 1, 10, 10);
+          ctx.fillStyle = "#00F0FF";
+          ctx.fillRect(cx + 3, cy + 3, 6, 6);
+          // Pins
+          ctx.fillStyle = "#d4af37";
+          ctx.fillRect(cx - 1, cy + 3, 2, 2);
+          ctx.fillRect(cx - 1, cy + 7, 2, 2);
+          ctx.fillRect(cx + 11, cy + 3, 2, 2);
+          ctx.fillRect(cx + 11, cy + 7, 2, 2);
+        }
+      }
+    }
+
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.vx = (Math.random() - 0.5) * 4 - (gameSpeed * 0.4);
+        this.vy = (Math.random() - 0.8) * 3;
+        this.size = Math.floor(Math.random() * 3) + 2;
+        this.life = 24;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life--;
+      }
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(Math.floor(this.x), Math.floor(this.y), this.size, this.size);
+      }
+    }
+
+    function createExplosion(x, y, color = "#86BC25", count = 10) {
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle(x, y, color));
+      }
+    }
+
+    /* ==========================================================
+       STREAMING_CHUNK:Rendering Parallax Pixel Skyline and Cityscape
+       ========================================================== */
+    const cityBuildings = [];
+    for (let i = 0; i < 16; i++) {
+      cityBuildings.push({
+        x: i * 36,
+        width: 28 + Math.floor(Math.random() * 16),
+        height: 60 + Math.floor(Math.random() * 75),
+        hasAntenna: Math.random() > 0.6,
+        hasGreenSign: Math.random() > 0.5
+      });
+    }
+
+    function drawPixelBackground() {
+      // 1. Sky Gradient: Dark Navy to Teal
+      const grad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
+      grad.addColorStop(0, "#030712");
+      grad.addColorStop(0.55, "#001e2b");
+      grad.addColorStop(1, "#004F59");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, V_WIDTH, FLOOR_Y);
+
+      // Distant stars / twinkling bits
+      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+      for (let s = 0; s < 18; s++) {
+        const sx = ((s * 37) - (frameCount * 0.2)) % V_WIDTH;
+        const realX = sx < 0 ? sx + V_WIDTH : sx;
+        ctx.fillRect(Math.floor(realX), (s * 11) % 110, 1, 1);
+      }
+
+      // 2. Distant Skyline (Parallax Layer 1, Slow)
+      const distantOffset = (distance * 0.25) % 36;
+      ctx.fillStyle = "#07131e";
+      for (let i = -1; i < 18; i++) {
+        const bx = i * 36 - distantOffset;
+        const b = cityBuildings[Math.abs(i) % cityBuildings.length];
+        ctx.fillRect(bx, FLOOR_Y - b.height, b.width, b.height);
+      }
+
+      // 3. Foreground Deloitte Highrises (Parallax Layer 2, Medium)
+      const fgOffset = (distance * 0.7) % 55;
+      for (let i = -1; i < 11; i++) {
+        const fx = i * 55 - fgOffset;
+        const bHeight = 45 + ((i * 17) % 50);
+        ctx.fillStyle = "#0c1824";
+        ctx.fillRect(fx, FLOOR_Y - bHeight, 48, bHeight);
+
+        // Lit Windows
+        ctx.fillStyle = "#86BC25";
+        for (let w = 0; w < 3; w++) {
+          for (let row = 0; row < 4; row++) {
+            if ((i + w + row) % 3 === 0) {
+              ctx.fillRect(fx + 6 + (w * 12), FLOOR_Y - bHeight + 8 + (row * 10), 4, 4);
+            }
+          }
+        }
+
+        // Antenna with Green Dot Warning Beacon
+        ctx.fillStyle = "#223";
+        ctx.fillRect(fx + 22, FLOOR_Y - bHeight - 12, 2, 12);
+        ctx.fillStyle = (frameCount % 30 < 15) ? "#86BC25" : "#3f680f";
+        ctx.fillRect(fx + 21, FLOOR_Y - bHeight - 14, 4, 3);
+      }
+
+      // 4. Ground / Rooftop Runway
+      ctx.fillStyle = "#111720";
+      ctx.fillRect(0, FLOOR_Y, V_WIDTH, V_HEIGHT - FLOOR_Y);
+
+      // Deloitte Green Rooftop Edge Trim
+      ctx.fillStyle = "#86BC25";
+      ctx.fillRect(0, FLOOR_Y, V_WIDTH, 3);
+      ctx.fillStyle = "#568819";
+      ctx.fillRect(0, FLOOR_Y + 3, V_WIDTH, 2);
+
+      // Runway Track Dashed Striping
+      const stripeOffset = (distance * 3) % 24;
+      ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+      for (let rx = -stripeOffset; rx < V_WIDTH; rx += 24) {
+        ctx.fillRect(rx, FLOOR_Y + 18, 14, 3);
+      }
+    }
+
+    /* ==========================================================
+       STREAMING_CHUNK:Collision Detection and Spawning Logic
+       ========================================================== */
+    function checkAABB(rect1, rect2) {
+      // Tighter hitbox padding for forgiving, enjoyable arcade feel
+      const pad = 3;
+      return (
+        rect1.x + pad < rect2.x + rect2.width - pad &&
+        rect1.x + rect1.width - pad > rect2.x + pad &&
+        rect1.y + pad < rect2.y + rect2.height - pad &&
+        rect1.y + rect1.height - pad > rect2.y + pad
+      );
+    }
+
+    function spawnGameElements() {
+      // Dynamic spacing scaling with game speed
+      nextObstacleDistance -= gameSpeed * 0.15;
+      nextCollectibleDistance -= gameSpeed * 0.15;
+
+      // Obstacle Spawner
+      if (nextObstacleDistance <= 0) {
+        const types = ['SCOPE_CREEP', 'RED_TAPE', 'SERVER_GLITCH', 'EMAIL_DRONE'];
+        const chosen = types[Math.floor(Math.random() * types.length)];
+        obstacles.push(new Obstacle(chosen, V_WIDTH + 20));
+        nextObstacleDistance = 60 + Math.random() * 50;
+      }
+
+      // Collectible Spawner
+      if (nextCollectibleDistance <= 0) {
+        const roll = Math.random();
+        let cType = 'DOT';
+        let spawnY = FLOOR_Y - 26;
+
+        if (roll > 0.88) {
+          cType = 'COFFEE';
+          spawnY = FLOOR_Y - 28;
+        } else if (roll > 0.75) {
+          cType = 'AI_CHIP';
+          spawnY = FLOOR_Y - 48; // mid-air jump reward
+        } else if (Math.random() > 0.5) {
+          spawnY = FLOOR_Y - 52; // high dot for jump
+        }
+
+        collectibles.push(new Collectible(cType, V_WIDTH + 20, spawnY));
+        nextCollectibleDistance = 30 + Math.random() * 35;
+      }
+    }
+
+    /* ==========================================================
+       STREAMING_CHUNK:Main Loop and Update Systems
+       ========================================================== */
+    function updateGame() {
+      if (gameState !== 'PLAYING') return;
+
+      frameCount++;
+      distance += 0.2;
+      gameSpeed = baseSpeed + Math.min(distance * 0.003, 3.8);
+
+      // Power-up count downs
+      if (coffeeTimer > 0) {
+        coffeeTimer--;
+        if (coffeeTimer === 0) hidePowerupStatus();
+      }
+      if (aiMultiplierTimer > 0) {
+        aiMultiplierTimer--;
+        comboMultiplier = 2;
+        if (aiMultiplierTimer === 0) {
+          comboMultiplier = 1;
+          hidePowerupStatus();
+        }
+      }
+
+      player.update();
+      spawnGameElements();
+
+      // Update Obstacles
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        const obs = obstacles[i];
+        obs.update();
+
+        // Collision test
+        if (checkAABB(player, obs)) {
+          if (coffeeTimer > 0) {
+            // Invincible smash!
+            createExplosion(obs.x + 10, obs.y + 10, "#E11D48", 12);
+            playSfx('hit');
+            obstacles.splice(i, 1);
+            score += 250 * comboMultiplier;
+            continue;
+          } else {
+            handleGameOver(obs.type);
+            return;
+          }
+        }
+
+        if (obs.markedForDeletion) {
+          obstacles.splice(i, 1);
+          score += 50 * comboMultiplier; // Points for cleared obstacle
+        }
+      }
+
+      // Update Collectibles
+      for (let i = collectibles.length - 1; i >= 0; i--) {
+        const c = collectibles[i];
+        c.update();
+
+        if (checkAABB(player, c)) {
+          createExplosion(c.x + 6, c.y + 6, "#86BC25", 8);
+
+          if (c.type === 'DOT') {
+            dotsCollected++;
+            score += 100 * comboMultiplier;
+            playSfx('dot');
+          } else if (c.type === 'COFFEE') {
+            coffeeTimer = 300; // ~5 seconds at 60fps
+            score += 300;
+            showPowerupStatus("COFFEE TURBO BOOST: INVINCIBLE!", "fa-mug-hot", "text-amber-400");
+            playSfx('powerup');
+          } else if (c.type === 'AI_CHIP') {
+            aiMultiplierTimer = 360; // ~6 seconds
+            comboMultiplier = 2;
+            score += 500;
+            showPowerupStatus("AI COPILOT: 2X MULTIPLIER!", "fa-microchip", "text-cyan-400");
+            playSfx('powerup');
+          }
+
+          collectibles.splice(i, 1);
+          continue;
+        }
+
+        if (c.markedForDeletion) {
+          collectibles.splice(i, 1);
+        }
+      }
+
+      // Update Particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        if (particles[i].life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+
+      // Update HUD Numbers
+      updateHUD();
+    }
+
+    function renderGame() {
+      ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
+
+      // Background
+      drawPixelBackground();
+
+      // Collectibles
+      collectibles.forEach(c => c.draw());
+
+      // Obstacles
+      obstacles.forEach(o => o.draw());
+
+      // Particles
+      particles.forEach(p => p.draw());
+
+      // Player
+      player.draw();
+    }
+
+    function gameLoop() {
+      updateGame();
+      renderGame();
+      requestAnimationFrame(gameLoop);
+    }
+
+    /* ==========================================================
+       STREAMING_CHUNK:HUD and Game Lifecycle Event Handlers
+       ========================================================== */
+    function updateHUD() {
+      document.getElementById("hudScore").textContent = Math.floor(score).toString().padStart(6, '0');
+      document.getElementById("hudMeters").textContent = `${Math.floor(distance)}m`;
+      document.getElementById("hudCombo").textContent = `x${comboMultiplier}`;
+
+      // Progressive Stage Name
+      const stageEl = document.getElementById("hudStage");
+      if (distance < 250) {
+        stageEl.textContent = "WAR ROOM";
+        stageEl.className = "text-cyan-400 font-bold text-[10px] sm:text-xs";
+      } else if (distance < 600) {
+        stageEl.textContent = "CLOUD TOWER";
+        stageEl.className = "text-deloitte-green font-bold text-[10px] sm:text-xs";
+      } else if (distance < 1100) {
+        stageEl.textContent = "DIGITAL LAB";
+        stageEl.className = "text-amber-400 font-bold text-[10px] sm:text-xs";
+      } else {
+        stageEl.textContent = "BOARDROOM";
+        stageEl.className = "text-purple-400 font-bold text-[10px] sm:text-xs";
+      }
+
+      // Power-up countdown update
+      if (coffeeTimer > 0) {
+        const secs = Math.ceil(coffeeTimer / 60);
+        document.getElementById("powerupText").textContent = `COFFEE TURBO: ${secs}s`;
+      } else if (aiMultiplierTimer > 0) {
+        const secs = Math.ceil(aiMultiplierTimer / 60);
+        document.getElementById("powerupText").textContent = `AI 2X COMBO: ${secs}s`;
+      }
+    }
+
+    function showPowerupStatus(text, iconClass, colorClass) {
+      const bar = document.getElementById("powerupStatusBar");
+      const icon = document.getElementById("powerupIcon");
+      const textEl = document.getElementById("powerupText");
+      bar.classList.remove("hidden");
+      icon.className = `fa-solid ${iconClass} ${colorClass}`;
+      textEl.textContent = text;
+    }
+
+    function hidePowerupStatus() {
+      if (coffeeTimer <= 0 && aiMultiplierTimer <= 0) {
+        document.getElementById("powerupStatusBar").classList.add("hidden");
+      }
+    }
+
+    function startGame() {
+      initAudio();
+      document.getElementById("startOverlay").classList.add("hidden");
+      document.getElementById("gameOverOverlay").classList.add("hidden");
+      document.getElementById("pauseOverlay").classList.add("hidden");
+
+      score = 0;
+      distance = 0;
+      dotsCollected = 0;
+      comboMultiplier = 1;
+      gameSpeed = baseSpeed;
+      coffeeTimer = 0;
+      aiMultiplierTimer = 0;
+      obstacles.length = 0;
+      collectibles.length = 0;
+      particles.length = 0;
+      player.reset();
+
+      gameState = 'PLAYING';
+    }
+
+    function restartGame() {
+      startGame();
+    }
+
+    function togglePause() {
+      if (gameState === 'PLAYING') {
+        gameState = 'PAUSED';
+        document.getElementById("pauseOverlay").classList.remove("hidden");
+        document.getElementById("pauseBtnIcon").className = "fa-solid fa-play";
+      } else if (gameState === 'PAUSED') {
+        gameState = 'PLAYING';
+        document.getElementById("pauseOverlay").classList.add("hidden");
+        document.getElementById("pauseBtnIcon").className = "fa-solid fa-pause";
+      }
+    }
+
+    function handleGameOver(hazardType) {
+      gameState = 'GAMEOVER';
+      playSfx('hit');
+
+      if (score > highScore) {
+        highScore = Math.floor(score);
+        localStorage.setItem('d_pixel_highscore', highScore.toString());
+        document.getElementById("hudHighScore").textContent = highScore.toString().padStart(6, '0');
+      }
+
+      // Death description
+      const reasons = {
+        'SCOPE_CREEP': 'Derailed by unexpected Scope Creep requirements.',
+        'RED_TAPE': 'Held up by legacy compliance red tape.',
+        'SERVER_GLITCH': 'Encountered unexpected 404 cloud downtime.',
+        'EMAIL_DRONE': 'Overwhelmed by high-priority unread emails.'
+      };
+      document.getElementById("gameOverReason").textContent = reasons[hazardType] || 'Project deadline reached an impassable hurdle.';
+      document.getElementById("finalDistance").textContent = `${Math.floor(distance)}m`;
+      document.getElementById("finalDots").textContent = dotsCollected.toString();
+      document.getElementById("finalScore").textContent = Math.floor(score).toString().padStart(6, '0');
+
+      document.getElementById("gameOverOverlay").classList.remove("hidden");
+    }
+
+    function toggleCRT() {
+      const crt = document.getElementById("crtOverlay");
+      crt.classList.toggle("hidden");
+    }
+
+    function openHelpModal() {
+      if (gameState === 'PLAYING') togglePause();
+      document.getElementById("helpModal").classList.remove("hidden");
+    }
+
+    function closeHelpModal() {
+      document.getElementById("helpModal").classList.add("hidden");
+    }
+
+    /* ==========================================================
+       STREAMING_CHUNK:Binding Keyboard, Mouse, and Touch Controls
+       ========================================================== */
+    window.addEventListener("keydown", (e) => {
+      // Space or Enter on Start/Game Over
+      if (gameState === 'START' || gameState === 'GAMEOVER') {
+        if (e.code === "Space" || e.code === "Enter") {
+          e.preventDefault();
+          startGame();
+          return;
+        }
+      }
+
+      if (e.code === "KeyP") {
+        e.preventDefault();
+        togglePause();
+        return;
+      }
+
+      if (gameState !== 'PLAYING') return;
+
+      if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW") {
+        e.preventDefault();
+        player.jump();
+      } else if (e.code === "ArrowDown" || e.code === "KeyS") {
+        e.preventDefault();
+        player.slide();
+      }
+    });
+
+    // Touch & Mouse bindings for Virtual Buttons
+    const btnJump = document.getElementById("btnTouchJump");
+    const btnSlide = document.getElementById("btnTouchSlide");
+
+    btnJump.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      if (gameState === 'PLAYING') player.jump();
+      else if (gameState === 'START' || gameState === 'GAMEOVER') startGame();
+    });
+    btnJump.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      if (gameState === 'PLAYING') player.jump();
+    });
+
+    btnSlide.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      if (gameState === 'PLAYING') player.slide();
+    });
+    btnSlide.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      if (gameState === 'PLAYING') player.slide();
+    });
+
+    // Direct Canvas Tap Zones: Top/Right = Jump, Bottom/Left = Slide
+    canvas.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      if (gameState !== 'PLAYING') return;
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      const relY = touch.clientY - rect.top;
+      if (relY > rect.height * 0.65) {
+        player.slide();
+      } else {
+        player.jump();
+      }
+    }, { passive: false });
+
+    // Boot the main animation loop on load
+    window.onload = function () {
+      requestAnimationFrame(gameLoop);
+    };
+  </script>
+</body>
+</html>
