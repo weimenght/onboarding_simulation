@@ -225,7 +225,15 @@
         <div id="questionCardContainer" onclick="handleQuestionClick()" class="cursor-pointer group relative bg-gradient-to-b from-deloitte-cardbg to-[#12151b] border-2 border-white/10 hover:border-deloitte-green/40 px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl sm:rounded-3xl card-shadow transition-all duration-300 text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[125px] select-none">
           
           <div class="space-y-1.5 max-w-3xl w-full">
-            <span class="text-[10px] sm:text-[11px] font-bold tracking-widest text-deloitte-gray uppercase">
+            <!-- Dynamic Category / Test Indicator -->
+            <div id="testBadgeContainer" class="hidden pb-1">
+              <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-[11px] sm:text-xs font-black uppercase tracking-wider animate-pulse">
+                <i class="fa-solid fa-flask-vial text-amber-400"></i>
+                <span>热身测试题 · PRACTICE QUESTION (不计入总分 / Not Scored)</span>
+              </div>
+            </div>
+
+            <span id="triviaStandardBadge" class="text-[10px] sm:text-[11px] font-bold tracking-widest text-deloitte-gray uppercase">
               Trivia Challenge · 智库问答
             </span>
 
@@ -414,21 +422,105 @@
 
   <script>
     /* ==========================================================
+       1. SOUND ENGINE (Tone.js Synthesis)
+       ========================================================== */
+    let audioEnabled = true;
+    let audioReady = false;
+
+    let correctSynth = null;
+    let incorrectSynth = null;
+    let revealSynth = null;
+    let clickSynth = null;
+
+    async function initAudioEngine() {
+      if (audioReady) return;
+      try {
+        await Tone.start();
+        
+        correctSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.005, decay: 0.15, sustain: 0.05, release: 0.6 }
+        }).toDestination();
+        correctSynth.volume.value = -4;
+
+        revealSynth = new Tone.Synth({
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.01, decay: 0.2, sustain: 0.0, release: 0.2 }
+        }).toDestination();
+        revealSynth.volume.value = -6;
+
+        incorrectSynth = new Tone.Synth({
+          oscillator: { type: "sawtooth" },
+          envelope: { attack: 0.01, decay: 0.3, sustain: 0.0, release: 0.1 }
+        }).toDestination();
+        incorrectSynth.volume.value = -6;
+
+        clickSynth = new Tone.MembraneSynth({
+          pitchDecay: 0.01,
+          octaves: 2,
+          envelope: { attack: 0.001, decay: 0.1, sustain: 0.01, release: 0.1 }
+        }).toDestination();
+        clickSynth.volume.value = -10;
+
+        audioReady = true;
+      } catch (err) {
+        console.warn("Audio initialization waiting for user gesture:", err);
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById("audioIcon");
+      const text = document.getElementById("audioText");
+      if (audioEnabled) {
+        if (icon) icon.className = "fa-solid fa-volume-high text-deloitte-green";
+        if (text) text.className = "text-gray-300";
+        initAudioEngine();
+      } else {
+        if (icon) icon.className = "fa-solid fa-volume-xmark text-deloitte-gray";
+        if (text) text.className = "text-deloitte-gray";
+      }
+    }
+
+    function playSound(type) {
+      if (!audioEnabled) return;
+      initAudioEngine();
+
+      const now = Tone.now();
+      try {
+        if (type === 'correct' && correctSynth) {
+          correctSynth.triggerAttackRelease(["C5", "E5", "G5"], "16n", now);
+          correctSynth.triggerAttackRelease(["C6"], "8n", now + 0.09);
+        } else if (type === 'reveal' && revealSynth) {
+          revealSynth.triggerAttackRelease("E5", "16n", now);
+          revealSynth.triggerAttackRelease("B5", "16n", now + 0.08);
+        } else if (type === 'incorrect' && incorrectSynth) {
+          incorrectSynth.triggerAttackRelease("Eb3", "16n", now);
+          incorrectSynth.triggerAttackRelease("C3", "12n", now + 0.12);
+        } else if (type === 'click' && clickSynth) {
+          clickSynth.triggerAttackRelease("C2", "32n", now);
+        }
+      } catch (e) {
+        console.warn("Audio playback non-critical warning:", e);
+      }
+    }
+
+    /* ==========================================================
        2. 15 CURATED DELOITTE TRIVIA QUESTIONS (Bilingual Database)
        ========================================================== */
     const DEFAULT_QUESTIONS_RAW = [
       "德勤最早创立于哪一年？ / In which year was Deloitte founded?, 1880年 / 1880, [1845年 / 1845], 1900年 / 1900, 1913年 / 1913",
       "德勤全球标志性的绿色圆点象征着什么？ / What does Deloitte's iconic Green Dot symbolize?, 环保与低碳愿景 / Green & Low-Carbon Vision, 财富与持续增长 / Wealth & Growth, [洞察力与聚焦终点 / A Period of Impact & Focus], 科技与未来互联 / Technology & Future",
-      "德勤全球法律实体（DTTL）法定注册总部设立在哪个城市？ / In which city is Deloitte's global legal entity (DTTL) registered?, 美国纽约 / New York, USA, [英国伦敦 / London, UK], 瑞士日内瓦 / Geneva, Switzerland, 荷兰阿姆斯特丹 / Amsterdam, Netherlands",
-      "在四大中，德勤在全球最以哪项业务的领先优势著称？ / Among the Big Four, which business is Deloitte globally renowned for leading?, [管理咨询业务 / Management Consulting], 个人破产清算 / Personal Bankruptcy, 建筑工程监理 / Construction Supervision, 知识产权代理 / IP Agency",
+      "德勤全球法律实体（DTTL）法定注册总部设立在哪个城市？ / In which city is Deloitte's global legal entity (DTTL) registered?, 美国纽约 / New York (USA), [英国伦敦 / London (UK)], 瑞士日内瓦 / Geneva (Switzerland), 荷兰阿姆斯特丹 / Amsterdam (Netherlands)",
+      "在四大中，德勤在全球最以哪项业务的领先优势著称？ / Among the Big Four which business is Deloitte globally renowned for leading?, [管理咨询业务 / Management Consulting], 个人破产清算 / Personal Bankruptcy, 建筑工程监理 / Construction Supervision, 知识产权代理 / IP Agency",
       "全球第一所德勤大学（Deloitte University）坐落于美国的哪个州？ / In which US state was the first Deloitte University established?, 加利福尼亚州 / California, 纽约州 / New York, [德克萨斯州 / Texas], 佛罗里达州 / Florida",
-      "德勤全称 Deloitte Touche Tohmatsu 中的 Touche 来自哪位先驱？ / In Deloitte Touche Tohmatsu, who does Touche represent?, [乔治·图什（苏格兰会计师） / George Touche (Scottish Accountant)], 托马斯·图什 / Thomas Touche, 亨利·图什 / Henri Touche, 亚瑟·图什 / Arthur Touche",
-      "德勤在全球推行的核心立所宗旨（Purpose Statement）是？ / What is Deloitte's global Purpose Statement?, 追求行业顶尖 / Best in Class, [成就不凡，致胜未来 / Make an impact that matters], 洞悉明日未来 / In Touch with Tomorrow, 始终卓越不凡 / Excellence Always",
-      "德勤进入中国市场最早可追溯至哪一年在上海设立办事处？ / In which year did Deloitte first establish an office in Shanghai, China?, 1898年 / 1898, [1917年 / 1917], 1949年 / 1949, 1978年 / 1978",
-      "德勤旗下专注于数字化创新、体验与创意的知名咨询品牌是？ / Which Deloitte brand specializes in digital innovation, UX & creative design?, [德勤数智 / Deloitte Digital], 科技前沿实验室 / D-Tech Labs, 未来网络中心 / CyberFuture, 德勤云创新 / Deloitte CloudX",
+      "德勤全称 Deloitte Touche Tohmatsu 中的 Touche 来自哪位先驱？ / In Deloitte Touche Tohmatsu - who does Touche represent?, [乔治·图什（苏格兰会计师） / George Touche (Scottish Accountant)], 托马斯·图什 / Thomas Touche, 亨利·图什 / Henri Touche, 亚瑟·图什 / Arthur Touche",
+      "德勤在全球推行的核心立所宗旨（Purpose Statement）是？ / What is Deloitte's global Purpose Statement?, 追求行业顶尖 / Best in Class, [成就不凡致胜未来 / Make an impact that matters], 洞悉明日未来 / In Touch with Tomorrow, 始终卓越不凡 / Excellence Always",
+      "德勤进入中国市场最早可追溯至哪一年在上海设立办事处？ / In which year did Deloitte first establish an office in Shanghai (China)?, 1898年 / 1898, [1917年 / 1917], 1949年 / 1949, 1978年 / 1978",
+      "德勤旗下专注于数字化创新、体验与创意的知名咨询品牌是？ / Which Deloitte brand specializes in digital innovation & UX creative design?, [德勤数智 / Deloitte Digital], 科技前沿实验室 / D-Tech Labs, 未来网络中心 / CyberFuture, 德勤云创新 / Deloitte CloudX",
       "德勤标志性品牌色中的核心绿色官方名称是？ / What is the official brand name of Deloitte's signature green color?, 森林绿 / Forest Lime, [德勤绿 / Deloitte Green], 赛博翠绿 / Cyber Emerald, 霓虹薄荷 / Neon Mint",
       "德勤三大联合创始人之一 Nobuzo Tohmatsu（等松农夫藏）来自哪个国家？ / Which country was co-founder Nobuzo Tohmatsu from?, 韩国 / South Korea, 新加坡 / Singapore, [日本 / Japan], 泰国 / Thailand",
-      "德勤每年针对科技、传媒和电信行业发布的权威全球趋势预测报告是？ / What is Deloitte's flagship annual forecast for Tech, Media & Telecom?, 科技脉动 / Tech Pulse, [TMT预测报告 / TMT Predictions], 全球传媒雷达 / Global Media Radar, 网络前瞻展望 / Cyber Outlook",
+      "德勤每年针对科技、传媒和电信行业发布的权威全球趋势预测报告是？ / What is Deloitte's flagship annual forecast for Tech Media & Telecom?, 科技脉动 / Tech Pulse, [TMT预测报告 / TMT Predictions], 全球传媒雷达 / Global Media Radar, 网络前瞻展望 / Cyber Outlook",
       "德勤每年在科技创新领域举办的知名快速成长企业评选项目名称是？ / Which renowned program does Deloitte host annually for fast-growing tech firms?, 科技独角兽100 / Tech Unicorn 100, 全球领航50 / Global Alpha 50, [高科技高成长50强 / Technology Fast 50], 未来跃升百强 / Future Leap 100",
       "德勤绿色小圆点在官方标准 Logo 视觉设计中通常放置在什么位置？ / Where is the Green Dot located in Deloitte's official standard logo?, 字母 D 的正上方 / Directly above letter D, 两个字母 l 之间 / Between letters l, [位于 Deloitte 字母末尾右下角 / At the bottom right after Deloitte], 字母 o 的圆心处 / Center of letter o",
       "德勤中国目前的五大核心专业服务领域中不包括以下哪一项？ / Which of the following is NOT one of Deloitte China's 5 core service offerings?, 审计及鉴证 / Audit & Assurance, 风险咨询 / Risk Advisory, [商业房地产开发 / Commercial Real Estate Development], 财务咨询 / Financial Advisory"
@@ -442,7 +534,7 @@
     /**
      * Parses trivia questions in format:
      * Question, optA, [optB], optC, optD
-     * Uses square brackets to designate the correct answer.
+     * Intelligently parses commas while respecting bracketed answers.
      */
     function parseQuestionsFromText(rawText) {
       if (!rawText || !rawText.trim()) return [];
@@ -454,9 +546,32 @@
         const line = lines[i].trim();
         if (!line || line.startsWith("#")) continue;
 
-        // Support both English commas and Chinese commas
-        const parts = line.split(/[,，]/).map(p => p.trim()).filter(p => p.length > 0);
-        if (parts.length < 3) continue; // Must have at least question + 2 options
+        const parts = [];
+        let currentPart = "";
+        let insideBracket = false;
+
+        for (let j = 0; j < line.length; j++) {
+          const char = line[j];
+          if (char === "[" || char === "【") {
+            insideBracket = true;
+            currentPart += char;
+          } else if (char === "]" || char === "】") {
+            insideBracket = false;
+            currentPart += char;
+          } else if ((char === "," || char === "，") && !insideBracket) {
+            if (currentPart.trim().length > 0) {
+              parts.push(currentPart.trim());
+            }
+            currentPart = "";
+          } else {
+            currentPart += char;
+          }
+        }
+        if (currentPart.trim().length > 0) {
+          parts.push(currentPart.trim());
+        }
+
+        if (parts.length < 3) continue;
 
         const questionText = parts[0];
         const rawOptions = parts.slice(1);
@@ -465,8 +580,7 @@
         const options = [];
 
         rawOptions.forEach((optStr, idx) => {
-          // Check for square brackets [option]
-          const match = optStr.match(/^\[(.*)\]$/);
+          const match = optStr.match(/^[\[【](.*)[\]】]$/);
           if (match) {
             correctIndex = idx;
             options.push(match[1].trim());
@@ -475,7 +589,6 @@
           }
         });
 
-        // Fallback: If author forgot brackets, mark option 0 as correct
         if (correctIndex === -1) {
           correctIndex = 0;
         }
@@ -553,9 +666,8 @@
 
     /* ==========================================================
        4. ANALOG & DIGITAL COUNTDOWN TIMER ENGINE
-       Default 60s, persists for following questions when modified
        ========================================================== */
-    let configuredDuration = 60; // Default 60s, persists once changed
+    let configuredDuration = 60;
     let questionTimeRemaining = 60;
     let questionTimerInterval = null;
     let isTimerPaused = false;
@@ -577,50 +689,40 @@
         display.textContent = formatTimeSeconds(questionTimeRemaining);
       }
 
-      // Calculate progress ratio (0 to 1)
       const ratio = Math.max(0, Math.min(1, questionTimeRemaining / configuredDuration));
-
-      // Calculate needle rotation: sweeps clockwise as time counts down
-      // At 100% time left: 0 deg (12 o'clock). At 0% time left: 360 deg.
       const angle = (1 - ratio) * 360;
       if (needle) {
         needle.setAttribute("transform", `rotate(${angle} 32 32)`);
       }
 
-      // Update circular sweep arc
       if (arc) {
         const offset = CIRCLE_CIRCUMFERENCE * (1 - ratio);
         arc.style.strokeDashoffset = offset;
       }
 
-      // Visual color alarm when remaining time <= 10s
       if (questionTimeRemaining <= 10 && questionTimeRemaining > 0) {
         if (display) {
           display.className = "font-mono text-sm sm:text-base font-black text-rose-400 tracking-wider px-2 py-0.5 rounded-lg bg-rose-950/40 border border-rose-500/50 shadow-inner animate-pulse";
         }
-        if (arc) {
-          arc.setAttribute("stroke", "#F43F5E");
-        }
-        if (pivot) {
-          pivot.setAttribute("fill", "#F43F5E");
-        }
+        if (arc) arc.setAttribute("stroke", "#F43F5E");
+        if (pivot) pivot.setAttribute("fill", "#F43F5E");
       } else {
         if (display) {
           display.className = "font-mono text-sm sm:text-base font-black text-deloitte-green tracking-wider px-2 py-0.5 rounded-lg bg-black/60 border border-white/10 shadow-inner";
         }
-        if (arc) {
-          arc.setAttribute("stroke", "#86BC25");
-        }
-        if (pivot) {
-          pivot.setAttribute("fill", "#86BC25");
-        }
+        if (arc) arc.setAttribute("stroke", "#86BC25");
+        if (pivot) pivot.setAttribute("fill", "#86BC25");
       }
     }
 
     function adjustTimerDuration(delta) {
       configuredDuration = Math.max(10, configuredDuration + delta);
       if (!hasAnsweredCurrent) {
-        questionTimeRemaining = Math.max(1, questionTimeRemaining + delta);
+        if (!optionsRevealed) {
+          questionTimeRemaining = configuredDuration;
+        } else {
+          questionTimeRemaining = Math.max(1, questionTimeRemaining + delta);
+        }
         updateTimerDisplayUI();
       }
       showToast(`Timer set to ${configuredDuration}s (applies to following questions)`);
@@ -653,6 +755,10 @@
 
     function toggleTimerRunning() {
       if (hasAnsweredCurrent) return;
+      if (!optionsRevealed) {
+        revealOptions();
+        return;
+      }
       isTimerPaused = !isTimerPaused;
       updateTimerButtonUI();
     }
@@ -661,9 +767,9 @@
       const icon = document.getElementById("timerToggleIcon");
       const text = document.getElementById("timerToggleText");
       if (!icon || !text) return;
-      if (isTimerPaused) {
+      if (isTimerPaused || !optionsRevealed) {
         icon.className = "fa-solid fa-play text-[9px]";
-        text.textContent = "Resume";
+        text.textContent = !optionsRevealed ? "Start" : "Resume";
       } else {
         icon.className = "fa-solid fa-pause text-[9px]";
         text.textContent = "Pause";
@@ -683,7 +789,7 @@
         opts.classList.remove("hidden");
       }
 
-      const q = currentQuestions[currentIndex];
+      const q = isTestMode ? TEST_QUESTION : currentQuestions[currentIndex];
       for (let i = 0; i < q.options.length; i++) {
         const btn = document.getElementById(`optBtn${i}`);
         const txt = document.getElementById(`optText${i}`);
@@ -693,7 +799,7 @@
         if (i === q.correctIndex) {
           btn.className = "p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-deloitte-green/15 border-2 border-deloitte-green text-left transition-all flex items-center justify-between shadow-lg shadow-deloitte-green/10";
           txt.innerHTML = renderBilingualHtml(q.options[i], false, 'correct');
-          icon.className = "text-base text-deloitte-green opacity-100";
+          icon.className = "text-base text-deloitte-green opacity-100 flex-shrink-0 ml-1.5";
           icon.innerHTML = '<i class="fa-solid fa-check"></i>';
         } else {
           btn.className = "opacity-40 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border border-white/5 text-left transition-all flex items-center justify-between";
@@ -708,7 +814,9 @@
       msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-amber-400";
       msg.innerHTML = '<i class="fa-regular fa-clock text-base sm:text-lg"></i><span>时间到！ Time\'s Up!</span>';
 
-      if (currentIndex === currentQuestions.length - 1) {
+      if (isTestMode) {
+        nextBtnText.textContent = "进入正式问答 · Start Official Challenge";
+      } else if (currentIndex === currentQuestions.length - 1) {
         nextBtnText.textContent = "查看结果 · View Results";
       } else {
         nextBtnText.textContent = "下一题 · Next Question";
@@ -719,15 +827,23 @@
     /* ==========================================================
        5. BILINGUAL RENDERING ENGINE & STEP-BY-STEP CONTROLLER
        ========================================================== */
+    const TEST_QUESTION = {
+      question: "在德勤做PPT时，如果一页胶片感觉还不够高大上，终极秘诀是？ / When making slides, what's the ultimate secret if a slide doesn't look professional enough?",
+      options: [
+        "把所有正文字体换成卡通艺术字 / Change all text to Comic Sans",
+        "加上三个同心圆飞轮和一个德勤绿点 / Add 3 concentric flywheel loops and a Deloitte Green Dot",
+        "插入一张充满困惑的猫咪表情包 / Insert a confused cat meme",
+        "把电脑屏幕亮度调到最高100% / Turn screen brightness to 100%"
+      ],
+      correctIndex: 1
+    };
+
+    let isTestMode = true;
     let currentIndex = 0;
     let score = 0;
     let optionsRevealed = false;
     let hasAnsweredCurrent = false;
 
-    /**
-     * Splits and formats bilingual text with Chinese on top and English below.
-     * Supports " / ", "/", or "／" as bilingual separators.
-     */
     function renderBilingualHtml(rawText, isQuestion = false, state = 'normal') {
       if (!rawText) return "";
       const match = rawText.match(/^(.*?)\s*[/／]\s*(.*)$/);
@@ -744,7 +860,6 @@
         return `<span class="text-base sm:text-xl md:text-2xl font-black font-cn text-white leading-snug">${rawText}</span>`;
       }
 
-      // Options styling depending on game state
       let zhColor = "text-gray-100 group-hover:text-white";
       let enColor = "text-gray-400 group-hover:text-gray-200";
 
@@ -776,30 +891,51 @@
     }
 
     function renderCurrentQuestion() {
-      const q = currentQuestions[currentIndex];
+      stopQuestionTimer();
       optionsRevealed = false;
       hasAnsweredCurrent = false;
+      isTimerPaused = false;
 
-      // Update question badges & progress
+      questionTimeRemaining = configuredDuration;
+      updateTimerDisplayUI();
+      updateTimerButtonUI();
+
       const total = currentQuestions.length;
-      document.getElementById("questionCounterLabel").textContent = `Question ${currentIndex + 1} / ${total}`;
-      document.getElementById("scoreDisplay").textContent = `${score} / ${total}`;
-      const pct = ((currentIndex + 1) / total) * 100;
-      document.getElementById("triviaProgressBar").style.width = `${pct}%`;
+      const testBadge = document.getElementById("testBadgeContainer");
+      const standardBadge = document.getElementById("triviaStandardBadge");
+      const counterLabel = document.getElementById("questionCounterLabel");
+      const progressBar = document.getElementById("triviaProgressBar");
+      const scoreDisplay = document.getElementById("scoreDisplay");
 
-      // Set Bilingual Question text
+      let q;
+      if (isTestMode) {
+        q = TEST_QUESTION;
+        testBadge.classList.remove("hidden");
+        standardBadge.classList.add("hidden");
+        counterLabel.textContent = "热身测试 · Practice Round";
+        counterLabel.className = "text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1";
+        scoreDisplay.textContent = `-- / ${total}`;
+        progressBar.style.width = "0%";
+      } else {
+        q = currentQuestions[currentIndex];
+        testBadge.classList.add("hidden");
+        standardBadge.classList.remove("hidden");
+        counterLabel.textContent = `Question ${currentIndex + 1} / ${total}`;
+        counterLabel.className = "text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-deloitte-green flex items-center gap-1";
+        scoreDisplay.textContent = `${score} / ${total}`;
+        const pct = ((currentIndex + 1) / total) * 100;
+        progressBar.style.width = `${pct}%`;
+      }
+
       document.getElementById("triviaQuestionText").innerHTML = renderBilingualHtml(q.question, true);
 
-      // Reset card interactive states
       const card = document.getElementById("questionCardContainer");
       card.className = "cursor-pointer group relative bg-gradient-to-b from-deloitte-cardbg to-[#12151b] border-2 border-white/10 hover:border-deloitte-green/40 px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl sm:rounded-3xl card-shadow transition-all duration-300 text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[125px] select-none";
       document.getElementById("revealCallout").classList.remove("hidden");
 
-      // Hide options and bottom action banner
       document.getElementById("optionsContainer").classList.add("hidden");
       document.getElementById("bottomActionBanner").classList.add("hidden");
 
-      // Reset individual option buttons with bilingual layout
       for (let i = 0; i < 4; i++) {
         const btn = document.getElementById(`optBtn${i}`);
         const txt = document.getElementById(`optText${i}`);
@@ -816,9 +952,6 @@
           btn.classList.add("hidden");
         }
       }
-
-      // Start countdown timer for this question using configuredDuration
-      startQuestionTimer();
     }
 
     function handleQuestionClick() {
@@ -838,6 +971,8 @@
       opts.classList.remove("animate-pop-in");
       void opts.offsetWidth;
       opts.classList.add("animate-pop-in");
+
+      startQuestionTimer();
     }
 
     function selectOption(selectedIndex) {
@@ -845,21 +980,23 @@
       hasAnsweredCurrent = true;
       stopQuestionTimer();
 
-      const q = currentQuestions[currentIndex];
+      const q = isTestMode ? TEST_QUESTION : currentQuestions[currentIndex];
       const isCorrect = (selectedIndex === q.correctIndex);
       const total = currentQuestions.length;
 
-      // Play matching tone
       if (isCorrect) {
         playSound('correct');
-        score++;
+        if (!isTestMode) {
+          score++;
+        }
       } else {
         playSound('incorrect');
       }
 
-      document.getElementById("scoreDisplay").textContent = `${score} / ${total}`;
+      if (!isTestMode) {
+        document.getElementById("scoreDisplay").textContent = `${score} / ${total}`;
+      }
 
-      // Highlight options with bilingual typography preservation
       for (let i = 0; i < q.options.length; i++) {
         const btn = document.getElementById(`optBtn${i}`);
         const txt = document.getElementById(`optText${i}`);
@@ -867,41 +1004,45 @@
         btn.disabled = true;
 
         if (i === q.correctIndex) {
-          // Correct option style (Deloitte green glow)
           btn.className = "p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-deloitte-green/15 border-2 border-deloitte-green text-left transition-all flex items-center justify-between shadow-lg shadow-deloitte-green/10";
           txt.innerHTML = renderBilingualHtml(q.options[i], false, 'correct');
           icon.className = "text-base text-deloitte-green opacity-100 flex-shrink-0 ml-1.5";
           icon.innerHTML = '<i class="fa-solid fa-check"></i>';
         } else if (i === selectedIndex && !isCorrect) {
-          // Wrong choice selected
           btn.className = "p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-rose-950/40 border-2 border-rose-500 text-left transition-all flex items-center justify-between shadow-lg shadow-rose-950/30";
           txt.innerHTML = renderBilingualHtml(q.options[i], false, 'incorrect');
           icon.className = "text-base text-rose-400 opacity-100 flex-shrink-0 ml-1.5";
           icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
         } else {
-          // Other unselected neutral options
           btn.className = "opacity-40 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border border-white/5 text-left transition-all flex items-center justify-between";
           txt.innerHTML = renderBilingualHtml(q.options[i], false, 'dimmed');
         }
       }
 
-      // Display bottom action banner
       const banner = document.getElementById("bottomActionBanner");
       const msg = document.getElementById("answerStatusMessage");
       const nextBtnText = document.getElementById("nextBtnText");
 
-      if (isCorrect) {
-        msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-deloitte-green";
-        msg.innerHTML = '<i class="fa-solid fa-circle-check text-base sm:text-lg"></i><span>回答正确！ Correct!</span>';
+      if (isTestMode) {
+        msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-amber-300";
+        msg.innerHTML = isCorrect 
+          ? '<i class="fa-solid fa-flask text-base"></i><span>测试回答正确！准备进入正式挑战 · Practice Correct!</span>'
+          : '<i class="fa-solid fa-flask text-base"></i><span>热身完毕！点击进入正式问答 · Practice Finished!</span>';
+        nextBtnText.textContent = "进入正式问答 · Start Official Challenge";
       } else {
-        msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-rose-400";
-        msg.innerHTML = '<i class="fa-solid fa-circle-xmark text-base sm:text-lg"></i><span>回答错误 Incorrect</span>';
-      }
+        if (isCorrect) {
+          msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-deloitte-green";
+          msg.innerHTML = '<i class="fa-solid fa-circle-check text-base sm:text-lg"></i><span>回答正确！ Correct!</span>';
+        } else {
+          msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-rose-400";
+          msg.innerHTML = '<i class="fa-solid fa-circle-xmark text-base sm:text-lg"></i><span>回答错误 Incorrect</span>';
+        }
 
-      if (currentIndex === total - 1) {
-        nextBtnText.textContent = "查看结果 · View Results";
-      } else {
-        nextBtnText.textContent = "下一题 · Next Question";
+        if (currentIndex === total - 1) {
+          nextBtnText.textContent = "查看结果 · View Results";
+        } else {
+          nextBtnText.textContent = "下一题 · Next Question";
+        }
       }
 
       banner.classList.remove("hidden");
@@ -910,6 +1051,16 @@
     function goToNextQuestion() {
       stopQuestionTimer();
       playSound('click');
+
+      if (isTestMode) {
+        isTestMode = false;
+        currentIndex = 0;
+        score = 0;
+        showToast("热身结束，正式答题开始！计时就绪 · Official Quiz Started!");
+        renderCurrentQuestion();
+        return;
+      }
+
       if (currentIndex < currentQuestions.length - 1) {
         currentIndex++;
         renderCurrentQuestion();
@@ -944,6 +1095,7 @@
 
     function restartTrivia() {
       stopQuestionTimer();
+      isTestMode = true;
       currentIndex = 0;
       score = 0;
       document.getElementById("summaryScoreView").classList.add("hidden");
@@ -951,7 +1103,6 @@
       renderCurrentQuestion();
     }
 
-    /* Keyboard Navigation Shortcuts (Space / Enter to reveal & advance, 1-4 for A-D) */
     window.addEventListener("keydown", (e) => {
       const adminModal = document.getElementById("adminModal");
       if (adminModal && !adminModal.classList.contains("hidden")) return;
@@ -983,7 +1134,6 @@
       }
     });
 
-    // Start on window load
     window.onload = function() {
       initQuestions();
       renderCurrentQuestion();
