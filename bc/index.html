@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Chemistry 商业化学指南 | D.Signal</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for subtle audio feedback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- FontAwesome 6 for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Plus Jakarta Sans & Noto Sans SC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            deloitte: {
+              green: '#86BC25',
+              darkgreen: '#568819',
+              teal: '#004F59',
+              navy: '#002776',
+              black: '#0a0d14',
+              cardbg: '#161a22',
+              cardborder: '#232936',
+              slate: '#1e2430',
+              gray: '#868D96',
+              lightgray: '#DCE0E5'
+            },
+            type: {
+              pioneer: '#00A3E0',   // Vivid Sky Blue (Pioneer)
+              driver: '#86BC25',    // Deloitte Green (Driver)
+              integrator: '#14B8A6',// Mint Emerald (Integrator)
+              guardian: '#A855F7'   // Regal Purple (Guardian)
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif'],
+            cn: ['"Noto Sans SC"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #0b0e14;
+      background-image: 
+        radial-gradient(circle at 18% 12%, rgba(134, 188, 37, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 82% 88%, rgba(0, 79, 89, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.07) 0%, transparent 60%);
+      min-height: 100vh;
+    }
+
+    .deloitte-dot {
+      display: inline-block;
+      width: 0.58em;
+      height: 0.58em;
+      background-color: #86BC25;
+      border-radius: 50%;
+      margin-left: 0.12em;
+      vertical-align: baseline;
+      box-shadow: 0 0 14px rgba(134, 188, 37, 0.8);
+    }
+
+    .card-shadow {
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .card-active-glow {
+      box-shadow: 0 20px 45px -8px rgba(134, 188, 37, 0.25), 0 0 0 2px rgba(134, 188, 37, 0.6);
+    }
+
+    .button-press {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .button-press:active {
+      transform: scale(0.97) translateY(2px);
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.96) translateY(12px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop-in {
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Sleek custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0e14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(134, 188, 37, 0.4);
+    }
+  </style>
+</head>
+
+<body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+
+  <!-- Top Navigation Bar -->
+  <header class="w-full border-b border-white/10 bg-deloitte-black/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <!-- Title & Branding -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="scrollToTop()">
+        <span class="font-black text-xl sm:text-2xl tracking-tight text-white">
+          Business Chemistry<span class="deloitte-dot"></span>
+        </span>
+        <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-deloitte-green font-bold hidden md:inline-block">
+          商业化学指南
+        </span>
+      </div>
+
+      <!-- SFX Toggle -->
+      <div class="flex items-center space-x-2 sm:space-x-3 text-xs">
+        <button id="audioToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 flex items-center space-x-2 transition-all">
+          <i id="audioIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
+          <span id="audioText" class="text-gray-300">SFX</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+    <!-- Interactive Explorer Section -->
+    <section id="typesSection" class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-white/10 pb-4 gap-2">
+        <div>
+          <span class="text-xs font-bold text-deloitte-green uppercase tracking-widest block">The 4 Styles</span>
+          <h2 class="text-2xl sm:text-3xl font-black text-white">四大风格总览 · Interactive Explorer</h2>
+        </div>
+        <p class="text-xs text-gray-400">
+          点击任意卡片深入解析 · Click any card to inspect detailed traits & flex tips.
+        </p>
+      </div>
+
+      <!-- 4 Type Selection Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Type 1: Pioneer -->
+        <div id="card-pioneer" onclick="selectType('pioneer')" class="button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-pioneer/60 card-shadow transition-all relative overflow-hidden group">
+          <div class="absolute -right-8 -top-8 w-24 h-24 bg-type-pioneer/15 rounded-full blur-xl group-hover:bg-type-pioneer/30 transition-all"></div>
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-11 h-11 rounded-xl bg-type-pioneer/15 border border-type-pioneer/30 flex items-center justify-center text-type-pioneer text-lg">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-type-pioneer/10 border border-type-pioneer/30 text-type-pioneer font-bold">
+              先锋型 · Pioneer
+            </span>
+          </div>
+          <h3 class="text-xl font-black text-white group-hover:text-type-pioneer transition-colors">Pioneer</h3>
+          <p class="text-xs text-gray-300 font-cn mt-0.5">激发能量 · 探索未知</p>
+          <p class="text-[11px] text-gray-400">Energize & Explore Possibility</p>
+          <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-gray-300 space-y-1">
+            <div class="flex items-center justify-between"><span>外向随性</span><span class="text-gray-400">Outgoing & Spontaneous</span></div>
+            <div class="flex items-center justify-between"><span>勇于冒险</span><span class="text-gray-400">Risk-Tolerant</span></div>
+            <div class="flex items-center justify-between"><span>放眼大局</span><span class="text-gray-400">Big-Picture</span></div>
+          </div>
+        </div>
+
+        <!-- Type 2: Driver -->
+        <div id="card-driver" onclick="selectType('driver')" class="button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-deloitte-green/60 card-active-glow transition-all relative overflow-hidden group">
+          <div class="absolute -right-8 -top-8 w-24 h-24 bg-deloitte-green/15 rounded-full blur-xl group-hover:bg-deloitte-green/30 transition-all"></div>
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-11 h-11 rounded-xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-lg">
+              <i class="fa-solid fa-bullseye"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green font-bold">
+              驱动型 · Driver
+            </span>
+          </div>
+          <h3 class="text-xl font-black text-white group-hover:text-deloitte-green transition-colors">Driver</h3>
+          <p class="text-xs text-gray-300 font-cn mt-0.5">聚焦成果 · 疾速推进</p>
+          <p class="text-[11px] text-gray-400">Momentum & Drive Results</p>
+          <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-gray-300 space-y-1">
+            <div class="flex items-center justify-between"><span>定量逻辑</span><span class="text-gray-400">Quantitative & Logical</span></div>
+            <div class="flex items-center justify-between"><span>直率果断</span><span class="text-gray-400">Direct & Decisive</span></div>
+            <div class="flex items-center justify-between"><span>目标导向</span><span class="text-gray-400">Results-Driven</span></div>
+          </div>
+        </div>
+
+        <!-- Type 3: Integrator -->
+        <div id="card-integrator" onclick="selectType('integrator')" class="button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-integrator/60 card-shadow transition-all relative overflow-hidden group">
+          <div class="absolute -right-8 -top-8 w-24 h-24 bg-type-integrator/15 rounded-full blur-xl group-hover:bg-type-integrator/30 transition-all"></div>
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-11 h-11 rounded-xl bg-type-integrator/15 border border-type-integrator/30 flex items-center justify-center text-type-integrator text-lg">
+              <i class="fa-solid fa-handshake"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-type-integrator/10 border border-type-integrator/30 text-type-integrator font-bold">
+              整合型 · Integrator
+            </span>
+          </div>
+          <h3 class="text-xl font-black text-white group-hover:text-type-integrator transition-colors">Integrator</h3>
+          <p class="text-xs text-gray-300 font-cn mt-0.5">凝聚团队 · 构筑信任</p>
+          <p class="text-[11px] text-gray-400">Connect & Build Trust</p>
+          <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-gray-300 space-y-1">
+            <div class="flex items-center justify-between"><span>同理共情</span><span class="text-gray-400">Empathetic & Caring</span></div>
+            <div class="flex items-center justify-between"><span>寻求共识</span><span class="text-gray-400">Consensus-Builder</span></div>
+            <div class="flex items-center justify-between"><span>注重关系</span><span class="text-gray-400">Relationship-Focused</span></div>
+          </div>
+        </div>
+
+        <!-- Type 4: Guardian -->
+        <div id="card-guardian" onclick="selectType('guardian')" class="button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-guardian/60 card-shadow transition-all relative overflow-hidden group">
+          <div class="absolute -right-8 -top-8 w-24 h-24 bg-type-guardian/15 rounded-full blur-xl group-hover:bg-type-guardian/30 transition-all"></div>
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-11 h-11 rounded-xl bg-type-guardian/15 border border-type-guardian/30 flex items-center justify-center text-type-guardian text-lg">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-type-guardian/10 border border-type-guardian/30 text-type-guardian font-bold">
+              守护型 · Guardian
+            </span>
+          </div>
+          <h3 class="text-xl font-black text-white group-hover:text-type-guardian transition-colors">Guardian</h3>
+          <p class="text-xs text-gray-300 font-cn mt-0.5">恪守秩序 · 稳健护航</p>
+          <p class="text-[11px] text-gray-400">Structure & Protect Quality</p>
+          <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-gray-300 space-y-1">
+            <div class="flex items-center justify-between"><span>严谨细致</span><span class="text-gray-400">Meticulous & Thorough</span></div>
+            <div class="flex items-center justify-between"><span>务实审慎</span><span class="text-gray-400">Pragmatic & Prudent</span></div>
+            <div class="flex items-center justify-between"><span>恪守规范</span><span class="text-gray-400">Order & Standards</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="typeDetailContainer" class="p-6 sm:p-8 rounded-3xl bg-deloitte-cardbg border-2 border-white/15 card-shadow space-y-6 animate-pop-in">
+        
+        <!-- Header Banner for Selected Type -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-white/10">
+          <div class="flex items-center space-x-4">
+            <div id="detailTypeIconBox" class="w-14 h-14 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-2xl text-deloitte-green">
+              <i id="detailTypeIcon" class="fa-solid fa-bullseye"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 id="detailTypeName" class="text-2xl sm:text-3xl font-black text-white">Driver · 驱动型</h3>
+                <span id="detailTypeTag" class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-deloitte-green/20 text-deloitte-green font-bold">
+                  Momentum & Results
+                </span>
+              </div>
+              <p id="detailTypeMottoCn" class="text-xs sm:text-sm text-gray-200 font-cn mt-0.5 font-bold">
+                “聚焦成果，讲求实效，以清晰逻辑驱动业务破局”
+              </p>
+              <p id="detailTypeMottoEn" class="text-xs text-gray-400">
+                "Focus on outcomes, quantify logic, and power past obstacles."
+              </p>
+            </div>
+          </div>
+
+          <!-- Section Switcher Buttons -->
+          <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 overflow-x-auto">
+            <button id="tabBtn-traits" onclick="switchDetailTab('traits')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black whitespace-nowrap">
+              核心特质 · Traits
+            </button>
+            <button id="tabBtn-stress" onclick="switchDetailTab('stress')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white whitespace-nowrap">
+              动力与压力 · Dynamics
+            </button>
+            <button id="tabBtn-flex" onclick="switchDetailTab('flex')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white whitespace-nowrap">
+              协同秘籍 · Flex Tips
+            </button>
+          </div>
+        </div>
+
+        <!-- Detail Tab 1: Mindset & Characteristics -->
+        <div id="tabContent-traits" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <!-- Mindset -->
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
+              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider block flex items-center gap-1.5">
+                <i class="fa-solid fa-brain"></i> 思维方式 · Mindset
+              </span>
+              <p id="detailMindsetCn" class="text-xs sm:text-sm text-gray-200 leading-relaxed font-cn font-semibold">
+                定量分析、推崇严密逻辑链条、追求黑白分明的确定性。善于抽丝剥茧，直击核心矛盾。
+              </p>
+              <p id="detailMindsetEn" class="text-[11px] sm:text-xs text-gray-400 leading-normal">
+                Quantitative, logic-driven, seeking black-and-white clarity. Swiftly uncovers root issues.
+              </p>
+            </div>
+
+            <!-- Focus -->
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
+              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider block flex items-center gap-1.5">
+                <i class="fa-solid fa-crosshairs"></i> 关注重心 · Core Focus
+              </span>
+              <p id="detailFocusCn" class="text-xs sm:text-sm text-gray-200 leading-relaxed font-cn font-semibold">
+                攻克高难度指标、快节奏高效率交付、竞争获胜以及切实可见的商业影响。
+              </p>
+              <p id="detailFocusEn" class="text-[11px] sm:text-xs text-gray-400 leading-normal">
+                High-tempo execution, challenging KPIs, clear commercial impact, and winning.
+              </p>
+            </div>
+
+            <!-- Decision Style -->
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
+              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider block flex items-center gap-1.5">
+                <i class="fa-solid fa-gavel"></i> 决策风格 · Decision Style
+              </span>
+              <p id="detailDecisionCn" class="text-xs sm:text-sm text-gray-200 leading-relaxed font-cn font-semibold">
+                雷厉风行、就事论事。在掌握关键数据与底线逻辑后，能够毫不犹豫地拍板定夺。
+              </p>
+              <p id="detailDecisionEn" class="text-[11px] sm:text-xs text-gray-400 leading-normal">
+                Decisive, objective, and action-oriented once bottom-line metrics and data are verified.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Detail Tab 2: Energizers vs Drainers -->
+        <div id="tabContent-stress" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- What Energizes -->
+          <div class="p-5 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 space-y-3">
+            <div class="flex items-center gap-2 text-deloitte-green font-bold text-sm">
+              <i class="fa-solid fa-battery-full"></i>
+              <span>赋能动力点 · What Energizes Them</span>
+            </div>
+            <ul id="detailEnergizeList" class="space-y-2.5 text-xs sm:text-sm text-gray-300">
+              <!-- Dynamically Populated -->
+            </ul>
+          </div>
+
+          <!-- What Drains -->
+          <div class="p-5 rounded-2xl bg-rose-950/20 border border-rose-900/40 space-y-3">
+            <div class="flex items-center gap-2 text-rose-400 font-bold text-sm">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <span>消耗雷区 · What Drains Them</span>
+            </div>
+            <ul id="detailDrainList" class="space-y-2.5 text-xs sm:text-sm text-gray-300">
+              <!-- Dynamically Populated -->
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Detail Tab 3: Collaboration & Flexing Tips -->
+        <div id="tabContent-flex" class="hidden space-y-4">
+          <div class="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-900/40 space-y-3">
+            <div class="flex items-center gap-2 text-cyan-400 font-bold text-sm">
+              <i class="fa-solid fa-comments"></i>
+              <span>如何与此风格高效沟通与协同 · How to Flex and Collaborate</span>
+            </div>
+            <ul id="detailFlexList" class="space-y-3 text-xs sm:text-sm text-gray-300">
+              <!-- Dynamically Populated -->
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="w-full border-t border-white/10 py-5 bg-deloitte-black/80 text-center text-xs text-deloitte-gray mt-12">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-gray-300">Business Chemistry 商业化学指南</span>
+        <span class="text-deloitte-green">●</span>
+        <span class="text-gray-400">Deloitte Workplace Science</span>
+      </div>
+      <p class="text-[11px] text-gray-500">
+        Make an impact that matters. 观察、理解与适应，让团队多元价值绽放。
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    let audioEnabled = true;
+    let audioReady = false;
+
+    let clickSynth = null;
+    let tabSynth = null;
+
+    async function initAudioEngine() {
+      if (audioReady) return;
+      try {
+        await Tone.start();
+        
+        clickSynth = new Tone.MembraneSynth({
+          pitchDecay: 0.01,
+          octaves: 2,
+          envelope: { attack: 0.001, decay: 0.08, sustain: 0.01, release: 0.08 }
+        }).toDestination();
+        clickSynth.volume.value = -9;
+
+        tabSynth = new Tone.Synth({
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.005, decay: 0.1, sustain: 0.0, release: 0.08 }
+        }).toDestination();
+        tabSynth.volume.value = -11;
+
+        audioReady = true;
+      } catch (err) {
+        console.warn("Audio waiting for user gesture:", err);
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById("audioIcon");
+      const text = document.getElementById("audioText");
+      if (audioEnabled) {
+        if (icon) icon.className = "fa-solid fa-volume-high text-deloitte-green";
+        if (text) text.className = "text-gray-300";
+        initAudioEngine();
+      } else {
+        if (icon) icon.className = "fa-solid fa-volume-xmark text-deloitte-gray";
+        if (text) text.className = "text-deloitte-gray";
+      }
+    }
+
+    function playSfx(type) {
+      if (!audioEnabled) return;
+      initAudioEngine();
+      const now = Tone.now();
+      try {
+        if (type === 'click' && clickSynth) {
+          clickSynth.triggerAttackRelease("C3", "32n", now);
+        } else if (type === 'tab' && tabSynth) {
+          tabSynth.triggerAttackRelease("E5", "32n", now);
+        }
+      } catch (e) {}
+    }
+
+    function scrollToSection(id) {
+      playSfx('click');
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function scrollToTop() {
+      playSfx('click');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    const CHEMISTRY_DATA = {
+      pioneer: {
+        name: "Pioneer · 先锋型",
+        tag: "Energy & Imagination",
+        colorClass: "text-type-pioneer",
+        borderClass: "border-type-pioneer",
+        icon: "fa-bolt",
+        mottoCn: "“点燃创意能量，跳脱既有框架，以非凡想象开辟崭新航向”",
+        mottoEn: "“Spark imagination, transcend rigid boxes, and explore bold new horizons.”",
+        mindsetCn: "天马行空、高度崇尚直觉与颠覆性创新。看待世界充满无限可能性，拒绝被既有教条束缚。",
+        mindsetEn: "Spontaneous, intuitive, and idea-driven. Views challenges as whiteboards of limitless possibility.",
+        focusCn: "从零到一的拓荒探索、宏观愿景构建、颠覆式革新与跨界创新点子。",
+        focusEn: "0-to-1 exploration, inspiring broad visions, and bold out-of-the-box brainstorming.",
+        decisionCn: "基于直觉与远见快速拍板，乐于承担计算过后的创新风险，鼓励团队放手一搏。",
+        decisionEn: "Fast and intuitive decisions; willing to take calculated risks and back bold initiatives.",
+        energizers: [
+          { cn: "无拘无束的头脑风暴与开放式研讨", en: "Open-ended brainstorming and blue-sky visioning" },
+          { cn: "敏捷试错与快速验证新概念", en: "Agile experimentation and rapid prototyping" },
+          { cn: "充满能量、鼓励创新的活跃氛围", en: "High-energy, spontaneous team environments" }
+        ],
+        drainers: [
+          { cn: "繁冗琐碎的行政流程与微观细节核查", en: "Bureaucratic red tape and micro-level detail control" },
+          { cn: "听到‘我们过去向来都是这么做’的墨守成规言论", en: "Rigid dogmas like 'we have always done it this way'" },
+          { cn: "反复开无聊的例行汇报会议", en: "Repetitive, uninspiring status-check meetings" }
+        ],
+        flexTips: [
+          { cn: "沟通从宏观大局愿景切入，不要一上来用琐碎执行细节将其淹没", en: "Lead with the big picture and vision; avoid sinking into weeds immediately." },
+          { cn: "给他们的发散性构想留出探讨空间，肯定创意的闪光点", en: "Validate their creative energy before introducing operational boundaries." },
+          { cn: "以高节奏推进行动，协助他们把灵感转化为明确里程碑", en: "Match their tempo and help translate vision into concrete deliverable milestones." }
+        ]
+      },
+      driver: {
+        name: "Driver · 驱动型",
+        tag: "Momentum & Results",
+        colorClass: "text-deloitte-green",
+        borderClass: "border-deloitte-green",
+        icon: "fa-bullseye",
+        mottoCn: "“聚焦成果，讲求实效，以清晰逻辑驱动业务破局”",
+        mottoEn: "“Focus on outcomes, quantify logic, and power past obstacles.”",
+        mindsetCn: "定量分析、推崇严密逻辑链条、追求黑白分明的确定性。善于抽丝剥茧，直击核心矛盾。",
+        mindsetEn: "Quantitative, logic-driven, seeking black-and-white clarity. Swiftly uncovers root issues.",
+        focusCn: "攻克高难度指标、快节奏高效率交付、竞争获胜以及切实可见的商业影响。",
+        focusEn: "High-tempo execution, challenging KPIs, clear commercial impact, and winning.",
+        decisionCn: "雷厉风行、就事论事。在掌握关键数据与底线逻辑后，能够毫不犹豫地拍板定夺。",
+        decisionEn: "Decisive, objective, and action-oriented once bottom-line metrics and data are verified.",
+        energizers: [
+          { cn: "攻克极具挑战性的量化业务指标与难题", en: "Tackling ambitious quantitative targets and hard problems" },
+          { cn: "高效直奔主题的沟通，迅速看到交付战果", en: "Direct, concise discussions with visible deliverable progress" },
+          { cn: "健康的竞争氛围与胜利的成就感", en: "Healthy competition and tangible bottom-line victories" }
+        ],
+        drainers: [
+          { cn: "目标涣散、缺乏明确结果导向的冗长拉锯讨论", en: "Unfocused, indecisive, meandering debates" },
+          { cn: "缺乏事实支撑的纯主观推测或过度情绪化反应", en: "Unsubstantiated opinions and emotional drama" },
+          { cn: "拖沓延误、推诿塞责与低效执行", en: "Delays, excuses, and lack of direct personal accountability" }
+        ],
+        flexTips: [
+          { cn: "直奔核心议题，少些寒暄铺垫，拿结构化数据和事实说话", en: "Be direct, concise, and lead immediately with data and facts." },
+          { cn: "明确量化产出（ROI/KPI），清晰交代方案的底线价值", en: "Frame proposals around bottom-line outcomes and ROI." },
+          { cn: "给出清晰的选项与建议方案，不要抛出无结论的开放式疑惑", en: "Present clear recommendations and choices rather than open dilemmas." }
+        ]
+      },
+      integrator: {
+        name: "Integrator · 整合型",
+        tag: "Connection & Trust",
+        colorClass: "text-type-integrator",
+        borderClass: "border-type-integrator",
+        icon: "fa-handshake",
+        mottoCn: "“倾听多元声音，构筑信任桥梁，以真诚连结凝聚卓越团队”",
+        mottoEn: "“Connect diverse perspectives, build deep trust, and forge collective unity.”",
+        mindsetCn: "同理心强、善于捕捉人际微妙动态。相信真正的成功离不开团队内部的彼此信任与紧密协作。",
+        mindsetEn: "Deeply empathetic and relationally attuned. Believes true success relies on team trust and unity.",
+        focusCn: "团队共同完成使命的成就感、深入有温度的伙伴关系、包容共赢的工作氛围。",
+        focusEn: "Consensus, shared team purpose, trusted partnerships, and inclusive culture.",
+        decisionCn: "倾向于多方征询顾虑与期望，在尊重团队成员共识与情感的前提下推进行动。",
+        decisionEn: "Considers impact on people; seeks diplomatic buy-in and alignment before moving forward.",
+        energizers: [
+          { cn: "大家同舟共济、紧密协作达成共赢使命", en: "Collaborative teamwork where everyone feels valued" },
+          { cn: "深入倾听利益相关方诉求，化解对立冲突", en: "Meaningful dialogue that bridges differences and heals friction" },
+          { cn: "充满人情味与温度的团队互相认可", en: "Authentic mutual support and recognition of contributions" }
+        ],
+        drainers: [
+          { cn: "针锋相对的零和博弈与冷漠的办公室政治", en: "Zero-sum cutthroat confrontation and toxic politics" },
+          { cn: "意见与情感诉求被漠视或被粗暴打断", en: "Having feelings or people considerations dismissed outright" },
+          { cn: "在孤立无援的孤岛环境中单打独斗", en: "Working in isolated silos without collaborative alignment" }
+        ],
+        flexTips: [
+          { cn: "在探讨工作任务前，真诚花一两分钟关注对方近况与团队感受", en: "Acknowledge the human element first before jumping into task lists." },
+          { cn: "主动征求其对团队成员和客户潜在反应的敏锐预判", en: "Invite their diplomatic insight on team consensus and stakeholder sentiment." },
+          { cn: "肯定团队在幕后的默默付出，倡导共识共赢", en: "Express genuine appreciation and foster collaborative teamwork." }
+        ]
+      },
+      guardian: {
+        name: "Guardian · 守护型",
+        tag: "Structure & Rigor",
+        colorClass: "text-type-guardian",
+        borderClass: "border-type-guardian",
+        icon: "fa-shield-halved",
+        mottoCn: "“恪守秩序规程，洞察潜在风险，以极致严谨护航业务稳健前行”",
+        mottoEn: "“Uphold rigorous order, foresee risks, and safeguard sustainable quality.”",
+        mindsetCn: "审慎细致、求真务实。相信经得起考验的流程和详尽的历史数据是防范风险的最稳护城河。",
+        mindsetEn: "Meticulous, pragmatic, and methodical. Values proven track records, standards, and data rigor.",
+        focusCn: "井井有条的规划安排、严密合规的交付质量、稳定可预期的业务运行。",
+        focusEn: "Predictability, rigorous compliance, high quality, and disciplined execution.",
+        decisionCn: "深思熟虑，必须全面审查证据、事实和先例后才稳妥做出结论，拒绝冒进试错。",
+        decisionEn: "Deliberate and prudent; requires verified data and precedents before committing.",
+        energizers: [
+          { cn: "规划清晰、时间表井井有条的推进环境", en: "Well-structured plans, detailed agendas, and clear milestones" },
+          { cn: "深入钻研历史数据，拿出无懈可击的高品质工作底稿", en: "Deep diving into data to build bulletproof deliverables" },
+          { cn: "严守业务质量底线与稳健可控的风险预案", en: "Maintaining high standards and protecting projects from risk" }
+        ],
+        drainers: [
+          { cn: "朝令夕改、缺乏预兆的突发变更与仓促决策", en: "Last-minute chaos, sudden pivots, and rushed decisions" },
+          { cn: "毫无事实根据的盲目激进或未经检验的假说", en: "Reckless gambles without supporting historical evidence" },
+          { cn: "杂乱无章的文档资料与模糊不清的权责归属", en: "Disorganized documentation and ambiguous responsibilities" }
+        ],
+        flexTips: [
+          { cn: "提前提供背景材料与议程，预留充分的思考与核查时间", en: "Provide documents and agendas well ahead to allow digest time." },
+          { cn: "用事实、严谨数据和成功先例来论证方案的可行性", en: "Back up proposals with proven precedents, facts, and track records." },
+          { cn: "尊重既定流程与节点，保证交付的一致性与高标准", en: "Honor agreed processes, deadlines, and meticulous standards." }
+        ]
+      }
+    };
+
+    let currentSelectedType = 'driver';
+    let currentDetailTab = 'traits';
+
+    function selectType(typeKey) {
+      playSfx('click');
+      currentSelectedType = typeKey;
+      const data = CHEMISTRY_DATA[typeKey];
+
+      // Update Card Visuals
+      const allCards = ['pioneer', 'driver', 'integrator', 'guardian'];
+      allCards.forEach(key => {
+        const el = document.getElementById(`card-${key}`);
+        if (key === typeKey) {
+          el.className = `button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 ${data.borderClass} card-active-glow transition-all relative overflow-hidden group`;
+        } else {
+          el.className = `button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-white/30 card-shadow transition-all relative overflow-hidden group`;
+        }
+      });
+
+      // Populate Header
+      document.getElementById("detailTypeName").textContent = data.name;
+      document.getElementById("detailTypeTag").textContent = data.tag;
+      document.getElementById("detailTypeTag").className = `text-xs font-mono px-2.5 py-0.5 rounded-full bg-white/10 ${data.colorClass} font-bold`;
+      document.getElementById("detailTypeMottoCn").textContent = data.mottoCn;
+      document.getElementById("detailTypeMottoEn").textContent = data.mottoEn;
+
+      const iconBox = document.getElementById("detailTypeIconBox");
+      const icon = document.getElementById("detailTypeIcon");
+      iconBox.className = `w-14 h-14 rounded-2xl bg-white/5 border border-white/15 flex items-center justify-center text-2xl ${data.colorClass}`;
+      icon.className = `fa-solid ${data.icon}`;
+
+      // Populate Mindset & Traits
+      document.getElementById("detailMindsetCn").textContent = data.mindsetCn;
+      document.getElementById("detailMindsetEn").textContent = data.mindsetEn;
+      document.getElementById("detailFocusCn").textContent = data.focusCn;
+      document.getElementById("detailFocusEn").textContent = data.focusEn;
+      document.getElementById("detailDecisionCn").textContent = data.decisionCn;
+      document.getElementById("detailDecisionEn").textContent = data.decisionEn;
+
+      // Populate Energizers & Drainers
+      const energizeList = document.getElementById("detailEnergizeList");
+      energizeList.innerHTML = data.energizers.map(item => `
+        <li class="flex items-start gap-2">
+          <i class="fa-solid fa-circle-check text-deloitte-green mt-1 text-xs"></i>
+          <div>
+            <strong class="font-cn text-white block">${item.cn}</strong>
+            <span class="text-gray-400 text-[11px]">${item.en}</span>
+          </div>
+        </li>
+      `).join('');
+
+      const drainList = document.getElementById("detailDrainList");
+      drainList.innerHTML = data.drainers.map(item => `
+        <li class="flex items-start gap-2">
+          <i class="fa-solid fa-circle-xmark text-rose-400 mt-1 text-xs"></i>
+          <div>
+            <strong class="font-cn text-white block">${item.cn}</strong>
+            <span class="text-gray-400 text-[11px]">${item.en}</span>
+          </div>
+        </li>
+      `).join('');
+
+      // Populate Flex Tips
+      const flexList = document.getElementById("detailFlexList");
+      flexList.innerHTML = data.flexTips.map(item => `
+        <li class="flex items-start gap-2.5">
+          <span class="w-5 h-5 rounded-md bg-cyan-400/20 text-cyan-300 flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">
+            <i class="fa-solid fa-arrow-right"></i>
+          </span>
+          <div>
+            <strong class="font-cn text-white block">${item.cn}</strong>
+            <span class="text-gray-400 text-[11px]">${item.en}</span>
+          </div>
+        </li>
+      `).join('');
+
+      // Trigger pop-in transition
+      const container = document.getElementById("typeDetailContainer");
+      container.classList.remove("animate-pop-in");
+      void container.offsetWidth;
+      container.classList.add("animate-pop-in");
+    }
+
+    function switchDetailTab(tabKey) {
+      playSfx('tab');
+      currentDetailTab = tabKey;
+      const tabs = ['traits', 'stress', 'flex'];
+      
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tabBtn-${t}`);
+        const content = document.getElementById(`tabContent-${t}`);
+        if (t === tabKey) {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black whitespace-nowrap";
+          content.classList.remove("hidden");
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white whitespace-nowrap";
+          content.classList.add("hidden");
+        }
+      });
+    }
+
+    window.onload = function() {
+      selectType('driver');
+    };
+
+    document.addEventListener("click", () => {
+      if (!audioReady && audioEnabled) {
+        initAudioEngine();
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>
