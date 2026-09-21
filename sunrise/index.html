@@ -208,10 +208,21 @@
                 memoPoint2: "2. The unauthorized hoarding of dry-erase markers in Building B breakout rooms constitutes a material audit impediment. Return them immediately.",
                 memoPoint3: "3. Facilities audit confirms a 400-cookie deficit at the DU Barn between 23:00 and 02:00. This incident has been logged as Incident #BARN-COOKIE-404.",
                 memoFooter: "NOTICE: This internal memorandum has been disclosed for regulatory amusement. It contains zero system override action codes.",
-                closeMemo: "Acknowledge & Close"
+                closeMemo: "Acknowledge & Close",
+                // Clearance Proof & Ranking
+                groupNumLabel: "Assigned Group / Squad Number",
+                groupNumPlaceholder: "e.g. Group 12 / Team 04",
+                timestampLabel: "Official System Lockdown Timestamp (UTC+8)",
+                exportProofBtn: "Print / Export Clearance Proof (JPEG)",
+                exportingText: "Generating Anti-Tamper Proof...",
+                groupNumRequired: "Please enter your Group Number before generating the ranking certificate!",
+                watermarkNotice: "Anti-tamper digital watermarks and cryptographic seals are superimposed. Judges will rank squads based on this timestamp.",
+                certCardTitle: "Official Clearance & Leaderboard Verification",
+                rankingMetricNotice: "JUDGES RANKING METRIC // OFFICIAL TIME OF RECORD",
+                downloadSuccess: "Proof exported successfully! Present the downloaded JPEG to the judging panel."
             },
             zh: {
-                projectSunrise: "日出计划",
+                projectSunrise: "旭日计划",
                 investigationHub: "调查中心",
                 directory: "员工目录",
                 security: "安全合规",
@@ -316,9 +327,49 @@
                 memoPoint2: "2. 严禁在 B 座小组研讨室内囤积白板笔，该行为已构成重大审计阻碍。请立即归还公共区域。",
                 memoPoint3: "3. 后勤设施审查确认，昨日 23:00 至 02:00 期间 DU Barn 谷仓饼干出现 400 块的不明库存短缺。已记为 #BARN-COOKIE-404 事件。",
                 memoFooter: "警示：本内部备忘录仅供教学娱乐参考，不包含任何系统覆盖或行动代码。",
-                closeMemo: "知悉并关闭"
+                closeMemo: "知悉并关闭",
+                // Clearance Proof & Ranking
+                groupNumLabel: "参赛小组编号",
+                groupNumPlaceholder: "例如 第12组 / Group 12",
+                timestampLabel: "系统锁定官方时间戳 (UTC+8)",
+                exportProofBtn: "打印 / 导出通关凭证 (JPEG)",
+                exportingText: "正在生成防伪凭证...",
+                groupNumRequired: "请先输入您的小组编号以生成官方排名凭证！",
+                watermarkNotice: "图片已叠加全幅防伪水印与数字验真印章。评委将以凭证中的 UTC+8 时间戳进行计时排名。",
+                certCardTitle: "官方审查通关记录与计分凭证",
+                rankingMetricNotice: "评委审核打分与排名核心凭证",
+                downloadSuccess: "凭证已成功导出！请将此图片提交给评委进行官方成绩核验。"
             }
         };
+
+        function formatUTC8Time(date = new Date()) {
+            try {
+                const d = new Date(date);
+                const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+                const nd = new Date(utc + (3600000 * 8));
+                const pad = (n) => String(n).padStart(2, '0');
+                const y = nd.getFullYear();
+                const m = pad(nd.getMonth() + 1);
+                const day = pad(nd.getDate());
+                const h = pad(nd.getHours());
+                const min = pad(nd.getMinutes());
+                const s = pad(nd.getSeconds());
+                return `${y}-${m}-${day} ${h}:${min}:${s} (UTC+8)`;
+            } catch(e) {
+                return new Date().toISOString().replace('T', ' ').substring(0, 19) + ' (UTC+8)';
+            }
+        }
+
+        function generateSecurityToken(group, timeStr) {
+            const raw = `${group || 'UNKNOWN'}_${timeStr}_SUNRISE_VOIDWIRE_2026`;
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) {
+                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+                hash |= 0;
+            }
+            const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+            return `SEC-${hex}-DU26`;
+        }
 
         // 100% OFFLINE INLINE SVG VECTOR AVATAR COMPONENT
         function EmployeeAvatar({ member, className = "w-10 h-10 md:w-12 md:h-12" }) {
@@ -638,6 +689,12 @@
             const [showMemo, setShowMemo] = useState(false);
             const [rowClickCount, setRowClickCount] = useState(0);
 
+            const [completionTime, setCompletionTime] = useState('');
+            const [groupNumber, setGroupNumber] = useState('');
+            const [groupError, setGroupError] = useState(false);
+            const [isExporting, setIsExporting] = useState(false);
+            const [exportSuccessMsg, setExportSuccessMsg] = useState(false);
+
             const t = dict[lang] || dict.en;
 
             const [search, setSearch] = useState('');
@@ -652,6 +709,13 @@
 
             const allNodesUnlocked = unlockedNodes.logs && unlockedNodes.ledger && unlockedNodes.banking;
             const allPuzzlesSolved = solvedPuzzles.puzzle1 && solvedPuzzles.puzzle2 && solvedPuzzles.puzzle3;
+
+            // Automatically record the exact UTC+8 completion timestamp the moment all puzzles are solved
+            useEffect(() => {
+                if (allPuzzlesSolved && !completionTime) {
+                    setCompletionTime(formatUTC8Time(new Date()));
+                }
+            }, [allPuzzlesSolved, completionTime]);
 
             const protocolData = [
                 { tier: t.pTier1, cap: "< $1,000,000", jur: t.pJur1, anomaly: t.pAnom1, code: "PROCEED-00" },
@@ -686,13 +750,12 @@
             };
 
             const handleUnlock = (e, nodeKey, expected) => {
-                if (e && e.preventDefault) e.preventDefault();
+                e.preventDefault();
                 const cleanInput = (unlockInput || '').trim().toUpperCase().replace(/,/g, '');
                 const noSpaceInput = cleanInput.replace(/\s+/g, '');
-                
                 const isMatch = expected.some(ans => {
-                    const normAns = ans.toUpperCase().trim();
-                    return cleanInput === normAns || noSpaceInput === normAns.replace(/\s+/g, '');
+                    const cleanAns = ans.toUpperCase().trim().replace(/,/g, '');
+                    return cleanInput === cleanAns || noSpaceInput === cleanAns.replace(/\s+/g, '');
                 });
 
                 if (isMatch) {
@@ -702,6 +765,261 @@
                 } else {
                     setUnlockError(true);
                     setTimeout(() => setUnlockError(false), 2000);
+                }
+            };
+
+            const downloadProofJPEG = () => {
+                const cleanGroup = (groupNumber || '').trim();
+                if (!cleanGroup) {
+                    setGroupError(true);
+                    setTimeout(() => setGroupError(false), 3500);
+                    return;
+                }
+                setGroupError(false);
+                setIsExporting(true);
+
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1400;
+                    canvas.height = 960;
+                    const ctx = canvas.getContext('2d');
+                    const timeToPrint = completionTime || formatUTC8Time(new Date());
+
+                    // 1. Background gradient
+                    const bgGrad = ctx.createLinearGradient(0, 0, 1400, 960);
+                    bgGrad.addColorStop(0, '#020617');
+                    bgGrad.addColorStop(0.5, '#091124');
+                    bgGrad.addColorStop(1, '#020617');
+                    ctx.fillStyle = bgGrad;
+                    ctx.fillRect(0, 0, 1400, 960);
+
+                    // 2. Cyber grid pattern
+                    ctx.strokeStyle = 'rgba(6, 182, 212, 0.08)';
+                    ctx.lineWidth = 1;
+                    for (let x = 0; x < 1400; x += 40) {
+                        ctx.beginPath();
+                        ctx.moveTo(x, 0);
+                        ctx.lineTo(x, 960);
+                        ctx.stroke();
+                    }
+                    for (let y = 0; y < 960; y += 40) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, y);
+                        ctx.lineTo(1400, y);
+                        ctx.stroke();
+                    }
+
+                    // 3. Superimposed Anti-Counterfeit Watermarks across entire canvas
+                    ctx.save();
+                    ctx.translate(700, 480);
+                    ctx.rotate(-22 * Math.PI / 180);
+                    ctx.translate(-700, -480);
+                    
+                    ctx.font = "bold 15px 'JetBrains Mono', monospace";
+                    ctx.fillStyle = "rgba(245, 158, 11, 0.09)";
+                    const wmPhrase = "PROJECT SUNRISE // OFFICIAL AUDIT CLEARANCE // JUDGES RANKING METRIC // DO NOT ALTER // EVIDENCE CERTIFIED // ";
+                    for (let y = -600; y < 1600; y += 50) {
+                        for (let x = -800; x < 2400; x += 850) {
+                            ctx.fillText(wmPhrase, x, y);
+                        }
+                    }
+                    ctx.restore();
+
+                    // 4. Double Security Border & Glowing Corner Brackets
+                    ctx.strokeStyle = 'rgba(134, 188, 37, 0.75)'; // Deloitte Green
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(30, 30, 1340, 900);
+
+                    ctx.strokeStyle = 'rgba(245, 158, 11, 0.5)'; // Amber inner rule
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(40, 40, 1320, 880);
+
+                    ctx.strokeStyle = '#86BC25';
+                    ctx.lineWidth = 6;
+                    const cLen = 35;
+                    // Top-left
+                    ctx.beginPath(); ctx.moveTo(25, 25 + cLen); ctx.lineTo(25, 25); ctx.lineTo(25 + cLen, 25); ctx.stroke();
+                    // Top-right
+                    ctx.beginPath(); ctx.moveTo(1375 - cLen, 25); ctx.lineTo(1375, 25); ctx.lineTo(1375, 25 + cLen); ctx.stroke();
+                    // Bottom-left
+                    ctx.beginPath(); ctx.moveTo(25, 935 - cLen); ctx.lineTo(25, 935); ctx.lineTo(25 + cLen, 935); ctx.stroke();
+                    // Bottom-right
+                    ctx.beginPath(); ctx.moveTo(1375 - cLen, 935); ctx.lineTo(1375, 935); ctx.lineTo(1375, 935 - cLen); ctx.stroke();
+
+                    // 5. Header Section
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.font = "bold 13px 'JetBrains Mono', monospace";
+                    ctx.fillText("DELOITTE UNIVERSITY // DAY 2 GEO-QUEST CAPSTONE // OFFICIAL AUDIT CLEARANCE", 70, 75);
+
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = "bold 34px 'Urbanist', sans-serif";
+                    ctx.fillText("PROJECT SUNRISE — INCIDENT OVERRIDE PROOF", 70, 115);
+
+                    // Top-right status pill
+                    ctx.fillStyle = 'rgba(134, 188, 37, 0.15)';
+                    ctx.fillRect(1040, 60, 270, 48);
+                    ctx.strokeStyle = '#86BC25';
+                    ctx.lineWidth = 1.5;
+                    ctx.strokeRect(1040, 60, 270, 48);
+                    ctx.fillStyle = '#86BC25';
+                    ctx.font = "bold 14px 'JetBrains Mono', monospace";
+                    ctx.fillText("STATUS: SAFELOCKED [OK]", 1060, 90);
+
+                    // Divider
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath(); ctx.moveTo(70, 140); ctx.lineTo(1330, 140); ctx.stroke();
+
+                    // 6. Highlighted Ranking Box (The Timestamp & Group Number)
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                    ctx.fillRect(70, 160, 1260, 150);
+                    ctx.strokeStyle = 'rgba(245, 158, 11, 0.85)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(70, 160, 1260, 150);
+
+                    // Subhead in Ranking Card
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.font = "bold 12px 'JetBrains Mono', monospace";
+                    ctx.fillText("OFFICIAL RANKING METRIC // CONFIRMED LOCKDOWN TIMESTAMP (UTC+8):", 95, 195);
+
+                    // Big Timestamp
+                    ctx.fillStyle = '#86BC25';
+                    ctx.font = "bold 42px 'JetBrains Mono', monospace";
+                    ctx.fillText(timeToPrint, 95, 250);
+
+                    // Group Number in Ranking Card (Right side)
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = "bold 13px 'JetBrains Mono', monospace";
+                    ctx.fillText("AUTHENTICATED SQUAD / GROUP:", 780, 195);
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = "bold 36px 'Urbanist', sans-serif";
+                    ctx.fillText(cleanGroup.toUpperCase(), 780, 245);
+
+                    // 7. Forensic Data Columns
+                    // Left Column (Incident Summary)
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
+                    ctx.fillRect(70, 335, 590, 375);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(70, 335, 590, 375);
+
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.font = "bold 14px 'JetBrains Mono', monospace";
+                    ctx.fillText("INCIDENT SPECIFICATIONS", 95, 370);
+
+                    const leftRows = [
+                        ["Target Environment", "FTV-PROD-01 (FitVision, Inc.)"],
+                        ["Executed Action Code", "VOID-WIRE (System Override Active)"],
+                        ["Frozen Transfer ID", "TXN8824 (Offshore Payment Ledger)"],
+                        ["Intercepted Amount", "$22,000,000.00 USD"],
+                        ["Beneficiary Entity", "APEX Shell Logistics (BVI Shell Co.)"],
+                        ["Legitimate PO Match", "PO4403 (APEX Logistics Ltd, SG) — Mismatch Flagged"]
+                    ];
+                    leftRows.forEach((r, idx) => {
+                        const y = 410 + idx * 48;
+                        ctx.fillStyle = '#94a3b8';
+                        ctx.font = "12px 'Urbanist', sans-serif";
+                        ctx.fillText(r[0].toUpperCase(), 95, y);
+                        ctx.fillStyle = idx === 1 ? '#86BC25' : '#e2e8f0';
+                        ctx.font = idx === 1 ? "bold 15px 'JetBrains Mono', monospace" : "bold 14px 'JetBrains Mono', monospace";
+                        ctx.fillText(r[1], 95, y + 20);
+                    });
+
+                    // Right Column (Compliance Attribution & Security Seal)
+                    ctx.fillStyle = 'rgba(15, 23, 42, 0.65)';
+                    ctx.fillRect(690, 335, 640, 375);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(690, 335, 640, 375);
+
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.font = "bold 14px 'JetBrains Mono', monospace";
+                    ctx.fillText("AUDIT FORENSIC ATTRIBUTION", 715, 370);
+
+                    const rightRows = [
+                        ["Rogue Technical Actor", "Marcus Bergstrom (EMP004) — Unauthorized Scrub"],
+                        ["Executive Signatory", "Victoria Vance (EMP001) — Wire Approved"],
+                        ["Policy Violation", "ISS-04 High Control Breach (Chained Scrub)"],
+                        ["Jurisdiction Risk Tier", "British Virgin Islands (EDD Watchlist Register)"]
+                    ];
+                    rightRows.forEach((r, idx) => {
+                        const y = 410 + idx * 48;
+                        ctx.fillStyle = '#94a3b8';
+                        ctx.font = "12px 'Urbanist', sans-serif";
+                        ctx.fillText(r[0].toUpperCase(), 715, y);
+                        ctx.fillStyle = '#e2e8f0';
+                        ctx.font = "bold 14px 'JetBrains Mono', monospace";
+                        ctx.fillText(r[1], 715, y + 20);
+                    });
+
+                    // Digital Verification Token
+                    const token = generateSecurityToken(cleanGroup, timeToPrint);
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = "12px 'Urbanist', sans-serif";
+                    ctx.fillText("DIGITAL VERIFICATION CHECKSUM", 715, 620);
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.font = "bold 16px 'JetBrains Mono', monospace";
+                    ctx.fillText(token, 715, 645);
+
+                    // Circular Official Seal Stamp
+                    ctx.save();
+                    ctx.translate(1220, 575);
+                    ctx.strokeStyle = 'rgba(134, 188, 37, 0.75)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.arc(0, 0, 55, 0, Math.PI * 2); ctx.stroke();
+                    ctx.setLineDash([4, 4]);
+                    ctx.beginPath(); ctx.arc(0, 0, 47, 0, Math.PI * 2); ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.fillStyle = '#86BC25';
+                    ctx.font = "bold 10px 'JetBrains Mono', monospace";
+                    ctx.textAlign = 'center';
+                    ctx.fillText("DELOITTE", 0, -22);
+                    ctx.fillText("DAY 2 QUEST", 0, -8);
+                    ctx.font = "bold 12px 'Urbanist', sans-serif";
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.fillText("VERIFIED", 0, 10);
+                    ctx.font = "9px 'JetBrains Mono', monospace";
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.fillText("2026 AUDIT", 0, 26);
+                    ctx.restore();
+
+                    // 8. Bottom Anti-Tamper Notice for Judges
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.08)';
+                    ctx.fillRect(70, 730, 1260, 95);
+                    ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(70, 730, 1260, 95);
+
+                    ctx.fillStyle = '#ef4444';
+                    ctx.font = "bold 12px 'JetBrains Mono', monospace";
+                    ctx.fillText("JUDICIAL EVALUATION & RANKING DIRECTIVE // ANTI-FRAUD SPECIFICATION:", 95, 760);
+
+                    ctx.fillStyle = '#cbd5e1';
+                    ctx.font = "12px 'Urbanist', sans-serif";
+                    ctx.fillText("1. The primary scoring metric for Day 2 Geo-Quest leaderboard placement is the chronological UTC+8 timestamp printed in Box 1.", 95, 783);
+                    ctx.fillText("2. Cryptographic background watermarks and checksums are mathematically bound to this timestamp and squad identification.", 95, 801);
+
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = "11px 'JetBrains Mono', monospace";
+                    ctx.fillText("Project Sunrise Simulator • Built for DeloitteLand A1 Orientation • All Evidence Cryptographically Logged", 70, 855);
+
+                    // 9. Download as JPEG
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                    const a = document.createElement('a');
+                    const cleanTimestamp = timeToPrint.replace(/[^0-9]/g, '_').substring(0, 19);
+                    const cleanGroupName = cleanGroup.replace(/[^a-zA-Z0-9_-]/g, '_');
+                    a.download = `Project_Sunrise_Proof_${cleanGroupName}_${cleanTimestamp}.jpg`;
+                    a.href = dataUrl;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    setIsExporting(false);
+                    setExportSuccessMsg(true);
+                    setTimeout(() => setExportSuccessMsg(false), 6000);
+                } catch(err) {
+                    console.error("Failed to generate proof image:", err);
+                    setIsExporting(false);
                 }
             };
 
@@ -1071,11 +1389,103 @@
                                     </div>
                                 ) : (
                                     allPuzzlesSolved ? (
-                                        <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 p-6 md:p-8 text-center fade-in">
-                                            <i className="fa-solid fa-shield-halved text-6xl md:text-7xl text-amber-500 mb-6"></i>
-                                            <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest mb-4 uppercase">{t.haltTxn}</h1>
-                                            <p className="text-sm md:text-base text-slate-300 max-w-xl mb-6">{t.missionAccomplished}</p>
-                                            <div className="bg-amber-500/10 text-amber-400 px-4 md:px-6 py-2 rounded-full text-base md:text-xl font-bold tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.2)]">{t.ptsAwarded}</div>
+                                        <div className="fade-in pb-12 flex flex-col items-center justify-start min-h-full">
+                                            <div className="max-w-2xl w-full glass-panel border border-amber-500/40 rounded-2xl shadow-2xl p-6 md:p-8 relative overflow-hidden my-auto">
+                                                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-500 via-lime-500 to-amber-500"></div>
+
+                                                {/* Header Icon & Title */}
+                                                <div className="text-center mb-6">
+                                                    <div className="w-16 h-16 rounded-full bg-amber-500/10 border-2 border-amber-500 flex items-center justify-center mx-auto mb-3 text-amber-400 text-2xl shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+                                                        <i className="fa-solid fa-shield-halved"></i>
+                                                    </div>
+                                                    <h1 className="text-2xl md:text-3xl font-bold text-white tracking-widest uppercase mb-2">
+                                                        {t.haltTxn}
+                                                    </h1>
+                                                    <p className="text-xs md:text-sm text-slate-300 leading-relaxed mb-4">
+                                                        {t.missionAccomplished}
+                                                    </p>
+                                                    <div className="inline-block bg-amber-500/10 border border-amber-500/40 text-amber-400 px-4 py-1.5 rounded-full text-xs md:text-sm font-bold tracking-widest shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+                                                        {t.ptsAwarded}
+                                                    </div>
+                                                </div>
+
+                                                {/* Official Clearance & Ranking Proof Box */}
+                                                <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-5 mb-6 space-y-4">
+                                                    <div className="border-b border-slate-800 pb-2">
+                                                        <span className="text-[10px] uppercase font-mono tracking-widest text-amber-500 block">
+                                                            <i className="fa-solid fa-certificate mr-1.5"></i> {t.certCardTitle}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* UTC+8 Timestamp Display */}
+                                                    <div>
+                                                        <label className="text-[11px] font-mono text-slate-400 block mb-1">
+                                                            <i className="fa-solid fa-clock text-amber-500 mr-1.5"></i> {t.timestampLabel}
+                                                        </label>
+                                                        <div className="bg-slate-900 border border-slate-700/80 rounded-lg p-3 flex items-center justify-between">
+                                                            <span className="font-mono text-base md:text-lg text-deloitte-green font-bold tracking-wider">
+                                                                {completionTime || formatUTC8Time(new Date())}
+                                                            </span>
+                                                            <span className="text-[9px] font-mono uppercase bg-slate-800 text-amber-400 px-2 py-1 rounded border border-slate-700 shrink-0 ml-2">
+                                                                {t.rankingMetricNotice}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Group Number Input Blank */}
+                                                    <div>
+                                                        <label className="text-[11px] font-mono text-slate-400 block mb-1">
+                                                            <i className="fa-solid fa-users text-amber-500 mr-1.5"></i> {t.groupNumLabel} <span className="text-red-400">*</span>
+                                                        </label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={groupNumber} 
+                                                            onChange={(e) => { setGroupNumber(e.target.value); setGroupError(false); }}
+                                                            placeholder={t.groupNumPlaceholder}
+                                                            className={`w-full bg-slate-900 border ${groupError ? 'border-red-500 text-red-400 ring-2 ring-red-500/30' : 'border-slate-700 text-white focus:border-amber-500'} rounded-lg p-3 text-sm md:text-base outline-none transition-all`}
+                                                        />
+                                                        {groupError && (
+                                                            <p className="text-xs text-red-400 mt-1 flex items-center gap-1.5 animate-pulse">
+                                                                <i className="fa-solid fa-triangle-exclamation"></i> {t.groupNumRequired}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Notice regarding anti-tamper watermark & judge ranking */}
+                                                    <p className="text-[11px] text-slate-400 leading-relaxed bg-slate-900/60 p-3 rounded border border-slate-800/80">
+                                                        <i className="fa-solid fa-shield-cat text-amber-400 mr-1.5"></i>
+                                                        {t.watermarkNotice}
+                                                    </p>
+                                                </div>
+
+                                                {/* Success message banner */}
+                                                {exportSuccessMsg && (
+                                                    <div className="mb-4 bg-emerald-950/60 border border-emerald-500/50 rounded-lg p-3 text-center text-xs md:text-sm text-emerald-300 font-bold fade-in flex items-center justify-center gap-2">
+                                                        <i className="fa-solid fa-circle-check text-emerald-400"></i>
+                                                        {t.downloadSuccess}
+                                                    </div>
+                                                )}
+
+                                                {/* Print / Export Button */}
+                                                <button 
+                                                    type="button"
+                                                    onClick={downloadProofJPEG}
+                                                    disabled={isExporting}
+                                                    className="w-full bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 active:from-amber-700 active:to-yellow-600 text-slate-950 font-bold py-3.5 px-6 rounded-xl transition-all uppercase tracking-widest text-sm md:text-base shadow-[0_0_25px_rgba(245,158,11,0.3)] flex items-center justify-center gap-3 cursor-pointer select-none"
+                                                >
+                                                    {isExporting ? (
+                                                        <>
+                                                            <i className="fa-solid fa-circle-notch fa-spin"></i>
+                                                            <span>{t.exportingText}</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <i className="fa-solid fa-file-arrow-down text-lg"></i>
+                                                            <span>{t.exportProofBtn}</span>
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
                                         </div>
                                     ) : (
                                         <div className="fade-in pb-12">
@@ -1083,7 +1493,7 @@
                                             <p className="text-xs md:text-sm text-slate-400 mb-6 max-w-2xl">{t.sysOverrideDesc}</p>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                 {[
-                                                    { k: 'puzzle1', t: t.identityMatch, p: t.empNameHint, e: ["MARCUS BERGSTROM", "MARCUS", "BERGSTROM", "VICTORIA VANCE", "VICTORIA", "VANCE"] },
+                                                    { k: 'puzzle1', t: t.identityMatch, p: t.empNameHint, e: ["MARCUS BERGSTROM", "MARCUS", "BERGSTROM", "VICTORIA VANCE", "VICTORIA", "VANCE", "EMP004", "004", "EMP001", "001"] },
                                                     { k: 'puzzle2', t: t.auditFlag, p: t.suspiciousTxn, e: ["TXN-8824", "TXN8824", "8824"] },
                                                     { k: 'puzzle3', t: t.executeAction, p: t.haltActionCode, e: ["VOID-WIRE", "VOID WIRE", "VOIDWIRE"] }
                                                 ].map(puz => {
