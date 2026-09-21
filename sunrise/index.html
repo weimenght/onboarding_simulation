@@ -4,40 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Sunrise</title>
+    <!-- Core Styling & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
+    
+    <!-- React, ReactDOM & Babel without CORS origin-blocking -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Urbanist', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        deloitte: {
-                            green: '#86BC25',
-                            dark: '#000000',
-                            panel: '#0F172A',
-                            border: '#1E293B'
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Urbanist', 'sans-serif'],
+                            mono: ['JetBrains Mono', 'monospace'],
+                            typewriter: ['Special Elite', 'cursive'],
+                        },
+                        colors: {
+                            deloitte: {
+                                green: '#86BC25',
+                                dark: '#000000',
+                                panel: '#0F172A',
+                                border: '#1E293B'
+                            }
                         }
                     }
                 }
-            }
+            };
         }
     </script>
     <style>
-        body { 
-            background-color: #020617; 
-            color: #F8FAFC;
-            overflow: hidden;
+        html, body, #root {
+            height: 100%;
+            width: 100%;
             margin: 0;
             padding: 0;
+            background-color: #020617;
+            color: #F8FAFC;
+            overflow: hidden;
+            font-family: 'Urbanist', sans-serif;
         }
         
         .cyber-grid {
@@ -71,13 +80,12 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(134, 188, 37, 0.3); border-radius: 4px; }
@@ -106,7 +114,7 @@
                 n3Protocol: "N3: Protocol",
                 haltTxn: "Halt Transaction",
                 decryptionStatus: "Decryption Status",
-                searchPlaceholderOrg: "Search (e.g. EMP012)",
+                searchPlaceholderOrg: "Search (e.g. EMP012 or 404)",
                 targetAcquired: "Target Match Acquired",
                 targetLocated: "Employee ID EMP004 located.",
                 id: "ID",
@@ -114,11 +122,11 @@
                 ext: "Ext",
                 ip: "IP",
                 n1Title: "Node 1: Server Logs",
-                n1Hint: "Enter the 4-digit Whistleblower Protocol PIN from Station 1.",
+                n1Hint: "Find the clues through the Task Card or NPC",
                 n2Title: "Node 2: Offshore Ledger",
-                n2Hint: "Enter the exact missing capital amount flagged in Station 3.",
+                n2Hint: "Find the clues through the Task Card or NPC",
                 n3Title: "Node 3: Emergency Action Protocol",
-                n3Hint: "Identify the high-risk offshore jurisdiction flagged in Station 2.",
+                n3Hint: "Find the clues through the Task Card or NPC",
                 enterKey: "ENTER KEY",
                 decryptBtn: "Decrypt Node",
                 time: "Time",
@@ -135,17 +143,21 @@
                 jurisdiction: "Jurisdiction",
                 anomalyFlag: "Anomaly Flag",
                 actionCode: "Action Code",
-                missionAccomplished: "Mission Accomplished. Marcus Bergstrom has been identified. The $22M transfer to APEX Shell Logistics is frozen. Summit & Co. is protected.",
-                ptsAwarded: "+50 D.POINTS AWARDED",
+                missionAccomplished: "Mission Accomplished. Rogue transactions halted. APEX Shell Logistics account frozen. Summit & Co. audit integrity safeguarded.",
                 sysOverride: "System Override Terminal",
                 sysOverrideDesc: "Scrutinize the decrypted nodes. Identify the rogue identity, flag the illegal transaction, and execute the action code to halt the transfer.",
+                terminalLockedTitle: "Terminal Lockdown Active",
+                terminalLockedDesc: "All 3 Encrypted Nodes must be fully decrypted before the System Override Terminal can be accessed.",
+                terminalProgress: "Decryption Progress",
+                jumpToNode: "Jump to Node",
                 identityMatch: "Identity Match",
-                empIdHint: "Employee ID (e.g. EMP001)",
+                empNameHint: "Employee Name (e.g. Victoria Vance)",
                 auditFlag: "Audit Flag",
                 suspiciousTxn: "Suspicious TXN ID",
                 executeAction: "Execute Action",
                 haltActionCode: "Halt Action Code",
                 verified: "VERIFIED",
+                verifyBtn: "Verify",
                 enter: "ENTER",
                 privActivities: "Privileged Activities (ISS-04)",
                 privDesc: "The following activities are classified as privileged and require prior written approval from a Vice President or above. A privileged activity performed without prior VP approval is a reportable High Control Breach.",
@@ -179,11 +191,24 @@
                 country: "Country",
                 risk: "Risk",
                 emergencyDesc: "Cross-reference the flagged transaction details against the Global Banking Protocol matrix below to determine the correct system override code. All criteria in a row must be met to authorize the execution code.",
-                // Protocol Matrix terms
                 pTier1: "Low", pTier2: "Elevated", pTier3: "High", pTier4: "Severe", pTier5: "Critical",
                 pJur1: "Standard", pJur2: "EDD Watchlist", pJur3: "Sanctioned List",
                 pAnom1: "Routine / No Flag", pAnom2: "Missing Purchase Order", pAnom3: "Unauthorized Signatory",
-                pAnom4: "Velocity Flag", pAnom5: "Vendor Mismatch / Shell", pAnom6: "Regulatory Breach", pCapAny: "Any"
+                pAnom4: "Velocity Flag", pAnom5: "Vendor Mismatch / Shell", pAnom6: "Regulatory Breach", pCapAny: "Any",
+                ghostTitle: "SPECTRAL ENTITY DETECTED",
+                ghostRole: "Chief Snack Officer & Cookie Guardian",
+                ghostDept: "DU Midnight Operations / Barn Hospitality",
+                ghostNote: "Lore Note: Legend says this auditor survived solely on Texas DU Barn cookies and 2 AM espresso shots. Known to hoard Expo dry-erase markers across all campus breakout rooms.",
+                memoHeader: "RESTRICTED // INTERNAL DISCIPLINARY MEMORANDUM",
+                memoSub: "DU Campus Facilities & Engagement Ethics Taskforce",
+                memoTo: "All Engagement Teams, Day 2 Simulation Cohorts",
+                memoFrom: "Office of the DU Managing Director of Hospitality",
+                memoSubject: "Investigation into Ongoing Breakout Room & Expense Violations",
+                memoPoint1: "1. Under Policy EXP-DU-01, iced caramel macchiatos from the Commons are strictly non-chargeable as 'urgent audit evidence assets'.",
+                memoPoint2: "2. The unauthorized hoarding of dry-erase markers in Building B breakout rooms constitutes a material audit impediment. Return them immediately.",
+                memoPoint3: "3. Facilities audit confirms a 400-cookie deficit at the DU Barn between 23:00 and 02:00. This incident has been logged as Incident #BARN-COOKIE-404.",
+                memoFooter: "NOTICE: This internal memorandum has been disclosed for regulatory amusement. It contains zero system override action codes.",
+                closeMemo: "Acknowledge & Close"
             },
             zh: {
                 projectSunrise: "旭日计划",
@@ -197,7 +222,7 @@
                 n3Protocol: "N3：协议",
                 haltTxn: "终止交易",
                 decryptionStatus: "解密状态",
-                searchPlaceholderOrg: "搜索 (例如 EMP012)",
+                searchPlaceholderOrg: "搜索 (例如 EMP012 或 404)",
                 targetAcquired: "发现目标匹配",
                 targetLocated: "已定位员工 ID EMP004。",
                 id: "工号",
@@ -205,11 +230,11 @@
                 ext: "分机",
                 ip: "IP地址",
                 n1Title: "节点 1：服务器日志",
-                n1Hint: "请输入第 1 站点的 4 位举报人协议 PIN 码。",
+                n1Hint: "通过任务卡或NPC寻找线索",
                 n2Title: "节点 2：离岸账本",
-                n2Hint: "请输入在第 3 站点标记的缺失资金准确金额。",
+                n2Hint: "通过任务卡或NPC寻找线索",
                 n3Title: "节点 3：紧急行动协议",
-                n3Hint: "识别在第 2 站点标记的高风险离岸管辖区。",
+                n3Hint: "通过任务卡或NPC寻找线索",
                 enterKey: "输入密钥",
                 decryptBtn: "解密节点",
                 time: "时间",
@@ -226,17 +251,21 @@
                 jurisdiction: "管辖区",
                 anomalyFlag: "异常标记",
                 actionCode: "行动代码",
-                missionAccomplished: "任务完成。已确认 Marcus Bergstrom 的身份。向 APEX Shell Logistics 转账的 2,200 万美元已被冻结。Summit & Co. 得到保护。",
-                ptsAwarded: "获得 +50 德勤积分",
+                missionAccomplished: "任务完成。违规资金流转已被成功拦截。APEX Shell Logistics 账户已被全面冻结。Summit & Co. 审计安全已获得保障。",
                 sysOverride: "系统覆盖终端",
                 sysOverrideDesc: "审查解密节点。识别违规人员身份，标记非法交易，并执行操作代码以阻止转账。",
+                terminalLockedTitle: "终端处于锁定状态",
+                terminalLockedDesc: "必须先完整解密全部 3 个加密节点，方可访问系统覆盖终端并执行终止交易。",
+                terminalProgress: "解密进度",
+                jumpToNode: "前往节点",
                 identityMatch: "身份匹配",
-                empIdHint: "员工 ID (例如 EMP001)",
+                empNameHint: "员工姓名 (例如 Victoria Vance)",
                 auditFlag: "审计标记",
                 suspiciousTxn: "可疑交易ID",
                 executeAction: "执行行动",
                 haltActionCode: "终止行动代码",
                 verified: "已验证",
+                verifyBtn: "验证",
                 enter: "输入",
                 privActivities: "特权活动 (ISS-04)",
                 privDesc: "以下活动被归类为特权活动，需事先获得副总裁（VP）或以上级别的书面批准。未经书面批准执行特权活动属于需上报的高风险控制违规行为。",
@@ -270,13 +299,110 @@
                 country: "国家/地区",
                 risk: "风险",
                 emergencyDesc: "将标记的交易明细与下方的全球银行协议矩阵进行交叉比对，以确定正确的系统覆盖代码。必须满足该行中的所有条件才能授权执行代码。",
-                // Protocol Matrix terms
                 pTier1: "低", pTier2: "提升", pTier3: "高", pTier4: "严重", pTier5: "极危",
                 pJur1: "标准", pJur2: "EDD 观察名单", pJur3: "制裁名单",
                 pAnom1: "常规 / 无标记", pAnom2: "缺失采购订单", pAnom3: "未经授权的签字人",
-                pAnom4: "频率异常标记", pAnom5: "供应商不匹配 / 空壳", pAnom6: "违反合规规定", pCapAny: "任何"
+                pAnom4: "频率异常标记", pAnom5: "供应商不匹配 / 空壳", pAnom6: "违反合规规定", pCapAny: "任何",
+                ghostTitle: "检测到幽灵实体",
+                ghostRole: "首席零食官兼饼干守护者",
+                ghostDept: "DU 深夜运营处 / 谷仓餐饮部",
+                ghostNote: "背景记录：传说这位审计师仅依靠德勤大学德州校区的谷仓饼干和凌晨两点的意式浓缩咖啡维生。因在所有研讨小组研讨室囤积 Expo 白板笔而广为人知。",
+                memoHeader: "机密文件 // 内部纪律审查备忘录",
+                memoSub: "德勤大学校区后勤设施与项目道德工作小组",
+                memoTo: "所有项目团队、第二天模拟培训全体学员",
+                memoFrom: "德勤大学校区餐饮后勤管理处",
+                memoSubject: "关于研讨小组室违规占用白板笔及违规报销的调查通报",
+                memoPoint1: "1. 依据管理规定 EXP-DU-01，在 Commons 购买的冰焦糖玛奇朵严禁列支为'紧急审计工作底稿资产'。",
+                memoPoint2: "2. 严禁在 B 座小组研讨室内囤积白板笔，该行为已构成重大审计阻碍。请立即归还公共区域。",
+                memoPoint3: "3. 后勤设施审查确认，昨日 23:00 至 02:00 期间 DU Barn 谷仓饼干出现 400 块的不明库存短缺。已记为 #BARN-COOKIE-404 事件。",
+                memoFooter: "警示：本内部备忘录仅供教学娱乐参考，不包含任何系统覆盖或行动代码。",
+                closeMemo: "知悉并关闭"
             }
         };
+
+        // 100% OFFLINE INLINE SVG VECTOR AVATAR COMPONENT
+        function EmployeeAvatar({ member, className = "w-10 h-10 md:w-12 md:h-12" }) {
+            const rawId = (member && member.id) ? member.id : "EMP001";
+            const num = parseInt(rawId.replace(/\D/g, ''), 10) || 1;
+            const palettes = [
+                { bg: '#0284c7', face: '#38bdf8', acc: '#f0fdf4', hair: '#0369a1' },
+                { bg: '#7c3aed', face: '#a78bfa', acc: '#fdf4ff', hair: '#5b21b6' },
+                { bg: '#db2777', face: '#f472b6', acc: '#fff1f2', hair: '#9d174d' },
+                { bg: '#059669', face: '#34d399', acc: '#ecfdf5', hair: '#065f46' },
+                { bg: '#d97706', face: '#fbbf24', acc: '#fffbeb', hair: '#b45309' },
+                { bg: '#86BC25', face: '#bef264', acc: '#0f172a', hair: '#3f6212' }
+            ];
+            const p = palettes[num % palettes.length];
+            const type = num % 4;
+
+            if (rawId === "EMP001") {
+                return (
+                    <svg className={`${className} rounded-full border-2 border-amber-400 bg-slate-900 shrink-0`} viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="48" fill="#1e293b" />
+                        <circle cx="50" cy="40" r="20" fill="#fde047" />
+                        <path d="M50 18 C38 18 32 28 32 38 C32 48 38 48 40 38 C42 28 58 28 60 38 C62 48 68 48 68 38 C68 28 62 18 50 18 Z" fill="#b45309" />
+                        <circle cx="43" cy="38" r="2.5" fill="#0f172a" />
+                        <circle cx="57" cy="38" r="2.5" fill="#0f172a" />
+                        <path d="M46 47 Q50 51 54 47" stroke="#0f172a" strokeWidth="2" fill="none" strokeLinecap="round" />
+                        <path d="M22 88 C26 68 40 64 50 64 C60 64 74 68 78 88 Z" fill="#86BC25" />
+                        <polygon points="50,66 45,82 50,88 55,82" fill="#f8fafc" />
+                    </svg>
+                );
+            }
+
+            return (
+                <svg className={`${className} rounded-full border border-slate-700 bg-slate-950 shrink-0`} viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="49" fill={p.bg} opacity="0.3" />
+                    {type === 0 && (
+                        <g>
+                            <circle cx="50" cy="42" r="22" fill={p.face} />
+                            <path d="M30 35 Q50 15 70 35 Q50 25 30 35 Z" fill={p.hair} />
+                            <circle cx="42" cy="40" r="2.5" fill="#0f172a" />
+                            <circle cx="58" cy="40" r="2.5" fill="#0f172a" />
+                            <path d="M45 50 Q50 54 55 50" stroke="#0f172a" strokeWidth="2" fill="none" strokeLinecap="round" />
+                            <path d="M24 90 C28 72 40 68 50 68 C60 68 72 72 76 90 Z" fill={p.hair} />
+                        </g>
+                    )}
+                    {type === 1 && (
+                        <g>
+                            <rect x="47" y="16" width="6" height="10" fill={p.acc} />
+                            <circle cx="50" cy="14" r="5" fill="#ef4444" />
+                            <rect x="28" y="26" width="44" height="34" rx="8" fill={p.face} />
+                            <rect x="34" y="34" width="32" height="16" rx="4" fill="#0f172a" />
+                            <circle cx="42" cy="42" r="3" fill="#38bdf8" />
+                            <circle cx="58" cy="42" r="3" fill="#38bdf8" />
+                            <line x1="38" y1="54" x2="62" y2="54" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" />
+                            <path d="M25 90 C30 70 40 66 50 66 C60 66 70 70 75 90 Z" fill={p.bg} />
+                        </g>
+                    )}
+                    {type === 2 && (
+                        <g>
+                            <polygon points="30,22 45,34 26,38" fill={p.hair} />
+                            <polygon points="70,22 55,34 74,38" fill={p.hair} />
+                            <circle cx="50" cy="46" r="22" fill={p.face} />
+                            <ellipse cx="42" cy="44" rx="3" ry="4" fill="#0f172a" />
+                            <ellipse cx="58" cy="44" rx="3" ry="4" fill="#0f172a" />
+                            <polygon points="50,49 47,52 53,52" fill="#ec4899" />
+                            <path d="M45 54 Q50 57 55 54" stroke="#0f172a" strokeWidth="1.5" fill="none" />
+                            <path d="M26 90 C30 74 40 70 50 70 C60 70 70 74 74 90 Z" fill={p.hair} />
+                        </g>
+                    )}
+                    {type === 3 && (
+                        <g>
+                            <circle cx="50" cy="42" r="22" fill={p.face} />
+                            <path d="M28 32 C38 18 62 18 72 32 C65 24 35 24 28 32 Z" fill={p.hair} />
+                            <rect x="34" y="36" width="13" height="10" rx="2" fill="none" stroke="#0f172a" strokeWidth="2.5" />
+                            <rect x="53" y="36" width="13" height="10" rx="2" fill="none" stroke="#0f172a" strokeWidth="2.5" />
+                            <line x1="47" y1="41" x2="53" y2="41" stroke="#0f172a" strokeWidth="2.5" />
+                            <circle cx="40.5" cy="41" r="2" fill="#0f172a" />
+                            <circle cx="59.5" cy="41" r="2" fill="#0f172a" />
+                            <path d="M46 51 Q50 54 54 51" stroke="#0f172a" strokeWidth="2" fill="none" strokeLinecap="round" />
+                            <path d="M24 90 C28 72 40 68 50 68 C60 68 72 72 76 90 Z" fill={p.acc} />
+                        </g>
+                    )}
+                </svg>
+            );
+        }
 
         // RAW DATA PIPELINES (With Injected Distractors)
         const rawLogs = `02:30|Backup Started|SYSTEM|OK|—^02:31|Backup Running|SYSTEM|OK|—^02:32|Backup Completed|SYSTEM|OK|—^02:33|Login|EMP002|OK|—^02:34|API Authentication|EMP002|OK|—^02:35|Report Export|EMP002|OK|—^02:36|Logout|EMP002|OK|—^02:37|Security Scan|SYSTEM|OK|—^02:38|Health Check|SYSTEM|OK|—^02:39|Cache Cleanup|SYSTEM|OK|—^02:40|Memory Allocation|SYSTEM|OK|—^02:41|Database Optimization|SYSTEM|OK|—^02:42|Email Sync|SYSTEM|OK|—^02:43|Session Renewed|SYSTEM|OK|—^02:44|Backup Validation|SYSTEM|OK|—^02:45|Disk Usage Check|SYSTEM|OK|—^02:46|Routine Scan|SYSTEM|OK|—^02:47|Connection Pool Refresh|SYSTEM|OK|—^02:48|DNS Cache Refresh|SYSTEM|OK|—^02:49|Firewall Rule Sync|SYSTEM|OK|—^02:50|Load Balancer Check|SYSTEM|OK|—^02:51|Login|EMP004|OK|—^02:52|Privilege Escalation|EMP004|WARNING|CHG-4471^02:53|Model_Output_Export|EMP004|WARNING|CHG-4471^02:54|Audit_Log_Archive|SYSTEM|OK|—^02:55|Database Compression|SYSTEM|OK|—^02:56|Health Check|SYSTEM|OK|—^02:57|Memory Optimization|SYSTEM|OK|—^02:58|Email Queue Refresh|SYSTEM|OK|—^02:59|Cache Cleanup|SYSTEM|OK|—^03:00|DATA_SCRUB_EXECUTED|EMP004|CRITICAL|CHG-4471^03:01|Log Archive|SYSTEM|OK|—^03:02|Logout|EMP004|OK|—^03:03|Backup Validation|SYSTEM|OK|—^03:04|Routine Scan|SYSTEM|OK|—^03:05|Memory Allocation|SYSTEM|OK|—^03:06|Index Rebuild|SYSTEM|OK|—^03:07|Login|EMP009|OK|—^03:08|Login|EMP005|OK|—^03:09|Backup Running|SYSTEM|OK|—^03:10|Index Rebuild|SYSTEM|OK|—^03:11|Queue Processed|SYSTEM|OK|—^03:12|Backup Started|SYSTEM|OK|—^03:13|Database Optimization|SYSTEM|OK|—^03:14|Patch Verification|SYSTEM|OK|—^03:15|Audit_Log_Archive|EMP021|WARNING|—^03:16|Patch Verification|SYSTEM|OK|—^03:17|Login|EMP009|OK|—^03:18|Certificate Renewal Check|SYSTEM|OK|—^03:19|Backup Completed|SYSTEM|OK|—^03:20|Index Rebuild|SYSTEM|OK|—^03:21|Login|EMP009|OK|—^03:22|Routine Scan|SYSTEM|OK|—^03:23|API Request|SYSTEM|OK|—^03:24|Password Reset|EMP005|OK|—^03:25|API Authentication|SYSTEM|OK|—^03:26|Cache Cleanup|SYSTEM|OK|—^03:27|Connection Pool Refresh|SYSTEM|OK|—^03:28|Routine Scan|SYSTEM|OK|—^03:29|Login|EMP007|OK|—^03:30|API Request|SYSTEM|OK|—^03:31|Database Optimization|SYSTEM|OK|—^03:32|Email Queue Refresh|SYSTEM|OK|—^03:33|Logout|EMP009|OK|—^03:34|Replication Sync|SYSTEM|OK|—^03:35|Disk Usage Check|SYSTEM|OK|—^03:36|Health Check|SYSTEM|OK|—^03:37|Backup Completed|SYSTEM|OK|—^03:38|Backup Validation|SYSTEM|OK|—^03:39|Log Rotation|SYSTEM|OK|—^03:40|Database Export|EMP017|WARNING|—^03:41|Disk Usage Check|SYSTEM|OK|—^03:42|DNS Cache Refresh|SYSTEM|OK|—^03:43|Connection Pool Refresh|SYSTEM|OK|—^03:44|Login|EMP003|OK|—^03:45|Index Rebuild|SYSTEM|OK|—^03:46|Load Balancer Check|SYSTEM|OK|—^03:47|Backup Validation|SYSTEM|OK|—^03:48|Memory Allocation|SYSTEM|OK|—^03:49|API Authentication|SYSTEM|OK|—^03:50|Cache Refresh|SYSTEM|OK|—^03:51|Logout|EMP003|OK|—^03:52|Security Scan|SYSTEM|OK|—^03:53|Connection Pool Refresh|SYSTEM|OK|—^03:54|Replication Sync|SYSTEM|OK|—^03:55|Backup Started|SYSTEM|OK|—^03:56|Cache Refresh|SYSTEM|OK|—^03:57|Index Rebuild|SYSTEM|OK|—^03:58|Patch Verification|SYSTEM|OK|—^03:59|Login|EMP009|OK|—^04:00|Report Export|SYSTEM|OK|—^04:01|Database Compression|SYSTEM|OK|—^04:02|Cache Cleanup|SYSTEM|OK|—^04:03|Session Renewed|SYSTEM|OK|—^04:04|Scheduled Job Completed|SYSTEM|OK|—^04:05|Memory Optimization|SYSTEM|OK|—^04:06|Database Optimization|SYSTEM|OK|—^04:07|Temp File Cleanup|SYSTEM|OK|—^04:08|Disk Usage Check|SYSTEM|OK|—^04:09|Cache Refresh|SYSTEM|OK|—^04:10|Customer_Data_Export|EMP006|WARNING|—^04:11|Session Renewed|SYSTEM|OK|—^04:12|Email Queue Refresh|SYSTEM|OK|—^04:13|API Authentication|SYSTEM|OK|—^04:14|Login|EMP011|OK|—^04:15|Index Rebuild|SYSTEM|OK|—^04:16|Memory Allocation|SYSTEM|OK|—^04:17|Replication Sync|SYSTEM|OK|—^04:18|Logout|EMP013|OK|—^04:19|Index Rebuild|SYSTEM|OK|—^04:20|Log Archive|SYSTEM|OK|—^04:21|Backup Validation|SYSTEM|OK|—^04:22|Routine Scan|SYSTEM|OK|—^04:23|Temp File Cleanup|SYSTEM|OK|—^04:24|Email Queue Refresh|SYSTEM|OK|—^04:25|Patch Verification|SYSTEM|OK|—^04:26|Database Export|EMP009|OK|—^04:27|Email Sync|SYSTEM|OK|—^04:28|Login|EMP021|OK|—^04:29|Backup Completed|SYSTEM|OK|—^04:30|API Request|SYSTEM|OK|—^04:31|Report Generated|SYSTEM|OK|—^04:32|Log Rotation|SYSTEM|OK|—^04:33|Firewall Rule Sync|SYSTEM|OK|—^04:34|Firewall Rule Sync|SYSTEM|OK|—^04:35|Privilege Escalation|EMP012|WARNING|—^04:36|Cache Cleanup|SYSTEM|OK|—^04:37|Certificate Renewal Check|SYSTEM|OK|—^04:38|Connection Pool Refresh|SYSTEM|OK|—^04:39|Health Check|SYSTEM|OK|—^04:40|Cache Cleanup|SYSTEM|OK|—^04:41|Logout|EMP021|OK|—^04:42|Cache Cleanup|SYSTEM|OK|—^04:43|Log Archive|SYSTEM|OK|—^04:44|Memory Allocation|SYSTEM|OK|—^04:45|Report Generated|SYSTEM|OK|—^04:46|API Request|SYSTEM|OK|—^04:47|Replication Sync|SYSTEM|OK|—^04:48|Login|EMP018|OK|—^04:49|Email Queue Refresh|SYSTEM|OK|—^02:26|ROOT_LOGIN_ATTEMPT|EMP042|CRITICAL|—^03:25|MASS_RECORD_DELETION|EMP009|WARNING|CHG-4450^04:12|FIREWALL_BYPASS_ATTEMPT|EMP012|CRITICAL|—`;
@@ -285,100 +411,78 @@
         const rawPO = `PO4401|Kingsbridge Systems Ltd|Telecom Contract Renewal|Controller, AP^PO4402|Fairmont Trading Partners|Legal Advisory Retainer|Controller, AP^PO4403|APEX Logistics Ltd|Cloud Infrastructure Migration|Controller, AP^PO4404|Sterling Services Solutions|Cloud Infrastructure Migration|VP, Finance^PO4405|Ashford Systems & Co.|Facilities Refresh — HQ|Procurement Manager^PO4406|Fairmont Services & Co.|Vendor Consolidation Initiative|Procurement Manager^PO4407|Oakmont Holdings Inc|Customer Data Warehouse Expansion|Procurement Manager^PO4408|Vireo Consulting GmbH|Try-On Rendering Pipeline|VP, Finance^PO4409|Cobalt Trading Holdings|Model Training Data Licensing|VP, Finance^PO4410|Delta Point Services Solutions|Facilities Refresh — HQ|VP, Finance^PO4411|Ashford Services Ltd|GPU Compute Capacity — Q3|Procurement Manager^PO4412|Prescott Trading LLC|Software License Renewal|VP, Finance^PO4413|Ashford Services Ltd|Equipment Lease Renewal|Controller, AP^PO4414|Union Holdings GmbH|Cloud Infrastructure Migration|VP, Finance^PO4415|Summit Peak Solutions LLC|Customer Data Warehouse Expansion|Procurement Manager^PO4416|Delta Point Services Ltd|Legal Advisory Retainer|Procurement Manager^PO4417|Anchor Services Solutions|Customer Data Warehouse Expansion|Controller, AP^PO4418|Northbridge Systems Holdings|Telecom Contract Renewal|Procurement Manager^PO4419|Delta Point Services Solutions|Vendor Consolidation Initiative|VP, Finance^PO4420|Waverly Services Partners|Facilities Refresh — HQ|Controller, AP^PO4421|Prescott Logistics Inc|Software License Renewal|Procurement Manager^PO4422|Cliffside Solutions Ltd|Telecom Contract Renewal|Procurement Manager^PO4423|Thackeray Trading Ltd|Vendor Consolidation Initiative|Procurement Manager^PO4424|Granite Systems & Co.|Customer Onboarding Platform|VP, Finance^PO4425|Oakmont Trading Partners|Staff Augmentation — Q2|VP, Finance^PO4426|Prescott Logistics Ltd|Customer Onboarding Platform|VP, Finance^PO4427|Union Holdings GmbH|Try-On Rendering Pipeline|Controller, AP^PO4428|Waverly Systems & Co.|Model Training Data Licensing|Procurement Manager^PO4429|Redwood Trading Partners|Telecom Contract Renewal|Controller, AP^PO4430|Anchor Consulting Co|Model Training Data Licensing|Procurement Manager^PO4431|Cliffside Solutions Ltd|Cloud Infrastructure Migration|Procurement Manager^PO4432|Apex Trading Co|Try-On Rendering Pipeline|Procurement Manager^PO4433|Cobalt Systems & Co.|Customer Data Warehouse Expansion|VP, Finance^PO4434|Ashford Systems & Co.|GPU Compute Capacity — Q3|Controller, AP^PO4435|Sterling Systems Solutions|Catering Services — HQ|VP, Finance^PO4436|Sterling Systems Solutions|Staff Augmentation — Q2|Procurement Manager^PO4437|Cobalt Systems LLC|GPU Compute Capacity — Q3|Controller, AP^PO4438|Ashford Holdings & Co.|Vendor Consolidation Initiative|VP, Finance^PO4439|Kingsbridge Consulting Holdings|Catering Services — HQ|Procurement Manager^PO4440|Cliffside Holdings LLC|Customer Data Warehouse Expansion|Controller, AP`;
 
         const orgData = [
-            { id: "EMP001", name: "Victoria Vance", dept: "Executive", role: "Chief Executive Officer", ext: "2885", ip: "10.45.99.201", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200" },
-            { id: "EMP002", name: "Daniel Reyes", dept: "AI / Machine Learning", role: "ML Team Lead", ext: "2271", ip: "10.45.99.204", img: "https://i.pravatar.cc/200?u=EMP002" },
-            { id: "EMP003", name: "Samuel Sorensen", dept: "Product", role: "Product Designer", ext: "2677", ip: "10.45.10.03", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP003" },
-            { id: "EMP004", name: "Marcus Bergstrom", dept: "AI / Machine Learning", role: "Senior ML Engineer", ext: "2593", ip: "10.45.10.04", img: "https://robohash.org/EMP004.png?set=set4" },
-            { id: "EMP005", name: "Fatima Mokoena", dept: "Executive", role: "Executive Assistant", ext: "2598", ip: "10.45.10.05", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP005" },
-            { id: "EMP006", name: "Ivan Castillo", dept: "People & Talent", role: "Generalist", ext: "2082", ip: "10.45.10.06", img: "https://robohash.org/EMP006.png?set=set2" },
-            { id: "EMP007", name: "Liam Berg", dept: "Growth & Marketing", role: "Coordinator", ext: "2413", ip: "10.45.10.07", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP007" },
-            { id: "EMP008", name: "Victor Andersen", dept: "Customer Success", role: "Account Manager", ext: "2634", ip: "10.45.10.08", img: "https://i.pravatar.cc/200?u=EMP008" },
-            { id: "EMP009", name: "Priya Castillo", dept: "Finance", role: "Senior Manager", ext: "2685", ip: "10.45.99.203", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP009" },
-            { id: "EMP010", name: "Chloe Reyes", dept: "Operations", role: "Ops Manager", ext: "2660", ip: "10.45.10.10", img: "https://robohash.org/EMP010.png?set=set4" },
-            { id: "EMP011", name: "Zara Moreno", dept: "AI / Machine Learning", role: "ML Engineer", ext: "2636", ip: "10.45.10.11", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP011" },
-            { id: "EMP012", name: "Noah Nguyen", dept: "Engineering", role: "Senior Engineer", ext: "2135", ip: "10.45.99.210", img: "https://robohash.org/EMP012.png?set=set2" },
-            { id: "EMP013", name: "Liam Andersen", dept: "Product", role: "Senior Product Manager", ext: "2448", ip: "10.45.10.13", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP013" },
-            { id: "EMP014", name: "Talia Adeyemi", dept: "Finance", role: "Analyst", ext: "2961", ip: "10.45.10.14", img: "https://i.pravatar.cc/200?u=EMP014" },
-            { id: "EMP015", name: "Kenji Larsson", dept: "Executive", role: "Chief of Staff", ext: "2159", ip: "10.45.10.15", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP015" },
-            { id: "EMP016", name: "Samuel Berg", dept: "People & Talent", role: "Generalist", ext: "2208", ip: "10.45.10.16", img: "https://robohash.org/EMP016.png?set=set4" },
-            { id: "EMP017", name: "Kenji Ibrahim", dept: "Growth & Marketing", role: "Specialist", ext: "2094", ip: "10.45.10.17", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP017" },
-            { id: "EMP018", name: "Mei Kim", dept: "Customer Success", role: "Representative", ext: "2652", ip: "10.45.10.18", img: "https://robohash.org/EMP018.png?set=set2" },
-            { id: "EMP019", name: "Omar Mokoena", dept: "Legal & Compliance", role: "General Counsel", ext: "2437", ip: "10.45.10.19", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP019" },
-            { id: "EMP020", name: "James Larsson", dept: "Operations", role: "Coordinator", ext: "2854", ip: "10.45.10.20", img: "https://i.pravatar.cc/200?u=EMP020" },
-            { id: "EMP021", name: "Leila Abara", dept: "AI / Machine Learning", role: "Senior ML Engineer", ext: "2042", ip: "10.45.10.21", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP021" },
-            { id: "EMP022", name: "Layla Okafor", dept: "Engineering", role: "Systems Administrator", ext: "2255", ip: "10.45.10.22", img: "https://robohash.org/EMP022.png?set=set4" },
-            { id: "EMP023", name: "Noah Halim", dept: "Product", role: "Product Designer", ext: "2158", ip: "10.45.10.23", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP023" },
-            { id: "EMP024", name: "Omar Osei", dept: "Finance", role: "Controller", ext: "2946", ip: "10.45.10.24", img: "https://robohash.org/EMP024.png?set=set2" },
-            { id: "EMP025", name: "Naledi Andersen", dept: "Executive", role: "Executive Assistant", ext: "2110", ip: "10.45.10.25", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP025" },
-            { id: "EMP026", name: "Wei Weiss", dept: "People & Talent", role: "Generalist", ext: "2358", ip: "10.45.10.26", img: "https://i.pravatar.cc/200?u=EMP026" },
-            { id: "EMP027", name: "Thomas Dubois", dept: "Growth & Marketing", role: "Coordinator", ext: "2408", ip: "10.45.10.27", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP027" },
-            { id: "EMP028", name: "Ana Nguyen", dept: "Customer Success", role: "Senior Representative", ext: "2409", ip: "10.45.10.28", img: "https://robohash.org/EMP028.png?set=set4" },
-            { id: "EMP029", name: "Adam Bergstrom", dept: "Legal & Compliance", role: "Associate", ext: "2182", ip: "10.45.10.29", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP029" },
-            { id: "EMP030", name: "Kenji Okafor", dept: "Operations", role: "Coordinator", ext: "2805", ip: "10.45.10.30", img: "https://robohash.org/EMP030.png?set=set2" },
-            { id: "EMP031", name: "Mei Berg", dept: "AI / Machine Learning", role: "ML Engineer", ext: "2194", ip: "10.45.10.31", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP031" },
-            { id: "EMP032", name: "Wei Girard", dept: "Engineering", role: "DevOps Engineer", ext: "2947", ip: "10.45.10.32", img: "https://i.pravatar.cc/200?u=EMP032" },
-            { id: "EMP033", name: "Elif Lund", dept: "Product", role: "Product Designer", ext: "2071", ip: "10.45.10.33", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP033" },
-            { id: "EMP034", name: "Yuki Odhiambo", dept: "Finance", role: "Senior Manager", ext: "2519", ip: "10.45.10.34", img: "https://robohash.org/EMP034.png?set=set4" },
-            { id: "EMP035", name: "Karim Baptiste", dept: "Executive", role: "Executive Assistant", ext: "2302", ip: "10.45.10.35", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP035" },
-            { id: "EMP036", name: "Lucas Volkov", dept: "People & Talent", role: "People Partner", ext: "2693", ip: "10.45.10.36", img: "https://robohash.org/EMP036.png?set=set2" },
-            { id: "EMP037", name: "Nia Marchetti", dept: "Growth & Marketing", role: "Specialist", ext: "2853", ip: "10.45.10.37", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP037" },
-            { id: "EMP038", name: "Nadia Novak", dept: "Customer Success", role: "Representative", ext: "2670", ip: "10.45.10.38", img: "https://i.pravatar.cc/200?u=EMP038" },
-            { id: "EMP039", name: "Zara Malik", dept: "Legal & Compliance", role: "General Counsel", ext: "2523", ip: "10.45.10.39", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP039" },
-            { id: "EMP040", name: "Naledi Fischer", dept: "Operations", role: "Senior Ops Manager", ext: "2679", ip: "10.45.10.40", img: "https://robohash.org/EMP040.png?set=set4" },
-            { id: "EMP041", name: "Nia Bergstrom", dept: "AI / Machine Learning", role: "ML Engineer", ext: "2317", ip: "10.45.10.41", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP041" },
-            { id: "EMP042", name: "Daniel Patel", dept: "Engineering", role: "Software Engineer", ext: "2486", ip: "10.45.10.42", img: "https://robohash.org/EMP042.png?set=set2" },
-            { id: "EMP043", name: "Amina Nguyen", dept: "Product", role: "Senior Product Manager", ext: "2199", ip: "10.45.10.43", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP043" },
-            { id: "EMP044", name: "Amara Yamamoto", dept: "Finance", role: "Manager", ext: "2005", ip: "10.45.10.44", img: "https://i.pravatar.cc/200?u=EMP044" },
-            { id: "EMP045", name: "Amina Sorensen", dept: "Executive", role: "Chief of Staff", ext: "2530", ip: "10.45.10.45", img: "https://api.dicebear.com/9.x/avataaars/svg?seed=EMP045" },
-            { id: "EMP046", name: "Fatima Abara", dept: "People & Talent", role: "Generalist", ext: "2136", ip: "10.45.10.46", img: "https://robohash.org/EMP046.png?set=set4" },
-            { id: "EMP047", name: "Karim Castillo", dept: "Growth & Marketing", role: "Growth Manager", ext: "2972", ip: "10.45.10.47", img: "https://api.dicebear.com/9.x/bottts/svg?seed=EMP047" },
-            { id: "EMP048", name: "Nia Lund", dept: "Customer Success", role: "Account Manager", ext: "2918", ip: "10.45.10.48", img: "https://robohash.org/EMP048.png?set=set2" },
-            { id: "EMP049", name: "Naledi Weiss", dept: "Legal & Compliance", role: "General Counsel", ext: "2860", ip: "10.45.10.49", img: "https://api.dicebear.com/9.x/micah/svg?seed=EMP049" },
-            { id: "EMP050", name: "Ana Farah", dept: "Operations", role: "Senior Ops Manager", ext: "2281", ip: "10.45.10.50", img: "https://i.pravatar.cc/200?u=EMP050" }
+            { id: "EMP001", name: "Victoria Vance", dept: "Executive", role: "Chief Executive Officer", ext: "2885", ip: "10.45.99.201" },
+            { id: "EMP002", name: "Daniel Reyes", dept: "AI / Machine Learning", role: "ML Team Lead", ext: "2271", ip: "10.45.99.204" },
+            { id: "EMP003", name: "Samuel Sorensen", dept: "Product", role: "Product Designer", ext: "2677", ip: "10.45.10.03" },
+            { id: "EMP004", name: "Marcus Bergstrom", dept: "AI / Machine Learning", role: "Senior ML Engineer", ext: "2593", ip: "10.45.10.04" },
+            { id: "EMP005", name: "Fatima Mokoena", dept: "Executive", role: "Executive Assistant", ext: "2598", ip: "10.45.10.05" },
+            { id: "EMP006", name: "Ivan Castillo", dept: "People & Talent", role: "Generalist", ext: "2082", ip: "10.45.10.06" },
+            { id: "EMP007", name: "Liam Berg", dept: "Growth & Marketing", role: "Coordinator", ext: "2413", ip: "10.45.10.07" },
+            { id: "EMP008", name: "Victor Andersen", dept: "Customer Success", role: "Account Manager", ext: "2634", ip: "10.45.10.08" },
+            { id: "EMP009", name: "Priya Castillo", dept: "Finance", role: "Senior Manager", ext: "2685", ip: "10.45.99.203" },
+            { id: "EMP010", name: "Chloe Reyes", dept: "Operations", role: "Ops Manager", ext: "2660", ip: "10.45.10.10" },
+            { id: "EMP011", name: "Zara Moreno", dept: "AI / Machine Learning", role: "ML Engineer", ext: "2636", ip: "10.45.10.11" },
+            { id: "EMP012", name: "Noah Nguyen", dept: "Engineering", role: "Senior Engineer", ext: "2135", ip: "10.45.99.210" },
+            { id: "EMP013", name: "Liam Andersen", dept: "Product", role: "Senior Product Manager", ext: "2448", ip: "10.45.10.13" },
+            { id: "EMP014", name: "Talia Adeyemi", dept: "Finance", role: "Analyst", ext: "2961", ip: "10.45.10.14" },
+            { id: "EMP015", name: "Kenji Larsson", dept: "Executive", role: "Chief of Staff", ext: "2159", ip: "10.45.10.15" },
+            { id: "EMP016", name: "Samuel Berg", dept: "People & Talent", role: "Generalist", ext: "2208", ip: "10.45.10.16" },
+            { id: "EMP017", name: "Kenji Ibrahim", dept: "Growth & Marketing", role: "Specialist", ext: "2094", ip: "10.45.10.17" },
+            { id: "EMP018", name: "Mei Kim", dept: "Customer Success", role: "Representative", ext: "2652", ip: "10.45.10.18" },
+            { id: "EMP019", name: "Omar Mokoena", dept: "Legal & Compliance", role: "General Counsel", ext: "2437", ip: "10.45.10.19" },
+            { id: "EMP020", name: "James Larsson", dept: "Operations", role: "Coordinator", ext: "2854", ip: "10.45.10.20" },
+            { id: "EMP021", name: "Leila Abara", dept: "AI / Machine Learning", role: "Senior ML Engineer", ext: "2042", ip: "10.45.10.21" },
+            { id: "EMP022", name: "Layla Okafor", dept: "Engineering", role: "Systems Administrator", ext: "2255", ip: "10.45.10.22" },
+            { id: "EMP023", name: "Noah Halim", dept: "Product", role: "Product Designer", ext: "2158", ip: "10.45.10.23" },
+            { id: "EMP024", name: "Omar Osei", dept: "Finance", role: "Controller", ext: "2946", ip: "10.45.10.24" },
+            { id: "EMP025", name: "Naledi Andersen", dept: "Executive", role: "Executive Assistant", ext: "2110", ip: "10.45.10.25" },
+            { id: "EMP026", name: "Wei Weiss", dept: "People & Talent", role: "Generalist", ext: "2358", ip: "10.45.10.26" },
+            { id: "EMP027", name: "Thomas Dubois", dept: "Growth & Marketing", role: "Coordinator", ext: "2408", ip: "10.45.10.27" },
+            { id: "EMP028", name: "Ana Nguyen", dept: "Customer Success", role: "Senior Representative", ext: "2409", ip: "10.45.10.28" },
+            { id: "EMP029", name: "Adam Bergstrom", dept: "Legal & Compliance", role: "Associate", ext: "2182", ip: "10.45.10.29" },
+            { id: "EMP030", name: "Kenji Okafor", dept: "Operations", role: "Coordinator", ext: "2805", ip: "10.45.10.30" },
+            { id: "EMP031", name: "Mei Berg", dept: "AI / Machine Learning", role: "ML Engineer", ext: "2194", ip: "10.45.10.31" },
+            { id: "EMP032", name: "Wei Girard", dept: "Engineering", role: "DevOps Engineer", ext: "2947", ip: "10.45.10.32" },
+            { id: "EMP033", name: "Elif Lund", dept: "Product", role: "Product Designer", ext: "2071", ip: "10.45.10.33" },
+            { id: "EMP034", name: "Yuki Odhiambo", dept: "Finance", role: "Senior Manager", ext: "2519", ip: "10.45.10.34" },
+            { id: "EMP035", name: "Karim Baptiste", dept: "Executive", role: "Executive Assistant", ext: "2302", ip: "10.45.10.35" },
+            { id: "EMP036", name: "Lucas Volkov", dept: "People & Talent", role: "People Partner", ext: "2693", ip: "10.45.10.36" },
+            { id: "EMP037", name: "Nia Marchetti", dept: "Growth & Marketing", role: "Specialist", ext: "2853", ip: "10.45.10.37" },
+            { id: "EMP038", name: "Nadia Novak", dept: "Customer Success", role: "Representative", ext: "2670", ip: "10.45.10.38" },
+            { id: "EMP039", name: "Zara Malik", dept: "Legal & Compliance", role: "General Counsel", ext: "2523", ip: "10.45.10.39" },
+            { id: "EMP040", name: "Naledi Fischer", dept: "Operations", role: "Senior Ops Manager", ext: "2679", ip: "10.45.10.40" },
+            { id: "EMP041", name: "Nia Bergstrom", dept: "AI / Machine Learning", role: "ML Engineer", ext: "2317", ip: "10.45.10.41" },
+            { id: "EMP042", name: "Daniel Patel", dept: "Engineering", role: "Software Engineer", ext: "2486", ip: "10.45.10.42" },
+            { id: "EMP043", name: "Amina Nguyen", dept: "Product", role: "Senior Product Manager", ext: "2199", ip: "10.45.10.43" },
+            { id: "EMP044", name: "Amara Yamamoto", dept: "Finance", role: "Manager", ext: "2005", ip: "10.45.10.44" },
+            { id: "EMP045", name: "Amina Sorensen", dept: "Executive", role: "Chief of Staff", ext: "2530", ip: "10.45.10.45" },
+            { id: "EMP046", name: "Fatima Abara", dept: "People & Talent", role: "Generalist", ext: "2136", ip: "10.45.10.46" },
+            { id: "EMP047", name: "Karim Castillo", dept: "Growth & Marketing", role: "Growth Manager", ext: "2972", ip: "10.45.10.47" },
+            { id: "EMP048", name: "Nia Lund", dept: "Customer Success", role: "Account Manager", ext: "2918", ip: "10.45.10.48" },
+            { id: "EMP049", name: "Naledi Weiss", dept: "Legal & Compliance", role: "General Counsel", ext: "2860", ip: "10.45.10.49" },
+            { id: "EMP050", name: "Ana Farah", dept: "Operations", role: "Senior Ops Manager", ext: "2281", ip: "10.45.10.50" }
         ];
 
-        // DYNAMIC DATA PARSING
-        const parsedLogs = rawLogs.split('^').map(r => {
+        // DYNAMIC DATA PARSING WITH ERROR GUARDS
+        const parsedLogs = (rawLogs || '').trim().split('^').filter(Boolean).map(r => {
             const p = r.split('|');
-            return { time: p[0], event: p[1], user: p[2], status: p[3], ticket: p[4] };
-        }).sort((a, b) => a.time.localeCompare(b.time));
+            return { time: p[0] || '00:00', event: p[1] || 'UNKNOWN', user: p[2] || 'SYSTEM', status: p[3] || 'OK', ticket: p[4] || '—' };
+        }).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
 
-        const parsedLedger = rawLedger.split('^').map(r => {
+        const parsedLedger = (rawLedger || '').trim().split('^').filter(Boolean).map(r => {
             const p = r.split('|');
-            return { id: p[0], time: p[1], vendor: p[2], vendor_id: p[3], amount: p[4], approved: p[5], status: p[6] };
-        }).sort((a, b) => a.id.localeCompare(b.id));
+            return { id: p[0] || 'TXN0000', time: p[1] || '00:00', vendor: p[2] || 'UNKNOWN', vendor_id: p[3] || 'V0000', amount: p[4] || '$0', approved: p[5] || '—', status: p[6] || 'CLEARED' };
+        }).sort((a, b) => (a.id || '').localeCompare(b.id || ''));
 
-        const parsedVM = rawVM.split('^').map(r => {
+        const parsedVM = (rawVM || '').trim().split('^').filter(Boolean).map(r => {
             const p = r.split('|');
-            return { id: p[0], name: p[1], country: p[2], status: p[3], risk: p[4], bank: p[5], currency: p[6] };
+            return { id: p[0] || '', name: p[1] || '', country: p[2] || '', status: p[3] || '', risk: p[4] || '', bank: p[5] || '', currency: p[6] || '' };
         });
 
-        const parsedPO = rawPO.split('^').map(r => {
+        const parsedPO = (rawPO || '').trim().split('^').filter(Boolean).map(r => {
             const p = r.split('|');
-            return { po: p[0], vendor: p[1], project: p[2], approver: p[3] };
+            return { po: p[0] || '', vendor: p[1] || '', project: p[2] || '', approver: p[3] || '' };
         });
-
-        // COMPONENTS
-        function QuestNavBtn({ icon, label, isActive, onClick, locked = false, className = "", disabled = false, isCritical = false }) {
-            const baseStyle = "flex items-center justify-center md:justify-between whitespace-nowrap shrink-0 md:shrink md:w-full p-3 rounded-lg text-xs md:text-sm font-medium transition-all duration-200";
-            let activeStyle = isActive ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-inner' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent';
-            
-            if (isCritical) {
-                activeStyle = disabled ? 'opacity-50 border border-slate-700 bg-slate-900 text-slate-500 cursor-not-allowed' 
-                                       : isActive ? 'bg-red-600 text-white border border-red-400 shadow-[0_0_15px_rgba(220,38,38,0.6)]'
-                                                  : 'bg-red-950/40 text-red-400 border border-red-500 hover:bg-red-600 hover:text-white animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]';
-            }
-
-            return (
-                <button onClick={disabled ? undefined : onClick} className={`${baseStyle} ${activeStyle} ${className}`}>
-                    <div className="flex items-center gap-2 md:gap-3">
-                        <i className={`fa-solid ${icon} w-4 md:w-5 text-center`}></i> 
-                        <span className={isCritical ? 'font-bold tracking-widest uppercase' : ''}>{label}</span>
-                    </div>
-                    {locked && <i className="fa-solid fa-lock text-slate-600 text-[10px] md:text-xs ml-2"></i>}
-                </button>
-            );
-        }
 
         function SnakeGame({ onClose }) {
             const [snake, setSnake] = useState([[10, 10]]);
@@ -429,7 +533,7 @@
             }, [dir]);
 
             return (
-                <div className="absolute inset-0 z-50 bg-black/90 flex flex-col items-center justify-center fade-in backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center fade-in backdrop-blur-sm p-4">
                     <div className="bg-slate-900 border-2 border-amber-500 p-4 md:p-6 rounded-xl shadow-[0_0_30px_rgba(245,158,11,0.2)]">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-amber-500 font-bold uppercase tracking-widest text-sm md:text-base"><i className="fa-solid fa-gamepad"></i> RETRO OVERRIDE</h2>
@@ -464,24 +568,85 @@
                         <button onClick={onClose} className="mt-6 w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded transition-colors text-sm tracking-widest uppercase">EXIT TERMINAL</button>
                     </div>
                 </div>
-            )
+            );
+        }
+
+        function CorruptedMemoModal({ onClose, t }) {
+            return (
+                <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm fade-in">
+                    <div className="max-w-2xl w-full bg-amber-50 text-slate-900 border-4 border-dashed border-red-700 rounded-lg p-6 md:p-8 font-typewriter shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                        <div className="absolute top-2 right-3 text-red-700 font-bold text-xs tracking-widest border border-red-700 px-2 py-0.5 transform rotate-3">
+                            CLASSIFIED // DU INTERNAL
+                        </div>
+                        <div className="border-b-2 border-slate-900 pb-3 mb-4">
+                            <h2 className="text-xl md:text-2xl font-bold text-red-800 tracking-wider mb-1">{t.memoHeader}</h2>
+                            <p className="text-xs text-slate-700 uppercase font-sans font-bold">{t.memoSub}</p>
+                        </div>
+                        <div className="text-xs space-y-1 font-mono mb-4 text-slate-800 border-b border-slate-300 pb-3">
+                            <p><strong className="font-bold">TO:</strong> {t.memoTo}</p>
+                            <p><strong className="font-bold">FROM:</strong> {t.memoFrom}</p>
+                            <p><strong className="font-bold">SUBJECT:</strong> {t.memoSubject}</p>
+                        </div>
+                        <div className="text-sm md:text-base space-y-3 leading-relaxed text-slate-800 mb-6">
+                            <p>{t.memoPoint1}</p>
+                            <p>{t.memoPoint2}</p>
+                            <p className="bg-red-200/60 p-2 rounded border-l-4 border-red-600">{t.memoPoint3}</p>
+                        </div>
+                        <div className="border-t border-slate-400 pt-3 flex flex-col md:flex-row justify-between items-center gap-3">
+                            <p className="text-[10px] text-slate-500 font-sans italic">{t.memoFooter}</p>
+                            <button onClick={onClose} className="bg-red-800 hover:bg-red-700 text-white font-sans text-xs px-4 py-2 rounded uppercase font-bold tracking-wider shrink-0 transition-colors">
+                                {t.closeMemo}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function QuestNavBtn({ icon, label, isActive, onClick, locked = false, className = "", disabled = false, isCritical = false }) {
+            const baseStyle = "flex items-center justify-center md:justify-between whitespace-nowrap shrink-0 md:shrink md:w-full p-3 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 cursor-pointer select-none";
+            let activeStyle = isActive ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-inner' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent';
+            
+            if (isCritical) {
+                activeStyle = disabled ? 'opacity-50 border border-slate-700 bg-slate-900 text-slate-500 cursor-not-allowed' 
+                                       : isActive ? 'bg-red-600 text-white border border-red-400 shadow-[0_0_15px_rgba(220,38,38,0.6)]'
+                                                  : 'bg-red-950/40 text-red-400 border border-red-500 hover:bg-red-600 hover:text-white animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]';
+            }
+
+            return (
+                <button onClick={onClick} className={`${baseStyle} ${activeStyle} ${className}`}>
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <i className={`fa-solid ${icon} w-4 md:w-5 text-center`}></i> 
+                        <span className={isCritical ? 'font-bold tracking-widest uppercase' : ''}>{label}</span>
+                    </div>
+                    {locked && <i className="fa-solid fa-lock text-slate-600 text-[10px] md:text-xs ml-2"></i>}
+                </button>
+            );
         }
 
         function QuestView() {
             const [activeTab, setActiveTab] = useState('org');
             const [unlockedNodes, setUnlockedNodes] = useState({ logs: false, ledger: false, banking: false });
             const [solvedPuzzles, setSolvedPuzzles] = useState({ puzzle1: false, puzzle2: false, puzzle3: false });
+            const [puzzleInputs, setPuzzleInputs] = useState({ puzzle1: '', puzzle2: '', puzzle3: '' });
+            const [puzzleErrors, setPuzzleErrors] = useState({ puzzle1: false, puzzle2: false, puzzle3: false });
             const [lang, setLang] = useState('en');
+            
+            // Easter Egg States
             const [showMinigame, setShowMinigame] = useState(false);
             const [clickCount, setClickCount] = useState(0);
-            
-            const t = dict[lang];
+            const [showMemo, setShowMemo] = useState(false);
+            const [rowClickCount, setRowClickCount] = useState(0);
+
+            const t = dict[lang] || dict.en;
 
             const [search, setSearch] = useState('');
             const [poSearch, setPoSearch] = useState('');
             const [vendorSearch, setVendorSearch] = useState('');
-            const isHacked = search.toUpperCase() === 'EMP004' || search === '004';
             
+            const isHacked = search.toUpperCase() === 'EMP004' || search === '004';
+            const isGhost = ['404', '999', 'GHOST', 'EMP404'].includes((search || '').trim().toUpperCase());
+
             const [unlockInput, setUnlockInput] = useState('');
             const [unlockError, setUnlockError] = useState(false);
 
@@ -510,15 +675,49 @@
                 });
             };
 
+            const handleDummyRowClick = () => {
+                setRowClickCount(prev => {
+                    if (prev + 1 >= 3) {
+                        setShowMemo(true);
+                        return 0;
+                    }
+                    return prev + 1;
+                });
+            };
+
             const handleUnlock = (e, nodeKey, expected) => {
-                e.preventDefault();
-                const cleanInput = unlockInput.trim().toUpperCase().replace(/,/g, '');
-                if (expected.some(ans => cleanInput === ans.toUpperCase())) {
-                    setUnlockError(false); setUnlockInput('');
+                if (e && e.preventDefault) e.preventDefault();
+                const cleanInput = (unlockInput || '').trim().toUpperCase().replace(/,/g, '');
+                const noSpaceInput = cleanInput.replace(/\s+/g, '');
+                
+                const isMatch = expected.some(ans => {
+                    const normAns = ans.toUpperCase().trim();
+                    return cleanInput === normAns || noSpaceInput === normAns.replace(/\s+/g, '');
+                });
+
+                if (isMatch) {
+                    setUnlockError(false);
+                    setUnlockInput('');
                     setUnlockedNodes(prev => ({ ...prev, [nodeKey]: true }));
                 } else {
                     setUnlockError(true);
                     setTimeout(() => setUnlockError(false), 2000);
+                }
+            };
+
+            const handleVerifyPuzzle = (key, acceptedAnswers) => {
+                const userVal = (puzzleInputs[key] || '').trim().toUpperCase().replace(/[#\-_]/g, '').replace(/\s+/g, '');
+                const isMatch = acceptedAnswers.some(ans => {
+                    const cleanAns = ans.toUpperCase().trim().replace(/[#\-_]/g, '').replace(/\s+/g, '');
+                    return userVal === cleanAns;
+                });
+
+                if (isMatch) {
+                    setSolvedPuzzles(prev => ({ ...prev, [key]: true }));
+                    setPuzzleErrors(prev => ({ ...prev, [key]: false }));
+                } else {
+                    setPuzzleErrors(prev => ({ ...prev, [key]: true }));
+                    setTimeout(() => setPuzzleErrors(prev => ({ ...prev, [key]: false })), 1500);
                 }
             };
 
@@ -530,21 +729,37 @@
                         <h2 className="text-xl md:text-2xl font-bold mb-2 tracking-widest text-white uppercase">{title}</h2>
                         <p className="text-slate-400 mb-8 text-xs md:text-sm px-2 md:px-4 leading-relaxed">{hint}</p>
                         <form onSubmit={(e) => handleUnlock(e, nodeKey, expected)}>
-                            <input type="text" value={unlockInput} onChange={(e) => setUnlockInput(e.target.value)} className={`w-full bg-slate-950 border ${unlockError ? 'border-red-500 text-red-400' : 'border-slate-700 text-amber-400'} rounded p-3 md:p-4 text-center text-base md:text-lg tracking-widest outline-none transition-all mb-6 uppercase`} placeholder={t.enterKey} autoFocus />
-                            <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-black font-bold py-3 px-4 rounded transition-colors uppercase tracking-wider flex items-center justify-center gap-2 text-sm"><i className="fa-solid fa-key"></i> {t.decryptBtn}</button>
+                            <input 
+                                type="text" 
+                                value={unlockInput} 
+                                onChange={(e) => setUnlockInput(e.target.value)} 
+                                className={`w-full bg-slate-950 border ${unlockError ? 'border-red-500 text-red-400' : 'border-slate-700 text-amber-400'} rounded p-3 md:p-4 text-center text-base md:text-lg tracking-widest outline-none transition-all mb-6 uppercase`} 
+                                placeholder={t.enterKey} 
+                                autoFocus 
+                            />
+                            <button 
+                                type="submit" 
+                                className="w-full bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-black font-bold py-3 px-4 rounded transition-colors uppercase tracking-wider flex items-center justify-center gap-2 text-sm cursor-pointer"
+                            >
+                                <i className="fa-solid fa-key"></i> {t.decryptBtn}
+                            </button>
                         </form>
                     </div>
                 </div>
             );
 
             return (
-                <div className="h-[100dvh] w-full flex flex-col md:flex-row p-2 md:p-4 gap-4 box-border max-w-[1600px] mx-auto fade-in relative">
+                <div className="h-full w-full flex flex-col md:flex-row p-2 md:p-4 gap-4 box-border max-w-[1600px] mx-auto fade-in relative">
                     {showMinigame && <SnakeGame onClose={() => setShowMinigame(false)} />}
+                    {showMemo && <CorruptedMemoModal onClose={() => setShowMemo(false)} t={t} />}
                     
+                    {/* Navigation Sidebar */}
                     <nav className="w-full md:w-64 glass-panel border border-slate-700 p-2 md:p-4 rounded-xl flex flex-row md:flex-col gap-2 shrink-0 z-20 overflow-x-auto md:overflow-y-auto custom-scrollbar items-center md:items-stretch">
                         <div className="hidden md:flex mb-4 pb-4 border-b border-slate-800 justify-between items-center">
-                            <h1 className="text-lg md:text-xl font-bold text-amber-400 tracking-wider flex items-center gap-2 uppercase select-none cursor-pointer" onClick={handleSecretClick}><i className="fa-solid fa-fingerprint text-2xl"></i> {t.projectSunrise}</h1>
-                            <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="bg-slate-800 hover:bg-slate-700 text-white text-[10px] px-2 py-1 rounded border border-slate-600 font-bold transition-colors">
+                            <h1 className="text-lg md:text-xl font-bold text-amber-400 tracking-wider flex items-center gap-2 uppercase select-none cursor-pointer" onClick={handleSecretClick} title="Triple click for Easter Egg">
+                                <i className="fa-solid fa-fingerprint text-2xl"></i> {t.projectSunrise}
+                            </h1>
+                            <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white text-[10px] px-2 py-1 rounded border border-slate-600 font-bold transition-colors cursor-pointer">
                                 {lang === 'en' ? '中文' : 'EN'}
                             </button>
                         </div>
@@ -568,24 +783,28 @@
                     </nav>
 
                     <main className="flex-grow h-full overflow-hidden relative z-10 flex flex-col min-w-0">
-                        {/* Mobile Header */}
+                        {/* Mobile Header Bar */}
                         <div className="md:hidden flex justify-between items-center w-full shrink-0 mb-3 px-1">
-                            <h1 className="text-base font-bold text-amber-400 tracking-wider flex items-center gap-2 uppercase select-none cursor-pointer" onClick={handleSecretClick}><i className="fa-solid fa-fingerprint"></i> {t.projectSunrise}</h1>
-                            <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="bg-slate-800 hover:bg-slate-700 text-white text-[10px] px-2 py-1 rounded border border-slate-600 font-bold">
+                            <h1 className="text-base font-bold text-amber-400 tracking-wider flex items-center gap-2 uppercase select-none cursor-pointer" onClick={handleSecretClick}>
+                                <i className="fa-solid fa-fingerprint"></i> {t.projectSunrise}
+                            </h1>
+                            <button onClick={() => setLang(lang === 'en' ? 'zh' : 'en')} className="bg-slate-800 hover:bg-slate-700 text-white text-[10px] px-2 py-1 rounded border border-slate-600 font-bold cursor-pointer">
                                 {lang === 'en' ? '中文' : 'EN'}
                             </button>
                         </div>
 
+                        {/* Status Bar */}
                         <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-4 glass-panel p-2 md:p-3 border border-slate-700 rounded-lg shrink-0">
                             <span className="text-[10px] md:text-xs text-slate-500 uppercase font-bold"><i className="fa-solid fa-chart-line text-amber-500"></i> {t.decryptionStatus}</span>
                             <div className="flex flex-wrap gap-2">
-                                {[{k:'logs', l:t.n1Logs}, {k:'ledger', l:t.n2Ledger}, {k:'banking', l:t.n3Protocol}].map((obj, i) => {
+                                {[{k:'logs', l:t.n1Logs}, {k:'ledger', l:t.n2Ledger}, {k:'banking', l:t.n3Protocol}].map((obj) => {
                                     const isActive = unlockedNodes[obj.k];
                                     return <div key={obj.k} className={`px-2 py-1 border text-[10px] rounded uppercase font-bold flex items-center gap-1 ${isActive ? 'bg-amber-950/40 border-amber-500/50 text-amber-400' : 'bg-slate-950 border-slate-800 text-slate-600'}`}><i className={`fa-solid ${isActive ? 'fa-lock-open' : 'fa-lock'}`}></i> {obj.l}</div>
                                 })}
                             </div>
                         </div>
 
+                        {/* Viewport Content */}
                         <div className="flex-grow overflow-y-auto custom-scrollbar relative pr-1 md:pr-2">
                             {/* SECURITY POLICY */}
                             {activeTab === 'security' && (
@@ -615,8 +834,8 @@
                                                 <tr><td className="p-2">Marcus Bergstrom (EMP004)</td><td className="p-2">Customer Data Warehouse</td><td className="p-2">Administrator</td></tr>
                                                 <tr><td className="p-2">Daniel Reyes (EMP002)</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Standard User</td></tr>
                                                 <tr><td className="p-2">Priya Castillo (EMP009)</td><td className="p-2">Model Training DB</td><td className="p-2">Standard User</td></tr>
-                                                <tr><td className="p-2">Karim Castillo (EMP042)</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Administrator</td></tr>
-                                                <tr><td className="p-2">Elena Petrov (VP, Finance)</td><td className="p-2">Model Training DB</td><td className="p-2">Administrator</td></tr>
+                                                <tr><td className="p-2">Karim Castillo (EMP042)</td><td className="p-2">FTV-PROD-01</td><td className="p-2 text-amber-400">Administrator</td></tr>
+                                                <tr><td className="p-2">Elena Petrov (VP, Finance)</td><td className="p-2">Model Training DB</td><td className="p-2 text-amber-400">Administrator</td></tr>
                                             </tbody></table>
                                         </div>
                                         <p className="text-[10px] md:text-xs text-slate-500 mt-4 border-t border-slate-800 pt-3"><i className="fa-solid fa-circle-exclamation text-amber-500"></i> {t.infraNote}</p>
@@ -624,7 +843,7 @@
                                 </div>
                             )}
 
-                            {/* PROCUREMENT POLICY */}
+                            {/* VENDOR POLICY */}
                             {activeTab === 'vendor' && (
                                 <div className="fade-in pb-12 flex flex-col gap-4 md:gap-6">
                                     <h2 className="text-xl md:text-2xl font-bold text-white mb-2"><i className="fa-solid fa-file-invoice-dollar text-amber-500"></i> {t.vendors}</h2>
@@ -649,7 +868,7 @@
                                             <div className="max-h-64 overflow-y-auto custom-scrollbar">
                                                 <table className="w-full text-left text-xs md:text-sm min-w-[600px]"><thead className="bg-slate-900 text-slate-400 sticky top-0 shadow-lg"><tr><th className="p-2">{t.poNum}</th><th className="p-2">{t.vendorName}</th><th className="p-2">{t.project}</th><th className="p-2">{t.approver}</th></tr></thead>
                                                 <tbody className="divide-y divide-slate-800 text-slate-300">
-                                                    {parsedPO.filter(p => p.vendor.toLowerCase().includes(poSearch.toLowerCase()) || p.po.toLowerCase().includes(poSearch.toLowerCase())).map(p => (
+                                                    {parsedPO.filter(p => (p.vendor || '').toLowerCase().includes((poSearch || '').toLowerCase()) || (p.po || '').toLowerCase().includes((poSearch || '').toLowerCase())).map(p => (
                                                         <tr key={p.po} className="hover:bg-slate-800/50"><td className="p-2 font-mono text-slate-400">{p.po}</td><td className="p-2 text-slate-200">{p.vendor}</td><td className="p-2 text-[10px] md:text-xs">{p.project}</td><td className="p-2 text-[10px] md:text-xs">{p.approver}</td></tr>
                                                     ))}
                                                 </tbody></table>
@@ -666,7 +885,7 @@
                                             <div className="max-h-64 overflow-y-auto custom-scrollbar">
                                                 <table className="w-full text-left text-xs md:text-sm min-w-[500px]"><thead className="bg-slate-900 text-slate-400 sticky top-0 shadow-lg"><tr><th className="p-2">{t.id}</th><th className="p-2">{t.legalName}</th><th className="p-2">{t.country}</th><th className="p-2">{t.risk}</th></tr></thead>
                                                 <tbody className="divide-y divide-slate-800 text-slate-300">
-                                                    {parsedVM.filter(v => v.name.toLowerCase().includes(vendorSearch.toLowerCase()) || v.id.toLowerCase().includes(vendorSearch.toLowerCase())).map(v => (
+                                                    {parsedVM.filter(v => (v.name || '').toLowerCase().includes((vendorSearch || '').toLowerCase()) || (v.id || '').toLowerCase().includes((vendorSearch || '').toLowerCase())).map(v => (
                                                         <tr key={v.id} className="hover:bg-slate-800/50"><td className="p-2 font-mono text-slate-400">{v.id}</td><td className="p-2 text-slate-200">{v.name}</td><td className="p-2 text-[10px] md:text-xs">{v.country}</td><td className="p-2 text-[10px] md:text-xs font-bold text-slate-400">{v.risk}</td></tr>
                                                     ))}
                                                 </tbody></table>
@@ -687,11 +906,33 @@
                                         </div>
                                     </div>
                                     {isHacked && <div className="mb-4 bg-red-950/40 border border-red-500/50 rounded-lg p-3 flex items-center gap-3"><i className="fa-solid fa-triangle-exclamation text-red-500 text-xl md:text-2xl"></i><div><h3 className="text-red-400 font-bold uppercase text-xs md:text-sm">{t.targetAcquired}</h3><p className="text-red-300/80 text-[10px] md:text-xs">{t.targetLocated}</p></div></div>}
+                                    
+                                    {/* Easter Egg Ghost Employee */}
+                                    {isGhost && (
+                                        <div className="mb-6 glass-panel border-2 border-dashed border-cyan-400 rounded-xl p-5 bg-cyan-950/20 shadow-[0_0_20px_rgba(6,182,212,0.3)] animate-pulse">
+                                            <div className="flex items-center gap-4 mb-3">
+                                                <div className="w-12 h-12 rounded-full bg-cyan-900/50 border-2 border-cyan-400 flex items-center justify-center text-cyan-300 text-2xl">
+                                                    <i className="fa-solid fa-ghost"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-cyan-300">Arthur 'Spooky' Pendelton (EMP404)</h3>
+                                                    <p className="text-cyan-400 text-xs font-mono">{t.ghostRole}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-xs text-slate-300 border-t border-cyan-900/50 pt-2 space-y-1 font-mono">
+                                                <p><strong className="text-cyan-400">{t.dept}:</strong> {t.ghostDept}</p>
+                                                <p><strong className="text-cyan-400">{t.ext}:</strong> 0404</p>
+                                                <p><strong className="text-cyan-400">{t.ip}:</strong> 127.0.0.1 (LOCALHOST_SPIRIT)</p>
+                                                <p className="text-[11px] text-cyan-200/70 italic mt-2">{t.ghostNote}</p>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                        {orgData.filter(m => m.name.toLowerCase().includes(search.toLowerCase()) || m.id.toLowerCase().includes(search.toLowerCase())).map(member => (
+                                        {orgData.filter(m => (m.name || '').toLowerCase().includes((search || '').toLowerCase()) || (m.id || '').toLowerCase().includes((search || '').toLowerCase())).map(member => (
                                             <div key={member.id} className="glass-panel border rounded-xl p-4 md:p-5 border-slate-800">
                                                 <div className="flex items-center gap-4 mb-3">
-                                                    <img src={member.img} className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-slate-700" />
+                                                    <EmployeeAvatar member={member} />
                                                     <div><h3 className="text-base md:text-lg font-bold text-white">{member.name}</h3><p className="text-amber-400 text-[10px] md:text-xs">{member.role}</p></div>
                                                 </div>
                                                 <div className="flex justify-between text-[10px] md:text-xs border-b border-slate-800 pb-1 mb-1"><span className="text-slate-400">{t.id}</span><span className="font-mono text-slate-200">{member.id}</span></div>
@@ -716,9 +957,12 @@
                             ))}
 
                             {/* LEDGER */}
-                            {activeTab === 'ledger' && (!unlockedNodes.ledger ? renderUnlock(t.n2Title, t.n2Hint, "ledger", ["22000000"]) : (
+                            {activeTab === 'ledger' && (!unlockedNodes.ledger ? renderUnlock(t.n2Title, t.n2Hint, "ledger", ["GUARDIAN"]) : (
                                 <div className="fade-in h-full flex flex-col pb-4">
-                                    <h3 className="text-amber-400 font-bold uppercase mb-4 text-sm md:text-base"><i className="fa-solid fa-database"></i> {t.n2Title}</h3>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="text-amber-400 font-bold uppercase text-sm md:text-base"><i className="fa-solid fa-database"></i> {t.n2Title}</h3>
+                                        <span className="text-[11px] text-slate-500 italic">TXN8892 (3x Click: Audit Memo)</span>
+                                    </div>
                                     <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-auto custom-scrollbar flex-grow">
                                         <table className="w-full text-left text-xs md:text-sm min-w-[600px] md:min-w-[800px]">
                                             <thead className="bg-slate-950 text-slate-400 sticky top-0 shadow-lg border-b border-slate-800">
@@ -733,7 +977,11 @@
                                             </thead>
                                             <tbody className="divide-y divide-slate-800">
                                                 {parsedLedger.map((r,i) => (
-                                                    <tr key={i} className="hover:bg-slate-800/50 transition-colors">
+                                                    <tr 
+                                                        key={i} 
+                                                        className="hover:bg-slate-800/50 transition-colors cursor-pointer"
+                                                        onClick={r.id === 'TXN8892' ? handleDummyRowClick : undefined}
+                                                    >
                                                         <td className="p-3 text-slate-500">{r.time}</td>
                                                         <td className="p-3 font-mono text-slate-500">{r.id}</td>
                                                         <td className="p-3 text-slate-200">{r.vendor}</td>
@@ -751,7 +999,7 @@
                             ))}
 
                             {/* PROTOCOL */}
-                            {activeTab === 'banking' && (!unlockedNodes.banking ? renderUnlock(t.n3Title, t.n3Hint, "banking", ["BRITISH VIRGIN ISLANDS", "BVI", "英属维尔京群岛", "英屬維爾京群島"]) : (
+                            {activeTab === 'banking' && (!unlockedNodes.banking ? renderUnlock(t.n3Title, t.n3Hint, "banking", ["TOGETHER MAKES PROGRESS", "TOGETHERMAKESPROGRESS"]) : (
                                 <div className="fade-in pb-12 flex flex-col gap-4 md:gap-6">
                                     <h2 className="text-xl md:text-2xl font-bold text-white mb-2"><i className="fa-solid fa-file-lines text-amber-500"></i> {t.n3Title}</h2>
                                     
@@ -791,53 +1039,106 @@
                             ))}
 
                             {/* FINAL MYSTERY */}
-                            {activeTab === 'mystery' && (allNodesUnlocked ? (allPuzzlesSolved ? (
-                                <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 p-6 md:p-8 text-center fade-in">
-                                    <i className="fa-solid fa-shield-halved text-6xl md:text-7xl text-amber-500 mb-6"></i>
-                                    <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest mb-4 uppercase">{t.haltTxn}</h1>
-                                    <p className="text-sm md:text-base text-slate-300 max-w-xl mb-6">{t.missionAccomplished}</p>
-                                    <div className="bg-amber-500/10 text-amber-400 px-4 md:px-6 py-2 rounded-full text-base md:text-xl font-bold tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.2)]">{t.ptsAwarded}</div>
-                                </div>
-                            ) : (
-                                <div className="fade-in">
-                                    <h2 className="text-xl md:text-2xl font-bold text-red-400 mb-2 uppercase"><i className="fa-solid fa-triangle-exclamation"></i> {t.sysOverride}</h2>
-                                    <p className="text-xs md:text-sm text-slate-400 mb-6 max-w-2xl">{t.sysOverrideDesc}</p>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        {[
-                                            { k: 'puzzle1', t: t.identityMatch, p: t.empIdHint, e: ["EMP004", "004"] },
-                                            { k: 'puzzle2', t: t.auditFlag, p: t.suspiciousTxn, e: ["TXN-8824", "TXN8824"] },
-                                            { k: 'puzzle3', t: t.executeAction, p: t.haltActionCode, e: ["VOID-WIRE", "VOID WIRE"] }
-                                        ].map(puz => {
-                                            const isSolved = solvedPuzzles[puz.k];
-                                            return (
-                                                <div key={puz.k} className={`glass-panel border p-4 rounded-xl flex flex-col h-40 md:h-48 ${isSolved ? 'border-lime-500 bg-lime-950/20' : 'border-slate-700'}`}>
-                                                    <h3 className="font-bold uppercase text-xs md:text-sm mb-2 text-white">{puz.t}</h3>
-                                                    <p className="text-[10px] md:text-xs text-slate-400 mb-auto">{puz.p}</p>
-                                                    {isSolved ? (
-                                                        <div className="text-lime-500 font-bold text-center mt-2 tracking-widest border border-lime-900 py-1 bg-slate-950 rounded text-xs md:text-sm">{t.verified}</div>
-                                                    ) : (
-                                                        <input type="text" placeholder={t.enter} className="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-xs md:text-sm uppercase text-white focus:outline-none focus:border-red-400 mt-2" onKeyDown={(e) => {
-                                                            if(e.key === 'Enter') {
-                                                                const v = e.target.value.trim().toUpperCase();
-                                                                if(puz.e.includes(v)) { setSolvedPuzzles(prev => ({...prev, [puz.k]: true})); }
-                                                                else { e.target.style.borderColor = 'red'; setTimeout(()=>e.target.style.borderColor='', 1000); }
-                                                            }
-                                                        }} />
-                                                    )}
+                            {activeTab === 'mystery' && (
+                                !allNodesUnlocked ? (
+                                    <div className="flex flex-col items-center justify-center h-full fade-in p-4 text-center">
+                                        <div className="max-w-md w-full p-6 md:p-8 glass-panel border border-red-500/30 rounded-xl shadow-2xl">
+                                            <div className="w-16 h-16 rounded-full bg-red-950/50 border-2 border-red-500 flex items-center justify-center mx-auto mb-4 text-red-400 text-2xl animate-pulse">
+                                                <i className="fa-solid fa-lock"></i>
+                                            </div>
+                                            <h2 className="text-xl font-bold uppercase tracking-widest text-white mb-2">{t.terminalLockedTitle}</h2>
+                                            <p className="text-slate-400 text-xs md:text-sm mb-6 leading-relaxed">{t.terminalLockedDesc}</p>
+                                            
+                                            <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 mb-6">
+                                                <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block mb-2">{t.terminalProgress}</span>
+                                                <div className="flex justify-center gap-3">
+                                                    {[{k:'logs', l:t.n1Logs, t:'logs'}, {k:'ledger', l:t.n2Ledger, t:'ledger'}, {k:'banking', l:t.n3Protocol, t:'banking'}].map(n => {
+                                                        const isDone = unlockedNodes[n.k];
+                                                        return (
+                                                            <button 
+                                                                key={n.k} 
+                                                                onClick={() => { setActiveTab(n.t); setUnlockInput(''); }}
+                                                                className={`px-3 py-1.5 rounded text-xs font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${isDone ? 'bg-amber-950/40 border-amber-500/50 text-amber-400' : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'}`}
+                                                            >
+                                                                <i className={`fa-solid ${isDone ? 'fa-lock-open' : 'fa-lock'}`}></i>
+                                                                {n.l}
+                                                            </button>
+                                                        );
+                                                    })}
                                                 </div>
-                                            )
-                                        })}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            )) : null)}
+                                ) : (
+                                    allPuzzlesSolved ? (
+                                        <div className="absolute inset-0 bg-slate-950 flex flex-col items-center justify-center z-50 p-6 md:p-8 text-center fade-in">
+                                            <i className="fa-solid fa-shield-halved text-6xl md:text-7xl text-amber-500 mb-6"></i>
+                                            <h1 className="text-3xl md:text-5xl font-bold text-white tracking-widest mb-4 uppercase">{t.haltTxn}</h1>
+                                            <p className="text-sm md:text-base text-slate-300 max-w-xl mb-6">{t.missionAccomplished}</p>
+                                            <div className="bg-amber-500/10 text-amber-400 px-4 md:px-6 py-2 rounded-full text-base md:text-xl font-bold tracking-widest shadow-[0_0_20px_rgba(245,158,11,0.2)]">{t.ptsAwarded}</div>
+                                        </div>
+                                    ) : (
+                                        <div className="fade-in pb-12">
+                                            <h2 className="text-xl md:text-2xl font-bold text-red-400 mb-2 uppercase"><i className="fa-solid fa-triangle-exclamation"></i> {t.sysOverride}</h2>
+                                            <p className="text-xs md:text-sm text-slate-400 mb-6 max-w-2xl">{t.sysOverrideDesc}</p>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                {[
+                                                    { k: 'puzzle1', t: t.identityMatch, p: t.empNameHint, e: ["MARCUS BERGSTROM", "MARCUS", "BERGSTROM", "VICTORIA VANCE", "VICTORIA", "VANCE"] },
+                                                    { k: 'puzzle2', t: t.auditFlag, p: t.suspiciousTxn, e: ["TXN-8824", "TXN8824", "8824"] },
+                                                    { k: 'puzzle3', t: t.executeAction, p: t.haltActionCode, e: ["VOID-WIRE", "VOID WIRE", "VOIDWIRE"] }
+                                                ].map(puz => {
+                                                    const isSolved = solvedPuzzles[puz.k];
+                                                    const hasError = puzzleErrors[puz.k];
+                                                    return (
+                                                        <div key={puz.k} className={`glass-panel border p-4 rounded-xl flex flex-col justify-between min-h-[170px] ${isSolved ? 'border-lime-500 bg-lime-950/20' : 'border-slate-700'}`}>
+                                                            <div>
+                                                                <h3 className="font-bold uppercase text-xs md:text-sm mb-1 text-white">{puz.t}</h3>
+                                                                <p className="text-[11px] text-slate-400 mb-4">{puz.p}</p>
+                                                            </div>
+                                                            {isSolved ? (
+                                                                <div className="text-lime-500 font-bold text-center tracking-widest border border-lime-900 py-2 bg-slate-950 rounded text-xs md:text-sm">{t.verified}</div>
+                                                            ) : (
+                                                                <div className="flex gap-2">
+                                                                    <input 
+                                                                        type="text" 
+                                                                        placeholder={t.enter} 
+                                                                        value={puzzleInputs[puz.k] || ''}
+                                                                        onChange={(e) => setPuzzleInputs({ ...puzzleInputs, [puz.k]: e.target.value })}
+                                                                        className={`w-full bg-slate-900 border ${hasError ? 'border-red-500 text-red-400' : 'border-slate-600 text-white'} rounded p-2 text-center text-xs md:text-sm uppercase focus:outline-none focus:border-red-400 transition-colors`} 
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === 'Enter') {
+                                                                                handleVerifyPuzzle(puz.k, puz.e);
+                                                                            }
+                                                                        }} 
+                                                                    />
+                                                                    <button 
+                                                                        type="button"
+                                                                        onClick={() => handleVerifyPuzzle(puz.k, puz.e)}
+                                                                        className="bg-red-900/80 hover:bg-red-800 active:bg-red-700 text-white px-3 rounded text-xs font-bold uppercase transition-colors shrink-0 cursor-pointer"
+                                                                    >
+                                                                        {t.verifyBtn}
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )
+                                )
+                            )}
                         </div>
                     </main>
                 </div>
             );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<QuestView />);
+        const rootContainer = document.getElementById('root');
+        if (rootContainer) {
+            const root = ReactDOM.createRoot(rootContainer);
+            root.render(<QuestView />);
+        }
     </script>
 </body>
 </html>
