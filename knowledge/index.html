@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Knowledge Clash 勤业智库 </title>
+  <title>勤业智库 Knowledge Clash</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Tone.js for Web Audio Synthesis -->
@@ -90,7 +90,6 @@
       animation: pulseRing 2.4s infinite ease-in-out;
     }
 
-    /* 16:9 Screen Fit Optimizations */
     @media (min-aspect-ratio: 16/10) {
       .game-viewport {
         max-height: 94vh;
@@ -105,9 +104,9 @@
   <header class="w-full border-b border-white/10 bg-deloitte-black/70 backdrop-blur-md sticky top-0 z-50 flex-shrink-0">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 h-13 sm:h-14 flex items-center justify-between">
       <div class="flex items-center space-x-3 cursor-pointer" onclick="restartTrivia()">
-        <span class="font-extrabold text-lg sm:text-xl tracking-tight">Knowledge Clash<span class="deloitte-dot"></span></span>
+        <span class="font-extrabold text-lg sm:text-xl tracking-tight">勤业智库<span class="deloitte-dot"></span></span>
         <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-deloitte-green font-bold hidden sm:inline-block">
-          勤业智库
+          Knowledge Clash
         </span>
       </div>
 
@@ -133,7 +132,6 @@
     </div>
   </header>
 
-  <!-- Main Application Container (Fitted for 16:9 Screens) -->
   <main class="flex-grow flex items-center justify-center p-2 sm:p-4 overflow-hidden">
     <div class="w-full max-w-4xl h-full flex flex-col justify-center">
 
@@ -154,12 +152,11 @@
             </div>
           </div>
 
-          <!-- Center: Analog Clock Timer & Controls -->
+          <!-- Center: Analog Clock Timer & Controls (Default 10s) -->
           <div class="flex items-center space-x-2 sm:space-x-3">
             <!-- Analog Clock Face -->
             <div class="relative w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0 flex items-center justify-center">
               <svg id="analogClockSvg" class="w-full h-full" viewBox="0 0 64 64">
-                <!-- Outer Dial -->
                 <circle cx="32" cy="32" r="28" fill="#141820" stroke="rgba(255,255,255,0.15)" stroke-width="1.8"/>
                 
                 <!-- 12 Tick Marks -->
@@ -177,7 +174,7 @@
                 <line x1="9.5" y1="19" x2="13.2" y2="21.2" stroke="rgba(255,255,255,0.25)" stroke-width="1.2"/>
                 <line x1="19" y1="9.5" x2="21.2" y2="13.2" stroke="rgba(255,255,255,0.25)" stroke-width="1.2"/>
 
-                <!-- Circular Countdown Sweep Arc (Starts at 12 o'clock via -90 deg rotation) -->
+                <!-- Countdown Sweep Arc -->
                 <circle id="analogClockArc" cx="32" cy="32" r="23.5" fill="none" stroke="#86BC25" stroke-width="2.5"
                   stroke-linecap="round" stroke-dasharray="147.65" stroke-dashoffset="0"
                   transform="rotate(-90 32 32)"
@@ -189,7 +186,7 @@
                   <line x1="32" y1="32" x2="32" y2="15" stroke="#86BC25" stroke-width="2" stroke-linecap="round" />
                 </g>
 
-                <!-- Center Deloitte Pivot Cap -->
+                <!-- Center Pivot -->
                 <circle id="analogPivot" cx="32" cy="32" r="3.2" fill="#86BC25" stroke="#141820" stroke-width="1"/>
               </svg>
             </div>
@@ -197,17 +194,17 @@
             <!-- Digital readout and duration modifiers -->
             <div class="flex items-center space-x-1.5">
               <div id="triviaTimerDisplay" class="font-mono text-sm sm:text-base font-black text-deloitte-green tracking-wider px-2 py-0.5 rounded-lg bg-black/60 border border-white/10 shadow-inner">
-                01:00
+                00:10
               </div>
-              <button onclick="adjustTimerDuration(-15)" title="Decrease duration by 15s" class="px-1.5 py-0.5 rounded-md bg-white/5 hover:bg-white/15 text-[11px] font-bold text-gray-300 transition-all">
-                -15s
+              <button onclick="adjustTimerDuration(-5)" title="Decrease duration by 5s" class="px-1.5 py-0.5 rounded-md bg-white/5 hover:bg-white/15 text-[11px] font-bold text-gray-300 transition-all">
+                -5s
               </button>
-              <button onclick="adjustTimerDuration(15)" title="Increase duration by 15s" class="px-1.5 py-0.5 rounded-md bg-white/5 hover:bg-white/15 text-[11px] font-bold text-gray-300 transition-all">
-                +15s
+              <button onclick="adjustTimerDuration(5)" title="Increase duration by 5s" class="px-1.5 py-0.5 rounded-md bg-white/5 hover:bg-white/15 text-[11px] font-bold text-gray-300 transition-all">
+                +5s
               </button>
               <button id="timerToggleBtn" onclick="toggleTimerRunning()" class="px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] transition-all flex items-center gap-1">
-                <i id="timerToggleIcon" class="fa-solid fa-pause text-[9px]"></i>
-                <span id="timerToggleText">Pause</span>
+                <i id="timerToggleIcon" class="fa-solid fa-play text-[9px]"></i>
+                <span id="timerToggleText">Start</span>
               </button>
             </div>
           </div>
@@ -221,11 +218,11 @@
           </div>
         </div>
 
-        <!-- CENTRAL QUESTION DISPLAY CARD (Compact for 16:9 vertical room) -->
+        <!-- CENTRAL QUESTION DISPLAY CARD -->
         <div id="questionCardContainer" onclick="handleQuestionClick()" class="cursor-pointer group relative bg-gradient-to-b from-deloitte-cardbg to-[#12151b] border-2 border-white/10 hover:border-deloitte-green/40 px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl sm:rounded-3xl card-shadow transition-all duration-300 text-center flex flex-col items-center justify-center min-h-[105px] sm:min-h-[125px] select-none">
           
           <div class="space-y-1.5 max-w-3xl w-full">
-            <!-- Dynamic Category / Test Indicator -->
+            <!-- Dynamic Category / Practice Indicator -->
             <div id="testBadgeContainer" class="hidden pb-1">
               <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-[11px] sm:text-xs font-black uppercase tracking-wider animate-pulse">
                 <i class="fa-solid fa-flask-vial text-amber-400"></i>
@@ -252,12 +249,12 @@
           </div>
         </div>
 
-        <!-- MULTIPLE CHOICE OPTIONS GRID (Compact 2x2 Layout to fit 16:9 screens) -->
+        <!-- MULTIPLE CHOICE OPTIONS GRID -->
         <div id="optionsContainer" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 pt-0.5 animate-pop-in">
           <!-- Option A -->
           <button id="optBtn0" onclick="selectOption(0)" class="button-press group relative p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-deloitte-green/60 text-left transition-all flex items-center justify-between">
             <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1">
-              <span class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-gray-300 group-hover:text-deloitte-green group-hover:border-deloitte-green/40 transition-colors">A</span>
+              <span id="optBadge0" class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-gray-300 group-hover:text-deloitte-green group-hover:border-deloitte-green/40 transition-colors">A</span>
               <div id="optText0" class="min-w-0 flex-1">Option A</div>
             </div>
             <div id="optIcon0" class="text-base sm:text-lg opacity-0 transition-opacity flex-shrink-0 ml-1.5"></div>
@@ -266,7 +263,7 @@
           <!-- Option B -->
           <button id="optBtn1" onclick="selectOption(1)" class="button-press group relative p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-deloitte-green/60 text-left transition-all flex items-center justify-between">
             <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1">
-              <span class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-gray-300 group-hover:text-deloitte-green group-hover:border-deloitte-green/40 transition-colors">B</span>
+              <span id="optBadge1" class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-gray-300 group-hover:text-deloitte-green group-hover:border-deloitte-green/40 transition-colors">B</span>
               <div id="optText1" class="min-w-0 flex-1">Option B</div>
             </div>
             <div id="optIcon1" class="text-base sm:text-lg opacity-0 transition-opacity flex-shrink-0 ml-1.5"></div>
@@ -275,7 +272,7 @@
           <!-- Option C -->
           <button id="optBtn2" onclick="selectOption(2)" class="button-press group relative p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-deloitte-green/60 text-left transition-all flex items-center justify-between">
             <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1">
-              <span class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-gray-300 group-hover:text-deloitte-green group-hover:border-deloitte-green/40 transition-colors">C</span>
+              <span id="optBadge2" class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-gray-300 group-hover:text-deloitte-green group-hover:border-deloitte-green/40 transition-colors">C</span>
               <div id="optText2" class="min-w-0 flex-1">Option C</div>
             </div>
             <div id="optIcon2" class="text-base sm:text-lg opacity-0 transition-opacity flex-shrink-0 ml-1.5"></div>
@@ -284,23 +281,32 @@
           <!-- Option D -->
           <button id="optBtn3" onclick="selectOption(3)" class="button-press group relative p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-deloitte-green/60 text-left transition-all flex items-center justify-between">
             <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1">
-              <span class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-gray-300 group-hover:text-deloitte-green group-hover:border-deloitte-green/40 transition-colors">D</span>
+              <span id="optBadge3" class="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-gray-300 group-hover:text-deloitte-green group-hover:border-deloitte-green/40 transition-colors">D</span>
               <div id="optText3" class="min-w-0 flex-1">Option D</div>
             </div>
             <div id="optIcon3" class="text-base sm:text-lg opacity-0 transition-opacity flex-shrink-0 ml-1.5"></div>
           </button>
         </div>
 
-        <!-- RESULT & NEXT ACTION FOOTER -->
-        <div id="bottomActionBanner" class="hidden flex items-center justify-between bg-white/[0.04] border border-white/10 px-3.5 py-2 rounded-xl sm:rounded-2xl animate-pop-in">
+        <!-- RESULT & MULTI-TRY ACTION FOOTER -->
+        <div id="bottomActionBanner" class="hidden flex flex-col sm:flex-row items-center justify-between bg-white/[0.04] border border-white/10 px-3.5 py-2.5 rounded-xl sm:rounded-2xl gap-2 animate-pop-in">
           <div id="answerStatusMessage" class="flex items-center space-x-2 text-xs sm:text-sm font-extrabold">
-            <!-- Dynamic feedback message: Correct / Incorrect -->
+            <!-- Dynamic feedback message -->
           </div>
 
-          <button id="nextQuestionBtn" onclick="goToNextQuestion()" class="button-press px-4 py-1.5 sm:px-5 sm:py-2 rounded-lg sm:rounded-xl bg-deloitte-green text-black font-bold text-xs sm:text-sm hover:bg-emerald-400 transition-all flex items-center space-x-1.5 shadow-lg shadow-deloitte-green/20">
-            <span id="nextBtnText">下一题 · Next Question</span>
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </button>
+          <div class="flex items-center space-x-2 self-end sm:self-auto">
+            <!-- Retry Button (Visible when attempt fails and retries remain) -->
+            <button id="retryQuestionBtn" onclick="retryCurrentQuestion()" class="hidden button-press px-4 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-300 font-bold text-xs sm:text-sm transition-all flex items-center space-x-1.5 shadow-md shadow-amber-500/10">
+              <i class="fa-solid fa-rotate-left text-xs"></i>
+              <span id="retryBtnText">重试 (还剩 2 次) · Retry</span>
+            </button>
+
+            <!-- Next Question Button -->
+            <button id="nextQuestionBtn" onclick="goToNextQuestion()" class="button-press px-4 py-1.5 sm:px-5 sm:py-2 rounded-lg sm:rounded-xl bg-deloitte-green text-black font-bold text-xs sm:text-sm hover:bg-emerald-400 transition-all flex items-center space-x-1.5 shadow-lg shadow-deloitte-green/20">
+              <span id="nextBtnText">下一题 · Next Question</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+          </div>
         </div>
 
       </section>
@@ -410,7 +416,7 @@
   </div>
 
   <!-- Notification Toast -->
-  <div id="toast" class="fixed bottom-6 right-6 pointer-events-none transform translate-y-16 opacity-0 transition-all duration-300 z-50 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2">
+  <div id="toast" class="hidden fixed bottom-6 right-6 pointer-events-none transform translate-y-16 opacity-0 transition-all duration-300 z-50 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2">
   </div>
 
   <script>
@@ -422,6 +428,7 @@
 
     let correctSynth = null;
     let incorrectSynth = null;
+    let retrySynth = null;
     let revealSynth = null;
     let clickSynth = null;
 
@@ -444,9 +451,15 @@
 
         incorrectSynth = new Tone.Synth({
           oscillator: { type: "sawtooth" },
-          envelope: { attack: 0.01, decay: 0.3, sustain: 0.0, release: 0.1 }
+          envelope: { attack: 0.01, decay: 0.25, sustain: 0.0, release: 0.1 }
         }).toDestination();
         incorrectSynth.volume.value = -6;
+
+        retrySynth = new Tone.Synth({
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.01, decay: 0.15, sustain: 0.02, release: 0.15 }
+        }).toDestination();
+        retrySynth.volume.value = -8;
 
         clickSynth = new Tone.MembraneSynth({
           pitchDecay: 0.01,
@@ -490,6 +503,9 @@
         } else if (type === 'incorrect' && incorrectSynth) {
           incorrectSynth.triggerAttackRelease("Eb3", "16n", now);
           incorrectSynth.triggerAttackRelease("C3", "12n", now + 0.12);
+        } else if (type === 'retry' && retrySynth) {
+          retrySynth.triggerAttackRelease("G4", "16n", now);
+          retrySynth.triggerAttackRelease("C5", "16n", now + 0.08);
         } else if (type === 'click' && clickSynth) {
           clickSynth.triggerAttackRelease("C2", "32n", now);
         }
@@ -499,13 +515,13 @@
     }
 
     /* ==========================================================
-       2. 15 CURATED DELOITTE TRIVIA QUESTIONS (Bilingual Database)
+       STREAMING_CHUNK:Populating default Deloitte trivia knowledge questions
        ========================================================== */
     const DEFAULT_QUESTIONS_RAW = [
       "德勤最早创立于哪一年？ / In which year was Deloitte founded?, 1880年 / 1880, [1845年 / 1845], 1900年 / 1900, 1913年 / 1913",
       "德勤全球标志性的绿色圆点象征着什么？ / What does Deloitte's iconic Green Dot symbolize?, 环保与低碳愿景 / Green & Low-Carbon Vision, 财富与持续增长 / Wealth & Growth, [洞察力与聚焦终点 / A Period of Impact & Focus], 科技与未来互联 / Technology & Future",
       "德勤全球法律实体（DTTL）法定注册总部设立在哪个城市？ / In which city is Deloitte's global legal entity (DTTL) registered?, 美国纽约 / New York (USA), [英国伦敦 / London (UK)], 瑞士日内瓦 / Geneva (Switzerland), 荷兰阿姆斯特丹 / Amsterdam (Netherlands)",
-      "在四大中，德勤在全球最以哪项业务的领先优势著称？ / Among the Big Four which business is Deloitte globally renowned for leading?, [管理咨询业务 / Management Consulting], 个人破产清算 / Personal Bankruptcy, 建筑工程监理 / Construction Supervision, 知识产权代理 / IP Agency",
+      "在四大中 德勤在全球最以哪项业务的领先优势著称？ / Among the Big Four which business is Deloitte globally renowned for leading?, [管理咨询业务 / Management Consulting], 个人破产清算 / Personal Bankruptcy, 建筑工程监理 / Construction Supervision, 知识产权代理 / IP Agency",
       "全球第一所德勤大学（Deloitte University）坐落于美国的哪个州？ / In which US state was the first Deloitte University established?, 加利福尼亚州 / California, 纽约州 / New York, [德克萨斯州 / Texas], 佛罗里达州 / Florida",
       "德勤全称 Deloitte Touche Tohmatsu 中的 Touche 来自哪位先驱？ / In Deloitte Touche Tohmatsu - who does Touche represent?, [乔治·图什（苏格兰会计师） / George Touche (Scottish Accountant)], 托马斯·图什 / Thomas Touche, 亨利·图什 / Henri Touche, 亚瑟·图什 / Arthur Touche",
       "德勤在全球推行的核心立所宗旨（Purpose Statement）是？ / What is Deloitte's global Purpose Statement?, 追求行业顶尖 / Best in Class, [成就不凡致胜未来 / Make an impact that matters], 洞悉明日未来 / In Touch with Tomorrow, 始终卓越不凡 / Excellence Always",
@@ -520,15 +536,10 @@
     ];
 
     /* ==========================================================
-       3. QUESTION PARSER ENGINE & ADMIN MANAGEMENT
+       STREAMING_CHUNK:Parsing question datasets and managing admin persistence
        ========================================================== */
     let currentQuestions = [];
 
-    /**
-     * Parses trivia questions in format:
-     * Question, optA, [optB], optC, optD
-     * Intelligently parses commas while respecting bracketed answers.
-     */
     function parseQuestionsFromText(rawText) {
       if (!rawText || !rawText.trim()) return [];
 
@@ -566,8 +577,18 @@
 
         if (parts.length < 3) continue;
 
-        const questionText = parts[0];
-        const rawOptions = parts.slice(1);
+        let questionText = "";
+        let rawOptions = [];
+
+        // If line has more than 5 parts (e.g. question had commas inside),
+        // the last 4 items are the options, and parts before are the question stem.
+        if (parts.length > 5) {
+          rawOptions = parts.slice(parts.length - 4);
+          questionText = parts.slice(0, parts.length - 4).join("，");
+        } else {
+          questionText = parts[0];
+          rawOptions = parts.slice(1);
+        }
 
         let correctIndex = -1;
         const options = [];
@@ -586,10 +607,11 @@
           correctIndex = 0;
         }
 
+        // Always guarantee strictly up to 4 options
         parsed.push({
           question: questionText,
-          options: options,
-          correctIndex: correctIndex
+          options: options.slice(0, 4),
+          correctIndex: Math.min(correctIndex, 3)
         });
       }
 
@@ -624,15 +646,33 @@
 
     document.getElementById("adminQuestionInput").addEventListener("input", updateAdminParsedCount);
 
+    /* ==========================================================
+       STREAMING_CHUNK:Managing auto-fading toast notifications
+       ========================================================== */
+    let toastTimeout = null;
     function showToast(message, isSuccess = true) {
       const toast = document.getElementById("toast");
+      if (!toast) return;
+
+      if (toastTimeout) {
+        clearTimeout(toastTimeout);
+        toastTimeout = null;
+      }
+
       toast.textContent = message;
+      toast.classList.remove("hidden", "translate-y-16", "opacity-0");
       toast.className = `fixed bottom-6 right-6 pointer-events-none transform transition-all duration-300 z-50 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2 ${
-        isSuccess ? "bg-deloitte-green text-black translate-y-0 opacity-100" : "bg-rose-600 text-white translate-y-0 opacity-100"
-      }`;
-      setTimeout(() => {
+        isSuccess ? "bg-deloitte-green text-black" : "bg-rose-600 text-white"
+      } translate-y-0 opacity-100`;
+
+      // Automatically animate out and hide after 2.2 seconds
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("translate-y-0", "opacity-100");
         toast.classList.add("translate-y-16", "opacity-0");
-      }, 2600);
+        setTimeout(() => {
+          toast.classList.add("hidden");
+        }, 350);
+      }, 2200);
     }
 
     function saveAdminQuestions() {
@@ -658,10 +698,11 @@
     }
 
     /* ==========================================================
-       4. ANALOG & DIGITAL COUNTDOWN TIMER ENGINE
+       STREAMING_CHUNK:Configuring analog and digital countdown clock (Default 10s)
        ========================================================== */
-    let configuredDuration = 60;
-    let questionTimeRemaining = 60;
+    // Default 10 seconds as requested
+    let configuredDuration = 10;
+    let questionTimeRemaining = 10;
     let questionTimerInterval = null;
     let isTimerPaused = false;
     const CIRCLE_CIRCUMFERENCE = 147.65; // 2 * PI * 23.5
@@ -693,7 +734,9 @@
         arc.style.strokeDashoffset = offset;
       }
 
-      if (questionTimeRemaining <= 10 && questionTimeRemaining > 0) {
+      // Turn warning color when 3 seconds or below
+      const warningThreshold = Math.min(5, Math.ceil(configuredDuration * 0.4));
+      if (questionTimeRemaining <= warningThreshold && questionTimeRemaining > 0) {
         if (display) {
           display.className = "font-mono text-sm sm:text-base font-black text-rose-400 tracking-wider px-2 py-0.5 rounded-lg bg-rose-950/40 border border-rose-500/50 shadow-inner animate-pulse";
         }
@@ -709,27 +752,26 @@
     }
 
     function adjustTimerDuration(delta) {
-      configuredDuration = Math.max(10, configuredDuration + delta);
-      if (!hasAnsweredCurrent) {
-        if (!optionsRevealed) {
+      configuredDuration = Math.max(5, configuredDuration + delta);
+      if (!isQuestionResolved) {
+        if (!optionsRevealed || isAwaitingRetry) {
           questionTimeRemaining = configuredDuration;
         } else {
           questionTimeRemaining = Math.max(1, questionTimeRemaining + delta);
         }
         updateTimerDisplayUI();
       }
-      showToast(`Timer set to ${configuredDuration}s (applies to following questions)`);
+      showToast(`Timer set to ${configuredDuration}s (applies to current & next questions)`);
     }
 
     function startQuestionTimer() {
       stopQuestionTimer();
-      questionTimeRemaining = configuredDuration;
       isTimerPaused = false;
       updateTimerDisplayUI();
       updateTimerButtonUI();
 
       questionTimerInterval = setInterval(() => {
-        if (!isTimerPaused && !hasAnsweredCurrent) {
+        if (!isTimerPaused && !isQuestionResolved && !isAwaitingRetry) {
           questionTimeRemaining--;
           updateTimerDisplayUI();
           if (questionTimeRemaining <= 0) {
@@ -747,9 +789,13 @@
     }
 
     function toggleTimerRunning() {
-      if (hasAnsweredCurrent) return;
+      if (isQuestionResolved) return;
       if (!optionsRevealed) {
         revealOptions();
+        return;
+      }
+      if (isAwaitingRetry) {
+        retryCurrentQuestion();
         return;
       }
       isTimerPaused = !isTimerPaused;
@@ -760,7 +806,7 @@
       const icon = document.getElementById("timerToggleIcon");
       const text = document.getElementById("timerToggleText");
       if (!icon || !text) return;
-      if (isTimerPaused || !optionsRevealed) {
+      if (isTimerPaused || !optionsRevealed || isAwaitingRetry) {
         icon.className = "fa-solid fa-play text-[9px]";
         text.textContent = !optionsRevealed ? "Start" : "Resume";
       } else {
@@ -769,56 +815,8 @@
       }
     }
 
-    function handleQuestionTimeout() {
-      stopQuestionTimer();
-      if (hasAnsweredCurrent) return;
-      hasAnsweredCurrent = true;
-      playSound('incorrect');
-
-      if (!optionsRevealed) {
-        optionsRevealed = true;
-        document.getElementById("revealCallout").classList.add("hidden");
-        const opts = document.getElementById("optionsContainer");
-        opts.classList.remove("hidden");
-      }
-
-      const q = isTestMode ? TEST_QUESTION : currentQuestions[currentIndex];
-      for (let i = 0; i < q.options.length; i++) {
-        const btn = document.getElementById(`optBtn${i}`);
-        const txt = document.getElementById(`optText${i}`);
-        const icon = document.getElementById(`optIcon${i}`);
-        btn.disabled = true;
-
-        if (i === q.correctIndex) {
-          btn.className = "p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-deloitte-green/15 border-2 border-deloitte-green text-left transition-all flex items-center justify-between shadow-lg shadow-deloitte-green/10";
-          txt.innerHTML = renderBilingualHtml(q.options[i], false, 'correct');
-          icon.className = "text-base text-deloitte-green opacity-100 flex-shrink-0 ml-1.5";
-          icon.innerHTML = '<i class="fa-solid fa-check"></i>';
-        } else {
-          btn.className = "opacity-40 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border border-white/5 text-left transition-all flex items-center justify-between";
-          txt.innerHTML = renderBilingualHtml(q.options[i], false, 'dimmed');
-        }
-      }
-
-      const banner = document.getElementById("bottomActionBanner");
-      const msg = document.getElementById("answerStatusMessage");
-      const nextBtnText = document.getElementById("nextBtnText");
-
-      msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-amber-400";
-      msg.innerHTML = '<i class="fa-regular fa-clock text-base sm:text-lg"></i><span>时间到！ Time\'s Up!</span>';
-
-      if (isTestMode) {
-        nextBtnText.textContent = "进入正式问答 · Start Official Challenge";
-      } else if (currentIndex === currentQuestions.length - 1) {
-        nextBtnText.textContent = "查看结果 · View Results";
-      } else {
-        nextBtnText.textContent = "下一题 · Next Question";
-      }
-      banner.classList.remove("hidden");
-    }
-
     /* ==========================================================
-       5. BILINGUAL RENDERING ENGINE & STEP-BY-STEP CONTROLLER
+       STREAMING_CHUNK:Defining practice test question and bilingual renderer
        ========================================================== */
     const TEST_QUESTION = {
       question: "在德勤做PPT时，如果一页胶片感觉还不够高大上，终极秘诀是？ / When making slides, what's the ultimate secret if a slide doesn't look professional enough?",
@@ -835,7 +833,13 @@
     let currentIndex = 0;
     let score = 0;
     let optionsRevealed = false;
-    let hasAnsweredCurrent = false;
+
+    // Multi-try variables: 1 initial attempt + 2 retries = 3 total attempts
+    const MAX_ATTEMPTS = 3;
+    let attemptsUsed = 0;
+    let selectedWrongIndices = new Set();
+    let isQuestionResolved = false; // true when correct or out of tries/conceded
+    let isAwaitingRetry = false;     // true when an attempt was wrong and player can retry
 
     function renderBilingualHtml(rawText, isQuestion = false, state = 'normal') {
       if (!rawText) return "";
@@ -863,8 +867,8 @@
         zhColor = "text-rose-300 font-extrabold";
         enColor = "text-rose-200/90 font-medium";
       } else if (state === 'dimmed') {
-        zhColor = "text-gray-400";
-        enColor = "text-gray-500";
+        zhColor = "text-gray-500";
+        enColor = "text-gray-600";
       }
 
       if (match) {
@@ -883,11 +887,17 @@
       currentQuestions = parseQuestionsFromText(DEFAULT_QUESTIONS_RAW.join("\n"));
     }
 
+    /* ==========================================================
+       STREAMING_CHUNK:Rendering current question card and resetting multi-try state
+       ========================================================== */
     function renderCurrentQuestion() {
       stopQuestionTimer();
       optionsRevealed = false;
-      hasAnsweredCurrent = false;
+      isQuestionResolved = false;
+      isAwaitingRetry = false;
       isTimerPaused = false;
+      attemptsUsed = 0;
+      selectedWrongIndices.clear();
 
       questionTimeRemaining = configuredDuration;
       updateTimerDisplayUI();
@@ -928,16 +938,23 @@
 
       document.getElementById("optionsContainer").classList.add("hidden");
       document.getElementById("bottomActionBanner").classList.add("hidden");
+      document.getElementById("retryQuestionBtn").classList.add("hidden");
 
+      // Strictly configure the 4 option buttons with boundary checks
       for (let i = 0; i < 4; i++) {
         const btn = document.getElementById(`optBtn${i}`);
         const txt = document.getElementById(`optText${i}`);
         const icon = document.getElementById(`optIcon${i}`);
+        const badge = document.getElementById(`optBadge${i}`);
+        if (!btn || !txt || !icon) continue;
 
         if (i < q.options.length) {
           btn.classList.remove("hidden");
           btn.disabled = false;
           btn.className = "button-press group relative p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-deloitte-green/60 text-left transition-all flex items-center justify-between";
+          if (badge) {
+            badge.className = "w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 rounded-lg sm:rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-black text-gray-300 group-hover:text-deloitte-green group-hover:border-deloitte-green/40 transition-colors";
+          }
           txt.innerHTML = renderBilingualHtml(q.options[i], false, 'normal');
           icon.innerHTML = "";
           icon.className = "text-base sm:text-lg opacity-0 transition-opacity flex-shrink-0 ml-1.5";
@@ -953,6 +970,9 @@
       }
     }
 
+    /* ==========================================================
+       STREAMING_CHUNK:Starting timer and revealing options on user trigger
+       ========================================================== */
     function revealOptions() {
       if (optionsRevealed) return;
       optionsRevealed = true;
@@ -965,73 +985,270 @@
       void opts.offsetWidth;
       opts.classList.add("animate-pop-in");
 
+      // Timer starts immediately when options are shown!
+      questionTimeRemaining = configuredDuration;
       startQuestionTimer();
     }
 
+    /* ==========================================================
+       STREAMING_CHUNK:Evaluating option selections and managing multi-try retries
+       ========================================================== */
     function selectOption(selectedIndex) {
-      if (!optionsRevealed || hasAnsweredCurrent) return;
-      hasAnsweredCurrent = true;
+      if (!optionsRevealed || isQuestionResolved || isAwaitingRetry || selectedWrongIndices.has(selectedIndex)) return;
+      
       stopQuestionTimer();
+      attemptsUsed++;
 
       const q = isTestMode ? TEST_QUESTION : currentQuestions[currentIndex];
       const isCorrect = (selectedIndex === q.correctIndex);
       const total = currentQuestions.length;
 
       if (isCorrect) {
+        // --- CORRECT ANSWER FLOW ---
+        isQuestionResolved = true;
+        isAwaitingRetry = false;
         playSound('correct');
+
         if (!isTestMode) {
           score++;
+          document.getElementById("scoreDisplay").textContent = `${score} / ${total}`;
         }
+
+        // Highlight chosen option in Deloitte green
+        for (let i = 0; i < 4; i++) {
+          const btn = document.getElementById(`optBtn${i}`);
+          const txt = document.getElementById(`optText${i}`);
+          const icon = document.getElementById(`optIcon${i}`);
+          if (!btn || !txt || !icon) continue;
+
+          btn.disabled = true;
+
+          if (i === q.correctIndex) {
+            btn.className = "p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-green/15 border-2 border-deloitte-green text-left transition-all flex items-center justify-between shadow-lg shadow-deloitte-green/10";
+            txt.innerHTML = renderBilingualHtml(q.options[i], false, 'correct');
+            icon.className = "text-base text-deloitte-green opacity-100 flex-shrink-0 ml-1.5";
+            icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+          } else {
+            btn.className = "opacity-40 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border border-white/5 text-left transition-all flex items-center justify-between";
+            txt.innerHTML = renderBilingualHtml(q.options[i], false, 'dimmed');
+          }
+        }
+
+        // Configure banner for Next Question
+        const banner = document.getElementById("bottomActionBanner");
+        const msg = document.getElementById("answerStatusMessage");
+        const nextBtnText = document.getElementById("nextBtnText");
+        const retryBtn = document.getElementById("retryQuestionBtn");
+
+        retryBtn.classList.add("hidden"); // No retry needed on correct
+
+        if (isTestMode) {
+          msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-amber-300";
+          msg.innerHTML = '<i class="fa-solid fa-flask text-base"></i><span>回答正确！测试完成 · Correct! Warm-up Finished</span>';
+          nextBtnText.textContent = "进入正式问答 · Start Official Challenge";
+        } else {
+          msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-deloitte-green";
+          msg.innerHTML = '<i class="fa-solid fa-circle-check text-base sm:text-lg"></i><span>回答正确！ Correct!</span>';
+
+          if (currentIndex === total - 1) {
+            nextBtnText.textContent = "查看结果 · View Results";
+          } else {
+            nextBtnText.textContent = "下一题 · Next Question";
+          }
+        }
+
+        banner.classList.remove("hidden");
+
       } else {
+        // --- INCORRECT ANSWER FLOW (Do NOT show correct answer, offer retries) ---
         playSound('incorrect');
+        selectedWrongIndices.add(selectedIndex);
+
+        // Highlight this specific wrong option in red and disable it
+        const wrongBtn = document.getElementById(`optBtn${selectedIndex}`);
+        const wrongTxt = document.getElementById(`optText${selectedIndex}`);
+        const wrongIcon = document.getElementById(`optIcon${selectedIndex}`);
+
+        if (wrongBtn && wrongTxt && wrongIcon) {
+          wrongBtn.className = "p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-rose-950/40 border-2 border-rose-500 text-left transition-all flex items-center justify-between shadow-lg shadow-rose-950/30 opacity-75";
+          wrongTxt.innerHTML = renderBilingualHtml(q.options[selectedIndex], false, 'incorrect');
+          wrongIcon.className = "text-base text-rose-400 opacity-100 flex-shrink-0 ml-1.5";
+          wrongIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+          wrongBtn.disabled = true;
+        }
+
+        const retriesRemaining = MAX_ATTEMPTS - attemptsUsed;
+
+        // Temporarily disable remaining options until user clicks Retry or Next
+        for (let i = 0; i < 4; i++) {
+          const btn = document.getElementById(`optBtn${i}`);
+          if (btn) btn.disabled = true;
+        }
+
+        const banner = document.getElementById("bottomActionBanner");
+        const msg = document.getElementById("answerStatusMessage");
+        const retryBtn = document.getElementById("retryQuestionBtn");
+        const retryBtnText = document.getElementById("retryBtnText");
+        const nextBtnText = document.getElementById("nextBtnText");
+
+        if (retriesRemaining > 0) {
+          // --- Has more tries available (1st or 2nd wrong) ---
+          isAwaitingRetry = true;
+
+          msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-amber-400";
+          msg.innerHTML = `<i class="fa-solid fa-circle-exclamation text-base"></i><span>回答错误！还剩 ${retriesRemaining} 次机会 / Incorrect! (${retriesRemaining} tries left)</span>`;
+
+          // Show BOTH "Retry" and "Next Question" buttons
+          retryBtnText.textContent = `重试 (还剩 ${retriesRemaining} 次) · Retry`;
+          retryBtn.classList.remove("hidden");
+          retryBtn.classList.add("flex");
+
+          if (isTestMode) {
+            nextBtnText.textContent = "跳过测试 · Skip Practice";
+          } else if (currentIndex === total - 1) {
+            nextBtnText.textContent = "查看结果 · View Results";
+          } else {
+            nextBtnText.textContent = "下一题 · Next Question";
+          }
+
+          banner.classList.remove("hidden");
+
+        } else {
+          // --- All 3 tries exhausted: Now reveal correct answer ---
+          isQuestionResolved = true;
+          isAwaitingRetry = false;
+
+          // Reveal the actual correct answer in green
+          revealCorrectAnswerOnExhaustion(q);
+
+          retryBtn.classList.add("hidden");
+          retryBtn.classList.remove("flex");
+
+          msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-rose-400";
+          msg.innerHTML = `<i class="fa-solid fa-circle-xmark text-base"></i><span>3次机会已用尽，正确答案已公布 / Tries exhausted, answer revealed</span>`;
+
+          if (isTestMode) {
+            nextBtnText.textContent = "进入正式问答 · Start Official Challenge";
+          } else if (currentIndex === total - 1) {
+            nextBtnText.textContent = "查看结果 · View Results";
+          } else {
+            nextBtnText.textContent = "下一题 · Next Question";
+          }
+
+          banner.classList.remove("hidden");
+        }
+      }
+    }
+
+    /* ==========================================================
+       STREAMING_CHUNK:Executing retry action and resetting countdown for next try
+       ========================================================== */
+    function retryCurrentQuestion() {
+      if (!isAwaitingRetry || isQuestionResolved) return;
+      playSound('retry');
+
+      isAwaitingRetry = false;
+      document.getElementById("bottomActionBanner").classList.add("hidden");
+      document.getElementById("retryQuestionBtn").classList.add("hidden");
+
+      // Re-enable options that haven't been picked wrongly yet
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById(`optBtn${i}`);
+        if (!btn) continue;
+        if (!selectedWrongIndices.has(i)) {
+          btn.disabled = false;
+          btn.className = "button-press group relative p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-deloitte-green/60 text-left transition-all flex items-center justify-between";
+        }
       }
 
-      if (!isTestMode) {
-        document.getElementById("scoreDisplay").textContent = `${score} / ${total}`;
-      }
+      // Reset timer back to default (10s) and restart countdown for this retry attempt
+      questionTimeRemaining = configuredDuration;
+      startQuestionTimer();
+    }
 
-      for (let i = 0; i < q.options.length; i++) {
+    function revealCorrectAnswerOnExhaustion(q) {
+      for (let i = 0; i < 4; i++) {
         const btn = document.getElementById(`optBtn${i}`);
         const txt = document.getElementById(`optText${i}`);
         const icon = document.getElementById(`optIcon${i}`);
+        if (!btn || !txt || !icon) continue;
+
         btn.disabled = true;
 
         if (i === q.correctIndex) {
-          btn.className = "p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-deloitte-green/15 border-2 border-deloitte-green text-left transition-all flex items-center justify-between shadow-lg shadow-deloitte-green/10";
+          btn.className = "p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-green/15 border-2 border-deloitte-green text-left transition-all flex items-center justify-between shadow-lg shadow-deloitte-green/10";
           txt.innerHTML = renderBilingualHtml(q.options[i], false, 'correct');
           icon.className = "text-base text-deloitte-green opacity-100 flex-shrink-0 ml-1.5";
           icon.innerHTML = '<i class="fa-solid fa-check"></i>';
-        } else if (i === selectedIndex && !isCorrect) {
-          btn.className = "p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-rose-950/40 border-2 border-rose-500 text-left transition-all flex items-center justify-between shadow-lg shadow-rose-950/30";
-          txt.innerHTML = renderBilingualHtml(q.options[i], false, 'incorrect');
-          icon.className = "text-base text-rose-400 opacity-100 flex-shrink-0 ml-1.5";
-          icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-        } else {
-          btn.className = "opacity-40 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border border-white/5 text-left transition-all flex items-center justify-between";
+        } else if (!selectedWrongIndices.has(i)) {
+          btn.className = "opacity-40 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-deloitte-cardbg border border-white/5 text-left transition-all flex items-center justify-between";
           txt.innerHTML = renderBilingualHtml(q.options[i], false, 'dimmed');
         }
+      }
+    }
+
+    /* ==========================================================
+       STREAMING_CHUNK:Handling countdown timeouts with retry support
+       ========================================================== */
+    function handleQuestionTimeout() {
+      stopQuestionTimer();
+      if (isQuestionResolved) return;
+      playSound('incorrect');
+
+      if (!optionsRevealed) {
+        optionsRevealed = true;
+        document.getElementById("revealCallout").classList.add("hidden");
+        document.getElementById("optionsContainer").classList.remove("hidden");
+      }
+
+      attemptsUsed++;
+      const retriesRemaining = MAX_ATTEMPTS - attemptsUsed;
+      const q = isTestMode ? TEST_QUESTION : currentQuestions[currentIndex];
+      const total = currentQuestions.length;
+
+      // Disable buttons temporarily
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById(`optBtn${i}`);
+        if (btn) btn.disabled = true;
       }
 
       const banner = document.getElementById("bottomActionBanner");
       const msg = document.getElementById("answerStatusMessage");
+      const retryBtn = document.getElementById("retryQuestionBtn");
+      const retryBtnText = document.getElementById("retryBtnText");
       const nextBtnText = document.getElementById("nextBtnText");
 
-      if (isTestMode) {
-        msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-amber-300";
-        msg.innerHTML = isCorrect 
-          ? '<i class="fa-solid fa-flask text-base"></i><span>测试回答正确！准备进入正式挑战 · Practice Correct!</span>'
-          : '<i class="fa-solid fa-flask text-base"></i><span>热身完毕！点击进入正式问答 · Practice Finished!</span>';
-        nextBtnText.textContent = "进入正式问答 · Start Official Challenge";
-      } else {
-        if (isCorrect) {
-          msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-deloitte-green";
-          msg.innerHTML = '<i class="fa-solid fa-circle-check text-base sm:text-lg"></i><span>回答正确！ Correct!</span>';
+      if (retriesRemaining > 0) {
+        isAwaitingRetry = true;
+        msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-amber-400";
+        msg.innerHTML = `<i class="fa-regular fa-clock text-base sm:text-lg"></i><span>时间到！还剩 ${retriesRemaining} 次机会 / Time's Up! (${retriesRemaining} tries left)</span>`;
+
+        retryBtnText.textContent = `重试 (还剩 ${retriesRemaining} 次) · Retry`;
+        retryBtn.classList.remove("hidden");
+        retryBtn.classList.add("flex");
+
+        if (isTestMode) {
+          nextBtnText.textContent = "跳过测试 · Skip Practice";
+        } else if (currentIndex === total - 1) {
+          nextBtnText.textContent = "查看结果 · View Results";
         } else {
-          msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-rose-400";
-          msg.innerHTML = '<i class="fa-solid fa-circle-xmark text-base sm:text-lg"></i><span>回答错误 Incorrect</span>';
+          nextBtnText.textContent = "下一题 · Next Question";
         }
 
-        if (currentIndex === total - 1) {
+      } else {
+        isQuestionResolved = true;
+        isAwaitingRetry = false;
+        revealCorrectAnswerOnExhaustion(q);
+
+        retryBtn.classList.add("hidden");
+        retryBtn.classList.remove("flex");
+
+        msg.className = "flex items-center space-x-2 text-xs sm:text-sm font-extrabold text-rose-400";
+        msg.innerHTML = `<i class="fa-regular fa-clock text-base sm:text-lg"></i><span>时间到，正确答案已公布 / Time's Up! Answer revealed</span>`;
+
+        if (isTestMode) {
+          nextBtnText.textContent = "进入正式问答 · Start Official Challenge";
+        } else if (currentIndex === total - 1) {
           nextBtnText.textContent = "查看结果 · View Results";
         } else {
           nextBtnText.textContent = "下一题 · Next Question";
@@ -1041,6 +1258,9 @@
       banner.classList.remove("hidden");
     }
 
+    /* ==========================================================
+       STREAMING_CHUNK:Advancing question sequence and rendering completion summary
+       ========================================================== */
     function goToNextQuestion() {
       stopQuestionTimer();
       playSound('click');
@@ -1096,6 +1316,9 @@
       renderCurrentQuestion();
     }
 
+    /* ==========================================================
+       STREAMING_CHUNK:Binding keyboard shortcuts and window events
+       ========================================================== */
     window.addEventListener("keydown", (e) => {
       const adminModal = document.getElementById("adminModal");
       if (adminModal && !adminModal.classList.contains("hidden")) return;
@@ -1114,7 +1337,15 @@
           e.preventDefault();
           revealOptions();
         }
-      } else if (!hasAnsweredCurrent) {
+      } else if (isAwaitingRetry) {
+        if (e.key.toLowerCase() === "r" || e.key === " ") {
+          e.preventDefault();
+          retryCurrentQuestion();
+        } else if (e.key === "Enter" || e.key === "ArrowRight") {
+          e.preventDefault();
+          goToNextQuestion();
+        }
+      } else if (!isQuestionResolved) {
         if (e.key === "1" || e.key.toLowerCase() === "a") selectOption(0);
         else if (e.key === "2" || e.key.toLowerCase() === "b") selectOption(1);
         else if (e.key === "3" || e.key.toLowerCase() === "c") selectOption(2);
