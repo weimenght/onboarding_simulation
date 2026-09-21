@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Sunrise - Node 1 Clue</title>
+    <title>Project Sunrise - Node 2 Clue</title>
     
     <!-- Core Styling & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -99,24 +99,24 @@
         const dict = {
             en: {
                 projectTitle: "Project Sunrise",
-                station: "STATION_01",
-                instruction: "Here are the instructions for the first node.",
-                nodeTitle: "Node 1: Server Logs",
+                station: "STATION_02",
+                instruction: "Here are the instructions for the second stage.",
+                nodeTitle: "Node 2: Offshore Ledger",
                 secretTitle: "Key",
-                secretText: "Enter the 4-digit Whistleblower Protocol PIN",
+                secretText: "What is the Business Chemistry type of the Summit & Co. CFO? (Answer in English)",
                 taskTitle: "Task",
-                taskText: "Find the name of the employee who committed the violation",
+                taskText: "Identify the specific Transaction ID (TXN ID) of the illicit fund transfer.",
                 awaiting: "Awaiting input at main terminal..."
             },
             zh: {
                 projectTitle: "旭日计划",
-                station: "站点_01",
-                instruction: "这里是第一关的指示",
-                nodeTitle: "节点 1：服务器日志",
+                station: "站点_02",
+                instruction: "这里是第二关的指示",
+                nodeTitle: "节点 2：离岸账本",
                 secretTitle: "密码",
-                secretText: "输入 4 位举报人协议 PIN 码",
+                secretText: "Summit & Co. CFO 的 Business Chemistry（商业化学反应）类型是什么？（请用英文作答）",
                 taskTitle: "任务",
-                taskText: "找出违规操作的员工的姓名",
+                taskText: "找出非法资金转移的确切交易流水号 (TXN ID)。",
                 awaiting: "等待主终端输入..."
             }
         };
@@ -146,7 +146,7 @@
                     {/* Main Icon & Title */}
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-900 border border-slate-700 mb-4 shadow-inner">
-                            <i className="fa-solid fa-terminal text-2xl text-slate-400"></i>
+                            <i className="fa-solid fa-database text-2xl text-slate-400"></i>
                         </div>
                         <h2 className="text-xl md:text-2xl font-bold text-white mb-2 tracking-widest">{t.instruction}</h2>
                         <p className="text-slate-400 text-xs md:text-sm uppercase tracking-widest">{t.nodeTitle}</p>
