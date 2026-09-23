@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>D-Pixel Rush</title>
+  <title>D-Pixel Rush: Deloitte Green Dot Odyssey</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Tone.js for retro 8-bit Chiptune SFX -->
@@ -152,7 +152,7 @@
             <span class="font-pixel text-xs sm:text-sm text-white tracking-wider">D-PIXEL RUSH</span>
             <span class="deloitte-dot-pixel"></span>
           </div>
-          <span class="text-[10px] font-bold text-deloitte-green tracking-widest uppercase">A1 Green Dot Dash</span>
+          <span class="text-[10px] font-bold text-deloitte-green tracking-widest uppercase">Consultant Green Dot Dash</span>
         </div>
       </div>
 
@@ -196,8 +196,12 @@
           </div>
         </div>
 
-        <!-- Role / Level & Distance -->
-        <div class="flex items-center space-x-4">
+        <!-- Role / Level, Stage & Distance -->
+        <div class="flex items-center space-x-3 sm:space-x-4">
+          <div class="flex flex-col text-right">
+            <span class="text-gray-400 text-[9px] uppercase tracking-wider">LEVEL</span>
+            <span id="hudDiff" class="text-deloitte-green font-bold text-[10px] sm:text-xs">NORMAL</span>
+          </div>
           <div class="flex flex-col text-right">
             <span class="text-gray-400 text-[9px] uppercase tracking-wider">STAGE</span>
             <span id="hudStage" class="text-cyan-400 font-bold text-[10px] sm:text-xs">WAR ROOM</span>
@@ -296,6 +300,30 @@
             Guide our pixel consultant! Dash across the Deloitte skyscraper rooftops, gather Green Dots & Coffee, and leap over Scope Creep & Tight Deadlines!
           </p>
 
+          <!-- Difficulty Level Selection (Easy, Normal, Hard) -->
+          <div class="w-full max-w-sm flex flex-col items-center space-y-1.5 pt-1">
+            <span class="text-[9px] font-pixel text-deloitte-green tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-gauge-high"></i> SELECT SPEED LEVEL:
+            </span>
+            <div class="grid grid-cols-3 gap-2 w-full">
+              <!-- Easy Level -->
+              <button type="button" id="diffBtn-easy" onclick="selectDifficulty('easy')" class="pixel-btn-press pixel-box py-2 px-1 rounded-lg border font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-white/5 border-white/15 text-gray-400 hover:text-white">
+                <span class="font-bold text-sky-400">EASY</span>
+                <span class="text-[8px] opacity-75 font-sans">2.6x Speed</span>
+              </button>
+              <!-- Normal Level (Default) -->
+              <button type="button" id="diffBtn-normal" onclick="selectDifficulty('normal')" class="pixel-btn-press pixel-box-green py-2 px-1 rounded-lg border-2 border-deloitte-green font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-deloitte-green/20 text-white shadow-md shadow-deloitte-green/30">
+                <span class="font-bold text-deloitte-green">NORMAL</span>
+                <span class="text-[8px] opacity-75 font-sans">3.6x Speed</span>
+              </button>
+              <!-- Hard Level -->
+              <button type="button" id="diffBtn-hard" onclick="selectDifficulty('hard')" class="pixel-btn-press pixel-box py-2 px-1 rounded-lg border font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-white/5 border-white/15 text-gray-400 hover:text-white">
+                <span class="font-bold text-rose-400">HARD</span>
+                <span class="text-[8px] opacity-75 font-sans">4.8x Speed</span>
+              </button>
+            </div>
+          </div>
+
           <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button onclick="startGame()" class="pixel-btn-press pixel-box-green px-6 py-3 rounded-lg bg-deloitte-green text-black font-pixel text-xs sm:text-sm font-black transition-all hover:bg-emerald-400 cursor-pointer flex items-center space-x-2">
               <i class="fa-solid fa-play text-xs"></i>
@@ -307,11 +335,11 @@
           </div>
 
           <div class="text-[10px] font-pixel text-gray-500 pt-2 flex items-center space-x-3">
-            <span>[SPACE] / [▲] JUMP</span>
+            <span>[1/2/3] LEVEL</span>
+            <span>•</span>
+            <span>[SPACE] JUMP</span>
             <span>•</span>
             <span>[▼] SLIDE</span>
-            <span>•</span>
-            <span>[P] PAUSE</span>
           </div>
         </div>
 
@@ -335,6 +363,10 @@
 
           <!-- Score Card -->
           <div class="bg-white/5 border border-white/15 rounded-xl p-4 w-full max-w-xs space-y-2 text-xs">
+            <div class="flex justify-between items-center text-gray-400">
+              <span>LEVEL:</span>
+              <span id="finalDifficulty" class="text-deloitte-green font-bold uppercase">NORMAL</span>
+            </div>
             <div class="flex justify-between items-center text-gray-400">
               <span>DISTANCE:</span>
               <span id="finalDistance" class="text-white font-bold">0m</span>
@@ -642,6 +674,69 @@
       if (start) start.classList.remove("hidden");
     }
 
+    // Difficulty Settings: Easy (2.6x), Normal (3.6x), Hard (4.8x)
+    let currentDifficulty = 'normal';
+    const DIFFICULTY_SETTINGS = {
+      easy: {
+        id: 'easy',
+        label: 'EASY',
+        badge: 'ANALYST',
+        speed: 2.6,
+        ramp: 0.0018,
+        maxBonus: 2.2,
+        obsMin: 72,
+        obsVar: 50,
+        scoreMult: 1,
+        color: '#38BDF8' // Sky Blue
+      },
+      normal: {
+        id: 'normal',
+        label: 'NORMAL',
+        badge: 'CONSULTANT',
+        speed: 3.6,
+        ramp: 0.003,
+        maxBonus: 3.8,
+        obsMin: 60,
+        obsVar: 48,
+        scoreMult: 1,
+        color: '#86BC25' // Deloitte Green
+      },
+      hard: {
+        id: 'hard',
+        label: 'HARD',
+        badge: 'PARTNER',
+        speed: 4.8,
+        ramp: 0.0042,
+        maxBonus: 4.6,
+        obsMin: 48,
+        obsVar: 38,
+        scoreMult: 1.5,
+        color: '#F43F5E' // Rose / Crimson
+      }
+    };
+
+    function selectDifficulty(level) {
+      if (!DIFFICULTY_SETTINGS[level]) return;
+      currentDifficulty = level;
+      playSfx('dot');
+
+      ['easy', 'normal', 'hard'].forEach(lvl => {
+        const btn = document.getElementById(`diffBtn-${lvl}`);
+        if (!btn) return;
+        if (lvl === level) {
+          btn.className = "pixel-btn-press pixel-box-green py-2 px-1 rounded-lg border-2 border-deloitte-green font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-deloitte-green/20 text-white shadow-md shadow-deloitte-green/30";
+        } else {
+          btn.className = "pixel-btn-press pixel-box py-2 px-1 rounded-lg border font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-white/5 border-white/15 text-gray-400 hover:text-white";
+        }
+      });
+
+      const hudDiff = document.getElementById("hudDiff");
+      if (hudDiff) {
+        hudDiff.textContent = DIFFICULTY_SETTINGS[level].label;
+        hudDiff.style.color = DIFFICULTY_SETTINGS[level].color;
+      }
+    }
+
     let gameState = 'START'; // 'START', 'PLAYING', 'PAUSED', 'GAMEOVER'
     let score = 0;
     let highScore = parseInt(localStorage.getItem('d_pixel_highscore') || '0', 10);
@@ -729,7 +824,8 @@
             this.y = FLOOR_Y - this.normalHeight;
           }
         } else {
-          this.runFrame += this.animSpeed;
+          // Adjust running animation tempo to match current game speed
+          this.runFrame += this.animSpeed * (gameSpeed / 3.6);
         }
       },
 
@@ -1137,12 +1233,14 @@
       nextObstacleDistance -= gameSpeed * 0.15;
       nextCollectibleDistance -= gameSpeed * 0.15;
 
-      // Obstacle Spawner
+      const config = DIFFICULTY_SETTINGS[currentDifficulty];
+
+      // Obstacle Spawner (spaced according to chosen difficulty)
       if (nextObstacleDistance <= 0) {
         const types = ['SCOPE_CREEP', 'RED_TAPE', 'SERVER_GLITCH', 'EMAIL_DRONE'];
         const chosen = types[Math.floor(Math.random() * types.length)];
         obstacles.push(new Obstacle(chosen, V_WIDTH + 20));
-        nextObstacleDistance = 60 + Math.random() * 50;
+        nextObstacleDistance = config.obsMin + Math.random() * config.obsVar;
       }
 
       // Collectible Spawner
@@ -1166,15 +1264,13 @@
       }
     }
 
-    /* ==========================================================
-       STREAMING_CHUNK:Main Loop and Update Systems
-       ========================================================== */
     function updateGame() {
       if (gameState !== 'PLAYING') return;
 
       frameCount++;
       distance += 0.2;
-      gameSpeed = baseSpeed + Math.min(distance * 0.003, 3.8);
+      const config = DIFFICULTY_SETTINGS[currentDifficulty];
+      gameSpeed = baseSpeed + Math.min(distance * config.ramp, config.maxBonus);
 
       // Power-up count downs
       if (coffeeTimer > 0) {
@@ -1345,11 +1441,21 @@
       document.getElementById("gameOverOverlay").classList.add("hidden");
       document.getElementById("pauseOverlay").classList.add("hidden");
 
+      // Initialize base speed and HUD for the selected difficulty
+      const config = DIFFICULTY_SETTINGS[currentDifficulty];
+      baseSpeed = config.speed;
+      gameSpeed = baseSpeed;
+
+      const hudDiff = document.getElementById("hudDiff");
+      if (hudDiff) {
+        hudDiff.textContent = config.label;
+        hudDiff.style.color = config.color;
+      }
+
       score = 0;
       distance = 0;
       dotsCollected = 0;
       comboMultiplier = 1;
-      gameSpeed = baseSpeed;
       coffeeTimer = 0;
       aiMultiplierTimer = 0;
       obstacles.length = 0;
@@ -1394,6 +1500,13 @@
         'EMAIL_DRONE': 'Overwhelmed by high-priority unread emails.'
       };
       document.getElementById("gameOverReason").textContent = reasons[hazardType] || 'Project deadline reached an impassable hurdle.';
+      
+      const diffEl = document.getElementById("finalDifficulty");
+      if (diffEl) {
+        diffEl.textContent = DIFFICULTY_SETTINGS[currentDifficulty].label;
+        diffEl.style.color = DIFFICULTY_SETTINGS[currentDifficulty].color;
+      }
+
       document.getElementById("finalDistance").textContent = `${Math.floor(distance)}m`;
       document.getElementById("finalDots").textContent = dotsCollected.toString();
       document.getElementById("finalScore").textContent = Math.floor(score).toString().padStart(6, '0');
@@ -1432,7 +1545,21 @@
         }
       }
 
-      // Space or Enter on Start/Game Over
+      // Quick difficulty selection via numeric keys on the Start / Game Over screen
+      if (gameState === 'START' || gameState === 'GAMEOVER') {
+        if (e.key === "1") {
+          selectDifficulty('easy');
+          return;
+        } else if (e.key === "2") {
+          selectDifficulty('normal');
+          return;
+        } else if (e.key === "3") {
+          selectDifficulty('hard');
+          return;
+        }
+      }
+
+      // Space or Enter on Start/Game Over starts the game
       if (gameState === 'START' || gameState === 'GAMEOVER') {
         if (e.code === "Space" || e.code === "Enter") {
           e.preventDefault();
