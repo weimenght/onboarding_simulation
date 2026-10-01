@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding Odyssey · 数字全景图谱</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for Web Audio Synthesis -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- FontAwesome 6 for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Plus Jakarta Sans & Noto Sans SC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            deloitte: {
+              green: '#86BC25',
+              darkgreen: '#568819',
+              teal: '#004F59',
+              navy: '#002776',
+              midnight: '#070a10',
+              cardbg: '#0e131d',
+              cardborder: '#1d2536',
+              slate: '#18202e',
+              gray: '#868D96',
+              lightgray: '#DCE0E5'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif'],
+            cn: ['"Noto Sans SC"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #06090e;
+      background-image: 
+        radial-gradient(circle at 14% 12%, rgba(134, 188, 37, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 86% 86%, rgba(0, 79, 89, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.08) 0%, transparent 65%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .deloitte-dot {
+      display: inline-block;
+      width: 0.58em;
+      height: 0.58em;
+      background-color: #86BC25;
+      border-radius: 50%;
+      margin-left: 0.12em;
+      vertical-align: baseline;
+      box-shadow: 0 0 14px rgba(134, 188, 37, 0.85);
+    }
+
+    .card-shadow {
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .button-press {
+      transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .button-press:active {
+      transform: scale(0.97) translateY(2px);
+    }
+
+    /* Map Conduit Pulsing Neon Flow */
+    @keyframes conduitPulse {
+      0% { stroke-dashoffset: 240; }
+      100% { stroke-dashoffset: 0; }
+    }
+    .path-active-glow {
+      animation: conduitPulse 8s linear infinite;
+    }
+
+    /* Radar Ping Rings */
+    @keyframes radarPing {
+      0% { r: 18px; opacity: 0.85; stroke-width: 2.5px; }
+      70% { opacity: 0.15; stroke-width: 1px; }
+      100% { r: 52px; opacity: 0; stroke-width: 0.5px; }
+    }
+    .radar-pulse-ring {
+      animation: radarPing 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+      transform-origin: center;
+    }
+
+    /* Tactical Compass Rose Rotation */
+    @keyframes compassSweep {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .compass-sweep-beam {
+      animation: compassSweep 6s linear infinite;
+      transform-origin: center;
+    }
+
+    /* Shoreline water ripple wave */
+    @keyframes waterRipple {
+      0%, 100% { opacity: 0.35; stroke-width: 1px; }
+      50% { opacity: 0.75; stroke-width: 2px; }
+    }
+    .water-ripple {
+      animation: waterRipple 4s ease-in-out infinite;
+    }
+
+    @keyframes beaconGlow {
+      0%, 100% { filter: drop-shadow(0 0 6px rgba(134, 188, 37, 0.4)); }
+      50% { filter: drop-shadow(0 0 18px rgba(134, 188, 37, 0.95)); }
+    }
+    .beacon-glow {
+      animation: beaconGlow 2.5s ease-in-out infinite;
+    }
+
+    /* Map Node Interactive States */
+    .map-node-group {
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .map-node-group:hover {
+      transform: scale(1.08);
+    }
+
+    /* Sleek Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #06090e;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(134, 188, 37, 0.5);
+    }
+  </style>
+</head>
+
+<body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+
+  <header class="w-full border-b border-white/10 bg-deloitte-midnight/90 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-18 flex items-center justify-between">
+      
+      <!-- Brand & Title -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="centerMap()">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-deloitte-green/15 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-lg font-black shadow-lg shadow-deloitte-green/20">
+          <i class="fa-solid fa-map-location-dot"></i>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center">
+            <span class="ml-1.5 font-bold text-xs sm:text-sm text-gray-200">Odyssey Map</span>
+          </div>
+          <span id="navBrandSubtitle" class="text-[10px] text-deloitte-green font-bold tracking-wider uppercase font-mono">
+            数字全景图谱
+          </span>
+        </div>
+      </div>
+
+      <!-- Live Quest Progress, Audio & Guide Controls -->
+      <div class="flex items-center space-x-2 sm:space-x-3 text-xs">
+        <!-- Language Toggle Pill (ZH / EN) -->
+        <button id="langToggleBtn" onclick="toggleLanguage()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 flex items-center space-x-1 transition-all text-gray-300 button-press" title="切换语言 / Switch Language">
+          <i class="fa-solid fa-globe text-deloitte-green text-xs mr-0.5"></i>
+          <span id="langPillZH" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-deloitte-green text-black transition-all">中</span>
+          <span class="text-gray-500 text-[10px]">/</span>
+          <span id="langPillEN" class="px-1.5 py-0.5 rounded text-[10px] font-bold text-gray-400 transition-all">EN</span>
+        </button>
+
+        <!-- Progress Counter Pill -->
+        <div class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+          <span class="w-2 h-2 rounded-full bg-deloitte-green animate-ping"></span>
+          <span id="navProgressLabel" class="text-gray-300 font-semibold font-cn hidden sm:inline">已通关:</span>
+          <span id="navProgressBadge" class="font-mono font-bold text-deloitte-green">0 / 6 站</span>
+        </div>
+
+        <!-- Audio SFX Toggle -->
+        <button id="audioToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 flex items-center space-x-1.5 transition-all text-gray-300">
+          <i id="audioIcon" class="fa-solid fa-volume-high text-deloitte-green text-xs"></i>
+          <span id="audioText" class="hidden sm:inline">SFX</span>
+        </button>
+
+        <!-- Guide Modal Button -->
+        <button onclick="openGuideModal()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-deloitte-green/15 hover:bg-deloitte-green/25 border border-deloitte-green/40 text-deloitte-green transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-compass text-xs"></i>
+          <span id="guideBtnText" class="hidden sm:inline">探索指南</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+    <!-- Top Tactical Radar Dashboard -->
+    <section class="p-4 sm:p-6 rounded-3xl bg-gradient-to-r from-deloitte-cardbg via-[#121824] to-[#0c121a] border border-white/10 card-shadow flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <div id="heroBadgeIconBox" class="w-14 h-14 rounded-2xl bg-deloitte-green/15 border-2 border-deloitte-green flex items-center justify-center text-deloitte-green text-2xl beacon-glow">
+            <i id="heroBadgeIcon" class="fa-solid fa-seedling"></i>
+          </div>
+          <span id="heroRankTag" class="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase font-mono tracking-wider bg-deloitte-green text-black">
+            LVL 1
+          </span>
+        </div>
+
+        <div class="space-y-0.5">
+          <div class="flex items-center gap-2">
+            <span id="telemetryTag" class="text-[10px] text-deloitte-green font-mono uppercase font-bold tracking-widest flex items-center gap-1">
+              <i class="fa-solid fa-satellite-dish"></i> 实时遥测
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-gray-400">
+              SYS-VER 2026.1
+            </span>
+          </div>
+          <h2 id="heroRankTitle" class="text-lg sm:text-xl font-black text-white">
+            启航探索者 · 初阶
+          </h2>
+          <p id="heroRankSubtitle" class="text-xs text-gray-400 font-cn">
+            探索下方数字航道图谱，点击任意航标站点以查阅任务、启动应用或签到打卡。
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Progress Gauge & Final Certificate Trigger -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <!-- Progress Bar Meter -->
+        <div class="bg-black/50 border border-white/10 rounded-2xl px-4 py-2.5 min-w-[220px] flex flex-col justify-center space-y-1">
+          <div class="flex justify-between items-center text-[10px] text-gray-300 font-mono">
+            <span id="expeditionProgressLabel">全图探索进度</span>
+            <span id="heroProgressPercent" class="text-deloitte-green font-bold">0%</span>
+          </div>
+          <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+            <div id="heroProgressBar" class="h-full bg-gradient-to-r from-deloitte-teal to-deloitte-green rounded-full transition-all duration-500" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Grand Finale Claim Badge Button -->
+        <button id="claimCertBtn" onclick="openCertificateModal()" class="opacity-50 pointer-events-none px-4 py-3 rounded-2xl bg-deloitte-green hover:bg-emerald-400 text-black font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20 button-press whitespace-nowrap">
+          <i class="fa-solid fa-award text-sm"></i>
+          <span id="claimCertBtnText">领航证书</span>
+        </button>
+
+        <button onclick="resetAllProgress()" class="px-3 py-3 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 text-gray-400 hover:text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5" title="重置记录">
+          <i class="fa-solid fa-rotate-left"></i>
+          <span id="resetBtnText" class="hidden sm:inline">重置</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      
+      <!-- Digital Map Canvas Wrapper -->
+      <div class="relative w-full rounded-3xl bg-[#070b12] border-2 border-white/10 card-shadow overflow-hidden">
+        
+        <!-- Map Top Floating HUD Header -->
+        <div class="absolute top-3 left-3 right-3 sm:top-5 sm:left-5 sm:right-5 z-20 flex items-center justify-between pointer-events-none">
+          <div class="pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-xl bg-deloitte-midnight/90 border border-white/15 backdrop-blur-md text-[11px] font-mono shadow-lg">
+            <span class="w-2 h-2 rounded-full bg-deloitte-green animate-ping"></span>
+            <span id="mapGisTitle" class="text-white font-bold">DELOITTE METROPOLIS GIS</span>
+            <span id="mapSectorSubtitle" class="text-deloitte-green hidden md:inline">• 区域全景图 v3.2</span>
+          </div>
+
+          <!-- Quick Navigation Station Jump Chips -->
+          <div class="pointer-events-auto hidden md:flex items-center gap-1.5 bg-deloitte-midnight/90 border border-white/15 backdrop-blur-md p-1 rounded-xl text-[11px] font-mono">
+            <button id="quickChip-fastpass" onclick="selectStation('fastpass')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">01 FastPass</button>
+            <button id="quickChip-game" onclick="selectStation('game')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">02 D-Rush</button>
+            <button id="quickChip-trivia" onclick="selectStation('trivia')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">03 Trivia</button>
+            <button id="quickChip-signal" onclick="selectStation('signal')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">04 D.Signal</button>
+            <button id="quickChip-chemistry" onclick="selectStation('chemistry')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">05 Chemistry</button>
+            <button id="quickChip-sunrise" onclick="selectStation('sunrise')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">06 Sunrise</button>
+          </div>
+        </div>
+
+        <!-- Grand Finale Claim Badge Button -->
+        <button id="claimCertBtn" onclick="openCertificateModal()" class="opacity-50 pointer-events-none px-4 py-3 rounded-2xl bg-deloitte-green hover:bg-emerald-400 text-black font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20 button-press whitespace-nowrap">
+          <i class="fa-solid fa-award text-sm"></i>
+          <span>领航证书 · Claim Certificate</span>
+        </button>
+
+        <button onclick="resetAllProgress()" class="px-3 py-3 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 text-gray-400 hover:text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5" title="重置记录">
+          <i class="fa-solid fa-rotate-left"></i>
+          <span class="hidden sm:inline">重置</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      
+      <!-- Digital Map Canvas Wrapper -->
+      <div class="relative w-full rounded-3xl bg-[#070b12] border-2 border-white/10 card-shadow overflow-hidden">
+        
+        <!-- Map Top Floating HUD Header -->
+        <div class="absolute top-3 left-3 right-3 sm:top-5 sm:left-5 sm:right-5 z-20 flex items-center justify-between pointer-events-none">
+          <div class="pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-xl bg-deloitte-midnight/90 border border-white/15 backdrop-blur-md text-[11px] font-mono shadow-lg">
+            <span class="w-2 h-2 rounded-full bg-deloitte-green animate-ping"></span>
+            <span class="text-white font-bold">DELOITTE METROPOLIS GIS</span>
+            <span class="text-deloitte-green hidden md:inline">• SECTOR MAP v3.2</span>
+          </div>
+
+          <!-- Quick Navigation Station Jump Chips -->
+          <div class="pointer-events-auto hidden md:flex items-center gap-1.5 bg-deloitte-midnight/90 border border-white/15 backdrop-blur-md p-1 rounded-xl text-[11px] font-mono">
+            <button onclick="selectStation('fastpass')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">01 FastPass</button>
+            <button onclick="selectStation('game')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">02 D-Rush</button>
+            <button onclick="selectStation('trivia')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">03 Trivia</button>
+            <button onclick="selectStation('signal')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">04 D.Signal</button>
+            <button onclick="selectStation('chemistry')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">05 Chemistry</button>
+            <button onclick="selectStation('sunrise')" class="px-2.5 py-1 rounded-lg hover:bg-white/10 text-gray-300 transition-colors">06 Sunrise</button>
+          </div>
+        </div>
+
+        <!-- The Real Digital Map SVG Canvas -->
+        <div class="relative w-full aspect-[16/10] sm:aspect-[16/9] min-h-[460px] max-h-[700px]">
+          <svg id="deloitteVectorMapSvg" viewBox="0 0 1100 620" class="w-full h-full select-none" preserveAspectRatio="xMidYMid meet">
+            
+            <defs>
+              <!-- City Street Micro Grid Pattern -->
+              <pattern id="cityStreetGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <rect width="30" height="30" fill="none" stroke="rgba(255, 255, 255, 0.025)" stroke-width="0.8" />
+                <circle cx="15" cy="15" r="0.8" fill="rgba(134, 188, 37, 0.15)" />
+              </pattern>
+
+              <!-- Water Wave Hatch -->
+              <pattern id="waterHatch" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M 0 12 Q 6 9, 12 12 T 24 12" fill="none" stroke="rgba(0, 163, 224, 0.12)" stroke-width="1.2" />
+              </pattern>
+
+              <!-- Park Greenery Pattern -->
+              <pattern id="ecoParkPattern" width="16" height="16" patternUnits="userSpaceOnUse">
+                <circle cx="8" cy="8" r="1.5" fill="#86BC25" opacity="0.18" />
+              </pattern>
+
+              <!-- Glow Gradients -->
+              <radialGradient id="greenNodeGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#86BC25" stop-opacity="0.6" />
+                <stop offset="70%" stop-color="#86BC25" stop-opacity="0.12" />
+                <stop offset="100%" stop-color="#86BC25" stop-opacity="0" />
+              </radialGradient>
+
+              <radialGradient id="cyanNodeGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#00A3E0" stop-opacity="0.6" />
+                <stop offset="70%" stop-color="#00A3E0" stop-opacity="0.12" />
+                <stop offset="100%" stop-color="#00A3E0" stop-opacity="0" />
+              </radialGradient>
+
+              <radialGradient id="goldNodeGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.65" />
+                <stop offset="70%" stop-color="#F59E0B" stop-opacity="0.15" />
+                <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+              </radialGradient>
+
+              <radialGradient id="radarSweepGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#86BC25" stop-opacity="0.25" />
+                <stop offset="100%" stop-color="#86BC25" stop-opacity="0" />
+              </radialGradient>
+
+              <!-- Deep Water Gradient -->
+              <linearGradient id="riverGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#020f17" />
+                <stop offset="45%" stop-color="#041a24" />
+                <stop offset="100%" stop-color="#010c14" />
+              </linearGradient>
+
+              <!-- Drop Shadow Filter for Map Buildings and Roads -->
+              <filter id="mapShadow" x="-10%" y="-10%" width="120%" height="120%">
+                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.75" />
+              </filter>
+              
+              <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            <!-- 1. BASE TERRAIN & GIS COORDINATE GRID -->
+            <rect width="1100" height="620" fill="#070b13" />
+            <rect width="1100" height="620" fill="url(#cityStreetGrid)" />
+
+            <!-- 2. CENTRAL DELOITTE SOUND & ESTUARY BAY (Natural Winding Coastline & Lagoon) -->
+            <!-- Grand Water Body wrapping around the central island and cutting into southwest marina -->
+            <path d="M 0 420 C 70 410, 160 440, 220 410 C 290 380, 320 310, 380 300 C 470 290, 520 220, 600 240 C 670 260, 710 320, 730 380 C 760 470, 700 560, 740 620 L 0 620 Z" 
+              fill="url(#riverGradient)" 
+              stroke="#004F59" 
+              stroke-width="2.5" />
+
+            <path d="M 0 420 C 70 410, 160 440, 220 410 C 290 380, 320 310, 380 300 C 470 290, 520 220, 600 240 C 670 260, 710 320, 730 380 C 760 470, 700 560, 740 620 L 0 620 Z" 
+              fill="url(#waterHatch)" />
+
+            <!-- Animated Shoreline Wave Crests -->
+            <path d="M 10 430 C 80 420, 165 450, 225 420 C 295 390, 325 320, 385 310 C 475 300, 525 230, 605 250 C 675 270, 715 330, 735 390" 
+              fill="none" 
+              stroke="#00A3E0" 
+              class="water-ripple" 
+              stroke-dasharray="8,12" />
+
+            <!-- Waterway Sounding & Navigation Markers -->
+            <g font-family="'JetBrains Mono'" font-size="8" fill="#00A3E0" opacity="0.6">
+              <text x="80" y="580">PORT BASIN · -12M</text>
+              <text x="390" y="520">CENTRAL SOUND · -26M DEPTH</text>
+              <text x="640" y="320">LAGOON INLET · -16M</text>
+              <!-- Ferry Transit Lane -->
+              <path d="M 60 520 C 200 550, 360 470, 480 430" fill="none" stroke="#00A3E0" stroke-width="1.2" stroke-dasharray="4,6" opacity="0.4" />
+            </g>
+
+            <!-- 3. TOPOGRAPHICAL ELEVATION CONTOURS (Northeast Mountain Ridge) -->
+            <g fill="none" stroke="rgba(245, 158, 11, 0.22)" stroke-width="1.2" stroke-dasharray="4,5">
+              <path d="M 820 60 C 880 40, 1020 50, 1080 90 C 1100 130, 1090 280, 1030 310 C 940 330, 870 260, 840 180 Z" />
+              <path d="M 860 90 C 910 80, 1000 90, 1040 130 C 1060 170, 1040 250, 990 270 C 920 280, 870 210, 860 150 Z" stroke="rgba(245, 158, 11, 0.35)" />
+              <path d="M 900 130 C 940 120, 990 130, 1010 160 C 1020 200, 990 240, 950 250 C 910 250, 890 200, 900 160 Z" stroke="rgba(245, 158, 11, 0.55)" />
+              <text x="1035" y="150" font-family="'JetBrains Mono'" font-size="8" fill="#F59E0B" opacity="0.8">EL +480M</text>
+              <text x="1050" y="225" font-family="'JetBrains Mono'" font-size="7" fill="#F59E0B" opacity="0.6">CONTOUR +300M</text>
+            </g>
+
+            <!-- 4. PHYSICAL DISTRICT ZONING PARCELS -->
+            <!-- District 1 (Southwest Induction Harbor Promenade & Docks) -->
+            <polygon points="30,440 190,440 220,590 30,590" fill="#0d1422" stroke="rgba(255,255,255,0.06)" stroke-width="1.2" />
+            <!-- Harbor Pier Fingers extending into water -->
+            <rect x="50" y="550" width="16" height="50" fill="#141f30" stroke="rgba(0,163,224,0.3)" stroke-width="1" />
+            <rect x="90" y="560" width="16" height="40" fill="#141f30" stroke="rgba(0,163,224,0.3)" stroke-width="1" />
+            <rect x="130" y="545" width="16" height="55" fill="#141f30" stroke="rgba(0,163,224,0.3)" stroke-width="1" />
+
+            <!-- District 2 (Northwest Agile Downtown Skyscrapers) -->
+            <polygon points="70,90 290,90 310,320 100,340" fill="#0d1422" stroke="rgba(255,255,255,0.06)" stroke-width="1.2" />
+            
+            <!-- District 3 (North-Central Knowledge Quad & University Grounds) -->
+            <polygon points="340,60 560,60 570,240 350,250" fill="#0d1422" stroke="rgba(255,255,255,0.06)" stroke-width="1.2" />
+            <!-- Quad Rotunda Circular Grass Court -->
+            <circle cx="460" cy="95" r="28" fill="#0a1f18" stroke="rgba(134,188,37,0.3)" stroke-width="1.2" />
+            <circle cx="460" cy="95" r="28" fill="url(#ecoParkPattern)" />
+            <text x="460" y="99" font-family="'JetBrains Mono'" font-size="7" fill="#86BC25" opacity="0.8" text-anchor="middle">THE ROTUNDA</text>
+
+            <!-- District 4 (Central Island: Cyber Spire Island surrounded by water) -->
+            <polygon points="480,310 630,300 660,420 520,440 470,370" fill="#0f192b" stroke="#00A3E0" stroke-width="1.8" filter="url(#mapShadow)" />
+            <polygon points="495,325 615,315 645,405 525,425 485,370" fill="#080e18" stroke="rgba(0,163,224,0.3)" stroke-width="1" />
+            <circle cx="560" cy="360" r="42" fill="none" stroke="rgba(0,163,224,0.25)" stroke-width="1" stroke-dasharray="3,3" />
+
+            <!-- District 5 (Southeast Synergy Biotech & Eco-Commons) -->
+            <polygon points="710,400 900,410 920,590 730,590" fill="#0d1422" stroke="rgba(255,255,255,0.06)" stroke-width="1.2" />
+            <!-- Eco-Park Botanical Commons -->
+            <rect x="735" y="430" width="85" height="45" rx="8" fill="#091f17" stroke="rgba(134,188,37,0.25)" stroke-width="1" />
+            <rect x="735" y="430" width="85" height="45" rx="8" fill="url(#ecoParkPattern)" />
+            <text x="777" y="456" font-family="'JetBrains Mono'" font-size="7" fill="#86BC25" opacity="0.85" text-anchor="middle">SYNERGY GARDENS</text>
+
+            <!-- District 6 (Northeast Project Sunrise Horizon Ridge) -->
+            <polygon points="860,110 1060,110 1080,320 890,340" fill="#0d1422" stroke="rgba(245,158,11,0.15)" stroke-width="1.2" />
+
+            <!-- 5. DETAILED URBAN BUILDING FOOTPRINTS & ROOFTOP HELIPADS -->
+            <!-- Downtown Northwest Skyscrapers -->
+            <g fill="#152132" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" filter="url(#mapShadow)">
+              <rect x="110" y="120" width="45" height="30" rx="3" />
+              <rect x="175" y="115" width="38" height="36" rx="3" />
+              <rect x="230" y="125" width="42" height="45" rx="3" />
+              <rect x="110" y="240" width="36" height="40" rx="3" />
+              <rect x="240" y="235" width="46" height="34" rx="3" />
+              <!-- Rooftop Helipad -->
+              <circle cx="194" cy="133" r="11" fill="#1b283d" stroke="#86BC25" stroke-width="0.8" />
+              <text x="194" y="137" font-family="'JetBrains Mono'" font-weight="800" font-size="9" fill="#86BC25" text-anchor="middle">H</text>
+            </g>
+
+            <!-- Knowledge Citadel Campus Blocks -->
+            <g fill="#152132" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" filter="url(#mapShadow)">
+              <rect x="365" y="80" width="38" height="50" rx="3" />
+              <rect x="515" y="80" width="38" height="50" rx="3" />
+              <rect x="375" y="175" width="45" height="32" rx="3" />
+              <rect x="505" y="175" width="45" height="32" rx="3" />
+            </g>
+
+            <!-- Cyber Island Towers -->
+            <g fill="#0e1e30" stroke="#00A3E0" stroke-width="0.8" filter="url(#mapShadow)">
+              <rect x="505" y="340" width="22" height="26" rx="2" />
+              <rect x="595" y="335" width="26" height="28" rx="2" />
+              <rect x="525" y="385" width="32" height="22" rx="2" />
+            </g>
+
+            <!-- Biotech & Chemistry Lab Buildings -->
+            <g fill="#152132" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" filter="url(#mapShadow)">
+              <rect x="830" y="440" width="48" height="34" rx="3" />
+              <rect x="835" y="515" width="42" height="38" rx="3" />
+              <rect x="740" y="520" width="38" height="35" rx="3" />
+            </g>
+
+            <!-- Sunrise Ridge Mountain Observatory -->
+            <g fill="#1c160c" stroke="#F59E0B" stroke-width="1" filter="url(#mapShadow)">
+              <rect x="990" y="180" width="36" height="32" rx="4" />
+              <circle cx="1008" cy="196" r="9" fill="#2d2212" stroke="#F59E0B" stroke-width="1" />
+              <line x1="1008" y1="196" x2="1022" y2="186" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round" />
+            </g>
+
+            <!-- 6. SECONDARY URBAN STREETS, ROUNDABOUTS & BRIDGES -->
+            <!-- Urban Street Mesh -->
+            <g fill="none" stroke="#131c2a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 40 180 L 320 180" />
+              <path d="M 160 80 L 160 340" />
+              <path d="M 330 60 L 600 60" />
+              <path d="M 330 200 L 680 200" />
+              <path d="M 720 160 L 1060 160" />
+              <path d="M 710 490 L 1060 490" />
+              <path d="M 810 390 L 810 590" />
+              <!-- Hairpin Mountain Switchback Road -->
+              <path d="M 940 330 C 890 310, 890 280, 940 270 C 1010 260, 1010 220, 960 210" stroke-width="3" />
+            </g>
+
+            <!-- Downtown Roundabout Plaza -->
+            <circle cx="210" cy="275" r="16" fill="#0a1019" stroke="#182333" stroke-width="4" />
+            <circle cx="210" cy="275" r="5" fill="#86BC25" opacity="0.7" />
+
+            <!-- Suspension Bridge Crossing: North Campus to Cyber Island -->
+            <g stroke="#00A3E0" stroke-width="1.8" opacity="0.75">
+              <line x1="515" y1="230" x2="515" y2="305" />
+              <line x1="535" y1="230" x2="535" y2="305" />
+              <line x1="505" y1="230" x2="545" y2="230" stroke-width="2.5" />
+              <!-- Suspension Cables -->
+              <line x1="505" y1="230" x2="480" y2="300" stroke-width="0.8" stroke-dasharray="2,2" />
+              <line x1="545" y1="230" x2="570" y2="300" stroke-width="0.8" stroke-dasharray="2,2" />
+            </g>
+
+            <!-- Causeway Bridge: Cyber Island to Southeast Eco-Campus -->
+            <g stroke="#00A3E0" stroke-width="2" opacity="0.75">
+              <line x1="650" y1="415" x2="725" y2="465" stroke-dasharray="6,4" />
+              <circle cx="685" cy="440" r="3" fill="#00A3E0" />
+            </g>
+
+            <!-- 7. PRIMARY EXPEDITION HIGHWAY & GLOWING CONDUIT (Diverse Non-Linear Path) -->
+            <!-- 
+                Path Route Nodes:
+                Station 1: (120, 490) - Southwest Harbor Terminal
+                Station 2: (190, 210) - Northwest Agile High-rises
+                Station 3: (460, 150) - North University Quad
+                Station 4: (560, 360) - Central Cyber Island
+                Station 5: (780, 490) - Southeast Eco-Campus
+                Station 6: (960, 230) - Northeast Mountain Peak
+            -->
+            <!-- Heavy Viaduct Drop Shadow -->
+            <path 
+              d="M 120 490 C 130 380, 160 270, 190 210 C 230 140, 360 120, 460 150 C 510 170, 520 280, 560 360 C 600 440, 680 510, 780 490 C 860 480, 890 320, 960 230" 
+              fill="none" 
+              stroke="#03060a" 
+              stroke-width="18" 
+              stroke-linecap="round" 
+              stroke-linejoin="round" />
+
+            <!-- Viaduct Concrete Bed -->
+            <path id="baseConduitPath" 
+              d="M 120 490 C 130 380, 160 270, 190 210 C 230 140, 360 120, 460 150 C 510 170, 520 280, 560 360 C 600 440, 680 510, 780 490 C 860 480, 890 320, 960 230" 
+              fill="none" 
+              stroke="#1b2536" 
+              stroke-width="13" 
+              stroke-linecap="round" 
+              stroke-linejoin="round" />
+
+            <!-- Asphalt Road Bed Surface -->
+            <path 
+              d="M 120 490 C 130 380, 160 270, 190 210 C 230 140, 360 120, 460 150 C 510 170, 520 280, 560 360 C 600 440, 680 510, 780 490 C 860 480, 890 320, 960 230" 
+              fill="none" 
+              stroke="#0e1624" 
+              stroke-width="9" 
+              stroke-linecap="round" 
+              stroke-linejoin="round" />
+
+            <!-- Dashed White Lane Dividers -->
+            <path 
+              d="M 120 490 C 130 380, 160 270, 190 210 C 230 140, 360 120, 460 150 C 510 170, 520 280, 560 360 C 600 440, 680 510, 780 490 C 860 480, 890 320, 960 230" 
+              fill="none" 
+              stroke="rgba(255, 255, 255, 0.45)" 
+              stroke-width="1.5" 
+              stroke-dasharray="6,8" 
+              stroke-linecap="round" />
+
+            <!-- Active Glowing Neon GPS Conduit -->
+            <path id="activeConduitPath" 
+              d="M 120 490 C 130 380, 160 270, 190 210 C 230 140, 360 120, 460 150 C 510 170, 520 280, 560 360 C 600 440, 680 510, 780 490 C 860 480, 890 320, 960 230" 
+              fill="none" 
+              stroke="#86BC25" 
+              stroke-width="4.5" 
+              stroke-linecap="round" 
+              stroke-dasharray="16,10" 
+              filter="url(#neonGlow)"
+              class="path-active-glow transition-all duration-700" 
+              style="stroke-dashoffset: 0; opacity: 0.95;" />
+
+            <!-- 8. CARTOGRAPHIC LABELS, COMPASS & SCALE BAR -->
+            <g font-family="'JetBrains Mono', monospace" font-size="8" fill="rgba(255,255,255,0.4)" font-weight="700">
+              <text x="110" y="340" transform="rotate(-75 110 340)">HARBOR ELEVATED PKWY 01</text>
+              <text x="290" y="140" transform="rotate(-15 290 140)">NORTHERN SKYLINE ARTERY 02</text>
+              <text x="545" y="240" transform="rotate(70 545 240)">SUSPENSION VIADUCT 03</text>
+              <text x="690" y="445" transform="rotate(35 690 445)">ISLAND CAUSEWAY 04</text>
+              <text x="910" y="410" transform="rotate(-65 910 410)">HORIZON ASCENT PASS 05</text>
+            </g>
+
+            <!-- District Geographic Titles -->
+            <g font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="9" fill="rgba(255,255,255,0.3)" letter-spacing="1">
+              <text x="40" y="465">SEC 01 · INDUCTION PORT</text>
+              <text x="115" y="80">SEC 02 · AGILE FINANCIAL DOWNTOWN</text>
+              <text x="360" y="50">SEC 03 · KNOWLEDGE QUAD</text>
+              <text x="500" y="290">SEC 04 · CENTRAL CYBER ISLAND</text>
+              <text x="740" y="390">SEC 05 · SYNERGY ECO-CAMPUS</text>
+              <text x="890" y="100">SEC 06 · SUNRISE SUMMIT PEAK</text>
+            </g>
+
+            <!-- Tactical Compass Rose (Bottom Right Corner) -->
+            <g id="tacticalCompass" transform="translate(1040, 540)">
+              <circle cx="0" cy="0" r="30" fill="#080e18" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+              <circle cx="0" cy="0" r="26" fill="none" stroke="rgba(134,188,37,0.3)" stroke-width="1" stroke-dasharray="2,4" />
+              <circle cx="0" cy="0" r="22" fill="url(#radarSweepGradient)" class="compass-sweep-beam" />
+              <line x1="0" y1="-24" x2="0" y2="24" stroke="rgba(255,255,255,0.25)" stroke-width="1" />
+              <line x1="-24" y1="0" x2="24" y2="0" stroke="rgba(255,255,255,0.25)" stroke-width="1" />
+              <polygon points="0,-22 4,-8 0,-12 -4,-8" fill="#86BC25" />
+              <polygon points="0,22 4,8 0,12 -4,8" fill="rgba(255,255,255,0.4)" />
+              <text x="0" y="-26" font-family="'JetBrains Mono'" font-size="8" font-weight="900" fill="#86BC25" text-anchor="middle">N</text>
+              <text x="0" y="32" font-family="'JetBrains Mono'" font-size="7" font-weight="700" fill="rgba(255,255,255,0.4)" text-anchor="middle">S</text>
+              <text x="30" y="3" font-family="'JetBrains Mono'" font-size="7" font-weight="700" fill="rgba(255,255,255,0.4)" text-anchor="middle">E</text>
+              <text x="-30" y="3" font-family="'JetBrains Mono'" font-size="7" font-weight="700" fill="rgba(255,255,255,0.4)" text-anchor="middle">W</text>
+            </g>
+
+            <!-- Digital Map Scale Bar (Bottom Left Corner) -->
+            <g transform="translate(40, 600)" font-family="'JetBrains Mono'" font-size="8" fill="rgba(255,255,255,0.5)">
+              <line x1="0" y1="0" x2="100" y2="0" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="0" y1="-4" x2="0" y2="4" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="50" y1="-3" x2="50" y2="3" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" />
+              <line x1="100" y1="-4" x2="100" y2="4" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <text x="0" y="-6" text-anchor="middle">0</text>
+              <text x="50" y="-6" text-anchor="middle">250m</text>
+              <text x="100" y="-6" text-anchor="middle">500m</text>
+              <text x="115" y="2" font-weight="700" fill="#86BC25">SCALE 1:5000</text>
+            </g>
+
+            <!-- 9. STATION 01: FastPass Hub (Coordinates: 120, 490 - Southwest Waterfront) -->
+            <g id="mapNode-fastpass" class="map-node-group" onclick="selectStation('fastpass')">
+              <circle cx="120" cy="490" r="48" fill="url(#greenNodeGlow)" />
+              <circle id="radarRing-fastpass" cx="120" cy="490" r="26" fill="none" stroke="#86BC25" class="radar-pulse-ring" />
+              <polygon points="120,452 152,471 152,509 120,528 88,509 88,471" fill="#080e18" stroke="#86BC25" stroke-width="2" />
+              <circle id="nodeOuter-fastpass" cx="120" cy="490" r="25" fill="#111824" stroke="#86BC25" stroke-width="2.5" />
+              <circle id="nodeInner-fastpass" cx="120" cy="490" r="18" fill="#182333" />
+              <text x="120" y="496" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="15" fill="#86BC25" text-anchor="middle">&#xf3ff;</text>
+              <rect x="60" y="535" width="120" height="26" rx="13" fill="#060b13" stroke="#86BC25" stroke-width="1.2" filter="url(#mapShadow)" />
+              <text id="nodeLabel-fastpass" x="120" y="552" font-family="'Plus Jakarta Sans', 'Noto Sans SC'" font-weight="800" font-size="11" fill="#FFFFFF" text-anchor="middle">01 · FastPass</text>
+              <circle id="nodeCheckBg-fastpass" cx="142" cy="468" r="10" fill="#111824" stroke="#86BC25" stroke-width="1.5" class="hidden" />
+              <text id="nodeCheckIcon-fastpass" x="142" y="472" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="10" fill="#86BC25" text-anchor="middle" class="hidden">&#xf00c;</text>
+            </g>
+
+            <!-- 10. STATION 02: D-Pixel Rush Arcade (Coordinates: 190, 210 - Northwest Downtown) -->
+            <g id="mapNode-game" class="map-node-group" onclick="selectStation('game')">
+              <circle cx="190" cy="210" r="48" fill="url(#greenNodeGlow)" />
+              <circle id="radarRing-game" cx="190" cy="210" r="26" fill="none" stroke="#86BC25" class="radar-pulse-ring hidden" />
+              <polygon points="190,172 222,191 222,229 190,248 158,229 158,191" fill="#080e18" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+              <circle id="nodeOuter-game" cx="190" cy="210" r="25" fill="#111824" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" />
+              <circle id="nodeInner-game" cx="190" cy="210" r="18" fill="#182333" />
+              <text x="190" y="216" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="15" fill="#DCE0E5" text-anchor="middle">&#xf11b;</text>
+              <rect x="130" y="145" width="120" height="26" rx="13" fill="#060b13" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" filter="url(#mapShadow)" />
+              <text id="nodeLabel-game" x="190" y="162" font-family="'Plus Jakarta Sans', 'Noto Sans SC'" font-weight="800" font-size="11" fill="#FFFFFF" text-anchor="middle">02 · 绿点跑酷</text>
+              <circle id="nodeCheckBg-game" cx="212" cy="188" r="10" fill="#111824" stroke="#86BC25" stroke-width="1.5" class="hidden" />
+              <text id="nodeCheckIcon-game" x="212" y="192" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="10" fill="#86BC25" text-anchor="middle" class="hidden">&#xf00c;</text>
+            </g>
+
+            <!-- 11. STATION 03: Knowledge Clash Citadel (Coordinates: 460, 150 - North University Quad) -->
+            <g id="mapNode-trivia" class="map-node-group" onclick="selectStation('trivia')">
+              <circle cx="460" cy="150" r="48" fill="url(#greenNodeGlow)" />
+              <circle id="radarRing-trivia" cx="460" cy="150" r="26" fill="none" stroke="#86BC25" class="radar-pulse-ring hidden" />
+              <polygon points="460,112 492,131 492,169 460,188 428,169 428,131" fill="#080e18" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+              <circle id="nodeOuter-trivia" cx="460" cy="150" r="25" fill="#111824" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" />
+              <circle id="nodeInner-trivia" cx="460" cy="150" r="18" fill="#182333" />
+              <text x="460" y="156" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="15" fill="#DCE0E5" text-anchor="middle">&#xf5dc;</text>
+              <rect x="395" y="85" width="130" height="26" rx="13" fill="#060b13" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" filter="url(#mapShadow)" />
+              <text id="nodeLabel-trivia" x="460" y="102" font-family="'Plus Jakarta Sans', 'Noto Sans SC'" font-weight="800" font-size="11" fill="#FFFFFF" text-anchor="middle">03 · 勤业智库</text>
+              <circle id="nodeCheckBg-trivia" cx="482" cy="128" r="10" fill="#111824" stroke="#86BC25" stroke-width="1.5" class="hidden" />
+              <text id="nodeCheckIcon-trivia" x="482" y="132" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="10" fill="#86BC25" text-anchor="middle" class="hidden">&#xf00c;</text>
+            </g>
+
+            <!-- 12. STATION 04: D.Signal Decryption Tower (Coordinates: 560, 360 - Central Cyber Island) -->
+            <g id="mapNode-signal" class="map-node-group" onclick="selectStation('signal')">
+              <circle cx="560" cy="360" r="48" fill="url(#cyanNodeGlow)" />
+              <circle id="radarRing-signal" cx="560" cy="360" r="26" fill="none" stroke="#00A3E0" class="radar-pulse-ring hidden" />
+              <polygon points="560,322 592,341 592,379 560,398 528,379 528,341" fill="#080e18" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+              <circle id="nodeOuter-signal" cx="560" cy="360" r="25" fill="#111824" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" />
+              <circle id="nodeInner-signal" cx="560" cy="360" r="18" fill="#182333" />
+              <text x="560" y="366" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="15" fill="#00A3E0" text-anchor="middle">&#xf7b9;</text>
+              <rect x="500" y="415" width="120" height="26" rx="13" fill="#060b13" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" filter="url(#mapShadow)" />
+              <text id="nodeLabel-signal" x="560" y="432" font-family="'Plus Jakarta Sans', 'Noto Sans SC'" font-weight="800" font-size="11" fill="#FFFFFF" text-anchor="middle">04 · D.Signal</text>
+              <circle id="nodeCheckBg-signal" cx="582" cy="338" r="10" fill="#111824" stroke="#86BC25" stroke-width="1.5" class="hidden" />
+              <text id="nodeCheckIcon-signal" x="582" y="342" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="10" fill="#86BC25" text-anchor="middle" class="hidden">&#xf00c;</text>
+            </g>
+
+            <!-- 13. STATION 05: Business Chemistry Lab (Coordinates: 780, 490 - Southeast Eco-Campus) -->
+            <g id="mapNode-chemistry" class="map-node-group" onclick="selectStation('chemistry')">
+              <circle cx="780" cy="490" r="48" fill="url(#greenNodeGlow)" />
+              <circle id="radarRing-chemistry" cx="780" cy="490" r="26" fill="none" stroke="#86BC25" class="radar-pulse-ring hidden" />
+              <polygon points="780,452 812,471 812,509 780,528 748,509 748,471" fill="#080e18" stroke="rgba(255,255,255,0.25)" stroke-width="2" />
+              <circle id="nodeOuter-chemistry" cx="780" cy="490" r="25" fill="#111824" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" />
+              <circle id="nodeInner-chemistry" cx="780" cy="490" r="18" fill="#182333" />
+              <text x="780" y="496" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="15" fill="#DCE0E5" text-anchor="middle">&#xf0c3;</text>
+              <rect x="715" y="545" width="130" height="26" rx="13" fill="#060b13" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" filter="url(#mapShadow)" />
+              <text id="nodeLabel-chemistry" x="780" y="562" font-family="'Plus Jakarta Sans', 'Noto Sans SC'" font-weight="800" font-size="11" fill="#FFFFFF" text-anchor="middle">05 · 商业化学</text>
+              <circle id="nodeCheckBg-chemistry" cx="802" cy="468" r="10" fill="#111824" stroke="#86BC25" stroke-width="1.5" class="hidden" />
+              <text id="nodeCheckIcon-chemistry" x="802" y="472" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="10" fill="#86BC25" text-anchor="middle" class="hidden">&#xf00c;</text>
+            </g>
+
+            <!-- 14. STATION 06: Project Sunrise Summit (Coordinates: 960, 230 - Northeast Mountain Peak) -->
+            <g id="mapNode-sunrise" class="map-node-group" onclick="selectStation('sunrise')">
+              <circle cx="960" cy="230" r="56" fill="url(#goldNodeGlow)" />
+              <circle id="radarRing-sunrise" cx="960" cy="230" r="28" fill="none" stroke="#F59E0B" class="radar-pulse-ring hidden" />
+              <polygon points="960,190 994,210 994,250 960,270 926,250 926,210" fill="#140f06" stroke="#F59E0B" stroke-width="2.5" />
+              <circle id="nodeOuter-sunrise" cx="960" cy="230" r="27" fill="#181308" stroke="#F59E0B" stroke-width="2.5" />
+              <circle id="nodeInner-sunrise" cx="960" cy="230" r="19" fill="#291e0a" />
+              <text x="960" y="237" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="17" fill="#F59E0B" text-anchor="middle">&#xf185;</text>
+              <rect x="895" y="160" width="130" height="26" rx="13" fill="#060b13" stroke="#F59E0B" stroke-width="1.2" filter="url(#mapShadow)" />
+              <text id="nodeLabel-sunrise" x="960" y="177" font-family="'Plus Jakarta Sans', 'Noto Sans SC'" font-weight="800" font-size="11" fill="#FBBF24" text-anchor="middle">06 · 旭日行动</text>
+              <circle id="nodeCheckBg-sunrise" cx="986" cy="208" r="10" fill="#111824" stroke="#86BC25" stroke-width="1.5" class="hidden" />
+              <text id="nodeCheckIcon-sunrise" x="986" y="212" font-family="'Font Awesome 6 Free'" font-weight="900" font-size="10" fill="#86BC25" text-anchor="middle" class="hidden">&#xf00c;</text>
+            </g>
+
+            <!-- 15. REAL-TIME TRAVELER GPS PIN (You Are Here Beacon) -->
+            <g id="travelerBeaconMarker" transform="translate(120, 490)" class="transition-all duration-700 pointer-events-none">
+              <circle cx="0" cy="0" r="16" fill="none" stroke="#86BC25" stroke-width="2" class="animate-ping" opacity="0.8" />
+              <circle cx="0" cy="0" r="7" fill="#86BC25" />
+              <!-- GPS Map Pin Arrow -->
+              <path d="M 0 -42 L -10 -26 L 10 -26 Z" fill="#86BC25" filter="url(#neonGlow)" />
+              <rect x="-42" y="-62" width="84" height="18" rx="9" fill="#080e18" stroke="#86BC25" stroke-width="1.2" filter="url(#mapShadow)" />
+              <text id="travelerBeaconText" x="0" y="-50" font-family="'JetBrains Mono'" font-weight="800" font-size="9" fill="#86BC25" text-anchor="middle">当前位置</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Map Bottom Status Legend Bar -->
+        <div class="border-t border-white/10 bg-black/60 backdrop-blur-md px-4 py-2.5 flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-400 gap-2">
+          <div class="flex items-center space-x-4">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-deloitte-green inline-block"></span> <span id="legendClearedText">已通关</span></span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span> <span id="legendActiveText">当前航标</span></span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-white/25 inline-block"></span> <span id="legendUpcomingText">待探索</span></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-location-crosshairs text-deloitte-green"></i>
+            <span id="mapCoordsLabel">第 01 区 · 启航港湾</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- DOCKED MISSION DOSSIER / SELECTED STATION CONTROL CONSOLE -->
+    <section id="stationMissionConsole" class="rounded-3xl bg-deloitte-cardbg border-2 border-white/15 card-shadow p-5 sm:p-7 space-y-5 transition-all duration-300">
+      
+      <!-- Top Station Header with Controls -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+        <div class="flex items-start sm:items-center space-x-3.5">
+          <div id="dossierIconBox" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-deloitte-green/15 border-2 border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-xl sm:text-2xl flex-shrink-0 shadow-lg shadow-deloitte-green/15">
+            <i id="dossierIcon" class="fa-solid fa-ticket"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="dossierStageTag" class="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 border border-deloitte-green/35 text-deloitte-green">
+                第 01 站 · 始发日程
+              </span>
+              <span id="dossierStatusTag" class="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 text-gray-400">
+                待探索
+              </span>
+            </div>
+            <h3 id="dossierTitle" class="text-xl sm:text-2xl font-black text-white mt-0.5">
+              Deloitte FastPass 快速通行证
+            </h3>
+            <p id="dossierSub" class="text-xs text-gray-400 font-mono">
+              1-36组专属轮转时间表贴纸
+            </p>
+          </div>
+        </div>
+
+        <!-- Previous / Next Station Buttons -->
+        <div class="flex items-center space-x-2 self-end sm:self-auto">
+          <button onclick="navigateStation(-1)" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white border border-white/10 flex items-center justify-center transition-all button-press" title="Previous Station">
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+          </button>
+          <span id="dossierIndexIndicator" class="font-mono text-xs font-bold text-gray-400 px-2">1 / 6</span>
+          <button onclick="navigateStation(1)" class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white border border-white/10 flex items-center justify-center transition-all button-press" title="Next Station">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Station Tactical Briefing & Competencies -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        
+        <!-- Left 2 Cols: Description & Insights -->
+        <div class="lg:col-span-2 space-y-3">
+          <p id="dossierDesc" class="text-xs sm:text-sm text-gray-300 font-cn leading-relaxed">
+            查询你所在第 1 - 36 小组的专属 8x5cm 时间表贴纸与 6 大展区轮转顺序，锁定无冲突日程！每个环节严格按照 30 分钟体验 + 10 分钟场地轮转进行。
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="bg-black/40 border border-white/5 rounded-2xl p-3.5 space-y-1">
+              <span id="objectiveHeading" class="text-gray-400 flex items-center gap-1.5 font-bold">
+                <i class="fa-solid fa-bullseye text-deloitte-green"></i> 核心通关目标:
+              </span>
+              <p id="dossierObjective" class="text-white font-semibold font-cn">
+                获取今日组别时间动线，熟悉 6 大环节
+              </p>
+            </div>
+
+            <div class="bg-black/40 border border-white/5 rounded-2xl p-3.5 space-y-1">
+              <span id="durationHeading" class="text-gray-400 flex items-center gap-1.5 font-bold">
+                <i class="fa-solid fa-stopwatch text-amber-400"></i> 建议用时与形式:
+              </span>
+              <p id="dossierDuration" class="text-white font-semibold font-cn">
+                2 - 3 分钟 · 数字化时刻表检索
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 1 Col: Station Actions -->
+        <div class="flex flex-col justify-between gap-3 bg-black/50 border border-white/10 rounded-2xl p-4 sm:p-5">
+          <div class="space-y-1">
+            <span id="dossierActionHeading" class="text-[10px] font-mono text-gray-400 uppercase tracking-widest block">任务操作指令</span>
+            <h4 id="dossierActionSubheading" class="text-xs sm:text-sm font-bold text-white">开始执行此项探索</h4>
+          </div>
+
+          <div class="space-y-2 pt-2">
+            <!-- Launch App in Safe New Tab -->
+            <a id="dossierLaunchBtn" href="https://projectsunrise.win/fastpass" target="_blank" rel="noopener noreferrer" onclick="trackLaunchCurrent()" class="button-press w-full py-3 px-4 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20">
+              <span id="dossierLaunchText">启动 FASTPASS 应用</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+            </a>
+
+            <!-- Check-in / Stamp Button -->
+            <button id="dossierCheckBtn" onclick="toggleCurrentCheck()" class="button-press w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-xs transition-all flex items-center justify-center gap-2">
+              <i id="dossierCheckIcon" class="fa-solid fa-circle-check text-xs"></i>
+              <span id="dossierCheckText">标记已完成</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <div id="guideModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="bg-deloitte-cardbg border border-white/20 rounded-3xl p-6 sm:p-8 max-w-lg w-full card-shadow space-y-5 animate-pop-in">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <h3 id="guideModalTitle" class="text-lg font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-map text-deloitte-green"></i>
+          <span>航道图谱操作指南</span>
+        </h3>
+        <button onclick="closeGuideModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 text-xs text-gray-300 font-cn">
+        <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
+          <strong id="guideStep1Title" class="text-deloitte-green flex items-center gap-1.5 text-sm">
+            <i class="fa-solid fa-circle-dot text-xs"></i> 1. 点击航标交互
+          </strong>
+          <p id="guideStep1Desc" class="text-gray-300">
+            点击地图上的任意圆环航标（第 01 至 06 站）即可聚焦对应任务，并在下方指挥台查阅目标。
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
+          <strong id="guideStep2Title" class="text-cyan-400 flex items-center gap-1.5 text-sm">
+            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> 2. 启动应用与签到
+          </strong>
+          <p id="guideStep2Desc" class="text-gray-300">
+            点击绿色按钮进入对应站点体验活动，完成后返回点击「标记已完成」即可点亮该段能量航道。
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
+          <strong id="guideStep3Title" class="text-amber-400 flex items-center gap-1.5 text-sm">
+            <i class="fa-solid fa-trophy text-xs"></i> 3. 解锁结业勋章
+          </strong>
+          <p id="guideStep3Desc" class="text-gray-300">
+            全景地图 6 大航标全部通关后，右上角「领航证书」按钮将被激活，可输入你的姓名生成专属荣誉证书！
+          </p>
+        </div>
+      </div>
+
+      <button id="guideCloseBtn" onclick="closeGuideModal()" class="button-press w-full py-3 rounded-xl bg-deloitte-green text-black font-extrabold text-xs hover:bg-emerald-400 transition-all shadow-lg shadow-deloitte-green/20">
+        进入全景图谱
+      </button>
+    </div>
+  </div>
+
+  <div id="certModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+    <div class="bg-[#0b0f17] border-4 border-[#86BC25]/60 rounded-3xl p-6 sm:p-10 max-w-xl w-full card-shadow space-y-6 text-center relative overflow-hidden animate-pop-in">
+      
+      <!-- Top Decorative Ribbon Accent -->
+      <div class="absolute -right-12 -top-12 w-36 h-36 bg-deloitte-green/20 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="space-y-2 relative z-10">
+        <div class="w-16 h-16 rounded-full bg-deloitte-green/20 border-2 border-deloitte-green flex items-center justify-center text-deloitte-green text-3xl mx-auto shadow-lg shadow-deloitte-green/30">
+          <i class="fa-solid fa-award"></i>
+        </div>
+        <span id="certRibbonText" class="text-xs font-mono font-bold tracking-widest text-deloitte-green uppercase block">
+          DELOITTE ONBOARDING ODYSSEY CERTIFICATE
+        </span>
+        <h3 id="certTitleText" class="text-2xl sm:text-3xl font-black text-white">
+          德勤卓越领航者结业证书
+        </h3>
+        <p id="certSubtitleText" class="text-xs text-gray-400 font-cn">
+          祝贺！你已成功通关全景图谱全部 6 大探索航标。
+        </p>
+      </div>
+
+      <!-- Personalized Name Box -->
+      <div class="bg-black/60 border border-white/15 rounded-2xl p-4 space-y-2 relative z-10">
+        <label id="certNameInputLabel" class="text-[11px] text-gray-400 block font-cn">输入你的姓名生成专属勋章:</label>
+        <input 
+          id="certParticipantName" 
+          type="text" 
+          placeholder="例如：张明 / Ming Zhang" 
+          class="w-full bg-white/5 border border-white/20 focus:border-deloitte-green focus:outline-none rounded-xl py-2 px-4 text-center font-bold text-base text-white placeholder-gray-600"
+          value="Deloitte Trailblazer"
+        />
+        <p class="text-[10px] text-deloitte-green font-mono pt-1">
+          ✓ FastPass ✓ Pixel Rush ✓ Trivia ✓ D.Signal ✓ Chemistry ✓ Sunrise
+        </p>
+      </div>
+
+      <div id="certQuoteText" class="text-xs text-gray-300 font-cn italic relative z-10 px-4">
+        “以初心致远方，用专业启新章。欢迎加入我们，成就不凡，致胜未来！”
+      </div>
+
+      <div class="flex items-center gap-3 relative z-10 pt-2">
+        <button id="certCloseBtn" onclick="closeCertificateModal()" class="button-press flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition-all">
+          关闭
+        </button>
+        <button id="certPrintBtn" onclick="triggerPrintCertificate()" class="button-press flex-1 py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-print"></i>
+          <span id="certPrintBtnText">保存证书</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="hidden fixed bottom-6 right-6 pointer-events-none transform translate-y-16 opacity-0 transition-all duration-300 z-50 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2">
+  </div>
+
+  <script>
+    let audioEnabled = true;
+    let audioReady = false;
+
+    let pinSynth = null;
+    let checkSynth = null;
+    let fanfareSynth = null;
+
+    let currentLang = 'zh';
+
+    const UI_TEXT = {
+      zh: {
+        navSubtitle: "数字全景图谱",
+        clearedLabel: "已通关:",
+        stopsUnit: "站",
+        guideBtn: "探索指南",
+        telemetry: "实时遥测",
+        rankSubtitle: "探索下方数字航道图谱，点击任意航标站点以查阅任务、启动应用或签到打卡。",
+        expeditionProgress: "全图探索进度",
+        claimCert: "领航证书",
+        reset: "重置",
+        gisTitle: "DELOITTE METROPOLIS GIS",
+        sectorSubtitle: "• 区域全景图 v3.2",
+        legendCleared: "已通关",
+        legendActive: "当前航标",
+        legendUpcoming: "待探索",
+        dossierActionTitle: "任务操作指令",
+        dossierActionSub: "开始执行此项探索",
+        coreObjective: "核心通关目标:",
+        durationLabel: "建议用时与形式:",
+        checkInBtn: "标记已完成",
+        clearedBtn: "已打卡通关",
+        clearedStatus: "已通关",
+        pendingStatus: "待探索",
+        youAreHere: "当前位置",
+        guideTitle: "航道图谱操作指南",
+        guideStep1Title: "1. 点击航标交互",
+        guideStep1Desc: "点击地图上的任意圆环航标（第 01 至 06 站）即可聚焦对应任务，并在下方指挥台查阅目标。",
+        guideStep2Title: "2. 启动应用与签到",
+        guideStep2Desc: "点击绿色按钮进入对应站点体验活动，完成后返回点击「标记已完成」即可点亮该段能量航道。",
+        guideStep3Title: "3. 解锁结业勋章",
+        guideStep3Desc: "全景地图 6 大航标全部通关后，右上角「领航证书」按钮将被激活，可输入你的姓名生成专属荣誉证书！",
+        guideCloseBtn: "进入全景图谱",
+        certRibbon: "DELOITTE ONBOARDING ODYSSEY CERTIFICATE",
+        certTitle: "卓越领航者结业证书",
+        certSubtitle: "祝贺！你已成功通关全景图谱全部 6 大探索航标。",
+        certNameLabel: "输入你的姓名生成专属勋章:",
+        certQuote: "“以初心致远方，用专业启新章。欢迎加入我们，成就不凡，致胜未来！”",
+        certCloseBtn: "关闭",
+        certPrintBtn: "保存证书",
+        footerBrand: "数字全景图谱",
+        footerSlogan: "成就不凡 · 致胜未来"
+      },
+      en: {
+        navSubtitle: "Digital Journey Map",
+        clearedLabel: "Cleared:",
+        stopsUnit: "STOPS",
+        guideBtn: "Guide",
+        telemetry: "ACTIVE TELEMETRY",
+        rankSubtitle: "Explore the digital expedition map below. Click any station waypoint to inspect briefings, launch apps, or check in.",
+        expeditionProgress: "EXPEDITION COMPLETION",
+        claimCert: "Claim Certificate",
+        reset: "Reset",
+        gisTitle: "METROPOLIS GIS",
+        sectorSubtitle: "• SECTOR MAP v3.2",
+        legendCleared: "Cleared",
+        legendActive: "Active",
+        legendUpcoming: "Upcoming",
+        dossierActionTitle: "STATION ACTIONS",
+        dossierActionSub: "Start this station expedition",
+        coreObjective: "Core Objective:",
+        durationLabel: "Estimated Duration:",
+        checkInBtn: "Mark Completed",
+        clearedBtn: "Status Cleared",
+        clearedStatus: "CLEARED",
+        pendingStatus: "PENDING",
+        youAreHere: "YOU ARE HERE",
+        guideTitle: "Expedition Map Briefing",
+        guideStep1Title: "1. Waypoint Interaction",
+        guideStep1Desc: "Click any circular waypoint (Stations 01 to 06) on the map to inspect its mission briefing and objectives below.",
+        guideStep2Title: "2. Launch & Check-in",
+        guideStep2Desc: "Click the green button to open each station in a new tab. When finished, return and click 'Mark Completed'.",
+        guideStep3Title: "3. Claim Certificate",
+        guideStep3Desc: "Once all 6 waypoints are cleared, the 'Claim Certificate' button will activate to generate your personalized award!",
+        guideCloseBtn: "Enter Journey Map",
+        certRibbon: "ONBOARDING ODYSSEY CERTIFICATE",
+        certTitle: "Master Trailblazer Certificate",
+        certSubtitle: "Congratulations! You have completed all 6 stations across the map.",
+        certNameLabel: "Enter Your Name for the Certificate:",
+        certQuote: "“Make an impact that matters. Welcome — ignite your potential and lead the future!”",
+        certCloseBtn: "Close",
+        certPrintBtn: "Print Certificate",
+        footerBrand: "Digital Journey Map",
+        footerSlogan: "Make an impact that matters."
+      }
+    };
+
+    async function initAudioEngine() {
+      if (audioReady) return;
+      try {
+        await Tone.start();
+        
+        pinSynth = new Tone.Synth({
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.005, decay: 0.15, sustain: 0, release: 0.1 }
+        }).toDestination();
+        pinSynth.volume.value = -9;
+
+        checkSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.005, decay: 0.12, sustain: 0.05, release: 0.4 }
+        }).toDestination();
+        checkSynth.volume.value = -6;
+
+        fanfareSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "square" },
+          envelope: { attack: 0.01, decay: 0.25, sustain: 0.1, release: 0.5 }
+        }).toDestination();
+        fanfareSynth.volume.value = -4;
+
+        audioReady = true;
+      } catch (err) {
+        console.warn("Audio waiting for user gesture:", err);
+      }
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const icon = document.getElementById("audioIcon");
+      const text = document.getElementById("audioText");
+      if (audioEnabled) {
+        if (icon) icon.className = "fa-solid fa-volume-high text-deloitte-green text-xs";
+        if (text) text.className = "hidden sm:inline text-gray-300";
+        initAudioEngine();
+      } else {
+        if (icon) icon.className = "fa-solid fa-volume-xmark text-deloitte-gray text-xs";
+        if (text) text.className = "hidden sm:inline text-deloitte-gray";
+      }
+    }
+
+    function playSound(type) {
+      if (!audioEnabled) return;
+      initAudioEngine();
+      const now = Tone.now();
+      try {
+        if (type === 'pin' && pinSynth) {
+          pinSynth.triggerAttackRelease("E5", "32n", now);
+        } else if (type === 'check' && checkSynth) {
+          checkSynth.triggerAttackRelease(["C5", "E5", "G5"], "16n", now);
+        } else if (type === 'uncheck' && checkSynth) {
+          checkSynth.triggerAttackRelease(["G4", "D4"], "16n", now);
+        } else if (type === 'fanfare' && fanfareSynth) {
+          fanfareSynth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "8n", now);
+          fanfareSynth.triggerAttackRelease(["E6", "G6", "C7"], "4n", now + 0.2);
+        }
+      } catch (e) {}
+    }
+
+    const STATIONS_MAP = {
+      'fastpass': {
+        index: 1,
+        id: 'fastpass',
+        name: { zh: 'Deloitte FastPass 快速通行证', en: 'Deloitte FastPass' },
+        sub: { zh: '1-36组专属轮转时间表贴纸', en: 'Team Rotation Schedule (Groups 1-36)' },
+        stageTag: { zh: '第 01 站 · 始发日程', en: 'STAGE 01 · SCHEDULE' },
+        mapLabel: { zh: '01 · FastPass', en: '01 · FastPass' },
+        icon: 'fa-ticket',
+        color: '#86BC25',
+        coords: { x: 120, y: 490, geo_zh: '第 01 区 · 启航港湾', geo_en: 'SECTOR 01 · INDUCTION PORT' },
+        file: 'fastpass.html',
+        desc: {
+          zh: '查询你所在第 1 - 36 小组的专属 8x5cm 时间表贴纸与 6 大展区轮转顺序，锁定无冲突日程！每个环节严格按照 30 分钟体验 + 10 分钟场地轮转进行。',
+          en: 'Inspect your team sticker schedule (Groups 1-36) and station rotation order. Each rotation features 30 minutes of activity and 10 minutes of transition.'
+        },
+        objective: {
+          zh: '获取今日组别时间动线，锁定展区顺次',
+          en: 'Acquire your team timeline and confirm rotation route'
+        },
+        duration: {
+          zh: '2 - 3 分钟 · 数字化时刻表检索',
+          en: '2 - 3 Mins · Digital Schedule Lookup'
+        }
+      },
+      'game': {
+        index: 2,
+        id: 'game',
+        name: { zh: 'D-Pixel Rush 绿点跑酷', en: 'D-Pixel Rush: Green Dot Odyssey' },
+        sub: { zh: '顾问绿点冲刺复古街机挑战', en: 'Consultant Green Dot Dash Arcade' },
+        stageTag: { zh: '第 02 站 · 敏捷破局', en: 'STAGE 02 · AGILITY' },
+        mapLabel: { zh: '02 · 绿点跑酷', en: '02 · Pixel Rush' },
+        icon: 'fa-gamepad',
+        color: '#86BC25',
+        coords: { x: 190, y: 210, geo_zh: '第 02 区 · 敏捷中心', geo_en: 'SECTOR 02 · AGILE DOWNTOWN' },
+        file: 'game.html',
+        desc: {
+          zh: '扮演像素顾问在摩天楼顶飞跃奔跑！收集绿点与咖啡，敏捷滑铲避开需求蔓延与紧急邮件！支持自由选择简单、普通与困难难度。',
+          en: 'Guide our pixel consultant across rooftops! Collect Green Dots and Espresso, slide under urgent drones, and dodge scope creep at Easy, Normal, or Hard speed.'
+        },
+        objective: {
+          zh: '跨越需求蔓延红线，收集绿点冲刺',
+          en: 'Leap over scope creep and collect Green Dots'
+        },
+        duration: {
+          zh: '3 - 5 分钟 · 复古像素街机破局',
+          en: '3 - 5 Mins · 8-Bit Retro Arcade Dash'
+        }
+      },
+      'trivia': {
+        index: 3,
+        id: 'trivia',
+        name: { zh: '勤业智库 Knowledge Clash', en: 'Knowledge Clash Trivia' },
+        sub: { zh: '15道德勤底蕴与专业洞察竞技', en: '15-Question Deloitte Knowledge Clash' },
+        stageTag: { zh: '第 03 站 · 智库争锋', en: 'STAGE 03 · KNOWLEDGE' },
+        mapLabel: { zh: '03 · 勤业智库', en: '03 · Knowledge' },
+        icon: 'fa-brain',
+        color: '#10B981',
+        coords: { x: 460, y: 150, geo_zh: '第 03 区 · 智库学苑', geo_en: 'SECTOR 03 · KNOWLEDGE QUAD' },
+        file: 'trivia.html',
+        desc: {
+          zh: '探索德勤创立先锋、绿点哲学与五大核心业务！配备指针表盘倒计时、热身测试题与3次作答容错机制，沉淀顾问底蕴。',
+          en: 'Explore founding pioneers, Green Dot philosophy, and core businesses with an analog clock timer, practice question, and multi-try allowances.'
+        },
+        objective: {
+          zh: '沉淀德勤底蕴与专业洞察，冲击全对',
+          en: 'Master Deloitte heritage and aim for a perfect score'
+        },
+        duration: {
+          zh: '5 - 8 分钟 · 智库互动答题',
+          en: '5 - 8 Mins · Interactive Trivia Clash'
+        }
+      },
+      'signal': {
+        index: 4,
+        id: 'signal',
+        name: { zh: 'D.Signal 信号解密', en: 'D.Signal Decryption' },
+        sub: { zh: '敏捷团队行话破译挑战', en: 'Word Association & Decryption Challenge' },
+        stageTag: { zh: '第 04 站 · 默契破译', en: 'STAGE 04 · DECRYPTION' },
+        mapLabel: { zh: '04 · D.Signal', en: '04 · D.Signal' },
+        icon: 'fa-tower-broadcast',
+        color: '#00A3E0',
+        coords: { x: 560, y: 360, geo_zh: '第 04 区 · 赛博数岛', geo_en: 'SECTOR 04 · CYBER ISLAND' },
+        file: 'index.html',
+        desc: {
+          zh: '三轮独立词库挑战：动物奇境、德勤行话（闭环/颗粒度/底层逻辑）、核心业务板块快速你划我猜！对齐团队行话颗粒度。',
+          en: 'Three word association challenges: Animals, Deloitte Buzzwords (Closed-loop, Granularity), and Business offerings. Test your team alignment!'
+        },
+        objective: {
+          zh: '强化团队暗号与业务行话共识',
+          en: 'Strengthen team communication and shared vocabulary'
+        },
+        duration: {
+          zh: '4 - 6 分钟 · 敏捷你划我猜',
+          en: '4 - 6 Mins · Rapid Word Association'
+        }
+      },
+      'chemistry': {
+        index: 5,
+        id: 'chemistry',
+        name: { zh: 'Business Chemistry 商业化学指南', en: 'Business Chemistry Guide' },
+        sub: { zh: '四大职场工作风格与协同秘籍', en: '4 Work Styles & Synergy Navigator' },
+        stageTag: { zh: '第 05 站 · 职场化学', en: 'STAGE 05 · CHEMISTRY' },
+        mapLabel: { zh: '05 · 商业化学', en: '05 · Chemistry' },
+        icon: 'fa-flask-vial',
+        color: '#A855F7',
+        coords: { x: 780, y: 490, geo_zh: '第 05 区 · 协同园区', geo_en: 'SECTOR 05 · SYNERGY ECO-CAMPUS' },
+        file: 'chemistry.html',
+        desc: {
+          zh: '解析先锋型 (Pioneer)、驱动型 (Driver)、整合型 (Integrator) 与守护型 (Guardian)，洞悉自我工作风格与跨团队共情之道。',
+          en: 'Understand Pioneers, Drivers, Integrators, and Guardians. Discover your work style and master collaborative empathy across diverse teams.'
+        },
+        objective: {
+          zh: '洞察多元风格，掌握跨团队协同秘籍',
+          en: 'Understand diverse work styles and boost collaboration'
+        },
+        duration: {
+          zh: '4 - 5 分钟 · 职场风格画像探索',
+          en: '4 - 5 Mins · Interactive Style Exploration'
+        }
+      },
+      'sunrise': {
+        index: 6,
+        id: 'sunrise',
+        name: { zh: 'Project Sunrise 旭日行动', en: 'Project Sunrise' },
+        sub: { zh: '战略愿景与致胜未来新篇', en: 'Strategic Horizon & Future Impact' },
+        stageTag: { zh: '第 06 站 · 终章使命', en: 'STAGE 06 · SUNRISE' },
+        mapLabel: { zh: '06 · 旭日行动', en: '06 · Sunrise' },
+        icon: 'fa-sun',
+        color: '#F59E0B',
+        coords: { x: 960, y: 230, geo_zh: '第 06 区 · 旭日巅峰', geo_en: 'SECTOR 06 · SUNRISE SUMMIT' },
+        file: 'sunrise.html',
+        desc: {
+          zh: '汇聚今天沉淀的专业智慧与团队能量，共绘 Project Sunrise 战略行动蓝图，迈向未来致胜篇章！',
+          en: 'Synthesize the knowledge and synergies gained throughout today to map out Project Sunrise and ignite your journey ahead.'
+        },
+        objective: {
+          zh: '签署成长誓约与战略行动愿景',
+          en: 'Affirm strategic vision and commitments'
+        },
+        duration: {
+          zh: '5 - 8 分钟 · 卓越战略终章',
+          en: '5 - 8 Mins · Strategic Horizon Finale'
+        }
+      }
+    };
+
+    const STATION_KEYS = ['fastpass', 'game', 'trivia', 'signal', 'chemistry', 'sunrise'];
+
+    const RANKS = [
+      { min: 0, title: { zh: "启航探索者 · 初阶", en: "Trailblazer Novice" }, tag: "LVL 1", icon: "fa-seedling" },
+      { min: 2, title: { zh: "敏捷先锋 · 进阶", en: "Agile Analyst" }, tag: "LVL 2", icon: "fa-compass" },
+      { min: 4, title: { zh: "智库精锐 · 资深", en: "Strategic Consultant" }, tag: "LVL 3", icon: "fa-bolt" },
+      { min: 6, title: { zh: "卓越领航者 · 大师", en: "Deloitte Master" }, tag: "MAX", icon: "fa-trophy" }
+    ];
+
+    let currentSelectedStationId = 'fastpass';
+    let completedStations = new Set();
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'zh' ? 'en' : 'zh';
+      playSound('pin');
+      try {
+        localStorage.setItem('deloitte_journey_lang', currentLang);
+      } catch (e) {}
+
+      applyLanguage();
+      showToast(currentLang === 'zh' ? '已切换为中文' : 'Switched to English');
+    }
+
+    function applyLanguage() {
+      const t = UI_TEXT[currentLang];
+
+      // 1. Language Pill Selector Visuals
+      const pillZH = document.getElementById("langPillZH");
+      const pillEN = document.getElementById("langPillEN");
+      if (pillZH && pillEN) {
+        if (currentLang === 'zh') {
+          pillZH.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-deloitte-green text-black transition-all';
+          pillEN.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold text-gray-400 transition-all';
+        } else {
+          pillZH.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold text-gray-400 transition-all';
+          pillEN.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-deloitte-green text-black transition-all';
+        }
+      }
+
+      // 2. Header & Dashboard Labels
+      const navSubtitle = document.getElementById("navBrandSubtitle");
+      if (navSubtitle) navSubtitle.textContent = t.navSubtitle;
+
+      const navLabel = document.getElementById("navProgressLabel");
+      if (navLabel) navLabel.textContent = t.clearedLabel;
+
+      const guideBtn = document.getElementById("guideBtnText");
+      if (guideBtn) guideBtn.textContent = t.guideBtn;
+
+      const telemetryTag = document.getElementById("telemetryTag");
+      if (telemetryTag) telemetryTag.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> ${t.telemetry}`;
+
+      const heroSubtitle = document.getElementById("heroRankSubtitle");
+      if (heroSubtitle) heroSubtitle.textContent = t.rankSubtitle;
+
+      const expProgress = document.getElementById("expeditionProgressLabel");
+      if (expProgress) expProgress.textContent = t.expeditionProgress;
+
+      const claimCertText = document.getElementById("claimCertBtnText");
+      if (claimCertText) claimCertText.textContent = t.claimCert;
+
+      const resetText = document.getElementById("resetBtnText");
+      if (resetText) resetText.textContent = t.reset;
+
+      // 3. Map GIS & Legend
+      const gisTitle = document.getElementById("mapGisTitle");
+      if (gisTitle) gisTitle.textContent = t.gisTitle;
+
+      const sectorSub = document.getElementById("mapSectorSubtitle");
+      if (sectorSub) sectorSub.textContent = t.sectorSubtitle;
+
+      const legCleared = document.getElementById("legendClearedText");
+      if (legCleared) legCleared.textContent = t.legendCleared;
+
+      const legActive = document.getElementById("legendActiveText");
+      if (legActive) legActive.textContent = t.legendActive;
+
+      const legUpcoming = document.getElementById("legendUpcomingText");
+      if (legUpcoming) legUpcoming.textContent = t.legendUpcoming;
+
+      const beaconText = document.getElementById("travelerBeaconText");
+      if (beaconText) beaconText.textContent = t.youAreHere;
+
+      // 4. Map Waypoint SVG Labels & Quick Chips
+      STATION_KEYS.forEach(key => {
+        const s = STATIONS_MAP[key];
+        const svgLabel = document.getElementById(`nodeLabel-${key}`);
+        if (svgLabel) svgLabel.textContent = s.mapLabel[currentLang];
+
+        const chip = document.getElementById(`quickChip-${key}`);
+        if (chip) chip.textContent = s.mapLabel[currentLang];
+      });
+
+      // 5. Mission Console Dossier Static Labels
+      const actHeading = document.getElementById("dossierActionHeading");
+      if (actHeading) actHeading.textContent = t.dossierActionTitle;
+
+      const actSub = document.getElementById("dossierActionSubheading");
+      if (actSub) actSub.textContent = t.dossierActionSub;
+
+      const objHeading = document.getElementById("objectiveHeading");
+      if (objHeading) objHeading.innerHTML = `<i class="fa-solid fa-bullseye text-deloitte-green"></i> ${t.coreObjective}`;
+
+      const durHeading = document.getElementById("durationHeading");
+      if (durHeading) durHeading.innerHTML = `<i class="fa-solid fa-stopwatch text-amber-400"></i> ${t.durationLabel}`;
+
+      // 6. Guide Modal Texts
+      const guideTitle = document.getElementById("guideModalTitle");
+      if (guideTitle) guideTitle.innerHTML = `<i class="fa-solid fa-map text-deloitte-green"></i> <span>${t.guideTitle}</span>`;
+
+      const g1T = document.getElementById("guideStep1Title");
+      if (g1T) g1T.innerHTML = `<i class="fa-solid fa-circle-dot text-xs"></i> ${t.guideStep1Title}`;
+      const g1D = document.getElementById("guideStep1Desc");
+      if (g1D) g1D.textContent = t.guideStep1Desc;
+
+      const g2T = document.getElementById("guideStep2Title");
+      if (g2T) g2T.innerHTML = `<i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> ${t.guideStep2Title}`;
+      const g2D = document.getElementById("guideStep2Desc");
+      if (g2D) g2D.textContent = t.guideStep2Desc;
+
+      const g3T = document.getElementById("guideStep3Title");
+      if (g3T) g3T.innerHTML = `<i class="fa-solid fa-trophy text-xs"></i> ${t.guideStep3Title}`;
+      const g3D = document.getElementById("guideStep3Desc");
+      if (g3D) g3D.textContent = t.guideStep3Desc;
+
+      const guideClose = document.getElementById("guideCloseBtn");
+      if (guideClose) guideClose.textContent = t.guideCloseBtn;
+
+      // 7. Certificate Modal Texts
+      const certRib = document.getElementById("certRibbonText");
+      if (certRib) certRib.textContent = t.certRibbon;
+
+      const certTitle = document.getElementById("certTitleText");
+      if (certTitle) certTitle.textContent = t.certTitle;
+
+      const certSub = document.getElementById("certSubtitleText");
+      if (certSub) certSub.textContent = t.certSubtitle;
+
+      const certNameLbl = document.getElementById("certNameInputLabel");
+      if (certNameLbl) certNameLbl.textContent = t.certNameLabel;
+
+      const certQuote = document.getElementById("certQuoteText");
+      if (certQuote) certQuote.textContent = t.certQuote;
+
+      const certClose = document.getElementById("certCloseBtn");
+      if (certClose) certClose.textContent = t.certCloseBtn;
+
+      const certPrint = document.getElementById("certPrintBtnText");
+      if (certPrint) certPrint.textContent = t.certPrintBtn;
+
+      // 8. Footer Brand & Slogan
+      const footerBrand = document.getElementById("footerBrandText");
+      if (footerBrand) footerBrand.textContent = t.footerBrand;
+
+      const footerSlogan = document.getElementById("footerSloganText");
+      if (footerSlogan) footerSlogan.textContent = t.footerSlogan;
+
+      // 9. Re-render Dynamic State
+      updateAllUI();
+      renderDossier(currentSelectedStationId);
+    }
+
+    function loadSavedProgress() {
+      try {
+        const savedLang = localStorage.getItem('deloitte_journey_lang');
+        if (savedLang === 'zh' || savedLang === 'en') {
+          currentLang = savedLang;
+        }
+
+        const saved = localStorage.getItem('deloitte_journey_progress');
+        if (saved) {
+          const list = JSON.parse(saved);
+          if (Array.isArray(list)) {
+            completedStations = new Set(list.filter(id => STATION_KEYS.includes(id)));
+          }
+        }
+      } catch (e) {}
+      
+      // Auto-focus on the first unfinished station
+      for (const k of STATION_KEYS) {
+        if (!completedStations.has(k)) {
+          currentSelectedStationId = k;
+          break;
+        }
+      }
+
+      applyLanguage();
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem('deloitte_journey_progress', JSON.stringify(Array.from(completedStations)));
+      } catch (e) {}
+    }
+
+    function selectStation(stationId) {
+      if (!STATIONS_MAP[stationId]) return;
+      currentSelectedStationId = stationId;
+      playSound('pin');
+      updateAllUI();
+      renderDossier(stationId);
+    }
+
+    function navigateStation(delta) {
+      const idx = STATION_KEYS.indexOf(currentSelectedStationId);
+      let nextIdx = idx + delta;
+      if (nextIdx < 0) nextIdx = STATION_KEYS.length - 1;
+      if (nextIdx >= STATION_KEYS.length) nextIdx = 0;
+      selectStation(STATION_KEYS[nextIdx]);
+    }
+
+    function toggleCurrentCheck() {
+      const id = currentSelectedStationId;
+      const t = UI_TEXT[currentLang];
+
+      if (completedStations.has(id)) {
+        completedStations.delete(id);
+        playSound('uncheck');
+        showToast(currentLang === 'zh' ? '已取消打卡' : 'Status reset');
+      } else {
+        completedStations.add(id);
+        playSound('check');
+        showToast(t.toastCleared);
+        
+        if (completedStations.size === STATION_KEYS.length) {
+          setTimeout(() => {
+            playSound('fanfare');
+            openCertificateModal();
+          }, 500);
+        }
+      }
+
+      saveProgress();
+      updateAllUI();
+      renderDossier(id);
+    }
+
+    function trackLaunchCurrent() {
+      playSound('pin');
+      const id = currentSelectedStationId;
+      if (!completedStations.has(id)) {
+        setTimeout(() => {
+          completedStations.add(id);
+          saveProgress();
+          updateAllUI();
+          renderDossier(id);
+        }, 800);
+      }
+    }
+
+    function updateAllUI() {
+      const count = completedStations.size;
+      const total = STATION_KEYS.length;
+      const percentage = Math.round((count / total) * 100);
+      const t = UI_TEXT[currentLang];
+
+      // 1. Navigation & Hero progress
+      const navBadge = document.getElementById("navProgressBadge");
+      if (navBadge) navBadge.textContent = `${count} / ${total} ${t.stopsUnit}`;
+
+      const heroPercent = document.getElementById("heroProgressPercent");
+      const heroBar = document.getElementById("heroProgressBar");
+
+      if (heroPercent) heroPercent.textContent = `${percentage}%`;
+      if (heroBar) heroBar.style.width = `${percentage}%`;
+
+      // 2. Rank Title & Icon
+      let currentRank = RANKS[0];
+      for (let i = RANKS.length - 1; i >= 0; i--) {
+        if (count >= RANKS[i].min) {
+          currentRank = RANKS[i];
+          break;
+        }
+      }
+
+      const rankTitle = document.getElementById("heroRankTitle");
+      const rankTag = document.getElementById("heroRankTag");
+      const rankIcon = document.getElementById("heroBadgeIcon");
+
+      if (rankTitle) rankTitle.textContent = currentRank.title[currentLang];
+      if (rankTag) rankTag.textContent = currentRank.tag;
+      if (rankIcon) rankIcon.className = `fa-solid ${currentRank.icon}`;
+
+      // 3. Update Vector Map Nodes Visuals
+      STATION_KEYS.forEach((key) => {
+        const isDone = completedStations.has(key);
+        const isSelected = (key === currentSelectedStationId);
+
+        const outer = document.getElementById(`nodeOuter-${key}`);
+        const ring = document.getElementById(`radarRing-${key}`);
+        const checkBg = document.getElementById(`nodeCheckBg-${key}`);
+        const checkIcon = document.getElementById(`nodeCheckIcon-${key}`);
+
+        if (outer) {
+          if (isDone) {
+            outer.setAttribute("stroke", "#86BC25");
+            outer.setAttribute("stroke-width", isSelected ? "4" : "3");
+            outer.setAttribute("fill", "#0a1d12");
+          } else if (isSelected) {
+            outer.setAttribute("stroke", "#00A3E0");
+            outer.setAttribute("stroke-width", "4");
+            outer.setAttribute("fill", "#111b2b");
+          } else {
+            outer.setAttribute("stroke", "rgba(255,255,255,0.25)");
+            outer.setAttribute("stroke-width", "2");
+            outer.setAttribute("fill", "#111824");
+          }
+        }
+
+        if (ring) {
+          if (isSelected) {
+            ring.classList.remove("hidden");
+          } else {
+            ring.classList.add("hidden");
+          }
+        }
+
+        if (checkBg && checkIcon) {
+          if (isDone) {
+            checkBg.classList.remove("hidden");
+            checkIcon.classList.remove("hidden");
+          } else {
+            checkBg.classList.add("hidden");
+            checkIcon.classList.add("hidden");
+          }
+        }
+      });
+
+      // 4. Update Traveler Avatar Marker coordinates on the map
+      const targetMeta = STATIONS_MAP[currentSelectedStationId];
+      const traveler = document.getElementById("travelerBeaconMarker");
+      const coordsLabel = document.getElementById("mapCoordsLabel");
+
+      if (traveler && targetMeta) {
+        traveler.setAttribute("transform", `translate(${targetMeta.coords.x}, ${targetMeta.coords.y})`);
+      }
+      if (coordsLabel && targetMeta) {
+        coordsLabel.textContent = targetMeta.coords['geo_' + currentLang];
+      }
+
+      // 5. Active Conduit Path Glow Progress
+      const activePath = document.getElementById("activeConduitPath");
+      if (activePath) {
+        activePath.style.opacity = count > 0 ? "1" : "0.35";
+      }
+
+      // 6. Grand Certificate button enablement
+      const certBtn = document.getElementById("claimCertBtn");
+      if (certBtn) {
+        if (count === total) {
+          certBtn.classList.remove("opacity-50", "pointer-events-none");
+          certBtn.classList.add("beacon-glow");
+        } else {
+          certBtn.classList.add("opacity-50", "pointer-events-none");
+          certBtn.classList.remove("beacon-glow");
+        }
+      }
+    }
+
+    function renderDossier(stationId) {
+      const s = STATIONS_MAP[stationId];
+      if (!s) return;
+
+      const isDone = completedStations.has(stationId);
+      const t = UI_TEXT[currentLang];
+
+      document.getElementById("dossierTitle").textContent = s.name[currentLang];
+      document.getElementById("dossierSub").textContent = s.sub[currentLang];
+      document.getElementById("dossierStageTag").textContent = s.stageTag[currentLang];
+      document.getElementById("dossierDesc").textContent = s.desc[currentLang];
+      document.getElementById("dossierObjective").textContent = s.objective[currentLang];
+      document.getElementById("dossierDuration").textContent = s.duration[currentLang];
+      document.getElementById("dossierIndexIndicator").textContent = `${s.index} / 6`;
+
+      // Icon & Box Colors
+      const icon = document.getElementById("dossierIcon");
+      icon.className = `fa-solid ${s.icon}`;
+
+      const launchBtn = document.getElementById("dossierLaunchBtn");
+      launchBtn.href = s.file;
+      document.getElementById("dossierLaunchText").textContent = currentLang === 'zh' 
+        ? `启动 ${s.id.toUpperCase()} 应用` 
+        : `Launch ${s.id.toUpperCase()} App`;
+
+      // Status Tag & Check Button State
+      const statusTag = document.getElementById("dossierStatusTag");
+      const checkBtn = document.getElementById("dossierCheckBtn");
+      const checkText = document.getElementById("dossierCheckText");
+      const checkIcon = document.getElementById("dossierCheckIcon");
+
+      if (isDone) {
+        statusTag.className = "text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/20 border border-deloitte-green text-deloitte-green flex items-center gap-1";
+        statusTag.innerHTML = `<i class="fa-solid fa-check text-[9px]"></i> ${t.clearedStatus}`;
+
+        checkBtn.className = "button-press w-full py-3 px-4 rounded-xl bg-deloitte-green/20 border-2 border-deloitte-green text-deloitte-green font-bold text-xs transition-all flex items-center justify-center gap-2";
+        checkText.textContent = t.clearedBtn;
+        checkIcon.className = "fa-solid fa-circle-check text-xs text-deloitte-green";
+      } else {
+        statusTag.className = "text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 text-gray-400";
+        statusTag.textContent = t.pendingStatus;
+
+        checkBtn.className = "button-press w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-xs transition-all flex items-center justify-center gap-2";
+        checkText.textContent = t.checkInBtn;
+        checkIcon.className = "fa-solid fa-circle-check text-xs text-gray-400";
+      }
+    }
+
+    function resetAllProgress() {
+      completedStations.clear();
+      saveProgress();
+      currentSelectedStationId = 'fastpass';
+      updateAllUI();
+      renderDossier(currentSelectedStationId);
+      playSound('uncheck');
+      showToast(UI_TEXT[currentLang].toastReset);
+    }
+
+    function centerMap() {
+      playSound('pin');
+      const el = document.getElementById("deloitteVectorMapSvg");
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function openGuideModal() {
+      playSound('pin');
+      document.getElementById("guideModal").classList.remove("hidden");
+    }
+
+    function closeGuideModal() {
+      document.getElementById("guideModal").classList.add("hidden");
+    }
+
+    function openCertificateModal() {
+      playSound('pin');
+      document.getElementById("certModal").classList.remove("hidden");
+    }
+
+    function closeCertificateModal() {
+      document.getElementById("certModal").classList.add("hidden");
+    }
+
+    function triggerPrintCertificate() {
+      playSound('pin');
+      window.print();
+    }
+
+    let toastTimer = null;
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      if (!toast) return;
+
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+        toastTimer = null;
+      }
+
+      toast.textContent = message;
+      toast.classList.remove("hidden", "translate-y-16", "opacity-0");
+      toast.className = "fixed bottom-6 right-6 pointer-events-none transform transition-all duration-300 z-50 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2 bg-deloitte-green text-black translate-y-0 opacity-100";
+
+      toastTimer = setTimeout(() => {
+        toast.classList.remove("translate-y-0", "opacity-100");
+        toast.classList.add("translate-y-16", "opacity-0");
+        setTimeout(() => {
+          toast.classList.add("hidden");
+        }, 300);
+      }, 2200);
+    }
+
+    /* Bootstrap Application on Load */
+    window.onload = function() {
+      loadSavedProgress();
+    };
+
+    document.addEventListener("click", () => {
+      if (!audioReady && audioEnabled) {
+        initAudioEngine();
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>
