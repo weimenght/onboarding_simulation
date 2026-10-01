@@ -162,7 +162,7 @@
         </div>
         <div class="flex flex-col">
           <div class="flex items-center">
-            <span class="ml-1.5 font-bold text-xs sm:text-sm text-gray-200">Odyssey Map</span>
+            <span class="ml-1.5 font-bold text-xs sm:text-sm text-gray-200">Onboarding Map</span>
           </div>
           <span id="navBrandSubtitle" class="text-[10px] text-deloitte-green font-bold tracking-wider uppercase font-mono">
             数字全景图谱
@@ -247,6 +247,16 @@
             <div id="heroProgressBar" class="h-full bg-gradient-to-r from-deloitte-teal to-deloitte-green rounded-full transition-all duration-500" style="width: 0%;"></div>
           </div>
         </div>
+        <!-- Grand Finale Claim Badge Button -->
+        <button id="claimCertBtn" onclick="openCertificateModal()" class="opacity-50 pointer-events-none px-4 py-3 rounded-2xl bg-deloitte-green hover:bg-emerald-400 text-black font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20 button-press whitespace-nowrap">
+          <i class="fa-solid fa-award text-sm"></i>
+          <span id="claimCertBtnText">领航证书</span>
+        </button>
+
+        <button onclick="resetAllProgress()" class="px-3 py-3 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 text-gray-400 hover:text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5" title="重置记录">
+          <i class="fa-solid fa-rotate-left"></i>
+          <span id="resetBtnText" class="hidden sm:inline">重置</span>
+        </button>
 
       </div>
     </section>
@@ -962,7 +972,7 @@
         guideStep3Title: "3. 解锁结业勋章",
         guideStep3Desc: "全景地图 6 大航标全部通关后，右上角「领航证书」按钮将被激活，可输入你的姓名生成专属荣誉证书！",
         guideCloseBtn: "进入全景图谱",
-        certRibbon: "DELOITTE ONBOARDING ODYSSEY CERTIFICATE",
+        certRibbon: "ONBOARDING ODYSSEY CERTIFICATE",
         certTitle: "卓越领航者结业证书",
         certSubtitle: "祝贺！你已成功通关全景图谱全部 6 大探索航标。",
         certNameLabel: "输入你的姓名生成专属勋章:",
