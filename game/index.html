@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>D-Pixel Rush</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>D-Rush</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Tone.js for retro 8-bit Chiptune SFX -->
@@ -29,7 +29,8 @@
               cardbg: '#11151c',
               slate: '#1E232A',
               lightgray: '#D9DDE2',
-              gray: '#868D96'
+              gray: '#868D96',
+              gold: '#F59E0B'
             }
           },
           fontFamily: {
@@ -49,16 +50,23 @@
       -webkit-touch-callout: none;
     }
 
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
     body {
       background-color: #070a0f;
       background-image: 
-        radial-gradient(circle at 50% 20%, rgba(134, 188, 37, 0.08) 0%, transparent 55%),
-        radial-gradient(circle at 85% 85%, rgba(0, 79, 89, 0.16) 0%, transparent 60%);
-      min-height: 100vh;
-      overflow-x: hidden;
+        radial-gradient(circle at 50% 15%, rgba(134, 188, 37, 0.09) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(0, 79, 89, 0.18) 0%, transparent 65%);
     }
 
-    /* Crisp retro pixel rendering across all browsers */
+    /* Crisp pixel rendering across all engines */
     canvas {
       image-rendering: -moz-crisp-edges;
       image-rendering: -webkit-crisp-edges;
@@ -72,8 +80,8 @@
         to bottom,
         rgba(255,255,255,0),
         rgba(255,255,255,0) 50%,
-        rgba(0, 0, 0, 0.28) 50%,
-        rgba(0, 0, 0, 0.28)
+        rgba(0, 0, 0, 0.3) 50%,
+        rgba(0, 0, 0, 0.3)
       );
       background-size: 100% 4px;
     }
@@ -81,47 +89,46 @@
     /* Pixel button bevel styles */
     .pixel-box {
       box-shadow: 
-        inset -3px -3px 0px 0px rgba(0,0,0,0.55),
-        inset 3px 3px 0px 0px rgba(255,255,255,0.25),
-        0 6px 0 0 rgba(0,0,0,0.65);
+        inset -2px -2px 0px 0px rgba(0,0,0,0.55),
+        inset 2px 2px 0px 0px rgba(255,255,255,0.22),
+        0 4px 0 0 rgba(0,0,0,0.65);
     }
 
     .pixel-box-green {
       box-shadow: 
-        inset -3px -3px 0px 0px #3f680f,
-        inset 3px 3px 0px 0px #b6f047,
-        0 5px 0 0 #05080b;
+        inset -2px -2px 0px 0px #3f680f,
+        inset 2px 2px 0px 0px #b6f047,
+        0 4px 0 0 #05080b;
     }
 
     .pixel-btn-press:active {
-      transform: translateY(3px);
+      transform: translateY(2px);
       box-shadow: 
-        inset -2px -2px 0px 0px rgba(0,0,0,0.55),
-        inset 2px 2px 0px 0px rgba(255,255,255,0.25),
+        inset -1px -1px 0px 0px rgba(0,0,0,0.55),
+        inset 1px 1px 0px 0px rgba(255,255,255,0.2),
         0 2px 0 0 rgba(0,0,0,0.65);
     }
 
     .deloitte-dot-pixel {
       display: inline-block;
-      width: 0.65em;
-      height: 0.65em;
+      width: 0.6em;
+      height: 0.6em;
       background-color: #86BC25;
       margin-left: 0.12em;
-      box-shadow: 0 0 10px rgba(134, 188, 37, 0.85);
+      box-shadow: 0 0 8px rgba(134, 188, 37, 0.85);
     }
 
     @keyframes pulseGlow {
-      0%, 100% { filter: drop-shadow(0 0 4px rgba(134, 188, 37, 0.4)); }
-      50% { filter: drop-shadow(0 0 14px rgba(134, 188, 37, 0.9)); }
+      0%, 100% { filter: drop-shadow(0 0 3px rgba(134, 188, 37, 0.4)); }
+      50% { filter: drop-shadow(0 0 10px rgba(134, 188, 37, 0.9)); }
     }
     .glow-anim {
       animation: pulseGlow 2s infinite;
     }
 
-    /* Interactive Loader Mini-Dot Bounce Animation */
     @keyframes loaderBounce {
       0%, 100% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.15) translateY(-6px); }
+      50% { transform: scale(1.12) translateY(-4px); }
     }
     .loader-dot-bounce {
       animation: loaderBounce 1.2s infinite ease-in-out;
@@ -129,7 +136,7 @@
 
     @keyframes floatUpFade {
       0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-30px) scale(1.2); }
+      100% { opacity: 0; transform: translateY(-26px) scale(1.15); }
     }
     .float-feedback {
       animation: floatUpFade 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -137,138 +144,145 @@
   </style>
 </head>
 
-<body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+<body class="text-white font-sans flex flex-col justify-between selection:bg-deloitte-green selection:text-black">
 
-  <!-- Top Arcade Header Bar -->
-  <header class="w-full border-b border-white/10 bg-deloitte-midnight/90 backdrop-blur-md sticky top-0 z-40 py-2.5 px-4 sm:px-6">
+  <!-- Top Arcade Header Bar (Compact 100% fit) -->
+  <header class="w-full flex-shrink-0 border-b border-white/10 bg-deloitte-midnight/90 backdrop-blur-md z-40 py-1.5 sm:py-2 px-3 sm:px-6">
     <div class="max-w-5xl mx-auto flex items-center justify-between">
-      <!-- Title Branding -->
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="restartGame()">
-        <div class="w-8 h-8 rounded-lg bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-pixel text-xs font-black shadow-md shadow-deloitte-green/20">
+      <!-- Title & Secret 3-Click Easter Egg on Logo -->
+      <div class="flex items-center space-x-2.5 cursor-pointer" onclick="handleLogoEasterEgg()" title="Click 3x for Executive Easter Egg!">
+        <div id="headerLogoBox" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-pixel text-xs font-black shadow-md shadow-deloitte-green/20 hover:scale-105 active:scale-95 transition-all">
           D.
         </div>
         <div class="flex flex-col">
           <div class="flex items-center">
-            <span class="font-pixel text-xs sm:text-sm text-white tracking-wider">D-PIXEL RUSH</span>
+            <span class="font-pixel text-[11px] sm:text-sm text-white tracking-wider">D-RUSH</span>
             <span class="deloitte-dot-pixel"></span>
           </div>
-          <span class="text-[10px] font-bold text-deloitte-green tracking-widest uppercase">A1 Green Dot Dash</span>
+          <span class="text-[9px] font-bold text-deloitte-green tracking-widest uppercase">unofficial game - just for fun</span>
         </div>
       </div>
 
       <!-- Controls & Audio Toggles -->
-      <div class="flex items-center space-x-2.5">
-        <button id="sfxToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-pixel flex items-center space-x-2 transition-all text-gray-300">
+      <div class="flex items-center space-x-2">
+        <button id="sfxToggleBtn" onclick="toggleAudio()" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-pixel flex items-center space-x-1.5 transition-all text-gray-300">
           <i id="sfxIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
           <span class="hidden sm:inline">SFX</span>
         </button>
-        <button onclick="toggleCRT()" id="crtToggleBtn" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-pixel flex items-center space-x-2 transition-all text-gray-300">
+        <button onclick="toggleCRT()" id="crtToggleBtn" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-pixel flex items-center space-x-1.5 transition-all text-gray-300">
           <i class="fa-solid fa-tv text-cyan-400"></i>
           <span class="hidden sm:inline">CRT</span>
         </button>
-        <button onclick="openHelpModal()" class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-pixel text-deloitte-lightgray hover:text-white transition-all">
+        <button onclick="openHelpModal()" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-pixel text-deloitte-lightgray hover:text-white transition-all">
           <i class="fa-solid fa-circle-question"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <main class="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 max-w-5xl mx-auto w-full">
+  <!-- Main Cabinet Body: Auto-scaled to 1-screen viewport -->
+  <main class="flex-1 min-h-0 w-full max-w-5xl mx-auto flex flex-col items-center justify-between p-1.5 sm:p-2.5 overflow-hidden">
     
     <!-- Outer Arcade Bezel / Cabinet Card -->
-    <div class="w-full bg-[#0e1219] border-2 border-white/10 rounded-2xl sm:rounded-3xl p-2 sm:p-4 shadow-2xl relative flex flex-col items-center">
+    <div class="flex-1 min-h-0 w-full bg-[#0e1219] border border-white/10 sm:border-2 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-2xl relative flex flex-col justify-between items-center overflow-hidden">
       
-      <!-- Top HUD Banner within Canvas Frame -->
-      <div class="w-full flex items-center justify-between px-2 sm:px-4 py-2 mb-2 bg-[#090c12] border border-white/10 rounded-xl font-pixel text-[10px] sm:text-xs">
-        <!-- Score & Combo -->
-        <div class="flex items-center space-x-3 sm:space-x-5">
+      <!-- Top HUD Banner -->
+      <div class="w-full flex-shrink-0 flex items-center justify-between px-2 sm:px-3 py-1 sm:py-1.5 mb-1 sm:mb-1.5 bg-[#090c12] border border-white/10 rounded-lg sm:rounded-xl font-pixel text-[9px] sm:text-xs">
+        <!-- Score & Multiplier -->
+        <div class="flex items-center space-x-3 sm:space-x-4">
           <div class="flex flex-col">
-            <span class="text-gray-400 text-[9px] uppercase tracking-wider">SCORE</span>
+            <span class="text-gray-400 text-[8px] uppercase tracking-wider">SCORE</span>
             <span id="hudScore" class="text-deloitte-green font-bold text-xs sm:text-sm tracking-wider">000000</span>
           </div>
           <div class="flex flex-col">
-            <span class="text-gray-400 text-[9px] uppercase tracking-wider">HIGH</span>
+            <span class="text-gray-400 text-[8px] uppercase tracking-wider">HIGH</span>
             <span id="hudHighScore" class="text-white font-bold text-xs sm:text-sm tracking-wider">000000</span>
           </div>
           <div class="flex flex-col hidden sm:flex">
-            <span class="text-gray-400 text-[9px] uppercase tracking-wider">COMBO</span>
+            <span class="text-gray-400 text-[8px] uppercase tracking-wider">COMBO</span>
             <span id="hudCombo" class="text-amber-400 font-bold text-xs sm:text-sm">x1</span>
           </div>
         </div>
 
-        <!-- Role / Level, Stage & Distance -->
-        <div class="flex items-center space-x-3 sm:space-x-4">
+        <!-- Level, Stage & Distance -->
+        <div class="flex items-center space-x-2.5 sm:space-x-4">
           <div class="flex flex-col text-right">
-            <span class="text-gray-400 text-[9px] uppercase tracking-wider">LEVEL</span>
-            <span id="hudDiff" class="text-deloitte-green font-bold text-[10px] sm:text-xs">NORMAL</span>
+            <span class="text-gray-400 text-[8px] uppercase tracking-wider">LEVEL</span>
+            <span id="hudDiff" class="text-deloitte-green font-bold text-[9px] sm:text-xs">NORMAL</span>
           </div>
           <div class="flex flex-col text-right">
-            <span class="text-gray-400 text-[9px] uppercase tracking-wider">STAGE</span>
-            <span id="hudStage" class="text-cyan-400 font-bold text-[10px] sm:text-xs">WAR ROOM</span>
+            <span class="text-gray-400 text-[8px] uppercase tracking-wider">STAGE</span>
+            <span id="hudStage" class="text-cyan-400 font-bold text-[9px] sm:text-xs">WAR ROOM</span>
           </div>
           <div class="flex flex-col text-right">
-            <span class="text-gray-400 text-[9px] uppercase tracking-wider">METERS</span>
+            <span class="text-gray-400 text-[8px] uppercase tracking-wider">METERS</span>
             <span id="hudMeters" class="text-deloitte-green font-bold text-xs sm:text-sm">0m</span>
           </div>
         </div>
       </div>
 
-      <div class="relative w-full aspect-[16/9] max-h-[70vh] rounded-xl overflow-hidden border border-white/15 bg-black flex items-center justify-center shadow-inner">
-        <!-- The Game Canvas (Internal native 480x270 pixel buffer) -->
+      <!-- Canvas Frame (Maintains 16:9 ratio and auto-scales to viewport) -->
+      <div class="flex-1 min-h-0 w-full relative aspect-[16/9] max-h-full rounded-lg sm:rounded-xl overflow-hidden border border-white/15 bg-black flex items-center justify-center shadow-inner">
+        <!-- The Game Canvas (Internal native 480x270 pixel resolution) -->
         <canvas id="gameCanvas" width="480" height="270" class="w-full h-full object-contain block"></canvas>
 
-        <!-- Retro Scanline Overlay (Toggleable) -->
-        <div id="crtOverlay" class="crt-scanlines pointer-events-none absolute inset-0 z-10 opacity-70"></div>
+        <!-- Retro Scanline Overlay -->
+        <div id="crtOverlay" class="crt-scanlines pointer-events-none absolute inset-0 z-10 opacity-60"></div>
 
-        <!-- INTERACTIVE RETRO DELOITTE BOOT & LOADING SCREEN -->
-        <div id="loaderOverlay" class="absolute inset-0 z-30 bg-[#06080d] flex flex-col items-center justify-between p-4 sm:p-6 text-center select-none font-pixel">
-          <!-- Top Bios Header -->
-          <div class="w-full flex items-center justify-between text-[9px] sm:text-[10px] text-deloitte-gray/80 border-b border-white/10 pb-2">
-            <div class="flex items-center space-x-2">
+        <!-- Live In-Game Floating Banner (Easter Eggs & Powerups) -->
+        <div id="inGameToast" class="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-25 hidden px-3 py-1 rounded-full bg-black/80 border border-deloitte-green/60 text-[9px] sm:text-[10px] font-pixel text-deloitte-green shadow-lg flex items-center space-x-2 animate-bounce">
+          <i id="inGameToastIcon" class="fa-solid fa-sparkles text-amber-300"></i>
+          <span id="inGameToastText">PARTNER SIGN-OFF! +300 PTS</span>
+        </div>
+
+        <!-- Powerup Status Pill inside Canvas -->
+        <div id="powerupStatusBar" class="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 z-20 hidden items-center gap-2 text-[9px] font-pixel text-deloitte-green bg-black/80 border border-deloitte-green/50 py-1 px-3 rounded-full animate-pulse shadow-md">
+          <i id="powerupIcon" class="fa-solid fa-mug-hot text-amber-400"></i>
+          <span id="powerupText">COFFEE TURBO BOOST: 5s</span>
+        </div>
+
+        <!-- RETRO DELOITTE BOOT & LOADING SCREEN -->
+        <div id="loaderOverlay" class="absolute inset-0 z-30 bg-[#06080d] flex flex-col items-center justify-between p-3 sm:p-5 text-center select-none font-pixel">
+          <div class="w-full flex items-center justify-between text-[8px] sm:text-[9px] text-deloitte-gray/80 border-b border-white/10 pb-1.5">
+            <div class="flex items-center space-x-1.5">
               <span class="w-2 h-2 bg-deloitte-green inline-block animate-ping"></span>
-              <span class="text-deloitte-green">A1-OS v18.45</span>
+              <span class="text-deloitte-green">v1.0.0</span>
             </div>
-            <span class="text-gray-400">MEM CHECK: 640KB OK</span>
+            <!--<span class="text-gray-400">NPC & EASTER EGG MATRIX OK</span>-->
           </div>
 
           <!-- Central Interactive Mini Experience -->
-          <div class="flex flex-col items-center justify-center space-y-3 my-auto max-w-sm w-full relative">
-            <div class="text-[10px] sm:text-xs text-deloitte-lightgray tracking-wider flex items-center gap-1.5">
-              <span>INITIALIZING A1 ENGINE</span>
+          <div class="flex flex-col items-center justify-center space-y-2 sm:space-y-3 my-auto max-w-sm w-full relative">
+            <div class="text-[9px] sm:text-[11px] text-deloitte-lightgray tracking-wider flex items-center gap-1.5">
+              <span>INITIALIZING A1 WORKPLACE ENGINE</span>
               <span class="animate-pulse text-deloitte-green">_</span>
             </div>
 
             <!-- Clickable Interactive Green Dot Widget -->
-            <div class="relative py-2">
+            <div class="relative py-1">
               <button id="loaderInteractiveDot" onclick="boostLoaderSpeed()" title="Click to accelerate load speed!" class="relative group outline-none cursor-pointer">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-deloitte-green/20 border-2 border-deloitte-green flex items-center justify-center loader-dot-bounce shadow-lg shadow-deloitte-green/40 group-hover:scale-110 group-active:scale-95 transition-transform">
-                  <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-deloitte-green shadow-inner"></div>
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-deloitte-green/20 border-2 border-deloitte-green flex items-center justify-center loader-dot-bounce shadow-lg shadow-deloitte-green/40 group-hover:scale-110 group-active:scale-95 transition-transform">
+                  <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-deloitte-green shadow-inner"></div>
                 </div>
-                <!-- Mini click indicator badge -->
-                <div class="absolute -bottom-2 -right-2 bg-[#0c1824] border border-deloitte-green/60 text-deloitte-green px-1.5 py-0.5 rounded text-[8px] font-pixel shadow">
+                <div class="absolute -bottom-1 -right-2 bg-[#0c1824] border border-deloitte-green/60 text-deloitte-green px-1 py-0.2 rounded text-[7px] font-pixel shadow">
                   TAP ME!
                 </div>
               </button>
-              <!-- Container for floating synergy points on click -->
               <div id="loaderFloatContainer" class="pointer-events-none absolute inset-0 overflow-visible"></div>
             </div>
 
-            <p class="text-[9px] font-sans text-gray-400">
-              💡 <span class="text-deloitte-green font-semibold">Pro-Tip:</span> Click the Green Dot to supercharge load speed!
-            </p>
-
             <!-- Dynamic Witty Consulting Console Log Line -->
-            <div class="bg-black/60 border border-white/10 rounded-lg px-3 py-1.5 w-full text-left min-h-[32px] flex items-center">
-              <span class="text-deloitte-green mr-1.5">&gt;</span>
-              <span id="loaderStatusText" class="text-[9px] sm:text-[10px] text-cyan-300 truncate">Synthesizing core deliverables...</span>
+            <div class="bg-black/60 border border-white/10 rounded-lg px-2.5 py-1 w-full text-left min-h-[28px] flex items-center">
+              <span class="text-deloitte-green mr-1.5 text-[9px]">&gt;</span>
+              <span id="loaderStatusText" class="text-[8px] sm:text-[9px] text-cyan-300 truncate">Synthesizing core deliverables...</span>
             </div>
 
-            <!-- Pixel Segmented Progress Bar -->
-            <div class="w-full space-y-1 pt-1">
-              <div class="w-full bg-white/10 h-3 sm:h-3.5 rounded p-0.5 border border-white/20">
+            <!-- Segmented Progress Bar -->
+            <div class="w-full space-y-1 pt-0.5">
+              <div class="w-full bg-white/10 h-2.5 sm:h-3 rounded p-0.5 border border-white/20">
                 <div id="loaderProgressBar" class="bg-gradient-to-r from-deloitte-darkgreen via-deloitte-green to-emerald-300 h-full rounded transition-all duration-150" style="width: 12%;"></div>
               </div>
-              <div class="flex justify-between items-center text-[9px] text-gray-400">
+              <div class="flex justify-between items-center text-[8px] text-gray-400">
                 <span id="loaderPercentText" class="text-deloitte-green font-bold">12%</span>
                 <span id="loaderClicksStat" class="text-gray-400">EFFICIENCY BOOST: 0</span>
               </div>
@@ -276,93 +290,88 @@
           </div>
 
           <!-- Bottom Actions / Skip -->
-          <div class="w-full flex items-center justify-between pt-2 border-t border-white/10 text-[9px]">
-            <span class="text-deloitte-gray/70 hidden sm:inline">Press any key or space to speed up</span>
-            <button onclick="finishLoader()" class="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-colors flex items-center gap-1.5 ml-auto">
+          <div class="w-full flex items-center justify-between pt-1.5 border-t border-white/10 text-[8px]">
+            <span class="text-deloitte-gray/70 hidden sm:inline">Tap Dot / Space to speed up</span>
+            <button onclick="finishLoader()" class="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition-colors flex items-center gap-1.5 ml-auto">
               <span>FAST-BOOT [SKIP]</span>
               <i class="fa-solid fa-forward-step text-[8px]"></i>
             </button>
           </div>
         </div>
 
-        <!-- START SCREEN OVERLAY (Appears after loader finishes) -->
-        <div id="startOverlay" class="hidden absolute inset-0 z-20 bg-deloitte-midnight/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-4">
-          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green text-[10px] sm:text-xs font-pixel mb-1">
-            <i class="fa-solid fa-sparkles"></i>
-            <span>RETRO DELOITTE ARCADE</span>
+        <!-- START SCREEN OVERLAY -->
+        <div id="startOverlay" class="hidden absolute inset-0 z-20 bg-deloitte-midnight/92 backdrop-blur-sm flex flex-col items-center justify-center p-3 sm:p-5 text-center space-y-2 sm:space-y-3">
+          <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green text-[9px] font-pixel">
+            <i class="fa-solid fa-briefcase text-[8px]"></i>
+            <span>WORKPLACE ARCADE</span>
           </div>
 
-          <h1 class="font-pixel text-lg sm:text-3xl md:text-4xl text-white tracking-wide glow-anim leading-relaxed">
-            D-PIXEL RUSH<span class="deloitte-dot-pixel"></span>
+          <h1 class="font-pixel text-base sm:text-2xl md:text-3xl text-white tracking-wide glow-anim">
+            D-RUSH<span class="deloitte-dot-pixel"></span>
           </h1>
 
-          <p class="font-sans text-xs sm:text-sm text-deloitte-lightgray max-w-md">
-            Guide our pixel A1! Dash across the skyscraper rooftops, gather Green Dots & Coffee, and leap over Scope Creep & Tight Deadlines!
+          <p class="font-sans text-[11px] sm:text-xs text-deloitte-lightgray max-w-sm leading-tight">
+            Dash through the office skyline, align with <span class="text-amber-300 font-bold">Partners & Clients</span>, and dodge Scope Creep!
           </p>
 
-          <!-- Difficulty Level Selection (Easy, Normal, Hard) -->
-          <div class="w-full max-w-sm flex flex-col items-center space-y-1.5 pt-1">
-            <span class="text-[9px] font-pixel text-deloitte-green tracking-wider flex items-center gap-1.5">
-              <i class="fa-solid fa-gauge-high"></i> SELECT SPEED LEVEL:
-            </span>
-            <div class="grid grid-cols-3 gap-2 w-full">
-              <!-- Easy Level -->
-              <button type="button" id="diffBtn-easy" onclick="selectDifficulty('easy')" class="pixel-btn-press pixel-box py-2 px-1 rounded-lg border font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-white/5 border-white/15 text-gray-400 hover:text-white">
+          <!-- Speed Selection -->
+          <div class="w-full max-w-xs flex flex-col items-center space-y-1">
+            <span class="text-[8px] font-pixel text-deloitte-green tracking-wider">SELECT LEVEL:</span>
+            <div class="grid grid-cols-3 gap-1.5 w-full">
+              <button type="button" id="diffBtn-easy" onclick="selectDifficulty('easy')" class="pixel-btn-press pixel-box py-1.5 px-1 rounded-lg border font-pixel text-[8px] sm:text-[9px] transition-all flex flex-col items-center justify-center bg-white/5 border-white/15 text-gray-400 hover:text-white">
                 <span class="font-bold text-sky-400">EASY</span>
-                <span class="text-[8px] opacity-75 font-sans">2.6x Speed</span>
+                <!--<span class="text-[7px] opacity-75 font-sans">2.6x Speed</span>-->
               </button>
-              <!-- Normal Level (Default) -->
-              <button type="button" id="diffBtn-normal" onclick="selectDifficulty('normal')" class="pixel-btn-press pixel-box-green py-2 px-1 rounded-lg border-2 border-deloitte-green font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-deloitte-green/20 text-white shadow-md shadow-deloitte-green/30">
+              <button type="button" id="diffBtn-normal" onclick="selectDifficulty('normal')" class="pixel-btn-press pixel-box-green py-1.5 px-1 rounded-lg border-2 border-deloitte-green font-pixel text-[8px] sm:text-[9px] transition-all flex flex-col items-center justify-center bg-deloitte-green/20 text-white shadow-md shadow-deloitte-green/30">
                 <span class="font-bold text-deloitte-green">NORMAL</span>
-                <span class="text-[8px] opacity-75 font-sans">3.6x Speed</span>
+                <!--<span class="text-[7px] opacity-75 font-sans">3.6x Speed</span>-->
               </button>
-              <!-- Hard Level -->
-              <button type="button" id="diffBtn-hard" onclick="selectDifficulty('hard')" class="pixel-btn-press pixel-box py-2 px-1 rounded-lg border font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-white/5 border-white/15 text-gray-400 hover:text-white">
+              <button type="button" id="diffBtn-hard" onclick="selectDifficulty('hard')" class="pixel-btn-press pixel-box py-1.5 px-1 rounded-lg border font-pixel text-[8px] sm:text-[9px] transition-all flex flex-col items-center justify-center bg-white/5 border-white/15 text-gray-400 hover:text-white">
                 <span class="font-bold text-rose-400">HARD</span>
-                <span class="text-[8px] opacity-75 font-sans">4.8x Speed</span>
+                <!--<span class="text-[7px] opacity-75 font-sans">4.8x Speed</span>-->
               </button>
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <button onclick="startGame()" class="pixel-btn-press pixel-box-green px-6 py-3 rounded-lg bg-deloitte-green text-black font-pixel text-xs sm:text-sm font-black transition-all hover:bg-emerald-400 cursor-pointer flex items-center space-x-2">
-              <i class="fa-solid fa-play text-xs"></i>
-              <span>START ODYSSEY</span>
+          <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+            <button onclick="startGame()" class="pixel-btn-press pixel-box-green px-5 py-2 sm:py-2.5 rounded-lg bg-deloitte-green text-black font-pixel text-[10px] sm:text-xs font-black transition-all hover:bg-emerald-400 cursor-pointer flex items-center space-x-1.5">
+              <i class="fa-solid fa-play text-[9px]"></i>
+              <span>START</span>
             </button>
-            <button onclick="openHelpModal()" class="pixel-btn-press pixel-box px-4 py-3 rounded-lg bg-white/10 text-white font-pixel text-xs transition-all hover:bg-white/20 cursor-pointer">
+            <button onclick="openHelpModal()" class="pixel-btn-press pixel-box px-3.5 py-2 sm:py-2.5 rounded-lg bg-white/10 text-white font-pixel text-[10px] sm:text-xs transition-all hover:bg-white/20 cursor-pointer">
               <span>HOW TO PLAY</span>
             </button>
           </div>
 
-          <div class="text-[10px] font-pixel text-gray-500 pt-2 flex items-center space-x-3">
-            <span>[1/2/3] LEVEL</span>
-            <span>•</span>
+          <div class="text-[8px] font-pixel text-gray-500 pt-1 flex items-center space-x-2">
             <span>[SPACE] JUMP</span>
             <span>•</span>
             <span>[▼] SLIDE</span>
+            <span>•</span>
+            <span>[P] PAUSE</span>
           </div>
         </div>
 
         <!-- PAUSE OVERLAY -->
-        <div id="pauseOverlay" class="hidden absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center space-y-4 font-pixel">
-          <div class="text-2xl sm:text-3xl text-deloitte-green tracking-widest">PAUSED</div>
-          <p class="text-xs text-gray-300 font-sans">Strategic alignment in progress...</p>
-          <button onclick="togglePause()" class="pixel-btn-press pixel-box-green px-5 py-2.5 bg-deloitte-green text-black text-xs font-bold rounded-md">
+        <div id="pauseOverlay" class="hidden absolute inset-0 z-20 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-3 font-pixel">
+          <div class="text-xl sm:text-2xl text-deloitte-green tracking-widest">PAUSED</div>
+          <p class="text-[10px] sm:text-xs text-gray-300 font-sans">Strategic alignment in progress...</p>
+          <button onclick="togglePause()" class="pixel-btn-press pixel-box-green px-4 py-2 bg-deloitte-green text-black text-[10px] font-bold rounded-md">
             RESUME [P]
           </button>
         </div>
 
         <!-- GAME OVER OVERLAY -->
-        <div id="gameOverOverlay" class="hidden absolute inset-0 z-20 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-4 font-pixel">
-          <div class="w-12 h-12 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-400 text-xl mx-auto mb-1">
-            <i class="fa-solid fa-skull"></i>
+        <div id="gameOverOverlay" class="hidden absolute inset-0 z-20 bg-black/92 backdrop-blur-md flex flex-col items-center justify-center p-3 sm:p-5 text-center space-y-2 sm:space-y-3 font-pixel">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-400 text-sm sm:text-base mx-auto">
+            <i class="fa-solid fa-briefcase"></i>
           </div>
 
-          <div class="text-xl sm:text-2xl text-rose-400 tracking-wider">PROJECT DELAYED!</div>
-          <p id="gameOverReason" class="font-sans text-xs text-gray-300 max-w-sm">Hit by Scope Creep during sprint deliverables.</p>
+          <div class="text-base sm:text-xl text-rose-400 tracking-wider">PROJECT DELAYED!</div>
+          <p id="gameOverReason" class="font-sans text-[10px] text-gray-300 max-w-xs">Encountered legacy Scope Creep.</p>
 
           <!-- Score Card -->
-          <div class="bg-white/5 border border-white/15 rounded-xl p-4 w-full max-w-xs space-y-2 text-xs">
+          <div class="bg-white/5 border border-white/15 rounded-xl p-2.5 w-full max-w-xs space-y-1.5 text-[9px] sm:text-[10px]">
             <div class="flex justify-between items-center text-gray-400">
               <span>LEVEL:</span>
               <span id="finalDifficulty" class="text-deloitte-green font-bold uppercase">NORMAL</span>
@@ -375,14 +384,14 @@
               <span>GREEN DOTS:</span>
               <span id="finalDots" class="text-deloitte-green font-bold">0</span>
             </div>
-            <div class="flex justify-between items-center border-t border-white/10 pt-2 text-deloitte-green font-bold">
+            <div class="flex justify-between items-center border-t border-white/10 pt-1 text-deloitte-green font-bold">
               <span>FINAL SCORE:</span>
-              <span id="finalScore" class="text-sm">000000</span>
+              <span id="finalScore" class="text-xs sm:text-sm">000000</span>
             </div>
           </div>
 
-          <div class="flex gap-3 pt-2">
-            <button onclick="restartGame()" class="pixel-btn-press pixel-box-green px-6 py-3 rounded-lg bg-deloitte-green text-black text-xs font-bold flex items-center space-x-2">
+          <div class="flex gap-2 pt-1">
+            <button onclick="restartGame()" class="pixel-btn-press pixel-box-green px-5 py-2.5 rounded-lg bg-deloitte-green text-black text-[10px] font-bold flex items-center space-x-1.5">
               <i class="fa-solid fa-rotate-right"></i>
               <span>RETRY ROUND</span>
             </button>
@@ -390,88 +399,81 @@
         </div>
       </div>
 
-      <div class="w-full mt-3 flex items-center justify-between gap-3 select-none">
-        <!-- Touch SLIDE button -->
-        <button id="btnTouchSlide" class="flex-1 pixel-btn-press pixel-box bg-deloitte-slate/80 hover:bg-deloitte-slate active:bg-deloitte-teal border border-white/15 py-3 rounded-xl flex items-center justify-center space-x-2 font-pixel text-xs text-cyan-300 transition-all">
-          <i class="fa-solid fa-arrow-down"></i>
+      <!-- Touch Buttons (Optimized for 1-screen responsive height) -->
+      <div class="w-full flex-shrink-0 mt-1.5 sm:mt-2 flex items-center justify-between gap-2 select-none">
+        <button id="btnTouchSlide" class="flex-1 pixel-btn-press pixel-box bg-deloitte-slate/90 hover:bg-deloitte-slate active:bg-deloitte-teal border border-white/15 py-2.5 sm:py-3 rounded-xl flex items-center justify-center space-x-1.5 font-pixel text-[10px] sm:text-xs text-cyan-300 transition-all">
+          <i class="fa-solid fa-arrow-down text-[9px]"></i>
           <span>SLIDE [▼]</span>
         </button>
 
-        <!-- Quick Pause Button -->
-        <button onclick="togglePause()" class="w-12 pixel-btn-press pixel-box bg-white/5 hover:bg-white/10 border border-white/15 py-3 rounded-xl flex items-center justify-center font-pixel text-xs text-gray-300">
+        <button onclick="togglePause()" class="w-10 sm:w-12 pixel-btn-press pixel-box bg-white/5 hover:bg-white/10 border border-white/15 py-2.5 sm:py-3 rounded-xl flex items-center justify-center font-pixel text-xs text-gray-300">
           <i id="pauseBtnIcon" class="fa-solid fa-pause"></i>
         </button>
 
-        <!-- Touch JUMP button -->
-        <button id="btnTouchJump" class="flex-1 pixel-btn-press pixel-box-green bg-deloitte-green/90 hover:bg-deloitte-green active:bg-emerald-400 border border-deloitte-green py-3 rounded-xl flex items-center justify-center space-x-2 font-pixel text-xs text-black font-black transition-all shadow-lg shadow-deloitte-green/20">
-          <i class="fa-solid fa-arrow-up"></i>
+        <button id="btnTouchJump" class="flex-1 pixel-btn-press pixel-box-green bg-deloitte-green/90 hover:bg-deloitte-green active:bg-emerald-400 border border-deloitte-green py-2.5 sm:py-3 rounded-xl flex items-center justify-center space-x-1.5 font-pixel text-[10px] sm:text-xs text-black font-black transition-all shadow-md shadow-deloitte-green/20">
+          <i class="fa-solid fa-arrow-up text-[9px]"></i>
           <span>JUMP [▲ / SPACE]</span>
         </button>
       </div>
 
     </div>
-
-    <!-- Power-Up Active Status Badge Bar -->
-    <div id="powerupStatusBar" class="hidden w-full max-w-md mt-2 flex items-center justify-center gap-3 text-[10px] font-pixel text-deloitte-green bg-black/60 border border-deloitte-green/30 py-1.5 px-4 rounded-full animate-pulse">
-      <i id="powerupIcon" class="fa-solid fa-bolt"></i>
-      <span id="powerupText">COFFEE TURBO BOOST: 5s</span>
-    </div>
   </main>
 
-  <div id="helpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 font-sans">
-    <div class="bg-deloitte-cardbg border border-white/20 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5 animate-pop-in">
-      <div class="flex items-center justify-between border-b border-white/10 pb-3 font-pixel">
-        <h3 class="text-sm sm:text-base text-deloitte-green flex items-center gap-2">
+  <!-- Help & Briefing Modal -->
+  <div id="helpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3 font-sans">
+    <div class="bg-deloitte-cardbg border border-white/20 rounded-2xl p-4 sm:p-6 max-w-md w-full shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-white/10 pb-2.5 font-pixel">
+        <h3 class="text-xs sm:text-sm text-deloitte-green flex items-center gap-2">
           <i class="fa-solid fa-gamepad"></i> MISSION BRIEFING
         </h3>
-        <button onclick="closeHelpModal()" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-400 hover:text-white">
+        <button onclick="closeHelpModal()" class="w-6 h-6 rounded-lg bg-white/5 hover:bg-white/15 flex items-center justify-center text-gray-400 hover:text-white">
           <i class="fa-solid fa-xmark text-xs"></i>
         </button>
       </div>
 
-      <!-- Controls Guide -->
-      <div class="space-y-3 text-xs text-gray-300">
-        <p class="font-bold text-white text-sm">Keyboard & Touch Controls:</p>
+      <!-- Controls & NPC Briefing -->
+      <div class="space-y-2.5 text-xs text-gray-300">
+        <p class="font-bold text-white text-xs">Workplace NPCs (Allies):</p>
         <div class="grid grid-cols-2 gap-2">
-          <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 font-pixel text-[10px]">
-            <span class="text-deloitte-green block mb-1">▲ JUMP / HOP</span>
-            <span class="text-gray-400 font-sans">Press [SPACE], [W], [▲] or Tap Right Screen</span>
+          <div class="p-2 rounded-lg bg-white/5 border border-amber-500/30">
+            <span class="text-amber-400 font-bold block mb-0.5 font-pixel text-[9px]">🤝 PARTNER NPC</span>
+            <span class="text-[11px] text-gray-300">Dash past for sign-off approval & <strong>+300 pts</strong>!</span>
           </div>
-          <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 font-pixel text-[10px]">
-            <span class="text-cyan-300 block mb-1">▼ DUCK / SLIDE</span>
-            <span class="text-gray-400 font-sans">Press [S], [▼] or Tap Left Screen</span>
+          <div class="p-2 rounded-lg bg-white/5 border border-cyan-500/30">
+            <span class="text-cyan-300 font-bold block mb-0.5 font-pixel text-[9px]">💼 CLIENT NPC</span>
+            <span class="text-[11px] text-gray-300">Seal high-value SOW deals for <strong>+500 pts</strong>!</span>
           </div>
         </div>
 
-        <!-- Collectibles & Hazards -->
-        <p class="font-bold text-white text-sm pt-2">Collectibles & Deliverables:</p>
-        <ul class="space-y-2 text-xs">
-          <li class="flex items-center gap-2">
-            <span class="w-4 h-4 rounded-full bg-deloitte-green inline-block shadow-sm shadow-deloitte-green"></span>
-            <span><strong class="text-deloitte-green">Green Dot (+100 pts):</strong> Collect to charge your insight multiplier.</span>
+<!--
+        <p class="font-bold text-white text-xs pt-1">Workplace Easter Eggs:</p>
+        <ul class="space-y-1.5 text-[11px] text-gray-300">
+          <li class="flex items-start gap-1.5">
+            <span class="text-deloitte-green font-bold">🥚 Logo 3-Tap:</span> Click the top "D." logo 3x to enter the Executive Penthouse suite (+1,845 pts & Turbo Coffee)!
           </li>
-          <li class="flex items-center gap-2">
-            <i class="fa-solid fa-mug-hot text-amber-400 text-sm w-4 text-center"></i>
-            <span><strong class="text-amber-300">Espresso Boost:</strong> 5s Invincibility & Turbo Speed through obstacles!</span>
-          </li>
-          <li class="flex items-center gap-2">
-            <i class="fa-solid fa-microchip text-cyan-400 text-sm w-4 text-center"></i>
-            <span><strong class="text-cyan-300">AI Copilot:</strong> Double points multiplier bonus!</span>
-          </li>
-          <li class="flex items-center gap-2">
-            <i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm w-4 text-center"></i>
-            <span><strong class="text-rose-400">Scope Creep & Red Tape:</strong> Avoid colliding by jumping over or sliding underneath!</span>
+          <li class="flex items-start gap-1.5">
+            <span class="text-deloitte-green font-bold">🥚 Code 1845:</span> Type "1845" during gameplay to transfigure obstacles into Green Dots!
           </li>
         </ul>
+-->
+
+        <p class="font-bold text-white text-xs pt-1">Controls:</p>
+        <div class="text-[11px] text-gray-300 grid grid-cols-2 gap-1.5">
+          <div><strong class="text-deloitte-green">Jump:</strong> [SPACE], [W], [▲] or Tap Canvas Upper Area</div>
+          <div><strong class="text-cyan-300">Slide:</strong> [S], [▼] or Tap Canvas Lower Area</div>
+        </div>
       </div>
 
-      <button onclick="closeHelpModal()" class="w-full py-3 rounded-xl bg-deloitte-green text-black font-pixel text-xs font-bold hover:bg-emerald-400 transition-all">
+      <button onclick="closeHelpModal()" class="w-full py-2.5 rounded-xl bg-deloitte-green text-black font-pixel text-xs font-bold hover:bg-emerald-400 transition-all">
         READY TO DELIVER
       </button>
     </div>
   </div>
 
   <script>
+    /* ==========================================================
+       AUDIO & CHIPTUNE SYNTH ENGINE (Tone.js)
+       ========================================================== */
     let audioEnabled = true;
     let audioReady = false;
 
@@ -507,7 +509,7 @@
         }).toDestination();
         dotSynth.volume.value = -6;
 
-        // Power-Up Fanfare
+        // Power-Up / NPC Fanfare
         powerupSynth = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "square" },
           envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.3 }
@@ -523,7 +525,7 @@
 
         audioReady = true;
       } catch (e) {
-        console.warn("Audio init gesture waiting:", e);
+        console.warn("Audio init waiting for user gesture:", e);
       }
     }
 
@@ -552,6 +554,10 @@
           dotSynth.triggerAttackRelease(["E5", "G#5"], "32n", now);
         } else if (type === 'powerup' && powerupSynth) {
           powerupSynth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "16n", now);
+        } else if (type === 'npc' && powerupSynth) {
+          powerupSynth.triggerAttackRelease(["D5", "F#5", "A5", "D6"], "16n", now);
+        } else if (type === 'easteregg' && powerupSynth) {
+          powerupSynth.triggerAttackRelease(["G4", "C5", "E5", "G5", "C6"], "16n", now);
         } else if (type === 'hit' && hitSynth) {
           hitSynth.triggerAttackRelease("C3", "16n", now);
           hitSynth.triggerAttackRelease("F#2", "8n", now + 0.08);
@@ -560,13 +566,13 @@
     }
 
     /* ==========================================================
-       STREAMING_CHUNK:Configuring Canvas and Global Game State
+       CANVAS & GAME ENGINE INITIALIZATION
        ========================================================== */
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
 
-    // Fixed Internal Virtual Pixel Resolution
+    // Fixed Virtual Native Pixel Resolution (480 x 270)
     const V_WIDTH = 480;
     const V_HEIGHT = 270;
     const FLOOR_Y = 222;
@@ -578,51 +584,38 @@
 
     const LOADER_MESSAGES = [
       "Establishing Core Principles (1845)...",
+      "Summoning Senior Partners & Key Clients...",
       "Brewing War Room Double Espresso...",
       "Calibrating Green Dot Matrix...",
-      "Synthesizing Synergies & Alignment...",
       "Deprecating Scope Creep Hazards...",
-      "Defending Against Urgent Email Drones...",
-      "Polishing Briefcase Leather...",
-      "Synchronizing AI Copilot Chipsets...",
+      "Polishing Executive Briefcases...",
+      "Configuring High-Impact Deliverables...",
       "Ready to Make an Impact that Matters!"
     ];
 
     function boostLoaderSpeed() {
       initAudio();
       loaderBoostClicks++;
-      loaderProgress = Math.min(100, loaderProgress + 14);
-
-      // Play soft blip if audio ready
+      loaderProgress = Math.min(100, loaderProgress + 15);
       if (audioReady && dotSynth) {
-        try {
-          dotSynth.triggerAttackRelease(["C6"], "32n", Tone.now());
-        } catch(e) {}
+        try { dotSynth.triggerAttackRelease(["C6"], "32n", Tone.now()); } catch(e) {}
       }
-
-      // Spawn floating feedback text over the interactive dot
       spawnLoaderFloatingText();
       updateLoaderUI();
-
-      if (loaderProgress >= 100) {
-        setTimeout(finishLoader, 250);
-      }
+      if (loaderProgress >= 100) setTimeout(finishLoader, 200);
     }
 
     function spawnLoaderFloatingText() {
       const container = document.getElementById("loaderFloatContainer");
       if (!container) return;
-
-      const perks = ["+100 IMPACT", "EFFICIENCY UP!", "+50 SPEED", "COFFEE SHOT!", "SYNERGY +1"];
+      const perks = ["+100 IMPACT", "EFFICIENCY UP!", "+50 SPEED", "PARTNER ALIGNED!", "SYNERGY +1"];
       const chosen = perks[Math.floor(Math.random() * perks.length)];
-
       const el = document.createElement("div");
-      el.className = "absolute font-pixel text-[9px] text-deloitte-green font-bold float-feedback pointer-events-none whitespace-nowrap";
+      el.className = "absolute font-pixel text-[8px] text-deloitte-green font-bold float-feedback pointer-events-none whitespace-nowrap";
       el.style.left = `${10 + Math.random() * 40}%`;
       el.style.top = `${Math.random() * 20}%`;
       el.textContent = chosen;
       container.appendChild(el);
-
       setTimeout(() => el.remove(), 750);
     }
 
@@ -636,21 +629,18 @@
       if (pct) pct.textContent = `${Math.floor(loaderProgress)}%`;
       if (clicksEl) clicksEl.textContent = `EFFICIENCY BOOST: +${loaderBoostClicks * 25}`;
 
-      const msgIndex = Math.min(
-        LOADER_MESSAGES.length - 1,
-        Math.floor((loaderProgress / 100) * LOADER_MESSAGES.length)
-      );
+      const msgIndex = Math.min(LOADER_MESSAGES.length - 1, Math.floor((loaderProgress / 100) * LOADER_MESSAGES.length));
       if (status) status.textContent = LOADER_MESSAGES[msgIndex];
     }
 
     function startLoaderSequence() {
       loaderInterval = setInterval(() => {
         if (loaderProgress < 100) {
-          loaderProgress += 1.8;
+          loaderProgress += 2.0;
           updateLoaderUI();
         } else {
           clearInterval(loaderInterval);
-          setTimeout(finishLoader, 300);
+          setTimeout(finishLoader, 250);
         }
       }, 70);
     }
@@ -666,45 +656,12 @@
       if (start) start.classList.remove("hidden");
     }
 
-    // Difficulty Settings: Easy (2.6x), Normal (3.6x), Hard (4.8x)
+    // Difficulty Settings
     let currentDifficulty = 'normal';
     const DIFFICULTY_SETTINGS = {
-      easy: {
-        id: 'easy',
-        label: 'EASY',
-        badge: 'ANALYST',
-        speed: 2.6,
-        ramp: 0.0018,
-        maxBonus: 2.2,
-        obsMin: 72,
-        obsVar: 50,
-        scoreMult: 1,
-        color: '#38BDF8' // Sky Blue
-      },
-      normal: {
-        id: 'normal',
-        label: 'NORMAL',
-        badge: 'CONSULTANT',
-        speed: 3.6,
-        ramp: 0.003,
-        maxBonus: 3.8,
-        obsMin: 60,
-        obsVar: 48,
-        scoreMult: 1,
-        color: '#86BC25' // Deloitte Green
-      },
-      hard: {
-        id: 'hard',
-        label: 'HARD',
-        badge: 'PARTNER',
-        speed: 4.8,
-        ramp: 0.0042,
-        maxBonus: 4.6,
-        obsMin: 48,
-        obsVar: 38,
-        scoreMult: 1.5,
-        color: '#F43F5E' // Rose / Crimson
-      }
+      easy: { id: 'easy', label: 'EASY', speed: 2.6, ramp: 0.0018, maxBonus: 2.2, obsMin: 74, obsVar: 50, color: '#38BDF8' },
+      normal: { id: 'normal', label: 'NORMAL', speed: 3.6, ramp: 0.003, maxBonus: 3.8, obsMin: 60, obsVar: 46, color: '#86BC25' },
+      hard: { id: 'hard', label: 'HARD', speed: 4.8, ramp: 0.0042, maxBonus: 4.6, obsMin: 48, obsVar: 36, color: '#F43F5E' }
     };
 
     function selectDifficulty(level) {
@@ -716,9 +673,9 @@
         const btn = document.getElementById(`diffBtn-${lvl}`);
         if (!btn) return;
         if (lvl === level) {
-          btn.className = "pixel-btn-press pixel-box-green py-2 px-1 rounded-lg border-2 border-deloitte-green font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-deloitte-green/20 text-white shadow-md shadow-deloitte-green/30";
+          btn.className = "pixel-btn-press pixel-box-green py-1.5 px-1 rounded-lg border-2 border-deloitte-green font-pixel text-[8px] sm:text-[9px] transition-all flex flex-col items-center justify-center bg-deloitte-green/20 text-white shadow-md shadow-deloitte-green/30";
         } else {
-          btn.className = "pixel-btn-press pixel-box py-2 px-1 rounded-lg border font-pixel text-[9px] sm:text-[10px] transition-all flex flex-col items-center justify-center gap-0.5 bg-white/5 border-white/15 text-gray-400 hover:text-white";
+          btn.className = "pixel-btn-press pixel-box py-1.5 px-1 rounded-lg border font-pixel text-[8px] sm:text-[9px] transition-all flex flex-col items-center justify-center bg-white/5 border-white/15 text-gray-400 hover:text-white";
         }
       });
 
@@ -743,11 +700,83 @@
     let coffeeTimer = 0;
     let aiMultiplierTimer = 0;
 
-    // High score HUD init
     document.getElementById("hudHighScore").textContent = highScore.toString().padStart(6, '0');
 
     /* ==========================================================
-       STREAMING_CHUNK:Defining Pixel Consultant Player Character
+       WORKPLACE EASTER EGGS SYSTEM
+       ========================================================== */
+    let logoClickCount = 0;
+    let logoClickResetTimer = null;
+    let typedKeysHistory = "";
+
+    function handleLogoEasterEgg() {
+      initAudio();
+      logoClickCount++;
+      clearTimeout(logoClickResetTimer);
+      logoClickResetTimer = setTimeout(() => { logoClickCount = 0; }, 2500);
+
+      const logo = document.getElementById("headerLogoBox");
+      if (logo) {
+        logo.classList.add("scale-125", "border-amber-400", "text-amber-400");
+        setTimeout(() => logo.classList.remove("scale-125", "border-amber-400", "text-amber-400"), 200);
+      }
+
+      if (logoClickCount === 3) {
+        logoClickCount = 0;
+        triggerWorkplaceEasterEgg('PARTNER_PENTHOUSE');
+      }
+    }
+
+    // Secret Key Listener for "1845"
+    window.addEventListener("keydown", (e) => {
+      typedKeysHistory += e.key;
+      if (typedKeysHistory.length > 10) typedKeysHistory = typedKeysHistory.slice(-10);
+      if (typedKeysHistory.endsWith("1845")) {
+        triggerWorkplaceEasterEgg('FOUNDING_1845');
+        typedKeysHistory = "";
+      }
+    });
+
+    function triggerWorkplaceEasterEgg(type) {
+      playSfx('easteregg');
+      if (type === 'PARTNER_PENTHOUSE') {
+        score += 1845;
+        coffeeTimer = 480; // 8s invincibility turbo boost
+        showToastNotification("🎉 EASTER EGG: PARTNER SUITE! +1845 PTS & TURBO!", "fa-crown", "text-amber-400");
+        showPowerupStatus("EXECUTIVE ESPRESSO BOOST: 8s", "fa-mug-hot", "text-amber-400");
+        createExplosion(player.x + 10, player.y + 10, "#F59E0B", 24);
+      } else if (type === 'FOUNDING_1845') {
+        // Transfigure all active obstacles into bonus Green Dots!
+        let converted = 0;
+        for (let i = obstacles.length - 1; i >= 0; i--) {
+          const obs = obstacles[i];
+          collectibles.push(new Collectible('DOT', obs.x, obs.y));
+          createExplosion(obs.x + 10, obs.y + 10, "#86BC25", 8);
+          converted++;
+        }
+        obstacles.length = 0;
+        score += 500;
+        showToastNotification(`🥚 EASTER EGG 1845: CONVERTED ${converted} HAZARDS TO DOTS!`, "fa-sparkles", "text-deloitte-green");
+      }
+    }
+
+    function showToastNotification(text, iconClass = "fa-sparkles", colorClass = "text-deloitte-green") {
+      const toast = document.getElementById("inGameToast");
+      const icon = document.getElementById("inGameToastIcon");
+      const textEl = document.getElementById("inGameToastText");
+      if (!toast) return;
+
+      icon.className = `fa-solid ${iconClass} ${colorClass}`;
+      textEl.textContent = text;
+      toast.classList.remove("hidden");
+
+      setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 2600);
+    }
+
+    /* ==========================================================
+       PIXEL CONSULTANT PLAYER CHARACTER
        ========================================================== */
     const player = {
       x: 52,
@@ -762,7 +791,7 @@
       isGrounded: true,
       isSliding: false,
       slideTimer: 0,
-      slideDuration: 36, // frames
+      slideDuration: 36,
       runFrame: 0,
       animSpeed: 0.18,
 
@@ -795,11 +824,9 @@
       },
 
       update() {
-        // Gravity & Vertical Movement
         if (!this.isGrounded) {
           this.velocityY += this.gravity;
           this.y += this.velocityY;
-
           if (this.y >= FLOOR_Y - this.height) {
             this.y = FLOOR_Y - this.height;
             this.velocityY = 0;
@@ -807,7 +834,6 @@
           }
         }
 
-        // Sliding Timing
         if (this.isSliding) {
           this.slideTimer--;
           if (this.slideTimer <= 0) {
@@ -816,7 +842,6 @@
             this.y = FLOOR_Y - this.normalHeight;
           }
         } else {
-          // Adjust running animation tempo to match current game speed
           this.runFrame += this.animSpeed * (gameSpeed / 3.6);
         }
       },
@@ -826,38 +851,30 @@
         const px = Math.floor(this.x);
         const py = Math.floor(this.y);
 
-        // Invincibility or Coffee Glow
         if (coffeeTimer > 0) {
           ctx.shadowColor = '#86BC25';
           ctx.shadowBlur = 10;
         }
 
         if (this.isSliding) {
-          // SLIDING PIXEL POSE (horizontal consultant with briefcase sliding)
-          // Body/Dark Suit
+          // SLIDING POSE
           ctx.fillStyle = "#1E232A";
           ctx.fillRect(px, py + 6, 26, 8);
-          // White Shirt Collar
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(px + 4, py + 5, 5, 4);
-          // Deloitte Green Tie
           ctx.fillStyle = "#86BC25";
           ctx.fillRect(px + 7, py + 7, 6, 3);
-          // Head / Hair
-          ctx.fillStyle = "#f3c299"; // Face skin
+          ctx.fillStyle = "#f3c299";
           ctx.fillRect(px + 18, py + 2, 8, 7);
-          ctx.fillStyle = "#2d1d14"; // Hair
+          ctx.fillStyle = "#2d1d14";
           ctx.fillRect(px + 20, py, 7, 4);
-          // Legs sliding behind
           ctx.fillStyle = "#0c1015";
           ctx.fillRect(px - 6, py + 8, 8, 6);
-          // Leather Briefcase
-          ctx.fillStyle = "#8b4513";
+          ctx.fillStyle = "#8b4513"; // Briefcase
           ctx.fillRect(px + 10, py + 11, 8, 6);
-          ctx.fillStyle = "#d4af37"; // gold buckle
+          ctx.fillStyle = "#d4af37";
           ctx.fillRect(px + 13, py + 13, 2, 2);
 
-          // Sparks underneath slide
           if (frameCount % 2 === 0) {
             ctx.fillStyle = "#86BC25";
             ctx.fillRect(px - 8 + Math.random() * 8, FLOOR_Y - 2, 2, 2);
@@ -866,44 +883,39 @@
           // RUNNING / JUMPING PIXEL CONSULTANT
           const legPhase = Math.floor(this.runFrame) % 4;
 
-          // Head & Hair
-          ctx.fillStyle = "#2d1d14"; // Hair
+          // Hair & Head
+          ctx.fillStyle = "#2d1d14";
           ctx.fillRect(px + 4, py, 11, 5);
-          ctx.fillStyle = "#f3c299"; // Skin
+          ctx.fillStyle = "#f3c299";
           ctx.fillRect(px + 5, py + 4, 10, 8);
-          // Pixel Eye
           ctx.fillStyle = "#0a0e14";
           ctx.fillRect(px + 12, py + 6, 2, 2);
-          // Deloitte Green Eyewear/Smart Glasses
-          ctx.fillStyle = "#86BC25";
+          ctx.fillStyle = "#86BC25"; // Green glasses
           ctx.fillRect(px + 10, py + 5, 5, 2);
 
-          // Charcoal Blazer & White Shirt
+          // Suit & Signature Green Tie
           ctx.fillStyle = "#1E232A";
           ctx.fillRect(px + 3, py + 12, 13, 11);
-          ctx.fillStyle = "#FFFFFF"; // Shirt
+          ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(px + 7, py + 12, 5, 7);
-
-          // Signature Deloitte Green Tie
           ctx.fillStyle = "#86BC25";
           ctx.fillRect(px + 8, py + 13, 3, 7);
           ctx.fillStyle = "#568819";
           ctx.fillRect(px + 9, py + 15, 2, 4);
 
-          // Briefcase in Hand
-          ctx.fillStyle = "#78350f"; // Brown leather
+          // Briefcase
+          ctx.fillStyle = "#78350f";
           const caseY = this.isGrounded ? (py + 14 + (legPhase % 2)) : (py + 10);
           ctx.fillRect(px - 4, caseY, 8, 9);
-          ctx.fillStyle = "#d97706"; // Buckle
+          ctx.fillStyle = "#d97706";
           ctx.fillRect(px - 1, caseY + 3, 2, 2);
 
-          // Legs & Shoes (Animated 4-step run cycle)
-          ctx.fillStyle = "#0c1015"; // Slacks
+          // Legs & Oxford Shoes
+          ctx.fillStyle = "#0c1015";
           if (!this.isGrounded) {
-            // Jump pose: legs tucked / bent
             ctx.fillRect(px + 2, py + 23, 5, 7);
             ctx.fillRect(px + 10, py + 21, 6, 6);
-            ctx.fillStyle = "#111"; // Shoes
+            ctx.fillStyle = "#111";
             ctx.fillRect(px + 1, py + 29, 6, 3);
             ctx.fillRect(px + 12, py + 26, 5, 3);
           } else {
@@ -920,7 +932,6 @@
               ctx.fillRect(px + 7, py + 23, 4, 9);
               ctx.fillRect(px + 2, py + 23, 4, 6);
             }
-            // Oxford Shoes
             ctx.fillStyle = "#000000";
             ctx.fillRect(px + 2, py + 30, 5, 3);
             ctx.fillRect(px + 9, py + 30, 5, 3);
@@ -931,7 +942,161 @@
     };
 
     /* ==========================================================
-       STREAMING_CHUNK:Defining Procedural Obstacles and Collectibles
+       WORKPLACE NPCS (PARTNERS & CLIENTS)
+       ========================================================== */
+    const npcs = [];
+    let nextNpcDistance = 65; // Spawns friendly workplace allies regularly
+
+    class NPC {
+      constructor(type, x) {
+        this.type = type; // 'PARTNER' or 'CLIENT'
+        this.x = x;
+        this.y = FLOOR_Y - 34;
+        this.width = 22;
+        this.height = 34;
+        this.interacted = false;
+        this.markedForDeletion = false;
+        this.speechBubble = "";
+        this.speechBubbleTimer = 0;
+        this.armWavePhase = 0;
+
+        if (this.type === 'PARTNER') {
+          this.label = "PARTNER";
+          this.quote = "PARTNER SIGN-OFF! +300";
+          this.color = "#F59E0B"; // Amber Gold
+        } else {
+          this.label = "VIP CLIENT";
+          this.quote = "CONTRACT SIGNED! +500";
+          this.color = "#38BDF8"; // Sky Blue
+        }
+      }
+
+      update() {
+        this.x -= gameSpeed;
+        this.armWavePhase += 0.12;
+        if (this.speechBubbleTimer > 0) this.speechBubbleTimer--;
+        if (this.x < -60) this.markedForDeletion = true;
+      }
+
+      interact() {
+        if (this.interacted) return;
+        this.interacted = true;
+        this.speechBubble = this.quote;
+        this.speechBubbleTimer = 75;
+
+        playSfx('npc');
+
+        if (this.type === 'PARTNER') {
+          score += 300 * comboMultiplier;
+          comboMultiplier = Math.min(4, comboMultiplier + 1);
+          createExplosion(this.x + 10, this.y + 10, "#F59E0B", 14);
+          showToastNotification("🤝 PARTNER SIGN-OFF! +300 PTS", "fa-file-signature", "text-amber-400");
+        } else {
+          score += 500 * comboMultiplier;
+          createExplosion(this.x + 10, this.y + 10, "#38BDF8", 16);
+          showToastNotification("💼 CLIENT DEAL SECURED! +500 PTS", "fa-handshake", "text-cyan-300");
+        }
+      }
+
+      draw() {
+        const nx = Math.floor(this.x);
+        const ny = Math.floor(this.y);
+
+        ctx.save();
+
+        // 1. Draw Overhead Role Badge
+        ctx.fillStyle = this.color;
+        ctx.font = "7px 'Press Start 2P', monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(`[${this.label}]`, nx + 10, ny - 10);
+
+        // 2. Draw Interactive Retro Speech Bubble when passed
+        if (this.speechBubbleTimer > 0) {
+          const bubbleY = ny - 24;
+          ctx.fillStyle = "rgba(0, 0, 0, 0.88)";
+          ctx.strokeStyle = this.color;
+          ctx.lineWidth = 1;
+          ctx.fillRect(nx - 28, bubbleY - 10, 80, 14);
+          ctx.strokeRect(nx - 28, bubbleY - 10, 80, 14);
+          ctx.fillStyle = "#FFFFFF";
+          ctx.font = "6px 'Press Start 2P', monospace";
+          ctx.fillText(this.speechBubble, nx + 12, bubbleY);
+        }
+
+        if (this.type === 'PARTNER') {
+          // PARTNER PIXEL ART: Silver temples, Navy Blazer, Golden Sign-off folder
+          // Hair with distinguished grey streaks
+          ctx.fillStyle = "#64748B";
+          ctx.fillRect(nx + 3, ny, 12, 5);
+          ctx.fillStyle = "#F8FAFC";
+          ctx.fillRect(nx + 4, ny + 1, 3, 2); // Silver streak
+          // Face
+          ctx.fillStyle = "#FBCFE8";
+          ctx.fillRect(nx + 4, ny + 4, 10, 7);
+          ctx.fillStyle = "#0F172A"; // Eyes
+          ctx.fillRect(nx + 10, ny + 6, 2, 2);
+          // Navy Blazer & White Shirt
+          ctx.fillStyle = "#002776";
+          ctx.fillRect(nx + 3, ny + 11, 13, 12);
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(nx + 7, ny + 11, 5, 5);
+          // Golden Deloitte Lapel Pin
+          ctx.fillStyle = "#F59E0B";
+          ctx.fillRect(nx + 4, ny + 13, 2, 2);
+          // Waving Hand / Thumbs-up
+          const waveY = Math.sin(this.armWavePhase) * 2;
+          ctx.fillStyle = "#FBCFE8";
+          ctx.fillRect(nx + 15, ny + 10 + waveY, 4, 4);
+          // Golden Sign-off Portfolio in left hand
+          ctx.fillStyle = "#D97706";
+          ctx.fillRect(nx - 2, ny + 12, 6, 9);
+          ctx.fillStyle = "#86BC25"; // Deloitte green stamp
+          ctx.fillRect(nx, ny + 14, 2, 3);
+          // Slacks & Dark Oxford Shoes
+          ctx.fillStyle = "#1E293B";
+          ctx.fillRect(nx + 4, ny + 23, 4, 8);
+          ctx.fillRect(nx + 10, ny + 23, 4, 8);
+          ctx.fillStyle = "#000000";
+          ctx.fillRect(nx + 3, ny + 30, 5, 3);
+          ctx.fillRect(nx + 10, ny + 30, 5, 3);
+
+        } else {
+          // CLIENT VIP PIXEL ART: Executive suit, glasses, holding signed contract
+          // Styled hair
+          ctx.fillStyle = "#451A03";
+          ctx.fillRect(nx + 3, ny, 12, 5);
+          // Face
+          ctx.fillStyle = "#FED7AA";
+          ctx.fillRect(nx + 4, ny + 4, 10, 7);
+          // Stylish Executive Glasses
+          ctx.fillStyle = "#0284C7";
+          ctx.fillRect(nx + 6, ny + 6, 8, 2);
+          // Charcoal Tailored Suit
+          ctx.fillStyle = "#334155";
+          ctx.fillRect(nx + 3, ny + 11, 13, 12);
+          // Silk Blue Tie
+          ctx.fillStyle = "#0284C7";
+          ctx.fillRect(nx + 8, ny + 11, 3, 7);
+          // Signed Contract with Green Ribbon
+          ctx.fillStyle = "#F8FAFC";
+          ctx.fillRect(nx + 14, ny + 11, 6, 9);
+          ctx.fillStyle = "#86BC25"; // Green Ribbon/Seal
+          ctx.fillRect(nx + 15, ny + 14, 4, 3);
+          // Slacks & Shoes
+          ctx.fillStyle = "#1E293B";
+          ctx.fillRect(nx + 4, ny + 23, 4, 8);
+          ctx.fillRect(nx + 10, ny + 23, 4, 8);
+          ctx.fillStyle = "#0F172A";
+          ctx.fillRect(nx + 3, ny + 30, 5, 3);
+          ctx.fillRect(nx + 10, ny + 30, 5, 3);
+        }
+
+        ctx.restore();
+      }
+    }
+
+    /* ==========================================================
+       OBSTACLES & COLLECTIBLES
        ========================================================== */
     const obstacles = [];
     const collectibles = [];
@@ -946,25 +1111,21 @@
         this.markedForDeletion = false;
 
         if (this.type === 'SCOPE_CREEP') {
-          // Ground jumping pixel slime monster
           this.width = 22;
           this.height = 20;
           this.y = FLOOR_Y - this.height;
         } else if (this.type === 'RED_TAPE') {
-          // Low barrier / traffic hazard
           this.width = 18;
           this.height = 26;
           this.y = FLOOR_Y - this.height;
         } else if (this.type === 'SERVER_GLITCH') {
-          // Tall server rack to leap over
           this.width = 20;
           this.height = 30;
           this.y = FLOOR_Y - this.height;
         } else if (this.type === 'EMAIL_DRONE') {
-          // High flying urgency alert - MUST SLIDE UNDER!
           this.width = 26;
           this.height = 16;
-          this.y = FLOOR_Y - 44; // elevated!
+          this.y = FLOOR_Y - 44; // High hazard: slide under!
         }
       }
 
@@ -978,17 +1139,14 @@
         const oy = Math.floor(this.y);
 
         if (this.type === 'SCOPE_CREEP') {
-          // Spiky crimson scope creep
           ctx.fillStyle = "#E11D48";
           ctx.fillRect(ox + 3, oy + 4, 16, 14);
           ctx.fillStyle = "#9F1239";
           ctx.fillRect(ox + 5, oy + 7, 12, 10);
-          // Spikes on top
           ctx.fillStyle = "#FDA4AF";
           ctx.fillRect(ox + 4, oy + 1, 3, 4);
           ctx.fillRect(ox + 10, oy, 3, 5);
           ctx.fillRect(ox + 16, oy + 2, 3, 4);
-          // Angry pixel eyes
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(ox + 6, oy + 8, 3, 3);
           ctx.fillRect(ox + 13, oy + 8, 3, 3);
@@ -996,20 +1154,17 @@
           ctx.fillRect(ox + 7, oy + 9, 2, 2);
           ctx.fillRect(ox + 14, oy + 9, 2, 2);
         } else if (this.type === 'RED_TAPE') {
-          // Striped red-tape barrier
           ctx.fillStyle = "#DC2626";
           ctx.fillRect(ox + 2, oy, 14, this.height);
-          ctx.fillStyle = "#FBBF24"; // warning yellow stripes
+          ctx.fillStyle = "#FBBF24";
           ctx.fillRect(ox + 3, oy + 4, 12, 4);
           ctx.fillRect(ox + 3, oy + 12, 12, 4);
           ctx.fillRect(ox + 3, oy + 20, 12, 4);
         } else if (this.type === 'SERVER_GLITCH') {
-          // Server stack with blinking error lights
           ctx.fillStyle = "#1E293B";
           ctx.fillRect(ox, oy, this.width, this.height);
           ctx.fillStyle = "#0F172A";
           ctx.fillRect(ox + 2, oy + 2, this.width - 4, this.height - 4);
-          // Server LED bars
           ctx.fillStyle = (frameCount % 20 < 10) ? "#F43F5E" : "#86BC25";
           ctx.fillRect(ox + 4, oy + 6, 4, 2);
           ctx.fillRect(ox + 11, oy + 6, 5, 2);
@@ -1017,19 +1172,15 @@
           ctx.fillRect(ox + 11, oy + 14, 5, 2);
           ctx.fillRect(ox + 4, oy + 22, 12, 2);
         } else if (this.type === 'EMAIL_DRONE') {
-          // High flying urgency notification / drone
           ctx.fillStyle = "#0284C7";
           ctx.fillRect(ox + 2, oy + 2, 22, 12);
-          // Envelope flap
           ctx.fillStyle = "#38BDF8";
           ctx.fillRect(ox + 4, oy + 4, 18, 3);
           ctx.fillRect(ox + 8, oy + 7, 10, 2);
-          // Red exclamation notification dot
           ctx.fillStyle = "#EF4444";
           ctx.fillRect(ox + 18, oy - 2, 6, 6);
           ctx.fillStyle = "#FFF";
           ctx.fillRect(ox + 20, oy, 2, 2);
-          // Rotor blades spinning on top
           ctx.fillStyle = "#94A3B8";
           const rotorX = (frameCount % 4 < 2) ? ox - 2 : ox + 4;
           ctx.fillRect(rotorX, oy - 4, 20, 2);
@@ -1058,35 +1209,28 @@
         const cx = Math.floor(this.x);
 
         if (this.type === 'DOT') {
-          // ICONIC DELOITTE GREEN DOT
           ctx.fillStyle = "#86BC25";
           ctx.beginPath();
           ctx.arc(cx + 6, cy + 6, 5, 0, Math.PI * 2);
           ctx.fill();
-          // Inner pixel shine
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(cx + 4, cy + 3, 2, 2);
         } else if (this.type === 'COFFEE') {
-          // Espresso Cup
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(cx + 2, cy + 3, 8, 8);
-          ctx.fillStyle = "#86BC25"; // Deloitte green stripe
+          ctx.fillStyle = "#86BC25";
           ctx.fillRect(cx + 2, cy + 6, 8, 2);
-          ctx.fillStyle = "#78350f"; // Coffee liquid
+          ctx.fillStyle = "#78350f";
           ctx.fillRect(cx + 3, cy + 4, 6, 2);
-          // Cup handle
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(cx + 9, cy + 5, 3, 4);
-          // Pixel Steam
           ctx.fillStyle = "rgba(255,255,255,0.6)";
           ctx.fillRect(cx + 4 + (frameCount % 4), cy, 2, 2);
         } else if (this.type === 'AI_CHIP') {
-          // AI Copilot Glowing Silicon Microchip
           ctx.fillStyle = "#004F59";
           ctx.fillRect(cx + 1, cy + 1, 10, 10);
           ctx.fillStyle = "#00F0FF";
           ctx.fillRect(cx + 3, cy + 3, 6, 6);
-          // Pins
           ctx.fillStyle = "#d4af37";
           ctx.fillRect(cx - 1, cy + 3, 2, 2);
           ctx.fillRect(cx - 1, cy + 7, 2, 2);
@@ -1101,7 +1245,7 @@
         this.x = x;
         this.y = y;
         this.color = color;
-        this.vx = (Math.random() - 0.5) * 4 - (gameSpeed * 0.4);
+        this.vx = (Math.random() - 0.5) * 4 - (gameSpeed * 0.35);
         this.vy = (Math.random() - 0.8) * 3;
         this.size = Math.floor(Math.random() * 3) + 2;
         this.life = 24;
@@ -1124,21 +1268,19 @@
     }
 
     /* ==========================================================
-       STREAMING_CHUNK:Rendering Parallax Pixel Skyline and Cityscape
+       PARALLAX SKYLINE & WORKPLACE SCENERY
        ========================================================== */
     const cityBuildings = [];
     for (let i = 0; i < 16; i++) {
       cityBuildings.push({
         x: i * 36,
         width: 28 + Math.floor(Math.random() * 16),
-        height: 60 + Math.floor(Math.random() * 75),
-        hasAntenna: Math.random() > 0.6,
-        hasGreenSign: Math.random() > 0.5
+        height: 60 + Math.floor(Math.random() * 75)
       });
     }
 
     function drawPixelBackground() {
-      // 1. Sky Gradient: Dark Navy to Teal
+      // 1. Sky Gradient
       const grad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
       grad.addColorStop(0, "#030712");
       grad.addColorStop(0.55, "#001e2b");
@@ -1146,7 +1288,7 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, V_WIDTH, FLOOR_Y);
 
-      // Distant stars / twinkling bits
+      // Stars
       ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
       for (let s = 0; s < 18; s++) {
         const sx = ((s * 37) - (frameCount * 0.2)) % V_WIDTH;
@@ -1154,7 +1296,7 @@
         ctx.fillRect(Math.floor(realX), (s * 11) % 110, 1, 1);
       }
 
-      // 2. Distant Skyline (Parallax Layer 1, Slow)
+      // 2. Distant Skyline
       const distantOffset = (distance * 0.25) % 36;
       ctx.fillStyle = "#07131e";
       for (let i = -1; i < 18; i++) {
@@ -1163,42 +1305,54 @@
         ctx.fillRect(bx, FLOOR_Y - b.height, b.width, b.height);
       }
 
-      // 3. Foreground Deloitte Highrises (Parallax Layer 2, Medium)
-      const fgOffset = (distance * 0.7) % 55;
-      for (let i = -1; i < 11; i++) {
-        const fx = i * 55 - fgOffset;
-        const bHeight = 45 + ((i * 17) % 50);
+      // 3. Foreground Workplace Highrises & War Rooms (Easter Egg visual details)
+      const fgOffset = (distance * 0.7) % 64;
+      for (let i = -1; i < 10; i++) {
+        const fx = i * 64 - fgOffset;
+        const bHeight = 52 + ((i * 19) % 55);
         ctx.fillStyle = "#0c1824";
-        ctx.fillRect(fx, FLOOR_Y - bHeight, 48, bHeight);
+        ctx.fillRect(fx, FLOOR_Y - bHeight, 56, bHeight);
 
-        // Lit Windows
+        // Windows & Workplace Whiteboards
         ctx.fillStyle = "#86BC25";
         for (let w = 0; w < 3; w++) {
           for (let row = 0; row < 4; row++) {
             if ((i + w + row) % 3 === 0) {
-              ctx.fillRect(fx + 6 + (w * 12), FLOOR_Y - bHeight + 8 + (row * 10), 4, 4);
+              ctx.fillRect(fx + 6 + (w * 14), FLOOR_Y - bHeight + 8 + (row * 10), 5, 4);
             }
           }
         }
 
-        // Antenna with Green Dot Warning Beacon
+        // WORKPLACE EASTER EGG: Illuminated Whiteboard & Coffee Lounge in Building 2 & 5
+        if (Math.abs(i) % 3 === 1) {
+          // Glass War Room
+          ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
+          ctx.fillRect(fx + 4, FLOOR_Y - bHeight + 4, 22, 14);
+          // Mini Whiteboard with Bar Chart
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(fx + 6, FLOOR_Y - bHeight + 6, 10, 8);
+          ctx.fillStyle = "#86BC25";
+          ctx.fillRect(fx + 8, FLOOR_Y - bHeight + 10, 2, 4);
+          ctx.fillStyle = "#38BDF8";
+          ctx.fillRect(fx + 11, FLOOR_Y - bHeight + 8, 2, 6);
+        }
+
+        // Rooftop Antenna with Deloitte Green Beacon
         ctx.fillStyle = "#223";
-        ctx.fillRect(fx + 22, FLOOR_Y - bHeight - 12, 2, 12);
+        ctx.fillRect(fx + 26, FLOOR_Y - bHeight - 12, 2, 12);
         ctx.fillStyle = (frameCount % 30 < 15) ? "#86BC25" : "#3f680f";
-        ctx.fillRect(fx + 21, FLOOR_Y - bHeight - 14, 4, 3);
+        ctx.fillRect(fx + 25, FLOOR_Y - bHeight - 14, 4, 3);
       }
 
-      // 4. Ground / Rooftop Runway
+      // 4. Rooftop Runway
       ctx.fillStyle = "#111720";
       ctx.fillRect(0, FLOOR_Y, V_WIDTH, V_HEIGHT - FLOOR_Y);
-
-      // Deloitte Green Rooftop Edge Trim
       ctx.fillStyle = "#86BC25";
       ctx.fillRect(0, FLOOR_Y, V_WIDTH, 3);
       ctx.fillStyle = "#568819";
       ctx.fillRect(0, FLOOR_Y + 3, V_WIDTH, 2);
 
-      // Runway Track Dashed Striping
+      // Track Striping
       const stripeOffset = (distance * 3) % 24;
       ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
       for (let rx = -stripeOffset; rx < V_WIDTH; rx += 24) {
@@ -1207,10 +1361,9 @@
     }
 
     /* ==========================================================
-       STREAMING_CHUNK:Collision Detection and Spawning Logic
+       COLLISION & GAMEPLAY LOGIC
        ========================================================== */
     function checkAABB(rect1, rect2) {
-      // Tighter hitbox padding for forgiving, enjoyable arcade feel
       const pad = 3;
       return (
         rect1.x + pad < rect2.x + rect2.width - pad &&
@@ -1221,21 +1374,28 @@
     }
 
     function spawnGameElements() {
-      // Dynamic spacing scaling with game speed
       nextObstacleDistance -= gameSpeed * 0.15;
       nextCollectibleDistance -= gameSpeed * 0.15;
+      nextNpcDistance -= gameSpeed * 0.15;
 
       const config = DIFFICULTY_SETTINGS[currentDifficulty];
 
-      // Obstacle Spawner (spaced according to chosen difficulty)
+      // 1. Friendly Workplace NPCs (Partners & Clients)
+      if (nextNpcDistance <= 0) {
+        const npcType = Math.random() > 0.5 ? 'PARTNER' : 'CLIENT';
+        npcs.push(new NPC(npcType, V_WIDTH + 20));
+        nextNpcDistance = 90 + Math.random() * 85;
+      }
+
+      // 2. Obstacles (Ensure no spawn collision with an NPC)
       if (nextObstacleDistance <= 0) {
         const types = ['SCOPE_CREEP', 'RED_TAPE', 'SERVER_GLITCH', 'EMAIL_DRONE'];
         const chosen = types[Math.floor(Math.random() * types.length)];
-        obstacles.push(new Obstacle(chosen, V_WIDTH + 20));
+        obstacles.push(new Obstacle(chosen, V_WIDTH + 30));
         nextObstacleDistance = config.obsMin + Math.random() * config.obsVar;
       }
 
-      // Collectible Spawner
+      // 3. Collectibles
       if (nextCollectibleDistance <= 0) {
         const roll = Math.random();
         let cType = 'DOT';
@@ -1244,11 +1404,11 @@
         if (roll > 0.88) {
           cType = 'COFFEE';
           spawnY = FLOOR_Y - 28;
-        } else if (roll > 0.75) {
+        } else if (roll > 0.74) {
           cType = 'AI_CHIP';
-          spawnY = FLOOR_Y - 48; // mid-air jump reward
+          spawnY = FLOOR_Y - 48;
         } else if (Math.random() > 0.5) {
-          spawnY = FLOOR_Y - 52; // high dot for jump
+          spawnY = FLOOR_Y - 52;
         }
 
         collectibles.push(new Collectible(cType, V_WIDTH + 20, spawnY));
@@ -1281,15 +1441,29 @@
       player.update();
       spawnGameElements();
 
+      // Update Workplace NPCs
+      for (let i = npcs.length - 1; i >= 0; i--) {
+        const npc = npcs[i];
+        npc.update();
+
+        // Check interaction with player
+        if (!npc.interacted && checkAABB(player, npc)) {
+          npc.interact();
+        }
+
+        if (npc.markedForDeletion) {
+          npcs.splice(i, 1);
+        }
+      }
+
       // Update Obstacles
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const obs = obstacles[i];
         obs.update();
 
-        // Collision test
         if (checkAABB(player, obs)) {
           if (coffeeTimer > 0) {
-            // Invincible smash!
+            // Invincible break!
             createExplosion(obs.x + 10, obs.y + 10, "#E11D48", 12);
             playSfx('hit');
             obstacles.splice(i, 1);
@@ -1303,7 +1477,7 @@
 
         if (obs.markedForDeletion) {
           obstacles.splice(i, 1);
-          score += 50 * comboMultiplier; // Points for cleared obstacle
+          score += 50 * comboMultiplier;
         }
       }
 
@@ -1320,12 +1494,12 @@
             score += 100 * comboMultiplier;
             playSfx('dot');
           } else if (c.type === 'COFFEE') {
-            coffeeTimer = 300; // ~5 seconds at 60fps
+            coffeeTimer = 300;
             score += 300;
             showPowerupStatus("COFFEE TURBO BOOST: INVINCIBLE!", "fa-mug-hot", "text-amber-400");
             playSfx('powerup');
           } else if (c.type === 'AI_CHIP') {
-            aiMultiplierTimer = 360; // ~6 seconds
+            aiMultiplierTimer = 360;
             comboMultiplier = 2;
             score += 500;
             showPowerupStatus("AI COPILOT: 2X MULTIPLIER!", "fa-microchip", "text-cyan-400");
@@ -1344,28 +1518,23 @@
       // Update Particles
       for (let i = particles.length - 1; i >= 0; i--) {
         particles[i].update();
-        if (particles[i].life <= 0) {
-          particles.splice(i, 1);
-        }
+        if (particles[i].life <= 0) particles.splice(i, 1);
       }
 
-      // Update HUD Numbers
       updateHUD();
     }
 
     function renderGame() {
       ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
 
-      // Background
       drawPixelBackground();
 
-      // Collectibles
+      // Collectibles & NPCs
       collectibles.forEach(c => c.draw());
+      npcs.forEach(npc => npc.draw());
 
-      // Obstacles
+      // Hazards & Particles
       obstacles.forEach(o => o.draw());
-
-      // Particles
       particles.forEach(p => p.draw());
 
       // Player
@@ -1379,30 +1548,28 @@
     }
 
     /* ==========================================================
-       STREAMING_CHUNK:HUD and Game Lifecycle Event Handlers
+       HUD & GAME LIFECYCLE HANDLERS
        ========================================================== */
     function updateHUD() {
       document.getElementById("hudScore").textContent = Math.floor(score).toString().padStart(6, '0');
       document.getElementById("hudMeters").textContent = `${Math.floor(distance)}m`;
       document.getElementById("hudCombo").textContent = `x${comboMultiplier}`;
 
-      // Progressive Stage Name
       const stageEl = document.getElementById("hudStage");
       if (distance < 250) {
         stageEl.textContent = "WAR ROOM";
-        stageEl.className = "text-cyan-400 font-bold text-[10px] sm:text-xs";
+        stageEl.className = "text-cyan-400 font-bold text-[9px] sm:text-xs";
       } else if (distance < 600) {
         stageEl.textContent = "CLOUD TOWER";
-        stageEl.className = "text-deloitte-green font-bold text-[10px] sm:text-xs";
+        stageEl.className = "text-deloitte-green font-bold text-[9px] sm:text-xs";
       } else if (distance < 1100) {
-        stageEl.textContent = "DIGITAL LAB";
-        stageEl.className = "text-amber-400 font-bold text-[10px] sm:text-xs";
+        stageEl.textContent = "PARTNER LAB";
+        stageEl.className = "text-amber-400 font-bold text-[9px] sm:text-xs";
       } else {
         stageEl.textContent = "BOARDROOM";
-        stageEl.className = "text-purple-400 font-bold text-[10px] sm:text-xs";
+        stageEl.className = "text-purple-400 font-bold text-[9px] sm:text-xs";
       }
 
-      // Power-up countdown update
       if (coffeeTimer > 0) {
         const secs = Math.ceil(coffeeTimer / 60);
         document.getElementById("powerupText").textContent = `COFFEE TURBO: ${secs}s`;
@@ -1417,13 +1584,16 @@
       const icon = document.getElementById("powerupIcon");
       const textEl = document.getElementById("powerupText");
       bar.classList.remove("hidden");
+      bar.classList.add("flex");
       icon.className = `fa-solid ${iconClass} ${colorClass}`;
       textEl.textContent = text;
     }
 
     function hidePowerupStatus() {
       if (coffeeTimer <= 0 && aiMultiplierTimer <= 0) {
-        document.getElementById("powerupStatusBar").classList.add("hidden");
+        const bar = document.getElementById("powerupStatusBar");
+        bar.classList.add("hidden");
+        bar.classList.remove("flex");
       }
     }
 
@@ -1433,7 +1603,6 @@
       document.getElementById("gameOverOverlay").classList.add("hidden");
       document.getElementById("pauseOverlay").classList.add("hidden");
 
-      // Initialize base speed and HUD for the selected difficulty
       const config = DIFFICULTY_SETTINGS[currentDifficulty];
       baseSpeed = config.speed;
       gameSpeed = baseSpeed;
@@ -1452,6 +1621,7 @@
       aiMultiplierTimer = 0;
       obstacles.length = 0;
       collectibles.length = 0;
+      npcs.length = 0;
       particles.length = 0;
       player.reset();
 
@@ -1484,9 +1654,8 @@
         document.getElementById("hudHighScore").textContent = highScore.toString().padStart(6, '0');
       }
 
-      // Death description
       const reasons = {
-        'SCOPE_CREEP': 'Derailed by unexpected Scope Creep requirements.',
+        'SCOPE_CREEP': 'Hit by Scope Creep during sprint deliverables.',
         'RED_TAPE': 'Held up by legacy compliance red tape.',
         'SERVER_GLITCH': 'Encountered unexpected 404 cloud downtime.',
         'EMAIL_DRONE': 'Overwhelmed by high-priority unread emails.'
@@ -1507,8 +1676,7 @@
     }
 
     function toggleCRT() {
-      const crt = document.getElementById("crtOverlay");
-      crt.classList.toggle("hidden");
+      document.getElementById("crtOverlay").classList.toggle("hidden");
     }
 
     function openHelpModal() {
@@ -1521,10 +1689,9 @@
     }
 
     /* ==========================================================
-       STREAMING_CHUNK:Binding Keyboard, Mouse, and Touch Controls
+       KEYBOARD, MOUSE & TOUCH INPUT BINDINGS
        ========================================================== */
     window.addEventListener("keydown", (e) => {
-      // If still on the loader screen, pressing Space or Enter accelerates / finishes loading
       if (!isGameLoaded) {
         if (e.code === "Space" || e.code === "Enter") {
           e.preventDefault();
@@ -1537,22 +1704,10 @@
         }
       }
 
-      // Quick difficulty selection via numeric keys on the Start / Game Over screen
       if (gameState === 'START' || gameState === 'GAMEOVER') {
-        if (e.key === "1") {
-          selectDifficulty('easy');
-          return;
-        } else if (e.key === "2") {
-          selectDifficulty('normal');
-          return;
-        } else if (e.key === "3") {
-          selectDifficulty('hard');
-          return;
-        }
-      }
-
-      // Space or Enter on Start/Game Over starts the game
-      if (gameState === 'START' || gameState === 'GAMEOVER') {
+        if (e.key === "1") { selectDifficulty('easy'); return; }
+        if (e.key === "2") { selectDifficulty('normal'); return; }
+        if (e.key === "3") { selectDifficulty('hard'); return; }
         if (e.code === "Space" || e.code === "Enter") {
           e.preventDefault();
           startGame();
@@ -1589,6 +1744,7 @@
     btnJump.addEventListener("mousedown", (e) => {
       e.preventDefault();
       if (gameState === 'PLAYING') player.jump();
+      else if (gameState === 'START' || gameState === 'GAMEOVER') startGame();
     });
 
     btnSlide.addEventListener("touchstart", (e) => {
@@ -1600,21 +1756,21 @@
       if (gameState === 'PLAYING') player.slide();
     });
 
-    // Direct Canvas Tap Zones: Top/Right = Jump, Bottom/Left = Slide
+    // Canvas Tap Zones: Upper area = Jump, Lower area = Slide
     canvas.addEventListener("touchstart", (e) => {
       e.preventDefault();
       if (gameState !== 'PLAYING') return;
       const rect = canvas.getBoundingClientRect();
       const touch = e.touches[0];
       const relY = touch.clientY - rect.top;
-      if (relY > rect.height * 0.65) {
+      if (relY > rect.height * 0.6) {
         player.slide();
       } else {
         player.jump();
       }
     }, { passive: false });
 
-    // Boot the main animation loop on load
+    // Boot Game Loop on Window Load
     window.onload = function () {
       startLoaderSequence();
       requestAnimationFrame(gameLoop);
