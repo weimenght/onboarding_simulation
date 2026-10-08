@@ -518,10 +518,10 @@
        STREAMING_CHUNK:Populating default Deloitte trivia knowledge questions
        ========================================================== */
     const DEFAULT_QUESTIONS_RAW = [
-      "德勤品牌于哪一年在全球创立？德勤前身于哪一年在中国上海设立第一家办公室？ / In what year was the Deloitte brand founded globally? In what year did Deloitte open its first office in China (Shanghai)?, [1845, 1917 / 1845, 1917], 1895, 1945 / 1895, 1945, 1917, 1980 / 1917, 1980, 1945, 1992 / 1945, 1992",
-      "德勤当前的全球品牌标语（brand tagline）是什么？ / What is Deloitte's current global brand tagline?, 因我不同，成就不凡 / To make an impact that matters, [众行致远 / Together makes progress[, 以诚信成就不凡，以宗旨驱动进步 / Progress with purpose through integrity and impact, 清晰敏锐，信而有征，人文关怀 / Clear, Confident, Human",
-      "德勤中国人才价值主张（EVP）的四个核心维度是什么？ / What are the four pillars of Deloitte China's Employee Value Proposition (EVP)?, [成才 惜才 悦才 纳才] / Development Caring Happiness Inclusion, 育才 信才 领才 纳才 / Cultivation integrity leadership Inclusion, 成才 结才 悦才 信才 / Development collaboration happiness integrity, 惜才 领才 育才 结才 / Caring leadership cultivation collaboration",
-      "德勤中国人才价值主张（EVP）的官方口号是什么？ / What is the official slogan of Deloitte China's Employee Value Proposition?, 智汇德勤，领航未来 / , [德育人才，勤创未来 / ], 赋能员工，改变世界 / , 携手同行，共创辉煌 / ",
+      "德勤品牌于哪一年在全球创立？德勤前身于哪一年在中国上海设立第一家办公室？ / In what year was the Deloitte brand founded globally? In what year did Deloitte open its first office in China (Shanghai)?, [1845 1917 / ], 1895 1945 / , 1917 1980 / , 1945 1992 / ",
+      "德勤当前的全球品牌标语（brand tagline）是什么？ / What is Deloitte's current global brand tagline?, 因我不同 成就不凡 / To make an impact that matters, [众行致远 / Together makes progress], 以诚信成就不凡 以宗旨驱动进步 / Progress with purpose through integrity and impact, 清晰敏锐 信而有征 人文关怀 / Clear Confident Human",
+      "德勤中国人才价值主张（EVP）的四个核心维度是什么？ / What are the four pillars of Deloitte China's Employee Value Proposition (EVP)?, [成才 惜才 悦才 纳才 / Development Caring Happiness Inclusion], 育才 信才 领才 纳才 / Cultivation integrity leadership Inclusion, 成才 结才 悦才 信才 / Development collaboration happiness integrity, 惜才 领才 育才 结才 / Caring leadership cultivation collaboration",
+      "德勤中国人才价值主张（EVP）的官方口号是什么？ / What is the official slogan of Deloitte China's Employee Value Proposition?, 智汇德勤 领航未来 / , [德育人才 勤创未来 / ], 赋能员工 改变世界 / , 携手同行 共创辉煌 / ",
       "德勤中国愿景Be in a category of ONE（一览众山小）核心内涵是？ / What is the core meaning of Deloitte China's vision BE IN A CATEGORY OF ONE?, 目标成为规模最大的四大会计师事务所 / , [ 打造独一无二的德勤，而非对标其他同业机构 / ], 做到业务面面俱到，覆盖全部专业服务赛道 / , 核心目标是规模超越 MBB 咨询公司 / ",
       "定义德勤中国 独一无二 的三个维度是？ / What are the three dimensions that define Deloitte China's ONE AND ONLY?, 人才 技术 市场 / , [规模 价值 影响力 / ], 增长 现金 社会责任 / , 客户 员工 合伙人 / ",
       "德勤中国 1-2-3战略 中 两手抓 包含哪些方向？ / What directions are included in the TWO ASPECTS of Deloitte China's 1-2-3 STRATEGY?, 把握机遇赢当下 聚焦赛道争第一 / , 优化运营提效率 积极变革创未来 / , 聚焦赛道争第一 优化运营提效率 / , [把握机遇赢当下 积极变革创未来 / ]",
@@ -531,7 +531,7 @@
       "解决问题五步法的正确顺序是什么？A 分析问题 B 选择最佳解决方案 C 确定问题 D 执行方案 E 生成可能的解决方案 / Which is the correct order for the 5 steps to problem solving method? A Analyze the problem B Select the best possible solution C Identify the problem D Implement the solution E Generate possible solutions, A-E-B-C-D / , [C-A-E-B-D / ], A-E-C-B-D / , C-E-A-B-D / ",
       "视觉、声音和语言对沟通效率的分别起多大作用呢？ / How much do the factors contribute to the communication effectiveness?, 视觉 58% 声音 7% 语言 35% / Visual 58% Vocal 7% Verbal 35%, 视觉 35% 声音 58% 语言 7% / Visual 35% Vocal 58% Verbal 7%,  视觉 7% 声音 35% 语言 58% / Visual 7% Vocal 35% Verbal 58%, [视觉 58% 声音 35% 语言7%  / Visual 58% Vocal 35% Verbal 7% ]",
       "有效沟通中的 K.I.S.S. 原则中，各字母分别代表什么意思？ / There is an effective communication principle K.I.S.S. What does it stand for?, [保持简明扼要 / Keep It Short and Simple], 保持真诚直率 / Keep It Sincere and Straightforward, 保持智能简洁 / Keep It Smart and Simple, 保持简短流畅 / Keep It Short and Smooth",
-      "在德勤的治理语境中，RRG 代表什么？ / What does RRG stand for in Deloitte's operational governance framework?, / Revenue Reputation Growth, [ /  Risk Reputation Governance], / Rules Regulations Guidance,  / Restructuring Reporting Governance",
+      "在德勤的治理语境中，RRG 代表什么？ / What does RRG stand for in Deloitte's operational governance framework?, Revenue Reputation Growth / , [Risk Reputation Governance / ], Rules Regulations Guidance / , Restructuring Reporting Governance / ",
       "德勤中国目前的四大核心专业服务领域中不包括以下哪一项？ / Which of the following is NOT one of Deloitte China's 5 core service offerings?, 审计及鉴证 / Audit & Assurance, 税务及商务咨询 / Tax & Business Advisory, [商业房地产开发 / Commercial Real Estate Development], 咨询业务 / Consulting"
     ];
 
