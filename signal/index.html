@@ -128,7 +128,7 @@
           </h1>
         </div>
 
-        <!-- 3 Round Selection Panels (Strictly round titles only) -->
+        <!-- 3 Round Selection Panels -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
           <!-- Round 1 Card -->
           <button onclick="startRound(1)" class="group p-8 rounded-2xl bg-gradient-to-b from-deloitte-cardbg to-[#12161c] border border-white/10 hover:border-deloitte-green/60 card-shadow transition-all duration-300 hover:-translate-y-1 relative overflow-hidden flex items-center justify-center min-h-[170px]">
@@ -179,7 +179,7 @@
           </div>
         </div>
 
-        <!-- Adjustable Timer Bar (Default 1 Minute with Alarm Trigger) -->
+        <!-- Adjustable Timer Bar -->
         <div class="flex flex-wrap items-center justify-between bg-white/[0.04] border border-white/10 px-4 sm:px-6 py-3 rounded-2xl gap-3">
           <div class="flex items-center space-x-2">
             <button onclick="adjustTimer(-15)" class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-xs font-bold text-gray-300 transition-all">
@@ -204,7 +204,7 @@
           </div>
         </div>
 
-        <!-- Central Flashcard (Clean word display only) -->
+        <!-- Central Flashcard -->
         <div id="wordCardElement" onclick="handleCardClick()" class="cursor-pointer group relative bg-gradient-to-b from-deloitte-cardbg to-[#12151b] border-2 border-white/10 hover:border-deloitte-green/40 p-10 sm:p-16 rounded-3xl card-shadow transition-all duration-300 text-center flex flex-col items-center justify-center min-h-[300px] sm:min-h-[360px] select-none">
           <div class="space-y-5 max-w-xl">
             <!-- Chinese Word -->
@@ -223,7 +223,7 @@
           </div>
         </div>
 
-        <!-- Action Control Buttons: Incorrect, Pass, Correct -->
+        <!-- Action Control Buttons -->
         <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-1">
           <!-- Button: Incorrect -->
           <button id="btnIncorrect" onclick="handleAction('incorrect')" class="button-press flex flex-col items-center justify-center p-4 rounded-2xl bg-[#1d161a] border border-rose-900/50 hover:border-rose-500 text-rose-300 hover:text-white hover:bg-rose-950/50 shadow-lg shadow-rose-950/20 transition-all group">
@@ -262,7 +262,7 @@
     </div>
   </main>
 
-  <!-- Alarm Modal (Appears when timer expires) -->
+  <!-- Alarm Modal -->
   <div id="alarmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
     <div class="bg-deloitte-cardbg border-2 border-rose-500 rounded-3xl p-8 max-w-sm w-full text-center space-y-6 animate-pop-in card-shadow shadow-rose-950/60">
       <div class="w-16 h-16 rounded-full bg-rose-500/20 text-rose-500 border border-rose-500/40 flex items-center justify-center mx-auto text-3xl animate-pulse">
@@ -313,10 +313,10 @@
           Round 1 (Animals) <span id="tabCount1" class="opacity-75 text-[11px]">(16)</span>
         </button>
         <button id="adminTabBtn2" onclick="switchAdminTab(2)" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all bg-white/5 text-gray-300 hover:bg-white/10 whitespace-nowrap">
-          Round 2 (Buzzwords) <span id="tabCount2" class="opacity-75 text-[11px]">(16)</span>
+          Round 2 (Buzzwords) <span id="tabCount2" class="opacity-75 text-[11px]">(36)</span>
         </button>
         <button id="adminTabBtn3" onclick="switchAdminTab(3)" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all bg-white/5 text-gray-300 hover:bg-white/10 whitespace-nowrap">
-          Round 3 (Business) <span id="tabCount3" class="opacity-75 text-[11px]">(16)</span>
+          Round 3 (Business) <span id="tabCount3" class="opacity-75 text-[11px]">(23)</span>
         </button>
       </div>
 
@@ -335,7 +335,7 @@
         <div id="adminTabPanel2" class="hidden flex-grow flex flex-col space-y-2">
           <div class="flex items-center justify-between text-xs text-deloitte-gray">
             <span>Round 2 Words (Deloitte Buzzwords)</span>
-            <span id="panelWordCount2" class="text-deloitte-green font-semibold">16 words</span>
+            <span id="panelWordCount2" class="text-deloitte-green font-semibold">36 words</span>
           </div>
           <textarea id="adminInputRound2" rows="7" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-2xl p-4 text-xs font-mono text-gray-200 placeholder-gray-500 leading-relaxed resize-none shadow-inner" placeholder="e.g. 赋能 Empower 抓手 Leverage 闭环 Closed-Loop..."></textarea>
         </div>
@@ -344,7 +344,7 @@
         <div id="adminTabPanel3" class="hidden flex-grow flex flex-col space-y-2">
           <div class="flex items-center justify-between text-xs text-deloitte-gray">
             <span>Round 3 Words (Deloitte Business)</span>
-            <span id="panelWordCount3" class="text-deloitte-green font-semibold">16 words</span>
+            <span id="panelWordCount3" class="text-deloitte-green font-semibold">23 words</span>
           </div>
           <textarea id="adminInputRound3" rows="7" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-2xl p-4 text-xs font-mono text-gray-200 placeholder-gray-500 leading-relaxed resize-none shadow-inner" placeholder="e.g. 审计及鉴证 Audit & Assurance 管理咨询 Consulting..."></textarea>
         </div>
@@ -383,7 +383,6 @@
     let audioEnabled = true;
     let audioContextReady = false;
 
-    // Synths for buttons
     let correctSynth = null;
     let passSynth = null;
     let incorrectSynth = null;
@@ -474,7 +473,7 @@
           alarmSynth.triggerAttackRelease(pitch, "16n", now);
         }
         tick++;
-        if (tick > 50) stopAlarm(); // auto stop after ~20 seconds
+        if (tick > 50) stopAlarm();
       }, 350);
     }
 
@@ -490,14 +489,14 @@
     function dismissAlarmAndRestart() {
       stopAlarm();
       resetTimer();
-      toggleTimer(true); // resume running
+      toggleTimer(true);
       advanceToNextWord();
     }
 
     /* ==========================================================
-       2. TIMER LOGIC (Default 1 minute, adjustable, triggers alarm)
+       2. TIMER LOGIC
        ========================================================== */
-    let defaultTimeSeconds = 60; // 1 minute default
+    let defaultTimeSeconds = 60;
     let timeRemaining = 60;
     let timerInterval = null;
     let isTimerRunning = false;
@@ -584,7 +583,7 @@
     }
 
     /* ==========================================================
-       3. VOCABULARY DATASETS & RANDOMIZATION
+       3. VOCABULARY DATASETS & DECK DEPLETION ENGINE
        ========================================================== */
     const DEFAULT_ROUND_DATA = {
       1: {
@@ -681,19 +680,80 @@
       }
     };
 
-    // Active round data (deep copy of defaults)
     let ROUND_DATA = JSON.parse(JSON.stringify(DEFAULT_ROUND_DATA));
+
+    // Exhaustion decks tracking unseen indices per round
+    let roundWordPools = { 1: [], 2: [], 3: [] };
+    let currentRoundId = 1;
+    let currentWordIndex = -1;
+    let roundStats = { correct: 0, pass: 0, incorrect: 0 };
+
+    /**
+     * Initializes a shuffled deck of word indices for a specified round.
+     * Guaranteed Fisher-Yates randomization.
+     */
+    function initRoundPool(roundId) {
+      const words = ROUND_DATA[roundId]?.words || [];
+      const indices = Array.from({ length: words.length }, (_, i) => i);
+
+      // Fisher-Yates Shuffle
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+
+      // If the newly generated pool's first popped word matches the word currently on screen, swap it
+      if (indices.length > 1 && indices[indices.length - 1] === currentWordIndex) {
+        [indices[indices.length - 1], indices[0]] = [indices[0], indices[indices.length - 1]];
+      }
+
+      roundWordPools[roundId] = indices;
+    }
+
+    /**
+     * Retrieves next word index from the unshown pool.
+     * Refills and reshuffles only after every word in the round has appeared.
+     */
+    function getNextDeprioritizedWordIndex() {
+      const words = ROUND_DATA[currentRoundId]?.words || [];
+      if (words.length <= 1) return 0;
+
+      // If current pool is uninitialized or completely exhausted, rebuild
+      if (!roundWordPools[currentRoundId] || roundWordPools[currentRoundId].length === 0) {
+        initRoundPool(currentRoundId);
+      }
+
+      return roundWordPools[currentRoundId].pop();
+    }
+
+    function renderWord(wordObj, triggerEffect = true) {
+      if (!wordObj) return;
+      const cnEl = document.getElementById("cardWordChinese");
+      const enEl = document.getElementById("cardWordEnglish");
+
+      if (triggerEffect) {
+        cnEl.classList.remove("animate-pop-in");
+        enEl.classList.remove("animate-pop-in");
+        void cnEl.offsetWidth;
+        cnEl.classList.add("animate-pop-in");
+        enEl.classList.add("animate-pop-in");
+      }
+
+      cnEl.textContent = wordObj.cn;
+      enEl.textContent = wordObj.en;
+    }
+
+    function advanceToNextWord() {
+      currentWordIndex = getNextDeprioritizedWordIndex();
+      const wordObj = ROUND_DATA[currentRoundId].words[currentWordIndex];
+      renderWord(wordObj, true);
+    }
 
     /* ==========================================================
        4. ADMIN WORD LIST PARSING & MANAGEMENT
        ========================================================== */
     let currentAdminTab = 1;
 
-    /**
-     * Parses word input formatted as `word1_zh word1_en word2_zh word2_en ...`
-     * Supports both single-word and multi-word English definitions intelligently
-     * based on Chinese character boundaries and whitespace tokens.
-     */
     function parseWordListInput(inputStr) {
       if (!inputStr) return null;
       const trimmed = inputStr.trim();
@@ -706,7 +766,6 @@
       const hasChinese = /[\u4e00-\u9fa5]/;
 
       if (hasChinese.test(trimmed)) {
-        // Smart parser: Chinese token opens a new word entry; consecutive non-Chinese tokens are appended to en
         let currentCn = null;
         let currentEnParts = [];
 
@@ -725,7 +784,6 @@
             if (currentCn) {
               currentEnParts.push(token);
             } else {
-              // Leading non-Chinese token fallback
               currentCn = token;
             }
           }
@@ -738,7 +796,6 @@
           });
         }
       } else {
-        // Generic alternating pairs: [token1, token2], [token3, token4]
         for (let i = 0; i < tokens.length; i += 2) {
           if (i + 1 < tokens.length) {
             parsedList.push({ cn: tokens[i], en: tokens[i + 1] });
@@ -818,11 +875,11 @@
         const textarea = document.getElementById(`adminInputRound${r}`);
         if (textarea) {
           const rawValue = textarea.value;
-          // If the textarea has text, parse it; if blank/empty, retain original
           if (rawValue.trim() !== "") {
             const parsed = parseWordListInput(rawValue);
             if (parsed && parsed.length > 0) {
               ROUND_DATA[r].words = parsed;
+              initRoundPool(r); // Invalidate and rebuild exhaustion deck
               updatedRounds.push(`Round ${r} (${parsed.length})`);
             }
           }
@@ -832,7 +889,6 @@
       updateAdminUI();
       closeAdminModal();
 
-      // If active game view is open, refresh current word
       const playView = document.getElementById("wordPlayView");
       if (!playView.classList.contains("hidden")) {
         advanceToNextWord();
@@ -848,6 +904,7 @@
     function restoreDefaultDatasets() {
       ROUND_DATA = JSON.parse(JSON.stringify(DEFAULT_ROUND_DATA));
       for (let r = 1; r <= 3; r++) {
+        initRoundPool(r); // Rebuild default exhaustion decks
         const textarea = document.getElementById(`adminInputRound${r}`);
         if (textarea) {
           textarea.value = formatWordsForTextarea(ROUND_DATA[r].words);
@@ -857,48 +914,16 @@
       showToast("Reset all word lists to defaults");
     }
 
-    let currentRoundId = 1;
-    let currentWordIndex = -1;
-    let roundStats = { correct: 0, pass: 0, incorrect: 0 };
-
-    function getRandomNextWordIndex() {
-      const words = ROUND_DATA[currentRoundId].words;
-      if (words.length <= 1) return 0;
-
-      let nextIndex;
-      do {
-        nextIndex = Math.floor(Math.random() * words.length);
-      } while (nextIndex === currentWordIndex);
-
-      return nextIndex;
-    }
-
-    function renderWord(wordObj, triggerEffect = true) {
-      const cnEl = document.getElementById("cardWordChinese");
-      const enEl = document.getElementById("cardWordEnglish");
-
-      if (triggerEffect) {
-        cnEl.classList.remove("animate-pop-in");
-        enEl.classList.remove("animate-pop-in");
-        void cnEl.offsetWidth;
-        cnEl.classList.add("animate-pop-in");
-        enEl.classList.add("animate-pop-in");
-      }
-
-      cnEl.textContent = wordObj.cn;
-      enEl.textContent = wordObj.en;
-    }
-
-    function advanceToNextWord() {
-      currentWordIndex = getRandomNextWordIndex();
-      const wordObj = ROUND_DATA[currentRoundId].words[currentWordIndex];
-      renderWord(wordObj, true);
-    }
-
+    /* ==========================================================
+       5. GAMEPLAY FLOW & USER CONTROLS
+       ========================================================== */
     function startRound(roundNum) {
       initAudioEngine();
       currentRoundId = roundNum;
       currentWordIndex = -1;
+
+      // Initialize fresh deck for this round session
+      initRoundPool(roundNum);
 
       roundStats = { correct: 0, pass: 0, incorrect: 0 };
       updateStatsUI();
@@ -909,7 +934,6 @@
       document.getElementById("wordPlayView").classList.remove("hidden");
       document.getElementById("navHomeBtn").classList.remove("hidden");
 
-      // Reset and start timer (1 minute default)
       resetTimer();
       toggleTimer(true);
 
@@ -962,7 +986,6 @@
 
     /* Keyboard Shortcuts */
     window.addEventListener("keydown", (e) => {
-      // Don't trigger shortcuts if modal is open or user is typing in textarea/input
       const adminModal = document.getElementById("adminModal");
       if (adminModal && !adminModal.classList.contains("hidden")) return;
       if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
