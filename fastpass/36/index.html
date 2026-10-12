@@ -3,14 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FastPass</title>
-  <!-- Tailwind CSS CDN -->
+  <title>FastPass | 36 Teams Schedule</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Tone.js for UI audio feedback -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
-  <!-- FontAwesome 6 Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts: Plus Jakarta Sans & Noto Sans SC -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -22,20 +18,14 @@
           colors: {
             deloitte: {
               green: '#86BC25',
-              darkgreen: '#568819',
-              teal: '#004F59',
-              navy: '#002776',
               bg: '#090c12',
               card: '#121722',
-              cardborder: '#1f2738',
               slate: '#1b2230',
-              gray: '#7e8794',
-              lightgray: '#d4d9e1'
+              gray: '#7e8794'
             }
           },
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif'],
-            cn: ['"Noto Sans SC"', 'sans-serif']
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif']
           }
         }
       }
@@ -51,7 +41,6 @@
         radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.06) 0%, transparent 60%);
       min-height: 100vh;
     }
-
     .deloitte-dot {
       display: inline-block;
       width: 0.55em;
@@ -59,44 +48,32 @@
       background-color: #86BC25;
       border-radius: 50%;
       margin-left: 0.12em;
-      vertical-align: baseline;
       box-shadow: 0 0 12px rgba(134, 188, 37, 0.8);
     }
-
-    .hide-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .hide-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 
 <body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
 
-  <!-- Top Navigation Bar -->
   <header class="w-full border-b border-white/10 bg-deloitte-bg/80 backdrop-blur-md sticky top-0 z-50">
     <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-      
-      <!-- Brand & Title -->
       <div class="flex items-center space-x-3 cursor-pointer" onclick="selectTeam(1)">
         <div class="w-9 h-9 rounded-xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green font-extrabold text-sm">
-          FP
+          36
         </div>
         <div class="flex flex-col">
           <div class="flex items-center leading-tight">
             <span class="font-extrabold text-lg tracking-tight text-white">FastPass<span class="deloitte-dot"></span></span>
           </div>
           <span id="headerSubtitle" class="text-[11px] text-deloitte-green font-semibold tracking-wider">
-            团队日程
+            团队日程追踪 (36组)
           </span>
         </div>
       </div>
 
-      <!-- Controls: Bilingual Switcher & Audio Toggle -->
       <div class="flex items-center space-x-2">
-        <!-- Language Switcher -->
         <div class="bg-white/5 border border-white/10 rounded-full p-0.5 flex items-center text-xs">
           <button id="langZhBtn" onclick="setLanguage('zh')" class="px-2.5 py-1 rounded-full font-bold transition-all bg-deloitte-green text-black">
             中文
@@ -105,60 +82,43 @@
             EN
           </button>
         </div>
-
-        <!-- Audio SFX Toggle -->
         <button id="audioToggleBtn" onclick="toggleAudio()" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">
           <i id="audioIcon" class="fa-solid fa-volume-high text-xs text-deloitte-green"></i>
         </button>
       </div>
-
     </div>
   </header>
 
-  <!-- Main Content Area -->
   <main class="flex-grow max-w-3xl mx-auto w-full px-4 py-6 space-y-5">
-
-    <!-- Unified Team Selector & Navigation Control -->
     <div class="bg-deloitte-card border border-white/10 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-      
       <div class="flex items-center justify-between gap-3">
-        <!-- Previous Group Button -->
         <button onclick="changeGroup(-1)" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-white font-bold text-sm transition-all flex items-center justify-center gap-2">
           <i class="fa-solid fa-chevron-left text-xs text-deloitte-green"></i>
           <span id="prevBtnText">上一组</span>
         </button>
 
-        <!-- Current Group Dropdown Selector -->
         <div class="relative flex-1 max-w-[200px]">
           <select id="teamSelect" onchange="selectTeam(parseInt(this.value, 10))" 
             class="w-full appearance-none bg-deloitte-slate border border-white/15 text-white font-extrabold text-sm sm:text-base py-2.5 pl-4 pr-9 rounded-xl focus:outline-none focus:border-deloitte-green text-center cursor-pointer">
-            <!-- Populated via JavaScript -->
           </select>
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-deloitte-green">
             <i class="fa-solid fa-chevron-down text-xs"></i>
           </div>
         </div>
 
-        <!-- Next Group Button -->
         <button onclick="changeGroup(1)" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-white font-bold text-sm transition-all flex items-center justify-center gap-2">
           <span id="nextBtnText">下一组</span>
           <i class="fa-solid fa-chevron-right text-xs text-deloitte-green"></i>
         </button>
       </div>
 
-      <!-- Quick Scrollable Number Strip (1 - 36) -->
       <div class="pt-2 border-t border-white/5">
         <div id="teamPillsTrack" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-1 scroll-smooth">
-          <!-- Populated 1 to 36 pills -->
         </div>
       </div>
-
     </div>
 
-    <!-- Digital Schedule View -->
     <section class="bg-deloitte-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-      
-      <!-- Card Header -->
       <div class="p-5 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <div class="flex items-center gap-2 mb-1">
@@ -168,91 +128,111 @@
             </span>
           </div>
           <h2 class="text-xl sm:text-2xl font-black text-white" id="scheduleTitle">
-            第 1 组 日程路线
+            第 1 组 · 活动日程
           </h2>
         </div>
 
         <div class="flex items-center gap-2 font-mono text-xs text-gray-400 bg-black/40 border border-white/10 px-3 py-1.5 rounded-xl self-start sm:self-auto">
           <i class="fa-regular fa-clock text-deloitte-green"></i>
-          <span>13:50 - 17:50</span>
+          <span>13:50 - 17:40</span>
           <span>•</span>
           <span id="liveStatusBadge" class="text-deloitte-green font-bold">进行中</span>
         </div>
       </div>
 
-      <!-- Station Timetable -->
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="border-b border-white/10 text-xs font-bold text-gray-400 bg-white/[0.02]">
-              <th id="thTime" class="py-3 px-4 w-32 font-mono">时间段</th>
+              <th id="thTime" class="py-3 px-4 w-36 font-mono">时间段</th>
               <th id="thStation" class="py-3 px-4">环节项目</th>
               <th id="thStatus" class="py-3 px-4 text-right w-28">状态</th>
             </tr>
           </thead>
           <tbody id="scheduleTableBody" class="divide-y divide-white/5 text-sm">
-            <!-- Dynamically populated 6 schedule rows -->
           </tbody>
         </table>
       </div>
 
-      <!-- Footer Info -->
       <div class="px-5 py-3 border-t border-white/10 bg-black/30 flex items-center justify-between text-xs text-gray-400">
-        <span id="footerDuration"></span>
-        <span class="font-mono text-[11px] text-deloitte-gray">36-Group</span>
+        <span id="footerDuration">每环节 30 分钟 · 轮转 10 分钟</span>
+        <span class="font-mono text-[11px] text-deloitte-gray">36-Team FastPass</span>
       </div>
-
     </section>
-
   </main>
 
-  <!-- Script Logic -->
   <script>
-    // State
-    let currentLang = 'zh'; // 'zh' or 'en'
+    const TOTAL_TEAMS = 36;
+    let currentLang = 'zh';
     let currentTeam = 1;
     let audioEnabled = true;
     let audioReady = false;
     let switchSynth = null;
 
-    // Time Slots Configuration
     const TIME_SLOTS = [
-      { start: '13:50', end: '14:20', startMin: 13 * 60 + 50, endMin: 14 * 60 + 20 },
-      { start: '14:30', end: '15:00', startMin: 14 * 60 + 30, endMin: 15 * 60 + 0 },
-      { start: '15:10', end: '15:40', startMin: 15 * 60 + 10, endMin: 15 * 60 + 40 },
-      { start: '16:00', end: '16:30', startMin: 16 * 60 + 0, endMin: 16 * 60 + 30 },
-      { start: '16:40', end: '17:10', startMin: 16 * 60 + 40, endMin: 17 * 60 + 10 },
-      { start: '17:20', end: '17:50', startMin: 17 * 60 + 20, endMin: 17 * 60 + 50 },
+      { start: '13:50', end: '14:20', startMin: 830, endMin: 860 },
+      { start: '14:30', end: '15:00', startMin: 870, endMin: 900 },
+      { start: '15:10', end: '15:40', startMin: 910, endMin: 940 },
+      { start: '15:50', end: '16:20', startMin: 950, endMin: 980 },
+      { start: '16:30', end: '17:00', startMin: 990, endMin: 1020 },
+      { start: '17:10', end: '17:40', startMin: 1030, endMin: 1060 },
     ];
 
-    // Station definitions
     const STATIONS = {
-      0: { zh: '一起拼未来', en: 'Piece by Piece, We Change', icon: 'fa-id-card-clip' },
+      0: { zh: '一起拼未来', en: 'Piece by piece, we change', icon: 'fa-puzzle-piece' },
       1: { zh: '培育您的职业道德之树', en: 'Plant Your Ethical Tree', icon: 'fa-tree' },
       2: { zh: '信号解密', en: 'D.Signal', icon: 'fa-tower-broadcast' },
       3: { zh: '勤业智库', en: 'Knowledge Clash', icon: 'fa-brain' },
       4: { zh: '情商罗盘', en: 'EQ Matrix', icon: 'fa-compass' },
-      5: { zh: 'AI纪元', en: 'AI Era', icon: 'fa-microchip' }
+      5: { zh: 'AI纪元', en: 'The AI Era', icon: 'fa-microchip' }
     };
 
-    // 6 Base Permutation Rows for the 36-group rotation system
-    const ROW_BASES = [
+    const SCHEDULE_MATRIX_36 = [
       [0, 1, 2, 3, 4, 5],
+      [1, 2, 3, 4, 5, 0],
+      [2, 3, 4, 5, 0, 1],
+      [3, 4, 5, 0, 1, 2],
+      [4, 5, 0, 1, 2, 3],
+      [5, 0, 1, 2, 3, 4],
       [0, 2, 4, 1, 3, 5],
+      [1, 3, 5, 2, 4, 0],
+      [2, 4, 0, 3, 5, 1],
+      [3, 5, 1, 4, 0, 2],
+      [4, 0, 2, 5, 1, 3],
+      [5, 1, 3, 0, 2, 4],
       [0, 3, 5, 4, 2, 1],
+      [1, 4, 0, 5, 3, 2],
+      [2, 5, 1, 0, 4, 3],
+      [3, 0, 2, 1, 5, 4],
+      [4, 1, 3, 2, 0, 5],
+      [5, 2, 4, 3, 1, 0],
       [0, 4, 1, 2, 5, 3],
+      [1, 5, 2, 3, 0, 4],
+      [2, 0, 3, 4, 1, 5],
+      [3, 1, 4, 5, 2, 0],
+      [4, 2, 5, 0, 3, 1],
+      [5, 3, 0, 1, 4, 2],
       [0, 5, 3, 4, 1, 2],
-      [0, 2, 5, 1, 4, 3]
+      [1, 0, 4, 5, 2, 3],
+      [2, 1, 5, 0, 3, 4],
+      [3, 2, 0, 1, 4, 5],
+      [4, 3, 1, 2, 5, 0],
+      [5, 4, 2, 3, 0, 1],
+      [0, 2, 5, 1, 4, 3],
+      [1, 3, 0, 2, 5, 4],
+      [2, 4, 1, 3, 0, 5],
+      [3, 5, 2, 4, 1, 0],
+      [4, 0, 3, 5, 2, 1],
+      [5, 1, 4, 0, 3, 2]
     ];
 
-    // Bilingual Text Dictionary
     const I18N = {
       zh: {
-        subtitle: '团队日程追踪',
+        subtitle: '团队日程追踪 (36组)',
         prev: '上一组',
         next: '下一组',
         groupOption: (i) => `第 ${i} 组`,
-        scheduleBadge: '日程路线',
+        scheduleBadge: '日程详情',
         scheduleTitle: (i) => `第 ${i} 组 · 活动日程`,
         thTime: '时间段',
         thStation: '环节项目',
@@ -261,12 +241,12 @@
         statusNext: '下一环节',
         statusDone: '已完成',
         statusWaiting: '待开始',
-        footerDuration: '',
+        footerDuration: '每环节 30 分钟 · 轮转 10 分钟',
         liveConcluded: '已结束',
         liveActive: '进行中'
       },
       en: {
-        subtitle: 'Team Schedule Tracker',
+        subtitle: 'Team Schedule Tracker (36 Teams)',
         prev: 'Previous',
         next: 'Next',
         groupOption: (i) => `Team ${i}`,
@@ -279,41 +259,26 @@
         statusNext: 'UP NEXT',
         statusDone: 'Done',
         statusWaiting: 'Upcoming',
-        footerDuration: '',
+        footerDuration: '30m Session · 10m Rotation',
         liveConcluded: 'Concluded',
         liveActive: 'Live Session'
       }
     };
 
-    function getGroupSchedule(gNum) {
-      const g = Math.max(1, Math.min(36, parseInt(gNum, 10) || 1));
-      const rowIndex = Math.floor((g - 1) / 6);
-      const colIndex = (g - 1) % 6;
-      const base = ROW_BASES[rowIndex];
-      return base.map(actId => (actId + colIndex) % 6);
-    }
-
     function getActiveSlotIndex() {
       const now = new Date();
       const currentMin = now.getHours() * 60 + now.getMinutes();
-
       for (let i = 0; i < TIME_SLOTS.length; i++) {
-        if (currentMin >= TIME_SLOTS[i].startMin && currentMin <= TIME_SLOTS[i].endMin) {
-          return i;
-        }
+        if (currentMin >= TIME_SLOTS[i].startMin && currentMin <= TIME_SLOTS[i].endMin) return i;
       }
       if (currentMin < TIME_SLOTS[0].startMin) return -1;
       if (currentMin > TIME_SLOTS[TIME_SLOTS.length - 1].endMin) return 99;
-
       for (let i = 0; i < TIME_SLOTS.length - 1; i++) {
-        if (currentMin > TIME_SLOTS[i].endMin && currentMin < TIME_SLOTS[i + 1].startMin) {
-          return i + 1;
-        }
+        if (currentMin > TIME_SLOTS[i].endMin && currentMin < TIME_SLOTS[i + 1].startMin) return i + 1;
       }
       return -1;
     }
 
-    // Audio SFX Engine
     async function initAudioEngine() {
       if (audioReady) return;
       try {
@@ -347,14 +312,11 @@
       }
     }
 
-    // Language Controller
     function setLanguage(lang) {
       currentLang = lang;
       playSwitchSound();
-
       const zhBtn = document.getElementById("langZhBtn");
       const enBtn = document.getElementById("langEnBtn");
-
       if (lang === 'zh') {
         zhBtn.className = "px-2.5 py-1 rounded-full font-bold transition-all bg-deloitte-green text-black";
         enBtn.className = "px-2.5 py-1 rounded-full font-semibold transition-all text-gray-400 hover:text-white";
@@ -362,7 +324,6 @@
         enBtn.className = "px-2.5 py-1 rounded-full font-bold transition-all bg-deloitte-green text-black";
         zhBtn.className = "px-2.5 py-1 rounded-full font-semibold transition-all text-gray-400 hover:text-white";
       }
-
       updateStaticTranslations();
       renderDropdownOptions();
       renderScheduleView();
@@ -384,7 +345,7 @@
       const select = document.getElementById("teamSelect");
       const t = I18N[currentLang];
       select.innerHTML = "";
-      for (let i = 1; i <= 36; i++) {
+      for (let i = 1; i <= TOTAL_TEAMS; i++) {
         const opt = document.createElement("option");
         opt.value = i;
         opt.textContent = t.groupOption(i);
@@ -396,7 +357,7 @@
     function renderPills() {
       const container = document.getElementById("teamPillsTrack");
       let html = "";
-      for (let i = 1; i <= 36; i++) {
+      for (let i = 1; i <= TOTAL_TEAMS; i++) {
         const isSelected = (i === currentTeam);
         const pillClass = isSelected
           ? "bg-deloitte-green text-black font-extrabold shadow-md border-deloitte-green scale-105"
@@ -410,7 +371,6 @@
       }
       container.innerHTML = html;
 
-      // Auto-center active pill
       const activePill = document.getElementById(`teamPill-${currentTeam}`);
       if (activePill) {
         activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
@@ -419,25 +379,23 @@
 
     function selectTeam(num) {
       playSwitchSound();
-      currentTeam = Math.max(1, Math.min(36, num));
-      
+      currentTeam = Math.max(1, Math.min(TOTAL_TEAMS, num));
       const select = document.getElementById("teamSelect");
       if (select) select.value = currentTeam;
-
       renderPills();
       renderScheduleView();
     }
 
     function changeGroup(delta) {
       let next = currentTeam + delta;
-      if (next < 1) next = 36;
-      if (next > 36) next = 1;
+      if (next < 1) next = TOTAL_TEAMS;
+      if (next > TOTAL_TEAMS) next = 1;
       selectTeam(next);
     }
 
     function renderScheduleView() {
       const t = I18N[currentLang];
-      const schedule = getGroupSchedule(currentTeam);
+      const schedule = SCHEDULE_MATRIX_36[currentTeam - 1];
       const activeSlot = getActiveSlotIndex();
 
       document.getElementById("scheduleTitle").textContent = t.scheduleTitle(currentTeam);
@@ -508,17 +466,14 @@
           </tr>
         `;
       }
-
       tbody.innerHTML = rowsHtml;
     }
 
-    // Keyboard Shortcuts
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft") changeGroup(-1);
       if (e.key === "ArrowRight") changeGroup(1);
     });
 
-    // Touch Swipe Support
     let touchStartX = 0;
     document.addEventListener("touchstart", (e) => {
       touchStartX = e.changedTouches[0].screenX;
@@ -533,13 +488,11 @@
       }
     }, { passive: true });
 
-    // Initialize
     window.onload = function() {
       updateStaticTranslations();
       renderDropdownOptions();
       renderPills();
       renderScheduleView();
-
       setInterval(renderScheduleView, 30000);
     };
 
