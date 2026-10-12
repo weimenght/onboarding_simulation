@@ -1240,16 +1240,16 @@
                                         <div className="overflow-x-auto custom-scrollbar">
                                             <table className="w-full text-left text-xs md:text-sm min-w-[500px]"><thead className="bg-slate-900 text-slate-400 border-b border-slate-800"><tr><th className="p-2">{t.employee}</th><th className="p-2">{t.system}</th><th className="p-2">{t.accessLevel}</th></tr></thead>
                                             <tbody className="divide-y divide-slate-800 text-slate-300">
-                                                <tr><td className="p-2">Marcus Bergstrom (EMP004)</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Administrator</td></tr>
-                                                <tr><td className="p-2">Marcus Bergstrom (EMP004)</td><td className="p-2">Model Training DB</td><td className="p-2">Administrator</td></tr>
-                                                <tr><td className="p-2">Marcus Bergstrom (EMP004)</td><td className="p-2">Customer Data Warehouse</td><td className="p-2">Administrator</td></tr>
-                                                <tr><td className="p-2">Daniel Reyes (EMP002)</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Standard User</td></tr>
-                                                <tr><td className="p-2">Priya Castillo (EMP009)</td><td className="p-2">Model Training DB</td><td className="p-2">Standard User</td></tr>
-                                                <tr><td className="p-2">Karim Castillo (EMP042)</td><td className="p-2">FTV-PROD-01</td><td className="p-2 text-amber-400">Administrator</td></tr>
+                                                <tr><td className="p-2">Marcus Bergstrom</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Administrator</td></tr>
+                                                <tr><td className="p-2">Marcus Bergstrom</td><td className="p-2">Model Training DB</td><td className="p-2">Administrator</td></tr>
+                                                <tr><td className="p-2">Marcus Bergstrom</td><td className="p-2">Customer Data Warehouse</td><td className="p-2">Administrator</td></tr>
+                                                <tr><td className="p-2">Daniel Reyes</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Standard User</td></tr>
+                                                <tr><td className="p-2">Priya Castillo</td><td className="p-2">Model Training DB</td><td className="p-2">Standard User</td></tr>
+                                                <tr><td className="p-2">Karim Castillo</td><td className="p-2">FTV-PROD-01</td><td className="p-2 text-amber-400">Administrator</td></tr>
                                                 <tr><td className="p-2">Elena Petrov (VP, Finance)</td><td className="p-2">Model Training DB</td><td className="p-2 text-amber-400">Administrator</td></tr>
                                             </tbody></table>
                                         </div>
-                                        <p className="text-[10px] md:text-xs text-slate-500 mt-4 border-t border-slate-800 pt-3"><i className="fa-solid fa-circle-exclamation text-amber-500"></i> {t.infraNote}</p>
+                                        <p className="text-[10px] md:text-xs text-slate-500 mt-4 border-t border-slate-800 pt-3"></p>
                                     </div>
                                 </div>
                             )}
@@ -1621,7 +1621,6 @@
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                                 {[
-                                                    // STRICT: Marcus Bergstrom only. Rejects EMP004, EMP001, Victoria Vance.
                                                     { k: 'puzzle1', t: t.identityMatch, p: t.empNameHint, e: ["MARCUS BERGSTROM", "MARCUS B.", "M. BERGSTROM"] },
                                                     { k: 'puzzle2', t: t.auditFlag, p: t.suspiciousTxn, e: ["TXN-8824", "TXN8824"] },
                                                     { k: 'puzzle3', t: t.executeAction, p: t.haltActionCode, e: ["VOID-WIRE-INTERCEPT", "VOID WIRE INTERCEPT", "VOIDWIREINTERCEPT", "VOID-WIRE", "VOID WIRE", "VOIDWIRE"] },
