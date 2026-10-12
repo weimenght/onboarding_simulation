@@ -219,14 +219,14 @@
                 strikeCountLabel: "Security Strikes",
                 // Clearance Proof & Ranking
                 groupNumLabel: "Assigned Group / Squad Number",
-                groupNumPlaceholder: "e.g. Group 12 / Team 04",
+                groupNumPlaceholder: "e.g. Group 12",
                 timestampLabel: "Official System Lockdown Timestamp (UTC+8)",
                 exportProofBtn: "Print / Export Clearance Proof (JPEG)",
                 exportingText: "Generating Anti-Tamper Proof...",
                 groupNumRequired: "Please enter your Group Number before generating the ranking certificate!",
                 watermarkNotice: "Anti-tamper digital watermarks and cryptographic seals are superimposed. Judges will rank squads based on this timestamp.",
                 certCardTitle: "Official Clearance & Leaderboard Verification",
-                rankingMetricNotice: "JUDGES RANKING METRIC // OFFICIAL TIME OF RECORD",
+                rankingMetricNotice: "OFFICIAL TIME OF RECORD",
                 downloadSuccess: "Proof exported successfully! Present the downloaded JPEG to the judging panel."
             },
             zh: {
@@ -346,14 +346,14 @@
                 strikeCountLabel: "安全告警次数",
                 // Clearance Proof & Ranking
                 groupNumLabel: "参赛小组编号",
-                groupNumPlaceholder: "例如 第12组 / Group 12",
+                groupNumPlaceholder: "例如 第12组",
                 timestampLabel: "系统锁定官方时间戳 (UTC+8)",
                 exportProofBtn: "打印 / 导出通关凭证 (JPEG)",
                 exportingText: "正在生成防伪凭证...",
                 groupNumRequired: "请先输入您的小组编号以生成官方排名凭证！",
                 watermarkNotice: "图片已叠加全幅防伪水印与数字验真印章。评委将以凭证中的 UTC+8 时间戳进行计时排名。",
                 certCardTitle: "官方审查通关记录与计分凭证",
-                rankingMetricNotice: "评委审核打分与排名核心凭证",
+                rankingMetricNotice: "排名核心凭证",
                 downloadSuccess: "凭证已成功导出！请将此图片提交给评委进行官方成绩核验。"
             }
         };
@@ -898,7 +898,7 @@
                     // 5. Header Section
                     ctx.fillStyle = '#f59e0b';
                     ctx.font = "bold 13px 'JetBrains Mono', monospace";
-                    ctx.fillText("DELOITTE UNIVERSITY // DAY 2 GEO-QUEST CAPSTONE // OFFICIAL AUDIT CLEARANCE", 70, 75);
+                    ctx.fillText("DELOITTE UNIVERSITY // DAY 2 GEO-QUEST // OFFICIAL CLEARANCE", 70, 75);
 
                     ctx.fillStyle = '#FFFFFF';
                     ctx.font = "bold 34px 'Urbanist', sans-serif";
@@ -929,7 +929,7 @@
                     // Subhead in Ranking Card
                     ctx.fillStyle = '#f59e0b';
                     ctx.font = "bold 12px 'JetBrains Mono', monospace";
-                    ctx.fillText("OFFICIAL RANKING METRIC // CONFIRMED LOCKDOWN TIMESTAMP (UTC+8):", 95, 195);
+                    ctx.fillText("OFFICIAL RANKING METRIC // CONFIRMED LOCKDOWN TIMESTAMP:", 95, 195);
 
                     // Big Timestamp
                     ctx.fillStyle = '#86BC25';
@@ -939,7 +939,7 @@
                     // Group Number in Ranking Card (Right side)
                     ctx.fillStyle = '#94a3b8';
                     ctx.font = "bold 13px 'JetBrains Mono', monospace";
-                    ctx.fillText("AUTHENTICATED SQUAD / GROUP:", 780, 195);
+                    ctx.fillText("AUTHENTICATED GROUP:", 780, 195);
                     ctx.fillStyle = '#FFFFFF';
                     ctx.font = "bold 36px 'Urbanist', sans-serif";
                     ctx.fillText(cleanGroup.toUpperCase(), 780, 245);
@@ -1029,7 +1029,7 @@
                     ctx.fillText("VERIFIED", 0, 10);
                     ctx.font = "9px 'JetBrains Mono', monospace";
                     ctx.fillStyle = '#94a3b8';
-                    ctx.fillText("2026 AUDIT", 0, 26);
+                    ctx.fillText("2026 DU", 0, 26);
                     ctx.restore();
 
                     // 8. Bottom Anti-Tamper Notice for Judges
@@ -1050,7 +1050,7 @@
 
                     ctx.fillStyle = '#94a3b8';
                     ctx.font = "11px 'JetBrains Mono', monospace";
-                    ctx.fillText("Project Sunrise Simulator • Built for DeloitteLand A1 Orientation • All Evidence Cryptographically Logged", 70, 855);
+                    ctx.fillText("Project Sunrise • Built for DeloitteLand • All Evidence Cryptographically Logged", 70, 855);
 
                     // 9. Download as JPEG
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
@@ -1088,7 +1088,7 @@
                         
                         const newStrikes = strikeCount + 1;
                         setStrikeCount(newStrikes);
-                        if (newStrikes >= 3) {
+                        if (newStrikes >= 5) {
                             setLockoutTimer(60);
                             setStrikeCount(0);
                         }
