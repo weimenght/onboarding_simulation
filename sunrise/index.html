@@ -771,11 +771,7 @@
                 // Punishes players who identify BVI + Shell Mismatch, but assumed CHIPS settled the USD wire
                 { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "CHIPS", anomaly: t.pAnom5, code: "INTERCEPT-OFFSHORE-USD", gateway: "CHP-BVI-ROUTING", hash: "HASH-8815-BVI" },
             
-                // DISTRACTOR 3: Threshold & Jurisdiction Trap (> $20M + Shell Mismatch in Panama)
-                // Punishes players who look for "> $20M" and guess an offshore tax haven without checking the BVI log
-                { tier: t.pTier4, cap: "> $20,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom5, code: "BLOCK-SHELL-SETTLEMENT", gateway: "GATE-PANAMA-INTERCEPT", hash: "HASH-7780" },
-            
-                // DISTRACTOR 4: Signatory Trap (Unauthorized Signatory in EDD)
+                // DISTRACTOR 3: Signatory Trap (Unauthorized Signatory in EDD)
                 // Punishes players who think Victoria Vance signing it counts as an unauthorized signatory breach
                 { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom3, code: "SUSPEND-SIGNATORY-FLAG", gateway: "GATE-MALTA-AUDIT", hash: "HASH-6640" },
             
@@ -1265,7 +1261,7 @@
                                                 <tr><td className="p-2">Daniel Reyes</td><td className="p-2">FTV-PROD-01</td><td className="p-2">Standard User</td></tr>
                                                 <tr><td className="p-2">Priya Castillo</td><td className="p-2">Model Training DB</td><td className="p-2">Standard User</td></tr>
                                                 <tr><td className="p-2">Karim Castillo</td><td className="p-2">FTV-PROD-01</td><td className="p-2 text-amber-400">Administrator</td></tr>
-                                                <tr><td className="p-2">Elena Petrov (VP, Finance)</td><td className="p-2">Model Training DB</td><td className="p-2 text-amber-400">Administrator</td></tr>
+                                                <tr><td className="p-2">Elena Petrov</td><td className="p-2">Model Training DB</td><td className="p-2 text-amber-400">Administrator</td></tr>
                                             </tbody></table>
                                         </div>
                                         <p className="text-[10px] md:text-xs text-slate-500 mt-4 border-t border-slate-800 pt-3"></p>
