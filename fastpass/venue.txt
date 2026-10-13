@@ -1,0 +1,6 @@
+0: 3F 培训室 A / 3F Training Room A
+1: 3F 培训室 B / 3F Training Room B
+2: 4F 会议室 1 / 4F Meeting Room 1
+3: 4F 会议室 2 / 4F Meeting Room 2
+4: 5F 创新中心 / 5F Innovation Hub
+5: 5F 报告厅 / 5F Auditorium
