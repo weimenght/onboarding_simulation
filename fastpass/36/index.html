@@ -141,11 +141,12 @@
       </div>
 
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-left border-collapse min-w-[560px] sm:min-w-full">
           <thead>
             <tr class="border-b border-white/10 text-xs font-bold text-gray-400 bg-white/[0.02]">
-              <th id="thTime" class="py-3 px-4 w-36 font-mono">时间段</th>
+              <th id="thTime" class="py-3 px-4 w-32 sm:w-36 font-mono">时间段</th>
               <th id="thStation" class="py-3 px-4">环节项目</th>
+              <th id="thVenue" class="py-3 px-4 w-36 sm:w-44">活动地点</th>
               <th id="thStatus" class="py-3 px-4 text-right w-28">状态</th>
             </tr>
           </thead>
@@ -185,6 +186,15 @@
       3: { zh: '勤业智库', en: 'Knowledge Clash', icon: 'fa-brain' },
       4: { zh: '情商罗盘', en: 'EQ Matrix', icon: 'fa-compass' },
       5: { zh: 'AI纪元', en: 'The AI Era', icon: 'fa-microchip' }
+    };
+
+    let stationVenues = {
+      0: { zh: '场地 1', en: 'Venue 1' },
+      1: { zh: '场地 2', en: 'Venue 2' },
+      2: { zh: '场地 3', en: 'Venue 3' },
+      3: { zh: '场地 4', en: 'Venue 4' },
+      4: { zh: '场地 5', en: 'Venue 5' },
+      5: { zh: '场地 6', en: 'Venue 6' }
     };
 
     const SCHEDULE_MATRIX_36 = [
@@ -236,6 +246,7 @@
         scheduleTitle: (i) => `第 ${i} 组 · 活动日程`,
         thTime: '时间段',
         thStation: '环节项目',
+        thVenue: '活动地点',
         thStatus: '状态',
         statusNow: '进行中',
         statusNext: '下一环节',
@@ -254,6 +265,7 @@
         scheduleTitle: (i) => `Team ${i} · Schedule`,
         thTime: 'Time Slot',
         thStation: 'Station / Activity',
+        thVenue: 'Venue',
         thStatus: 'Status',
         statusNow: 'IN PROGRESS',
         statusNext: 'UP NEXT',
@@ -264,6 +276,92 @@
         liveActive: 'Live Session'
       }
     };
+
+    function parseVenueText(text) {
+      const venues = {};
+      if (!text || typeof text !== 'string') return venues;
+
+      const rawLines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('#'));
+      if (rawLines.length === 0) return venues;
+
+      function parseBilingual(val) {
+        if (val.includes('|')) {
+          const [zh, en] = val.split('|').map(s => s.trim());
+          return { zh: zh || val, en: en || zh || val };
+        }
+        if (val.includes('/')) {
+          const [zh, en] = val.split('/').map(s => s.trim());
+          return { zh: zh || val, en: en || zh || val };
+        }
+        return { zh: val, en: val };
+      }
+
+      const kvPairs = [];
+      for (const line of rawLines) {
+        const sepIdx = line.search(/[:=：]/);
+        if (sepIdx !== -1) {
+          const key = line.slice(0, sepIdx).trim();
+          const val = line.slice(sepIdx + 1).trim();
+          kvPairs.push({ key, val });
+        }
+      }
+
+      if (kvPairs.length > 0) {
+        const hasZero = kvPairs.some(p => p.key.replace(/\D/g, '') === '0');
+        let matchedAny = false;
+
+        for (const { key, val } of kvPairs) {
+          const cleanKey = key.toLowerCase();
+          
+          let nameMatched = false;
+          for (const [idStr, stObj] of Object.entries(STATIONS)) {
+            if (cleanKey.includes(stObj.zh.toLowerCase()) || cleanKey.includes(stObj.en.toLowerCase())) {
+              venues[parseInt(idStr, 10)] = parseBilingual(val);
+              nameMatched = true;
+              matchedAny = true;
+              break;
+            }
+          }
+          if (nameMatched) continue;
+
+          const numMatch = cleanKey.match(/\d+/);
+          if (numMatch) {
+            const num = parseInt(numMatch[0], 10);
+            const idx = hasZero ? num : (num >= 1 && num <= 6 ? num - 1 : num);
+            if (idx >= 0 && idx <= 5) {
+              venues[idx] = parseBilingual(val);
+              matchedAny = true;
+            }
+          }
+        }
+
+        if (matchedAny) return venues;
+      }
+
+      for (let i = 0; i < Math.min(rawLines.length, 6); i++) {
+        venues[i] = parseBilingual(rawLines[i]);
+      }
+
+      return venues;
+    }
+
+    async function loadVenueData() {
+      const candidates = ['../venue.txt', 'venue.txt'];
+      for (const path of candidates) {
+        try {
+          const res = await fetch(path);
+          if (res.ok) {
+            const text = await res.text();
+            const parsed = parseVenueText(text);
+            if (Object.keys(parsed).length > 0) {
+              stationVenues = { ...stationVenues, ...parsed };
+              renderScheduleView();
+              return;
+            }
+          }
+        } catch (err) {}
+      }
+    }
 
     function getActiveSlotIndex() {
       const now = new Date();
@@ -336,6 +434,7 @@
       document.getElementById("nextBtnText").textContent = t.next;
       document.getElementById("thTime").textContent = t.thTime;
       document.getElementById("thStation").textContent = t.thStation;
+      document.getElementById("thVenue").textContent = t.thVenue;
       document.getElementById("thStatus").textContent = t.thStatus;
       document.getElementById("scheduleBadge").textContent = t.scheduleBadge;
       document.getElementById("footerDuration").textContent = t.footerDuration;
@@ -414,8 +513,12 @@
 
       for (let i = 0; i < 6; i++) {
         const slot = TIME_SLOTS[i];
-        const station = STATIONS[schedule[i]];
+        const stationIdx = schedule[i];
+        const station = STATIONS[stationIdx];
         const isCurrent = (i === activeSlot);
+
+        const venueObj = stationVenues[stationIdx] || { zh: `场地 ${stationIdx + 1}`, en: `Venue ${stationIdx + 1}` };
+        const venueName = currentLang === 'zh' ? venueObj.zh : venueObj.en;
 
         let rowBg = isCurrent ? "bg-deloitte-green/10" : "hover:bg-white/[0.02]";
         let timeColor = isCurrent ? "text-deloitte-green font-extrabold" : "text-gray-300";
@@ -460,6 +563,12 @@
                 <span class="font-bold text-white text-xs sm:text-sm">${stationName}</span>
               </div>
             </td>
+            <td class="py-3.5 px-4">
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs sm:text-sm font-medium text-gray-200">
+                <i class="fa-solid fa-location-dot text-deloitte-green text-xs flex-shrink-0"></i>
+                <span class="truncate max-w-[130px] sm:max-w-[200px]" title="${venueName}">${venueName}</span>
+              </div>
+            </td>
             <td class="py-3.5 px-4 text-right">
               ${statusBadge}
             </td>
@@ -493,7 +602,9 @@
       renderDropdownOptions();
       renderPills();
       renderScheduleView();
+      loadVenueData();
       setInterval(renderScheduleView, 30000);
+      setInterval(loadVenueData, 60000);
     };
 
     document.addEventListener("click", () => {
