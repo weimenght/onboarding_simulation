@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding Admin Portal 管理控制台</title>
+  
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            deloitte: {
+              green: '#86BC25',
+              darkgreen: '#568819',
+              teal: '#004F59',
+              navy: '#002776',
+              black: '#080b11',
+              cardbg: '#121620',
+              cardborder: '#1f2637',
+              slate: '#1a202c',
+              gray: '#868D96',
+              lightgray: '#DCE0E5'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif'],
+            cn: ['"Noto Sans SC"', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      background-color: #080b11;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(134, 188, 37, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(0, 79, 89, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.06) 0%, transparent 60%);
+      min-height: 100vh;
+    }
+
+    .deloitte-dot {
+      display: inline-block;
+      width: 0.58em;
+      height: 0.58em;
+      background-color: #86BC25;
+      border-radius: 50%;
+      margin-left: 0.12em;
+      vertical-align: baseline;
+      box-shadow: 0 0 14px rgba(134, 188, 37, 0.8);
+    }
+
+    .card-shadow {
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.07);
+    }
+
+    .button-press { transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1); }
+    .button-press:active { transform: scale(0.97) translateY(2px); }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake-error { animation: shake 0.4s ease-in-out; }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  </style>
+</head>
+
+<body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+
+  <!-- Gate / Login Overlay -->
+  <div id="passwordGate" class="fixed inset-0 z-50 flex items-center justify-center bg-[#080b11] p-4">
+    <div id="gateCard" class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center animate-fade-in relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-32 h-32 bg-deloitte-green/15 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="space-y-3 relative z-10">
+        <div class="w-16 h-16 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-2xl mx-auto shadow-lg shadow-deloitte-green/20">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-black text-white">Onboarding<span class="deloitte-dot"></span> Admin</h1>
+          <p class="text-xs text-gray-400 mt-1 font-cn">请登录管理员账号以访问控制台<br><span class="text-[11px] text-gray-500">Sign in with authorized administrator credentials</span></p>
+        </div>
+      </div>
+
+      <!-- Supabase Login Form -->
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-3.5 relative z-10 text-left">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">账号 / Email</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-envelope"></i>
+            </span>
+            <input id="emailInput" type="email" placeholder="admin@deloitte.com" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">密码 / Password</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-10 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs transition-colors" title="显示/隐藏密码">
+              <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <p id="errorMessage" class="hidden text-xs text-rose-400 font-semibold font-cn flex items-center gap-1.5 pt-1">
+          <i class="fa-solid fa-circle-exclamation text-rose-500 shrink-0"></i>
+          <span id="errorText">账号或密码错误 / Invalid credentials</span>
+        </p>
+
+        <button id="submitBtn" type="submit" class="button-press w-full mt-2 py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+          <span id="btnText">验证并登录 · Sign In</span>
+        </button>
+      </form>
+
+      <p class="text-[11px] text-gray-500 font-mono relative z-10 pt-2 border-t border-white/10">Protected by Supabase Auth</p>
+    </div>
+  </div>
+
+  <!-- Main Authenticated Admin Portal -->
+  <div id="mainAdminContent" class="hidden flex-col justify-between min-h-screen">
+    <header class="w-full border-b border-white/10 bg-deloitte-black/80 backdrop-blur-md sticky top-0 z-40">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-sm">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div>
+            <span class="font-black text-lg text-white">Onboarding<span class="deloitte-dot"></span></span>
+            <span class="ml-1 text-xs text-gray-400 font-bold">Admin Portal</span>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <span id="userEmailTag" class="hidden sm:inline-block text-xs font-mono text-gray-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full truncate max-w-[200px]"></span>
+          <button type="button" onclick="handleLogout()" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 hover:border-rose-500/30 border border-white/10 text-gray-300 hover:text-rose-300 transition-all flex items-center gap-2">
+            <i class="fa-solid fa-arrow-right-from-bracket text-xs text-deloitte-green"></i>
+            <span>退出 · Sign Out</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12 space-y-8 animate-fade-in">
+      <div class="text-center sm:text-left space-y-2 border-b border-white/10 pb-6">
+        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">项目链接控制台</h1>
+        <p class="text-sm text-gray-400 font-cn">点击下方各个页面的跳转按钮进入对应的应用系统。<br><span class="text-xs text-gray-500">Click any button below to navigate to the corresponding web application.</span></p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- 01: D.Signal -->
+        <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">01</span>
+              <h2 class="text-lg sm:text-xl font-black text-white">D.Signal 信号解密</h2>
+            </div>
+            <p class="text-xs text-gray-500">Signal decoding experience</p>
+          </div>
+          <a href="https://www.projectsunrise.win/signal" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
+            <span>打开 D.Signal</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+        </div>
+
+        <!-- 02: Knowledge Clash -->
+        <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">02</span>
+              <h2 class="text-lg sm:text-xl font-black text-white">Knowledge Clash 勤业智库</h2>
+            </div>
+            <p class="text-xs text-gray-500">Knowledge challenge</p>
+          </div>
+          <a href="https://www.projectsunrise.win/knowledge" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
+            <span>打开 Knowledge Clash</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+        </div>
+
+        <!-- 03: FastPass (24 / 36 / 48) -->
+        <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">03</span>
+              <h2 class="text-lg sm:text-xl font-black text-white">FastPass 快速通行证 (24 / 36 / 48 组)</h2>
+            </div>
+            <p class="text-xs text-gray-500">Multi-team session routing & real-time schedule tracking</p>
+            <div class="inline-flex items-center gap-2 text-[11px] text-gray-400 bg-black/40 border border-white/10 rounded-lg px-2.5 py-1.5 font-mono">
+              <i class="fa-solid fa-pen-to-square text-lime-400"></i>
+              <span>配置提示：编辑 <code class="text-lime-300 font-bold bg-white/5 px-1 py-0.5 rounded">~/fastpass/venue.txt</code> 可同步更新 6 站活动地点</span>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <a href="https://projectsunrise.win/fastpass/24" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+              <span>FastPass (24)</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+            <a href="https://projectsunrise.win/fastpass/36" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+              <span>FastPass (36)</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+            <a href="https://projectsunrise.win/fastpass/48" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+              <span>FastPass (48)</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- 04: QR Code Stations -->
+        <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-500/15 text-teal-400 border border-teal-500/30">04</span>
+              <h2 class="text-lg sm:text-xl font-black text-white">QR Code 打卡码站点</h2>
+            </div>
+            <p class="text-xs text-gray-500">Station QR code hub & live verification displays</p>
+            <div class="inline-flex items-center gap-2 text-[11px] text-gray-400 bg-black/40 border border-white/10 rounded-lg px-2.5 py-1.5 font-mono">
+              <i class="fa-solid fa-image text-teal-400"></i>
+              <span>配置提示：替换 <code class="text-teal-300 font-bold bg-white/5 px-1 py-0.5 rounded">~/qr/assets</code> 中的图片可更新各环节二维码</span>
+            </div>
+          </div>
+          <a href="https://projectsunrise.win/qr" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-teal-400 hover:bg-teal-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
+            <span>打开 QR 站点</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+        </div>
+
+        <!-- 05: Business Chemistry -->
+        <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">05</span>
+              <h2 class="text-lg sm:text-xl font-black text-white">Business Chemistry 商业化学指南</h2>
+            </div>
+            <p class="text-xs text-gray-500">Business chemistry guide</p>
+          </div>
+          <a href="https://www.projectsunrise.win/bc" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
+            <span>打开 Chemistry</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+        </div>
+
+        <!-- 06: D-Pixel Rush -->
+        <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">06</span>
+              <h2 class="text-lg sm:text-xl font-black text-white">D-Rush: Green Dot Odyssey</h2>
+            </div>
+            <p class="text-xs text-gray-500">Interactive pixel game</p>
+          </div>
+          <a href="https://www.projectsunrise.win/game" target="_blank" rel="noopener noreferrer" class="button-press shrink-0 px-6 py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
+            <span>进入 D-Rush</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+        </div>
+
+        <!-- 07: Project Sunrise & Quest Nodes -->
+        <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">07</span>
+              <h2 class="text-lg sm:text-xl font-black text-white">Project Sunrise</h2>
+            </div>
+            <p class="text-xs text-gray-500">Event hub home page & quest checkpoint nodes</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <a href="https://www.projectsunrise.win/sunrise" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+              <span>Sunrise 主站</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/diyiguan" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+              <span>Node 1</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/niveldos" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+              <span>Node 2</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/sankyu" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+              <span>Node 3</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // 1. SUPABASE CONFIGURATION
+    // Replace these values with your project credentials
+    // -------------------------------------------------------------
+    const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // -------------------------------------------------------------
+    // 2. AUTH STATE & SESSION CHECK
+    // -------------------------------------------------------------
+    window.addEventListener('load', async () => {
+      // Check if user already has an active session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        renderAuthorized(session.user);
+      } else {
+        document.getElementById('emailInput').focus();
+      }
+
+      // Listen for auth events (sign in, sign out, token refresh)
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          renderAuthorized(session.user);
+        } else if (event === 'SIGNED_OUT') {
+          renderLocked();
+        }
+      });
+    });
+
+    // -------------------------------------------------------------
+    // 3. LOGIN SUBMISSION
+    // -------------------------------------------------------------
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const errorEl = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const gateCard = document.getElementById('gateCard');
+
+      // Loading UI State
+      submitBtn.disabled = true;
+      btnText.textContent = "验证中 · Verifying...";
+      submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      // Restore UI State
+      submitBtn.disabled = false;
+      btnText.textContent = "验证并登录 · Sign In";
+      submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+
+      if (error) {
+        errorText.textContent = error.message || "账号或密码错误 / Invalid credentials";
+        errorEl.classList.remove('hidden');
+
+        // Trigger card shake animation on error
+        gateCard.classList.remove('shake-error');
+        void gateCard.offsetWidth; // Force CSS repaint
+        gateCard.classList.add('shake-error');
+        document.getElementById('passwordInput').focus();
+      } else {
+        errorEl.classList.add('hidden');
+        renderAuthorized(data.user);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 4. LOGOUT / LOCK ACTION
+    // -------------------------------------------------------------
+    async function handleLogout() {
+      await supabase.auth.signOut();
+    }
+
+    // -------------------------------------------------------------
+    // 5. VIEW TOGGLE HELPERS
+    // -------------------------------------------------------------
+    function renderAuthorized(user) {
+      document.getElementById('passwordGate').classList.add('hidden');
+      document.getElementById('mainAdminContent').classList.remove('hidden');
+      document.getElementById('mainAdminContent').classList.add('flex');
+
+      if (user && user.email) {
+        const userTag = document.getElementById('userEmailTag');
+        userTag.textContent = user.email;
+        userTag.classList.remove('hidden');
+      }
+    }
+
+    function renderLocked() {
+      document.getElementById('mainAdminContent').classList.add('hidden');
+      document.getElementById('mainAdminContent').classList.remove('flex');
+      document.getElementById('passwordGate').classList.remove('hidden');
+
+      const passwordInput = document.getElementById('passwordInput');
+      if (passwordInput) passwordInput.value = '';
+      document.getElementById('errorMessage').classList.add('hidden');
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('passwordInput');
+      const icon = document.getElementById('toggleEyeIcon');
+      const visible = input.type === 'password';
+      input.type = visible ? 'text' : 'password';
+      icon.className = visible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    }
+  </script>
+</body>
+</html>
