@@ -152,7 +152,7 @@
                 terminalProgress: "Decryption Progress",
                 jumpToNode: "Jump to Node",
                 identityMatch: "Identity Match",
-                empNameHint: "Employee Full Legal Name (e.g. Ana Farah)",
+                empNameHint: "Employee Full Legal Name (e.g. John Doe)",
                 auditFlag: "Audit Flag",
                 suspiciousTxn: "Suspicious TXN ID (e.g. TXN0001)",
                 executeAction: "Execute Action",
@@ -215,8 +215,9 @@
                 // Anti-Brute-Force Lockout UI
                 lockoutTitle: "SECURITY FIREWALL ENGAGED",
                 lockoutDesc: "Repeated invalid authentication vectors detected. Terminal input frozen for security cooling:",
-                badgeEnumWarning: "You must identify the employee by Full Legal Name (e.g. Victoria Vance), not employee badge numbers.",
+                badgeEnumWarning: "You must identify the employee by Full Legal Name (e.g. John Doe), not employee badge numbers.",
                 strikeCountLabel: "Security Strikes",
+                nextFreezeLabel: "Next Freeze at",
                 // Clearance Proof & Ranking
                 groupNumLabel: "Assigned Group / Squad Number",
                 groupNumPlaceholder: "e.g. Group 12",
@@ -279,7 +280,7 @@
                 terminalProgress: "解密进度",
                 jumpToNode: "前往节点",
                 identityMatch: "身份匹配",
-                empNameHint: "员工法定全名 (例如 Victoria Vance)",
+                empNameHint: "员工法定全名 (例如 John Doe)",
                 auditFlag: "审计标记",
                 suspiciousTxn: "可疑交易ID (例如 TXN0001)",
                 executeAction: "执行行动",
@@ -342,8 +343,9 @@
                 // Anti-Brute-Force Lockout UI
                 lockoutTitle: "安全防火墙已激活",
                 lockoutDesc: "检测到连续无效认证尝试。系统终端输入已进入安全冷却锁定状态：",
-                badgeEnumWarning: "系统要求输入涉案人员的法定全名 (例如 Victoria Vance)，严禁使用纯工号代号。",
+                badgeEnumWarning: "系统要求输入涉案人员的法定全名 (例如 John Doe)，严禁使用纯工号代号。",
                 strikeCountLabel: "安全告警次数",
+                nextFreezeLabel: "下次锁定阈值",
                 // Clearance Proof & Ranking
                 groupNumLabel: "参赛小组编号",
                 groupNumPlaceholder: "例如 第12组",
@@ -474,9 +476,15 @@
         // RAW DATA PIPELINES (Over 140+ log entries with distractor change tickets & false alerts)
         const rawLogs = `02:00|System Initialization Check|SYSTEM|OK|—^02:02|Network Route Sync|SYSTEM|OK|—^02:05|Cache Warmer Service|SYSTEM|OK|—^02:08|Login|EMP009|OK|—^02:11|Database Index Scan|SYSTEM|OK|—^02:12|Routine Scan Complete|EMP004|OK|CHG-4410^02:14|Session Renewed|EMP009|OK|—^02:16|API Gateway Health|SYSTEM|OK|—^02:18|DATA_SCRUB_SANDBOX|SYSTEM|OK|CHG-4410^02:20|Memory Pool Alloc|SYSTEM|OK|—^02:22|Model_Inference_Check|EMP004|OK|—^02:24|Privilege Escalation|EMP022|WARNING|CHG-4425^02:26|ROOT_LOGIN_ATTEMPT|EMP042|CRITICAL|—^02:27|Security Sandbox Alert|SYSTEM|WARNING|—^02:28|Session Terminated|EMP042|OK|—^02:30|Backup Started|SYSTEM|OK|—^02:31|Backup Running|SYSTEM|OK|—^02:32|Backup Completed|SYSTEM|OK|—^02:33|Login|EMP002|OK|—^02:34|API Authentication|EMP002|OK|—^02:35|Report Export|EMP002|OK|—^02:36|Logout|EMP002|OK|—^02:37|Security Scan|SYSTEM|OK|—^02:38|PII_DATA_SCRUB_TEST|EMP012|WARNING|CHG-4462^02:39|Cache Cleanup|SYSTEM|OK|—^02:40|Memory Allocation|SYSTEM|OK|—^02:41|Database Optimization|SYSTEM|OK|—^02:42|Email Sync|SYSTEM|OK|—^02:43|Session Renewed|SYSTEM|OK|—^02:44|SSL_CERT_VALIDATION_FAILURE|SYSTEM|WARNING|—^02:45|Disk Usage Check|SYSTEM|OK|—^02:46|Routine Scan|SYSTEM|OK|—^^02:47|Connection Pool Refresh|SYSTEM|OK|—^02:48|Login|EMP001|OK|—^02:49|Firewall Rule Sync|SYSTEM|OK|—^02:50|Load Balancer Check|SYSTEM|OK|—^02:51|Login|EMP004|OK|—^02:52|Privilege Escalation|EMP004|WARNING|CHG-4471^02:53|Model_Output_Export|EMP004|WARNING|CHG-4471^02:54|Audit_Log_Archive|SYSTEM|OK|—^02:55|Database Compression|SYSTEM|OK|—^02:56|Health Check|SYSTEM|OK|—^02:57|Index_Rebuild_Bypass|EMP004|WARNING|CHG-4471^02:59|Cache Cleanup|SYSTEM|OK|—^03:00|SWIFT_EDD_WIRE_DISPATCH [BVI]|EMP001|CRITICAL|—^03:00|DATA_SCRUB_EXECUTED|EMP004|CRITICAL|CHG-4471^03:01|Audit_Trail_Truncate|EMP004|CRITICAL|CHG-4471^03:02|Logout|EMP004|OK|—^03:03|Logout|EMP001|OK|—^03:04|Routine Scan|SYSTEM|OK|—^03:05|Memory Allocation|SYSTEM|OK|—^03:06|Index Rebuild|SYSTEM|OK|—^03:07|Login|EMP009|OK|—^03:08|Login|EMP005|OK|—^03:09|Backup Running|SYSTEM|OK|—^03:10|Index Rebuild|SYSTEM|OK|—^03:11|Queue Processed|SYSTEM|OK|—^03:12|Backup Started|SYSTEM|OK|—^03:13|Database Optimization|SYSTEM|OK|—^03:14|DATA_SCRUB_AUTO_PURGE|SYSTEM|OK|CHG-4468^03:15|Audit_Log_Archive|EMP021|WARNING|CHG-4472^03:16|Patch Verification|SYSTEM|OK|—^03:17|Login|EMP009|OK|—^03:18|UNAUTHORIZED_PORT_PROBE|SYSTEM|WARNING|SEC-8812^03:19|Backup Completed|SYSTEM|OK|—^03:20|Index Rebuild|SYSTEM|OK|—^03:21|Login|EMP009|OK|—^03:22|Routine Scan|SYSTEM|OK|—^03:23|API Request|SYSTEM|OK|—^03:24|Password Reset|EMP005|OK|—^03:25|MASS_RECORD_DELETION|EMP009|WARNING|CHG-4450^03:26|Cache Cleanup|SYSTEM|OK|—^03:27|Connection Pool Refresh|SYSTEM|OK|—^03:28|Routine Scan|SYSTEM|OK|—^03:29|Login|EMP007|OK|—^03:30|API Request|SYSTEM|OK|—^03:31|Database Optimization|SYSTEM|OK|—^03:32|Privilege Escalation|EMP041|WARNING|CHG-4417^03:33|Logout|EMP009|OK|—^03:34|Replication Sync|SYSTEM|OK|—^03:35|Disk Usage Check|SYSTEM|OK|—^03:36|Health Check|SYSTEM|OK|—^03:37|Backup Completed|SYSTEM|OK|—^03:38|Backup Validation|SYSTEM|OK|—^03:39|Log Rotation|SYSTEM|OK|—^03:40|Database Export|EMP017|WARNING|CHG-4485^03:41|Disk Usage Check|SYSTEM|OK|—^03:42|DNS Cache Refresh|SYSTEM|OK|—^03:43|Connection Pool Refresh|SYSTEM|OK|—^03:44|Login|EMP003|OK|—^03:45|ANONYMIZED_DATA_SCRUB|EMP021|WARNING|CHG-4470^03:46|Load Balancer Check|SYSTEM|OK|—^03:47|Backup Validation|SYSTEM|OK|—^03:48|Memory Allocation|SYSTEM|OK|—^03:49|API Authentication|SYSTEM|OK|—^03:50|Cache Refresh|SYSTEM|OK|—^03:51|Logout|EMP003|OK|—^03:52|DATA_SCRUB_MASK_EXPORT|EMP002|WARNING|CHG-4477^03:53|Connection Pool Refresh|SYSTEM|OK|—^03:54|Replication Sync|SYSTEM|OK|—^03:55|MULTIPLE_FAILED_AUTH|EMP018|WARNING|—^03:56|Cache Refresh|SYSTEM|OK|—^03:57|Index Rebuild|SYSTEM|OK|—^03:58|Patch Verification|SYSTEM|OK|—^03:59|Login|EMP009|OK|—^04:00|Report Export|SYSTEM|OK|—^04:01|Database Compression|SYSTEM|OK|—^04:02|Privilege Escalation|EMP012|WARNING|CHG-4473^04:03|Session Renewed|SYSTEM|OK|—^04:04|Scheduled Job Completed|SYSTEM|OK|—^04:05|DATA_SCRUB_ANONYMIZED_Q2|SYSTEM|OK|CHG-4482^04:06|Database Optimization|SYSTEM|OK|—^04:07|Temp File Cleanup|SYSTEM|OK|—^04:08|Disk Usage Check|SYSTEM|OK|—^04:09|Cache Refresh|SYSTEM|OK|—^04:10|Customer_Data_Export|EMP006|WARNING|CHG-4478^04:11|Session Renewed|SYSTEM|OK|—^04:12|FIREWALL_BYPASS_ATTEMPT|EMP012|CRITICAL|—^04:13|API Authentication|SYSTEM|OK|—^04:14|Login|EMP011|OK|—^04:15|Customer Record Removal|EMP003|WARNING|CHG-4741^04:16|Memory Allocation|SYSTEM|OK|—^04:17|Replication Sync|SYSTEM|OK|—^04:18|DATA_SCRUB_STAGING_ENV|EMP032|WARNING|CHG-4482^04:19|Index Rebuild|SYSTEM|OK|—^04:20|Log Archive|SYSTEM|OK|—^04:21|Backup Validation|SYSTEM|OK|—^04:22|Routine Scan|SYSTEM|OK|—^04:23|Temp File Cleanup|SYSTEM|OK|—^04:24|Email Queue Refresh|SYSTEM|OK|—^04:25|Patch Verification|SYSTEM|OK|—^04:26|Database Export|EMP009|OK|—^04:27|Email Sync|SYSTEM|OK|—^04:28|Login|EMP021|OK|—^04:29|Backup Completed|SYSTEM|OK|—^04:30|API Request|SYSTEM|OK|—^04:31|Report Generated|SYSTEM|OK|—^04:32|Log Rotation|SYSTEM|OK|—^04:33|Firewall Rule Sync|SYSTEM|OK|—^04:34|Firewall Rule Sync|SYSTEM|OK|—^04:35|Privilege Escalation|EMP021|WARNING|—^04:36|Session Ping|EMP004|OK|—^04:37|Certificate Renewal Check|SYSTEM|OK|—^04:38|Connection Pool Refresh|SYSTEM|OK|—^04:39|Health Check|SYSTEM|OK|—^04:40|Cache Cleanup|SYSTEM|OK|—^04:41|Logout|EMP021|OK|—^04:42|Audit_Log_Archive|EMP022|WARNING|CHG-4472^04:43|Log Archive|SYSTEM|OK|—^04:44|Memory Allocation|SYSTEM|OK|—^04:45|Report Generated|SYSTEM|OK|—^04:46|API Request|SYSTEM|OK|—^04:47|API_RATE_LIMIT_EXCEEDED|EMP007|WARNING|—^04:48|Login|EMP018|OK|—^04:49|Email Queue Refresh|SYSTEM|OK|—`;
         
-        const rawLedger = `TXN8801|03:05|Delta Point Services Ltd|V8825|298,596.42 KRW|VP, Finance|CLEARED^TXN8802|03:49|Anchor Systems Ltd|V8813|433,778.67 AED|Controller, AP|CLEARED^TXN8803|02:53|Apex Solutions Holdings|V8805|278,826.07 EUR|Finance Manager|CLEARED^TXN8804|03:03|Everline Holdings Holdings|V8842|359,169.59 DKK|AP Supervisor|CLEARED^TXN8805|03:12|Prescott Trading LLC|V8847|255,512.86 AED|Finance Manager|CLEARED^TXN8806|03:56|Bellwood Services Co|V8862|464,393.28 USD|Controller, AP|CLEARED^TXN8807|03:27|Anchor Services Solutions|V8860|462,244.44 NOK|VP, Finance|CLEARED^TXN8808|04:03|Redwood Trading Partners|V8851|464,338.57 EUR|Controller, AP|CLEARED^TXN8809|04:26|Redwood Trading Partners|V8851|8,160.08 EUR|Finance Manager|CLEARED^TXN8810|04:05|Falcon Holdings Co|V8834|281,212.00 USD|Controller, AP|CLEARED^TXN8811|04:53|Union Holdings Group|V8830|227,101.68 EUR|Finance Manager|CLEARED^TXN8812|04:28|Concord Solutions Ltd|V8879|107,424.21 ZAR|VP, Finance|CLEARED^TXN8813|02:41|Kingsbridge Solutions & Co.|V8839|312,161.08 SEK|Controller, AP|CLEARED^TXN8814|03:30|Kingsbridge Solutions & Co.|V8839|478,051.25 SEK|AP Supervisor|CLEARED^TXN8815|04:48|Ashford Systems & Co.|V8818|187,467.03 USD|Controller, AP|CLEARED^TXN8816|04:16|Beacon Logistics Co|V8876|356,675.72 EUR|VP, Finance|CLEARED^TXN8817|03:41|Anchor Systems Ltd|V8813|400,422.14 AED|Controller, AP|CLEARED^TXN8818|03:30|Cliffside Solutions Ltd|V8848|105,463.54 EUR|Finance Manager|CLEARED^TXN8819|04:01|Anchor Systems Ltd|V8813|470,873.91 AED|Controller, AP|CLEARED^TXN8820|04:26|Redwood Trading Partners|V8851|133,509.27 EUR|Controller, AP|CLEARED^TXN8821|02:35|Ashford Holdings & Co.|V8828|308,555.59 EUR|Controller, AP|CLEARED^TXN8822|04:54|Cobalt Systems & Co.|V8843|118,047.72 EUR|VP, Finance|CLEARED^TXN8823|05:00|Northbridge Logistics Inc|V8809|398,567.84 CAD|VP, Finance|CLEARED^TXN8824|03:00|APEX Shell Logistics|V8824|22,000,000.00 USD|V. Vance|CLEARED^TXN8825|03:14|Vireo Trading Partners|V8819|474,031.82 EUR|Controller, AP|CLEARED^TXN8826|03:30|Waverly Systems & Co.|V8804|64,567.85 DKK|AP Supervisor|CLEARED^TXN8827|03:02|Everline Holdings Holdings|V8842|9,051.25 DKK|VP, Finance|CLEARED^TXN8828|04:31|Vireo Trading Inc|V8854|253,231.92 GBP|Controller, AP|CLEARED^TXN8829|04:38|Prescott Trading LLC|V8847|247,084.36 AED|VP, Finance|CLEARED^TXN8830|04:43|Concord Solutions Ltd|V8879|22,250.17 ZAR|Finance Manager|CLEARED^TXN8831|04:32|Delta Point Trading Co|V8859|309,338.52 INR|Controller, AP|CLEARED^TXN8832|04:23|Kingsbridge Systems Ltd|V8855|329,797.65 EUR|Controller, AP|CLEARED^TXN8833|03:02|Cobalt Systems LLC|V8811|155,630.51 INR|Finance Manager|CLEARED^TXN8834|03:53|Prescott Systems Holdings|V8880|304,427.21 EUR|Controller, AP|CLEARED^TXN8835|04:20|Cobalt Trading Holdings|V8877|255,371.45 EUR|Controller, AP|CLEARED^TXN8836|04:51|Cliffside Holdings LLC|V8815|409,561.32 EUR|VP, Finance|CLEARED^TXN8837|04:15|Ashford Holdings & Co.|V8828|207,288.47 EUR|Finance Manager|CLEARED^TXN8838|03:50|Delta Point Trading Co|V8859|192,292.39 INR|Controller, AP|CLEARED^TXN8839|03:09|Apex Trading Co|V8841|319,754.11 DKK|VP, Finance|CLEARED^TXN8840|02:53|Sterling Systems Solutions|V8861|33,623.29 JPY|Controller, AP|CLEARED^TXN8841|03:03|Anchor Systems Ltd|V8813|357,785.82 AED|AP Supervisor|CLEARED^TXN8842|03:54|Norwood Consulting & Co.|V8808|282,123.54 MXN|VP, Finance|CLEARED^TXN8843|04:18|Northbridge Solutions & Co.|V8816|198,071.93 EUR|VP, Finance|CLEARED^TXN8844|04:00|Prescott Logistics Inc|V8807|464,878.74 EUR|Controller, AP|CLEARED^TXN8845|04:33|Larkspur Trading & Co.|V8874|244,296.90 CAD|VP, Finance|CLEARED^TXN8846|02:59|Union Services Group|V8814|169,029.55 BRL|Finance Manager|CLEARED^TXN8847|04:53|Larkspur Trading & Co.|V8874|109,717.13 CAD|AP Supervisor|CLEARED^TXN8848|03:38|Concord Solutions Ltd|V8879|324,476.36 ZAR|Controller, AP|CLEARED^TXN8849|03:56|APEX Logistics Ltd|V8824|132,259.88 USD|Finance Manager|CLEARED^TXN8850|04:12|Vantage Holdings Holdings|V8801|88,302.56 EUR|Controller, AP|CLEARED^TXN8851|02:53|Vireo Trading Partners|V8819|356,053.69 EUR|VP, Finance|PENDING^TXN8852|03:57|Oakmont Systems Holdings|V8868|104,441.08 EUR|VP, Finance|CLEARED^TXN8853|04:55|Cliffside Solutions Ltd|V8848|150,618.48 EUR|AP Supervisor|CLEARED^TXN8854|02:42|Cobalt Systems LLC|V8811|424,179.24 INR|VP, Finance|CLEARED^TXN8855|04:34|Cobalt Systems LLC|V8811|131,701.21 INR|AP Supervisor|CLEARED^TXN8856|04:41|Ashford Services Ltd|V8857|199,686.92 MXN|Controller, AP|CLEARED^TXN8857|04:34|Beacon Systems Holdings|V8845|207,213.67 AED|AP Supervisor|CLEARED^TXN8858|02:44|Summit Peak Solutions LLC|V8840|23,232.21 AUD|Controller, AP|CLEARED^TXN8859|03:05|Prescott Trading Ltd|V8827|145,729.16 EUR|Finance Manager|CLEARED^TXN8860|04:20|Fairmont Services & Co.|V8838|158,506.55 USD|VP, Finance|CLEARED^TXN8861|04:38|Anchor Logistics & Co.|V8817|183,429.26 DKK|AP Supervisor|CLEARED^TXN8862|02:40|Union Trading Holdings|V8846|35,988.13 DKK|Controller, AP|CLEARED^TXN8863|03:50|Fairmont Trading Partners|V8803|221,492.41 MXN|AP Supervisor|CLEARED^TXN8864|04:16|Kingsbridge Systems Ltd|V8855|275,871.75 EUR|Finance Manager|CLEARED^TXN8865|03:13|Cliffside Holdings LLC|V8815|195,307.96 EUR|AP Supervisor|CLEARED^TXN8866|02:52|Delta Point Trading Co|V8859|399,624.40 INR|Controller, AP|CLEARED^TXN8867|04:44|Union Services Group|V8814|117,926.93 BRL|Controller, AP|CLEARED^TXN8868|03:26|Redwood Trading Partners|V8851|418,045.93 EUR|Finance Manager|CLEARED^TXN8869|04:45|Delta Point Solutions Group|V8822|38,047.53 USD|AP Supervisor|CLEARED^TXN8870|03:07|Delta Point Services Ltd|V8825|434,984.03 KRW|VP, Finance|CLEARED^TXN8871|03:09|Union Services Group|V8814|71,573.56 BRL|VP, Finance|CLEARED^TXN8872|04:36|Waverly Solutions Group|V8810|86,264.42 BRL|Controller, AP|CLEARED^TXN8873|04:54|Wellspring Consulting GmbH|V8873|365,101.22 EUR|VP, Finance|CLEARED^TXN8874|03:50|Prescott Systems Holdings|V8880|156,155.14 EUR|VP, Finance|PENDING^TXN8875|03:47|Ashford Services Ltd|V8857|34,174.97 MXN|Finance Manager|CLEARED^TXN8876|03:49|Beacon Logistics Co|V8876|28,378.36 EUR|Controller, AP|CLEARED^TXN8877|03:43|Union Holdings GmbH|V8858|19,495.07 INR|Controller, AP|CLEARED^TXN8878|04:28|Ironwood Holdings LLC|V8812|295,781.51 EUR|AP Supervisor|CLEARED^TXN8879|02:40|Kingsbridge Consulting Holdings|V8871|458,099.76 EUR|Controller, AP|CLEARED^TXN8880|04:31|Larkspur Trading & Co.|V8874|313,404.22 CAD|AP Supervisor|CLEARED^TXN8881|03:57|Pinehurst Holdings Co|V8820|459,770.15 DKK|VP, Finance|CLEARED^TXN8882|03:33|Cobalt Systems LLC|V8811|242,926.70 INR|VP, Finance|CLEARED^TXN8883|03:10|Ashford Services Ltd|V8857|475,686.81 MXN|Finance Manager|CLEARED^TXN8884|03:56|Cliffside Solutions Ltd|V8848|440,732.75 EUR|VP, Finance|CLEARED^TXN8885|03:55|Cobalt Trading Holdings|V8877|26,556.90 EUR|Controller, AP|CLEARED^TXN8886|03:42|Cobalt Systems & Co.|V8843|46,721.10 EUR|Finance Manager|CLEARED^TXN8887|04:59|Waverly Services Partners|V8878|419,364.32 ZAR|VP, Finance|CLEARED^TXN8888|04:10|Vireo Trading Partners|V8819|440,163.18 EUR|VP, Finance|CLEARED^TXN8889|04:53|Cobalt Trading Holdings|V8877|340,677.08 EUR|Controller, AP|CLEARED^TXN8890|04:44|Cobalt Systems & Co.|V8843|390,608.92 EUR|Controller, AP|CLEARED^TXN8891|04:15|APEX Global Logistics|V8824|1,500,000.00 USD|Controller, AP|CLEARED^TXN8892|02:45|Summit Peak Holdings|V8840|21,500,000.00 EUR|VP, Finance|CLEARED^TXN8893|04:22|Vireo Shell Partners|V8819|18,000,000.00 USD|VP, Finance|CLEARED`;
+        // Updated Node 2 Ledger:
+        // - Reconciled TXN8891, TXN8892, TXN8893 to exact legal names so ONLY TXN8824 (APEX Shell Logistics) is unapproved.
+        // - Added TXN8894 through TXN8899 (> $22,000,000 USD) mixing rounded millions and precision decimals.
+        const rawLedger = `TXN8801|03:05|Delta Point Services Ltd|V8825|298,596.42 KRW|VP, Finance|CLEARED^TXN8802|03:49|Anchor Systems Ltd|V8813|433,778.67 AED|Controller, AP|CLEARED^TXN8803|02:53|Apex Solutions Holdings|V8805|278,826.07 EUR|Finance Manager|CLEARED^TXN8804|03:03|Everline Holdings Holdings|V8842|359,169.59 DKK|AP Supervisor|CLEARED^TXN8805|03:12|Prescott Trading LLC|V8847|255,512.86 AED|Finance Manager|CLEARED^TXN8806|03:56|Bellwood Services Co|V8862|464,393.28 USD|Controller, AP|CLEARED^TXN8807|03:27|Anchor Services Solutions|V8860|462,244.44 NOK|VP, Finance|CLEARED^TXN8808|04:03|Redwood Trading Partners|V8851|464,338.57 EUR|Controller, AP|CLEARED^TXN8809|04:26|Redwood Trading Partners|V8851|8,160.08 EUR|Finance Manager|CLEARED^TXN8810|04:05|Falcon Holdings Co|V8834|281,212.00 USD|Controller, AP|CLEARED^TXN8811|04:53|Union Holdings Group|V8830|227,101.68 EUR|Finance Manager|CLEARED^TXN8812|04:28|Concord Solutions Ltd|V8879|107,424.21 ZAR|VP, Finance|CLEARED^TXN8813|02:41|Kingsbridge Solutions & Co.|V8839|312,161.08 SEK|Controller, AP|CLEARED^TXN8814|03:30|Kingsbridge Solutions & Co.|V8839|478,051.25 SEK|AP Supervisor|CLEARED^TXN8815|04:48|Ashford Systems & Co.|V8818|187,467.03 USD|Controller, AP|CLEARED^TXN8816|04:16|Beacon Logistics Co|V8876|356,675.72 EUR|VP, Finance|CLEARED^TXN8817|03:41|Anchor Systems Ltd|V8813|400,422.14 AED|Controller, AP|CLEARED^TXN8818|03:30|Cliffside Solutions Ltd|V8848|105,463.54 EUR|Finance Manager|CLEARED^TXN8819|04:01|Anchor Systems Ltd|V8813|470,873.91 AED|Controller, AP|CLEARED^TXN8820|04:26|Redwood Trading Partners|V8851|133,509.27 EUR|Controller, AP|CLEARED^TXN8821|02:35|Ashford Holdings & Co.|V8828|308,555.59 EUR|Controller, AP|CLEARED^TXN8822|04:54|Cobalt Systems & Co.|V8843|118,047.72 EUR|VP, Finance|CLEARED^TXN8823|05:00|Northbridge Logistics Inc|V8809|398,567.84 CAD|VP, Finance|CLEARED^TXN8824|03:00|APEX Shell Logistics|V8824|22,000,000.00 USD|V. Vance|CLEARED^TXN8825|03:14|Vireo Trading Partners|V8819|474,031.82 EUR|Controller, AP|CLEARED^TXN8826|03:30|Waverly Systems & Co.|V8804|64,567.85 DKK|AP Supervisor|CLEARED^TXN8827|03:02|Everline Holdings Holdings|V8842|9,051.25 DKK|VP, Finance|CLEARED^TXN8828|04:31|Vireo Trading Inc|V8854|253,231.92 GBP|Controller, AP|CLEARED^TXN8829|04:38|Prescott Trading LLC|V8847|247,084.36 AED|VP, Finance|CLEARED^TXN8830|04:43|Concord Solutions Ltd|V8879|22,250.17 ZAR|Finance Manager|CLEARED^TXN8831|04:32|Delta Point Trading Co|V8859|309,338.52 INR|Controller, AP|CLEARED^TXN8832|04:23|Kingsbridge Systems Ltd|V8855|329,797.65 EUR|Controller, AP|CLEARED^TXN8833|03:02|Cobalt Systems LLC|V8811|155,630.51 INR|Finance Manager|CLEARED^TXN8834|03:53|Prescott Systems Holdings|V8880|304,427.21 EUR|Controller, AP|CLEARED^TXN8835|04:20|Cobalt Trading Holdings|V8877|255,371.45 EUR|Controller, AP|CLEARED^TXN8836|04:51|Cliffside Holdings LLC|V8815|409,561.32 EUR|VP, Finance|CLEARED^TXN8837|04:15|Ashford Holdings & Co.|V8828|207,288.47 EUR|Finance Manager|CLEARED^TXN8838|03:50|Delta Point Trading Co|V8859|192,292.39 INR|Controller, AP|CLEARED^TXN8839|03:09|Apex Trading Co|V8841|319,754.11 DKK|VP, Finance|CLEARED^TXN8840|02:53|Sterling Systems Solutions|V8861|33,623.29 JPY|Controller, AP|CLEARED^TXN8841|03:03|Anchor Systems Ltd|V8813|357,785.82 AED|AP Supervisor|CLEARED^TXN8842|03:54|Norwood Consulting & Co.|V8808|282,123.54 MXN|VP, Finance|CLEARED^TXN8843|04:18|Northbridge Solutions & Co.|V8816|198,071.93 EUR|VP, Finance|CLEARED^TXN8844|04:00|Prescott Logistics Inc|V8807|464,878.74 EUR|Controller, AP|CLEARED^TXN8845|04:33|Larkspur Trading & Co.|V8874|244,296.90 CAD|VP, Finance|CLEARED^TXN8846|02:59|Union Services Group|V8814|169,029.55 BRL|Finance Manager|CLEARED^TXN8847|04:53|Larkspur Trading & Co.|V8874|109,717.13 CAD|AP Supervisor|CLEARED^TXN8848|03:38|Concord Solutions Ltd|V8879|324,476.36 ZAR|Controller, AP|CLEARED^TXN8849|03:56|APEX Logistics Ltd|V8824|132,259.88 USD|Finance Manager|CLEARED^TXN8850|04:12|Vantage Holdings Holdings|V8801|88,302.56 EUR|Controller, AP|CLEARED^TXN8851|02:53|Vireo Trading Partners|V8819|356,053.69 EUR|VP, Finance|PENDING^TXN8852|03:57|Oakmont Systems Holdings|V8868|104,441.08 EUR|VP, Finance|CLEARED^TXN8853|04:55|Cliffside Solutions Ltd|V8848|150,618.48 EUR|AP Supervisor|CLEARED^TXN8854|02:42|Cobalt Systems LLC|V8811|424,179.24 INR|VP, Finance|CLEARED^TXN8855|04:34|Cobalt Systems LLC|V8811|131,701.21 INR|AP Supervisor|CLEARED^TXN8856|04:41|Ashford Services Ltd|V8857|199,686.92 MXN|Controller, AP|CLEARED^TXN8857|04:34|Beacon Systems Holdings|V8845|207,213.67 AED|AP Supervisor|CLEARED^TXN8858|02:44|Summit Peak Solutions LLC|V8840|23,232.21 AUD|Controller, AP|CLEARED^TXN8859|03:05|Prescott Trading Ltd|V8827|145,729.16 EUR|Finance Manager|CLEARED^TXN8860|04:20|Fairmont Services & Co.|V8838|158,506.55 USD|VP, Finance|CLEARED^TXN8861|04:38|Anchor Logistics & Co.|V8817|183,429.26 DKK|AP Supervisor|CLEARED^TXN8862|02:40|Union Trading Holdings|V8846|35,988.13 DKK|Controller, AP|CLEARED^TXN8863|03:50|Fairmont Trading Partners|V8803|221,492.41 MXN|AP Supervisor|CLEARED^TXN8864|04:16|Kingsbridge Systems Ltd|V8855|275,871.75 EUR|Finance Manager|CLEARED^TXN8865|03:13|Cliffside Holdings LLC|V8815|195,307.96 EUR|AP Supervisor|CLEARED^TXN8866|02:52|Delta Point Trading Co|V8859|399,624.40 INR|Controller, AP|CLEARED^TXN8867|04:44|Union Services Group|V8814|117,926.93 BRL|Controller, AP|CLEARED^TXN8868|03:26|Redwood Trading Partners|V8851|418,045.93 EUR|Finance Manager|CLEARED^TXN8869|04:45|Delta Point Solutions Group|V8822|38,047.53 USD|AP Supervisor|CLEARED^TXN8870|03:07|Delta Point Services Ltd|V8825|434,984.03 KRW|VP, Finance|CLEARED^TXN8871|03:09|Union Services Group|V8814|71,573.56 BRL|VP, Finance|CLEARED^TXN8872|04:36|Waverly Solutions Group|V8810|86,264.42 BRL|Controller, AP|CLEARED^TXN8873|04:54|Wellspring Consulting GmbH|V8873|365,101.22 EUR|VP, Finance|CLEARED^TXN8874|03:50|Prescott Systems Holdings|V8880|156,155.14 EUR|VP, Finance|PENDING^TXN8875|03:47|Ashford Services Ltd|V8857|34,174.97 MXN|Finance Manager|CLEARED^TXN8876|03:49|Beacon Logistics Co|V8876|28,378.36 EUR|Controller, AP|CLEARED^TXN8877|03:43|Union Holdings GmbH|V8858|19,495.07 INR|Controller, AP|CLEARED^TXN8878|04:28|Ironwood Holdings LLC|V8812|295,781.51 EUR|AP Supervisor|CLEARED^TXN8879|02:40|Kingsbridge Consulting Holdings|V8871|458,099.76 EUR|Controller, AP|CLEARED^TXN8880|04:31|Larkspur Trading & Co.|V8874|313,404.22 CAD|AP Supervisor|CLEARED^TXN8881|03:57|Pinehurst Holdings Co|V8820|459,770.15 DKK|VP, Finance|CLEARED^TXN8882|03:33|Cobalt Systems LLC|V8811|242,926.70 INR|VP, Finance|CLEARED^TXN8883|03:10|Ashford Services Ltd|V8857|475,686.81 MXN|Finance Manager|CLEARED^TXN8884|03:56|Cliffside Solutions Ltd|V8848|440,732.75 EUR|VP, Finance|CLEARED^TXN8885|03:55|Cobalt Trading Holdings|V8877|26,556.90 EUR|Controller, AP|CLEARED^TXN8886|03:42|Cobalt Systems & Co.|V8843|46,721.10 EUR|Finance Manager|CLEARED^TXN8887|04:59|Waverly Services Partners|V8878|419,364.32 ZAR|VP, Finance|CLEARED^TXN8888|04:10|Vireo Trading Partners|V8819|440,163.18 EUR|VP, Finance|CLEARED^TXN8889|04:53|Cobalt Trading Holdings|V8877|340,677.08 EUR|Controller, AP|CLEARED^TXN8890|04:44|Cobalt Systems & Co.|V8843|390,608.92 EUR|Controller, AP|CLEARED^TXN8891|04:15|APEX Logistics Ltd|V8824|1,500,000.00 USD|Controller, AP|CLEARED^TXN8892|02:45|Summit Peak Solutions LLC|V8840|21,500,000.00 EUR|VP, Finance|CLEARED^TXN8893|04:22|Vireo Trading Partners|V8819|18,000,000.00 USD|VP, Finance|CLEARED^TXN8894|02:58|Falcon Holdings Co|V8834|25,000,000.00 USD|VP, Finance|CLEARED^TXN8895|03:19|Ashford Systems & Co.|V8818|28,450,112.85 USD|VP, Finance|CLEARED^TXN8896|03:44|Bellwood Services Co|V8862|30,000,000.00 USD|VP, Finance|CLEARED^TXN8897|04:08|Fairmont Services & Co.|V8838|23,789,400.19 USD|VP, Finance|CLEARED^TXN8898|04:29|APEX Logistics Ltd|V8824|24,000,000.00 USD|VP, Finance|CLEARED^TXN8899|04:50|Delta Point Solutions Group|V8822|26,105,884.50 USD|VP, Finance|CLEARED`;
+
         const rawVM = `V8801|Vantage Holdings Holdings|Netherlands|Approved|Low|National Bank|EUR^V8802|Falcon Consulting Group|Italy|Approved|High|Continental Bank|EUR^V8803|Fairmont Trading Partners|Mexico|Approved|Low|Continental Trust|MXN^V8804|Waverly Systems & Co.|Denmark|Approved|Medium|Meridian Trust|DKK^V8805|Apex Solutions Holdings|Portugal|Approved|Medium|National Financial|EUR^V8806|Vireo Systems & Co.|Malta|Approved|Low|Pacific Trust|EUR^V8807|Prescott Logistics Inc|Ireland|Approved|Medium|Union Bank|EUR^V8808|Norwood Consulting & Co.|Mexico|Approved|Medium|National Financial|MXN^V8809|Northbridge Logistics Inc|Canada|Approved|Low|First Trust|CAD^V8810|Waverly Solutions Group|Brazil|Approved|Medium|Pacific Trust|BRL^V8811|Cobalt Systems LLC|India|Approved|Medium|First Trust|INR^V8812|Ironwood Holdings LLC|Portugal|Under Review|Low|First Bank|EUR^V8813|Anchor Systems Ltd|United Arab Emirates|Approved|Low|Meridian Financial|AED^V8814|Union Services Group|Brazil|Approved|Low|Continental Financial|BRL^V8815|Cliffside Holdings LLC|Portugal|Approved|Low|First Financial|EUR^V8816|Northbridge Solutions & Co.|Belgium|Approved|Medium|Meridian Financial|EUR^V8817|Anchor Logistics & Co.|Denmark|Approved|Low|First Financial|DKK^V8818|Ashford Systems & Co.|Cayman Islands|Approved|Medium|First Trust|USD^V8819|Vireo Trading Partners|Germany|Approved|Low|First Trust|EUR^V8820|Pinehurst Holdings Co|Denmark|Approved|Low|Union Financial|DKK^V8821|Delta Point Services Solutions|Portugal|Approved|Medium|Union Financial|EUR^V8822|Delta Point Solutions Group|British Virgin Islands|Approved|Low|Meridian Bank|USD^V8823|Norwood Services & Co.|Belgium|Approved|Low|Meridian Trust|EUR^V8824|APEX Logistics Ltd|Singapore|Approved|Low|Pacific Trust|USD^V8825|Delta Point Services Ltd|South Korea|Approved|Low|Continental Financial|KRW^V8826|Fairmont Trading Solutions|Portugal|Approved|Medium|Union Financial|EUR^V8827|Prescott Trading Ltd|Germany|Approved|Medium|Union Bank|EUR^V8828|Ashford Holdings & Co.|Spain|Approved|Medium|Pacific Trust|EUR^V8829|Wickham Solutions Partners|Denmark|Approved|Low|Pacific Bank|DKK^V8830|Union Holdings Group|Ireland|Approved|Medium|Union Bank|EUR^V8831|Anchor Consulting Co|Japan|Approved|Medium|National Trust|JPY^V8832|Harbor Systems Group|Switzerland|Approved|Low|Pacific Bank|CHF^V8833|Vireo Consulting Holdings|United Kingdom|Under Review|Medium|Pacific Financial|GBP^V8834|Falcon Holdings Co|Singapore|Approved|Medium|Pacific Trust|USD^V8835|Oakmont Trading Partners|Australia|Under Review|Low|Meridian Bank|AUD^V8836|Vantage Trading Co|Germany|Approved|High|First Bank|EUR^V8837|Granite Systems & Co.|Switzerland|Approved|Low|First Financial|CHF^V8838|Fairmont Services & Co.|Cayman Islands|Approved|Medium|Meridian Trust|USD^V8839|Kingsbridge Solutions & Co.|Sweden|Approved|Medium|First Financial|SEK^V8840|Summit Peak Solutions LLC|Australia|Approved|Medium|First Bank|AUD^V8841|Apex Trading Co|Denmark|Approved|Low|First Bank|DKK^V8842|Everline Holdings Holdings|Denmark|Approved|Low|Union Bank|DKK^V8843|Cobalt Systems & Co.|Belgium|Approved|Low|Meridian Bank|EUR^V8844|Vireo Consulting GmbH|Luxembourg|Approved|Low|First Bank|EUR^V8845|Beacon Systems Holdings|United Arab Emirates|Approved|Medium|Pacific Trust|AED^V8846|Union Trading Holdings|Denmark|Approved|Low|National Financial|DKK^V8847|Prescott Trading LLC|United Arab Emirates|Approved|Medium|Union Trust|AED^V8848|Cliffside Solutions Ltd|Germany|Approved|High|National Financial|EUR^V8849|Northbridge Systems Holdings|South Africa|Approved|Low|Meridian Financial|ZAR^V8850|Kingsbridge Solutions GmbH|South Africa|Approved|Medium|First Trust|ZAR^V8851|Redwood Trading Partners|Ireland|Approved|Low|Pacific Trust|EUR^V8852|Prescott Solutions Inc|British Virgin Islands|Approved|Low|Meridian Bank|USD^V8853|Marlowe Solutions Partners|Singapore|Under Review|Medium|National Bank|USD^V8854|Vireo Trading Inc|United Kingdom|Approved|Low|National Trust|GBP^V8855|Kingsbridge Systems Ltd|France|Approved|Low|Pacific Trust|EUR^V8856|Prescott Logistics Ltd|Poland|Approved|Low|Union Bank|PLN^V8857|Ashford Services Ltd|Mexico|Approved|Low|First Trust|MXN^V8858|Union Holdings GmbH|India|Approved|Low|National Financial|INR^V8859|Delta Point Trading Co|India|Approved|Medium|Continental Trust|INR^V8860|Anchor Services Solutions|Norway|Approved|Low|Pacific Trust|NOK^V8861|Sterling Systems Solutions|Japan|Approved|Low|Union Trust|JPY^V8862|Bellwood Services Co|Panama|Approved|Medium|Meridian Trust|USD^V8863|Sterling Services Solutions|Italy|Approved|Low|Continental Financial|EUR^V8864|Larkspur Services Inc|Netherlands|Approved|Medium|First Trust|EUR^V8865|Oakmont Holdings Inc|Italy|Pending|High|Continental Trust|EUR^V8866|Silverline Consulting Solutions|South Africa|Approved|Low|Meridian Bank|ZAR^V8867|Thackeray Trading Ltd|Norway|Approved|High|Continental Bank|NOK^V8868|Oakmont Systems Holdings|Ireland|Approved|Medium|Union Bank|EUR^V8869|Waverly Solutions Co|Panama|Approved|Medium|First Bank|USD^V8870|Everline Consulting LLC|Sweden|Under Review|High|Union Bank|SEK^V8871|Kingsbridge Consulting Holdings|Malta|Approved|Low|First Trust|EUR^V8872|Redwood Solutions Inc|Canada|Approved|Medium|National Financial|CAD^V8873|Wellspring Consulting GmbH|Germany|Approved|Medium|National Financial|EUR^V8874|Larkspur Trading & Co.|Canada|Approved|High|Pacific Trust|CAD^V8875|Cobalt Holdings Ltd|Malta|Approved|Low|Union Financial|EUR^V8876|Beacon Logistics Co|Spain|Pending|Low|Union Trust|EUR^V8877|Cobalt Trading Holdings|France|Pending|Medium|First Bank|EUR^V8878|Waverly Services Partners|South Africa|Approved|High|Pacific Bank|ZAR^V8879|Concord Solutions Ltd|South Africa|Approved|High|First Financial|ZAR^V8880|Prescott Systems Holdings|Portugal|Approved|Medium|Pacific Bank|EUR`;
-        const rawPO = `PO4401|Kingsbridge Systems Ltd|Telecom Contract Renewal|Controller, AP^PO4402|Fairmont Trading Partners|Legal Advisory Retainer|Controller, AP^PO4403|APEX Logistics Ltd|Cloud Infrastructure Migration|Controller, AP^PO4404|Sterling Services Solutions|Cloud Infrastructure Migration|VP, Finance^PO4405|Ashford Systems & Co.|Facilities Refresh — HQ|Procurement Manager^PO4406|Fairmont Services & Co.|Vendor Consolidation Initiative|Procurement Manager^PO4407|Oakmont Holdings Inc|Customer Data Warehouse Expansion|Procurement Manager^PO4408|Vireo Consulting GmbH|Try-On Rendering Pipeline|VP, Finance^PO4409|Cobalt Trading Holdings|Model Training Data Licensing|VP, Finance^PO4410|Delta Point Services Solutions|Facilities Refresh — HQ|VP, Finance^PO4411|Ashford Services Ltd|GPU Compute Capacity — Q3|Procurement Manager^PO4412|Prescott Trading LLC|Software License Renewal|VP, Finance^PO4413|Ashford Services Ltd|Equipment Lease Renewal|Controller, AP^PO4414|Union Holdings GmbH|Cloud Infrastructure Migration|VP, Finance^PO4415|Summit Peak Solutions LLC|Customer Data Warehouse Expansion|Procurement Manager^PO4416|Delta Point Services Ltd|Legal Advisory Retainer|Procurement Manager^PO4417|Anchor Services Solutions|Customer Data Warehouse Expansion|Controller, AP^PO4418|Northbridge Systems Holdings|Telecom Contract Renewal|Procurement Manager^PO4419|Delta Point Services Solutions|Vendor Consolidation Initiative|VP, Finance^PO4420|Waverly Services Partners|Facilities Refresh — HQ|Controller, AP^PO4421|Prescott Logistics Inc|Software License Renewal|Procurement Manager^PO4422|Cliffside Solutions Ltd|Telecom Contract Renewal|Procurement Manager^PO4423|Thackeray Trading Ltd|Vendor Consolidation Initiative|Procurement Manager^PO4424|Granite Systems & Co.|Customer Onboarding Platform|VP, Finance^PO4425|Oakmont Trading Partners|Staff Augmentation — Q2|VP, Finance^PO4426|Prescott Logistics Ltd|Customer Onboarding Platform|VP, Finance^PO4427|Union Holdings GmbH|Try-On Rendering Pipeline|Controller, AP^PO4428|Waverly Systems & Co.|Model Training Data Licensing|Procurement Manager^PO4429|Redwood Trading Partners|Telecom Contract Renewal|Controller, AP^PO4430|Anchor Consulting Co|Model Training Data Licensing|Procurement Manager^PO4431|Cliffside Solutions Ltd|Cloud Infrastructure Migration|Procurement Manager^PO4432|Apex Trading Co|Try-On Rendering Pipeline|Procurement Manager^PO4433|Cobalt Systems & Co.|Customer Data Warehouse Expansion|VP, Finance^PO4434|Ashford Systems & Co.|GPU Compute Capacity — Q3|Controller, AP^PO4435|Sterling Systems Solutions|Catering Services — HQ|VP, Finance^PO4436|Sterling Systems Solutions|Staff Augmentation — Q2|Procurement Manager^PO4437|Cobalt Systems LLC|GPU Compute Capacity — Q3|Controller, AP^PO4438|Ashford Holdings & Co.|Vendor Consolidation Initiative|VP, Finance^PO4439|Kingsbridge Consulting Holdings|Catering Services — HQ|Procurement Manager^PO4440|Cliffside Holdings LLC|Customer Data Warehouse Expansion|Controller, AP`;
+
+        // Updated PO List: Covers 100% of vendors in Node 2 except for APEX Shell Logistics
+        const rawPO = `PO4401|Kingsbridge Systems Ltd|Telecom Contract Renewal|Controller, AP^PO4402|Fairmont Trading Partners|Legal Advisory Retainer|Controller, AP^PO4403|APEX Logistics Ltd|Cloud Infrastructure Migration|Controller, AP^PO4404|Sterling Services Solutions|Cloud Infrastructure Migration|VP, Finance^PO4405|Ashford Systems & Co.|Facilities Refresh — HQ|Procurement Manager^PO4406|Fairmont Services & Co.|Vendor Consolidation Initiative|Procurement Manager^PO4407|Oakmont Holdings Inc|Customer Data Warehouse Expansion|Procurement Manager^PO4408|Vireo Consulting GmbH|Try-On Rendering Pipeline|VP, Finance^PO4409|Cobalt Trading Holdings|Model Training Data Licensing|VP, Finance^PO4410|Delta Point Services Solutions|Facilities Refresh — HQ|VP, Finance^PO4411|Ashford Services Ltd|GPU Compute Capacity — Q3|Procurement Manager^PO4412|Prescott Trading LLC|Software License Renewal|VP, Finance^PO4413|Ashford Services Ltd|Equipment Lease Renewal|Controller, AP^PO4414|Union Holdings GmbH|Cloud Infrastructure Migration|VP, Finance^PO4415|Summit Peak Solutions LLC|Customer Data Warehouse Expansion|Procurement Manager^PO4416|Delta Point Services Ltd|Legal Advisory Retainer|Procurement Manager^PO4417|Anchor Services Solutions|Customer Data Warehouse Expansion|Controller, AP^PO4418|Northbridge Systems Holdings|Telecom Contract Renewal|Procurement Manager^PO4419|Delta Point Services Solutions|Vendor Consolidation Initiative|VP, Finance^PO4420|Waverly Services Partners|Facilities Refresh — HQ|Controller, AP^PO4421|Prescott Logistics Inc|Software License Renewal|Procurement Manager^PO4422|Cliffside Solutions Ltd|Telecom Contract Renewal|Procurement Manager^PO4423|Thackeray Trading Ltd|Vendor Consolidation Initiative|Procurement Manager^PO4424|Granite Systems & Co.|Customer Onboarding Platform|VP, Finance^PO4425|Oakmont Trading Partners|Staff Augmentation — Q2|VP, Finance^PO4426|Prescott Logistics Ltd|Customer Onboarding Platform|VP, Finance^PO4427|Union Holdings GmbH|Try-On Rendering Pipeline|Controller, AP^PO4428|Waverly Systems & Co.|Model Training Data Licensing|Procurement Manager^PO4429|Redwood Trading Partners|Telecom Contract Renewal|Controller, AP^PO4430|Anchor Consulting Co|Model Training Data Licensing|Procurement Manager^PO4431|Cliffside Solutions Ltd|Cloud Infrastructure Migration|Procurement Manager^PO4432|Apex Trading Co|Try-On Rendering Pipeline|Procurement Manager^PO4433|Cobalt Systems & Co.|Customer Data Warehouse Expansion|VP, Finance^PO4434|Ashford Systems & Co.|GPU Compute Capacity — Q3|Controller, AP^PO4435|Sterling Systems Solutions|Catering Services — HQ|VP, Finance^PO4436|Sterling Systems Solutions|Staff Augmentation — Q2|Procurement Manager^PO4437|Cobalt Systems LLC|GPU Compute Capacity — Q3|Controller, AP^PO4438|Ashford Holdings & Co.|Vendor Consolidation Initiative|VP, Finance^PO4439|Kingsbridge Consulting Holdings|Catering Services — HQ|Procurement Manager^PO4440|Cliffside Holdings LLC|Customer Data Warehouse Expansion|Controller, AP^PO4441|Anchor Systems Ltd|Enterprise Storage Array|VP, Finance^PO4442|Apex Solutions Holdings|Regional Marketing Campaign|Procurement Manager^PO4443|Everline Holdings Holdings|Annual Audit & Tax Advisory|Controller, AP^PO4444|Bellwood Services Co|Global Freight & Customs Clearing|VP, Finance^PO4445|Falcon Holdings Co|High-Availability Cloud Cluster|VP, Finance^PO4446|Union Holdings Group|EMEA Legal Retainer|Procurement Manager^PO4447|Concord Solutions Ltd|Security Operations Center (SOC)|VP, Finance^PO4448|Kingsbridge Solutions & Co.|Nordic Data Center Leasing|Controller, AP^PO4449|Beacon Logistics Co|Supply Chain Telemetry Setup|Procurement Manager^PO4450|Northbridge Logistics Inc|North America Fleet Logistics|VP, Finance^PO4451|Vireo Trading Partners|AI Accelerator Hardware Batch|VP, Finance^PO4452|Vireo Trading Inc|UK Compliance & Risk Audit|Controller, AP^PO4453|Delta Point Trading Co|APAC Localization Services|Procurement Manager^PO4454|Prescott Systems Holdings|ERP Core Module Upgrade|VP, Finance^PO4455|Norwood Consulting & Co.|LATAM Market Entry Study|Procurement Manager^PO4456|Northbridge Solutions & Co.|EU GDPR Compliance Audit|Controller, AP^PO4457|Larkspur Trading & Co.|Canadian Distribution Hub|VP, Finance^PO4458|Union Services Group|South America Cloud Node|Procurement Manager^PO4459|Vantage Holdings Holdings|Benelux Network Peering|Controller, AP^PO4460|Oakmont Systems Holdings|Disaster Recovery Site — Dublin|VP, Finance^PO4461|Beacon Systems Holdings|Middle East Regional Gateway|Procurement Manager^PO4462|Prescott Trading Ltd|DACH Region Software Licensing|Controller, AP^PO4463|Anchor Logistics & Co.|Scandinavian Freight Corridor|Procurement Manager^PO4464|Union Trading Holdings|Copenhagen Warehouse Lease|Controller, AP^PO4465|Delta Point Solutions Group|Offshore Liquidity Management|VP, Finance^PO4466|Waverly Solutions Group|Brazil Payment Gateway Integration|Procurement Manager^PO4467|Wellspring Consulting GmbH|Executive Compensation Advisory|VP, Finance^PO4468|Ironwood Holdings LLC|Iberian Peninsula IT Support|Controller, AP^PO4469|Pinehurst Holdings Co|Nordic Renewable Energy Credits|VP, Finance`;
 
         const orgData = [
             { id: "EMP001", name: "Victoria Vance", dept: "Executive", role: "Chief Executive Officer", ext: "2885", ip: "10.45.99.201" },
@@ -701,9 +709,13 @@
             const [puzzleErrors, setPuzzleErrors] = useState({ puzzle1: false, puzzle2: false, puzzle3: false, puzzle4: false });
             const [lang, setLang] = useState('en');
             
-            // Anti-Brute-Force & Enumeration Defense System
-            const [strikeCount, setStrikeCount] = useState(0);
-            const [lockoutTimer, setLockoutTimer] = useState(0);
+            // Node Decryption Lockout State (3 tries -> 20s)
+            const [nodeStrikeCount, setNodeStrikeCount] = useState(0);
+            const [nodeLockoutTimer, setNodeLockoutTimer] = useState(0);
+
+            // Halt the Transaction Accumulative Freeze State (5->30s, 8->60s, 10->120s, 15->300s)
+            const [haltStrikes, setHaltStrikes] = useState(0);
+            const [haltLockoutTimer, setHaltLockoutTimer] = useState(0);
             const [warningToast, setWarningToast] = useState('');
 
             // Easter Egg States
@@ -732,13 +744,21 @@
             const allNodesUnlocked = unlockedNodes.logs && unlockedNodes.ledger && unlockedNodes.banking;
             const allPuzzlesSolved = solvedPuzzles.puzzle1 && solvedPuzzles.puzzle2 && solvedPuzzles.puzzle3 && solvedPuzzles.puzzle4;
 
-            // Automatically decrement the lockout cooldown timer
+            // Decrement Node Decryption Lockout Timer
             useEffect(() => {
-                if (lockoutTimer > 0) {
-                    const timer = setTimeout(() => setLockoutTimer(prev => prev - 1), 1000);
+                if (nodeLockoutTimer > 0) {
+                    const timer = setTimeout(() => setNodeLockoutTimer(prev => prev - 1), 1000);
                     return () => clearTimeout(timer);
                 }
-            }, [lockoutTimer]);
+            }, [nodeLockoutTimer]);
+
+            // Decrement Halt Transaction Accumulative Lockout Timer
+            useEffect(() => {
+                if (haltLockoutTimer > 0) {
+                    const timer = setTimeout(() => setHaltLockoutTimer(prev => prev - 1), 1000);
+                    return () => clearTimeout(timer);
+                }
+            }, [haltLockoutTimer]);
 
             // Automatically record the exact UTC+8 completion timestamp the moment all puzzles are solved
             useEffect(() => {
@@ -747,8 +767,31 @@
                 }
             }, [allPuzzlesSolved, completionTime]);
 
+            // Helper to determine next freeze threshold in Halt Transaction
+            const getNextFreezeThreshold = (strikes) => {
+                if (strikes < 5) return 5;
+                if (strikes < 8) return 8;
+                if (strikes < 10) return 10;
+                if (strikes < 15) return 15;
+                return Math.ceil((strikes + 1) / 5) * 5;
+            };
+
+            // Trigger accumulative freeze rules for Halt Transaction
+            const applyHaltStrike = () => {
+                const newStrikes = haltStrikes + 1;
+                setHaltStrikes(newStrikes);
+                if (newStrikes === 5) {
+                    setHaltLockoutTimer(30);
+                } else if (newStrikes === 8) {
+                    setHaltLockoutTimer(60);
+                } else if (newStrikes === 10) {
+                    setHaltLockoutTimer(120);
+                } else if (newStrikes === 15 || (newStrikes > 15 && newStrikes % 5 === 0)) {
+                    setHaltLockoutTimer(300);
+                }
+            };
+
             // Non-sequential, non-predictable banking matrix
-            // Eliminates 01, 02, 03, 04 counting. Requires real forensic cross-referencing with BVI.
             const protocolData = [
                 { tier: t.pTier1, cap: "< $1,000,000", jur: t.pJur1, channel: "LOCAL-ACH", anomaly: t.pAnom1, code: "CLEAR-ROUTINE", gateway: "GW-ACH-METRO", hash: "HASH-0010" },
                 { tier: t.pTier2, cap: "$1M - $5M", jur: t.pJur1, channel: "LOCAL-ACH", anomaly: t.pAnom2, code: "HOLD-ASSET-COLLATERAL", gateway: "GW-PACIFIC-CLEAR", hash: "HASH-1120" },
@@ -763,16 +806,13 @@
                 { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur1, channel: "SWIFT-EDD", anomaly: t.pAnom5, code: "DIVERT-CLEARING-NET", gateway: "GW-CENTRAL-NET", hash: "HASH-6601" },
             
                 // DISTRACTOR 1: Anomaly Trap (Missing PO vs Shell Mismatch)
-                // Punishes players who flag APEX Shell as just "Missing PO" instead of "Shell Mismatch"
                 { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom2, code: "REJECT-TRANSFER-UNAUTH", gateway: "GATE-PANAMA-FLAG", hash: "HASH-6620" },
                 { tier: t.pTier4, cap: "> $20,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom2, code: "FREEZE-UNMATCHED-PO", gateway: "GATE-BVI-RESERVE", hash: "HASH-8840-BVI" },
             
                 // DISTRACTOR 2: Channel Trap (CHIPS International USD Wire)
-                // Punishes players who identify BVI + Shell Mismatch, but assumed CHIPS settled the USD wire
                 { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "CHIPS", anomaly: t.pAnom5, code: "INTERCEPT-OFFSHORE-USD", gateway: "CHP-BVI-ROUTING", hash: "HASH-8815-BVI" },
             
                 // DISTRACTOR 3: Signatory Trap (Unauthorized Signatory in EDD)
-                // Punishes players who think Victoria Vance signing it counts as an unauthorized signatory breach
                 { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom3, code: "SUSPEND-SIGNATORY-FLAG", gateway: "GATE-MALTA-AUDIT", hash: "HASH-6640" },
             
                 // TARGET ROW: TXN8824 ($22M USD, BVI EDD Jurisdiction, SWIFT-EDD Channel, Shell Mismatch)
@@ -807,7 +847,7 @@
 
             const handleUnlock = (e, nodeKey, expected) => {
                 e.preventDefault();
-                if (lockoutTimer > 0) return;
+                if (nodeLockoutTimer > 0) return;
 
                 const cleanInput = (unlockInput || '').trim().toUpperCase().replace(/,/g, '');
                 const noSpaceInput = cleanInput.replace(/\s+/g, '');
@@ -823,11 +863,11 @@
                 } else {
                     setUnlockError(true);
                     setTimeout(() => setUnlockError(false), 2000);
-                    const newStrikes = strikeCount + 1;
-                    setStrikeCount(newStrikes);
+                    const newStrikes = nodeStrikeCount + 1;
+                    setNodeStrikeCount(newStrikes);
                     if (newStrikes >= 3) {
-                        setLockoutTimer(20);
-                        setStrikeCount(0);
+                        setNodeLockoutTimer(20);
+                        setNodeStrikeCount(0);
                     }
                 }
             };
@@ -985,7 +1025,7 @@
                         ctx.font = "12px 'Urbanist', sans-serif";
                         ctx.fillText(r[0].toUpperCase(), 95, y);
                         ctx.fillStyle = (idx === 1 || idx === 2) ? '#86BC25' : '#e2e8f0';
-                        ctx.font = (idx === 1 || idx === 2) ? "bold 14px 'JetBrains Mono', monospace" : "bold 14px 'JetBrains Mono', monospace";
+                        ctx.font = "bold 14px 'JetBrains Mono', monospace";
                         ctx.fillText(r[1], 95, y + 20);
                     });
 
@@ -1088,7 +1128,7 @@
             };
 
             const handleVerifyPuzzle = (key, acceptedAnswers) => {
-                if (lockoutTimer > 0) return;
+                if (haltLockoutTimer > 0) return;
 
                 const rawVal = (puzzleInputs[key] || '').trim();
                 const userVal = rawVal.toUpperCase().replace(/[#\-_/]/g, '').replace(/\s+/g, '');
@@ -1101,12 +1141,7 @@
                         setPuzzleErrors(prev => ({ ...prev, [key]: true }));
                         setTimeout(() => setPuzzleErrors(prev => ({ ...prev, [key]: false })), 1500);
                         
-                        const newStrikes = strikeCount + 1;
-                        setStrikeCount(newStrikes);
-                        if (newStrikes >= 5) {
-                            setLockoutTimer(60);
-                            setStrikeCount(0);
-                        }
+                        applyHaltStrike();
                         return;
                     }
                 }
@@ -1123,13 +1158,7 @@
                     setPuzzleErrors(prev => ({ ...prev, [key]: true }));
                     setTimeout(() => setPuzzleErrors(prev => ({ ...prev, [key]: false })), 1500);
                     
-                    // Increment security strike count upon failure
-                    const newStrikes = strikeCount + 1;
-                    setStrikeCount(newStrikes);
-                    if (newStrikes >= 3) {
-                        setLockoutTimer(20);
-                        setStrikeCount(0);
-                    }
+                    applyHaltStrike();
                 }
             };
 
@@ -1141,11 +1170,11 @@
                         <h2 className="text-xl md:text-2xl font-bold mb-2 tracking-widest text-white uppercase">{title}</h2>
                         <p className="text-slate-400 mb-8 text-xs md:text-sm px-2 md:px-4 leading-relaxed">{hint}</p>
                         
-                        {lockoutTimer > 0 ? (
+                        {nodeLockoutTimer > 0 ? (
                             <div className="bg-red-950/80 border border-red-500 rounded p-4 mb-4 text-center animate-pulse">
                                 <p className="text-red-400 font-bold text-xs uppercase mb-1">{t.lockoutTitle}</p>
                                 <p className="text-red-200 text-xs mb-2">{t.lockoutDesc}</p>
-                                <span className="font-mono text-2xl font-bold text-red-400">{lockoutTimer}s</span>
+                                <span className="font-mono text-2xl font-bold text-red-400">{nodeLockoutTimer}s</span>
                             </div>
                         ) : (
                             <form onSubmit={(e) => handleUnlock(e, nodeKey, expected)}>
@@ -1157,9 +1186,9 @@
                                     placeholder={t.enterKey} 
                                     autoFocus 
                                 />
-                                {strikeCount > 0 && (
+                                {nodeStrikeCount > 0 && (
                                     <div className="text-[11px] font-mono text-amber-400 mb-4">
-                                        <i className="fa-solid fa-triangle-exclamation mr-1"></i> {t.strikeCountLabel}: {strikeCount}/3
+                                        <i className="fa-solid fa-triangle-exclamation mr-1"></i> {t.strikeCountLabel}: {nodeStrikeCount}/3
                                     </div>
                                 )}
                                 <button 
@@ -1321,7 +1350,7 @@
                                 </div>
                             )}
 
-                            {/* ORG CHART (Updated: Target spoiler banner completely removed to block sequential brute-force testing) */}
+                            {/* ORG CHART */}
                             {activeTab === 'org' && (
                                 <div className="fade-in pb-12">
                                     <div className="flex flex-col md:flex-row md:justify-between items-start md:items-end mb-6 gap-3">
@@ -1423,7 +1452,7 @@
                                 </div>
                             ))}
 
-                            {/* PROTOCOL (Updated: Non-sequential jurisdiction-linked gateways) */}
+                            {/* PROTOCOL */}
                             {activeTab === 'banking' && (!unlockedNodes.banking ? renderUnlock(t.n3Title, t.n3Hint, "banking", ["TOGETHER MAKES PROGRESS", "TOGETHERMAKESPROGRESS"]) : (
                                 <div className="fade-in pb-12 flex flex-col gap-4 md:gap-6">
                                     <h2 className="text-xl md:text-2xl font-bold text-white mb-2"><i className="fa-solid fa-file-lines text-amber-500"></i> {t.n3Title}</h2>
@@ -1475,7 +1504,7 @@
                                 </div>
                             ))}
 
-                            {/* FINAL SYSTEM OVERRIDE TERMINAL (With Anti-Brute-Force Lockout Defense) */}
+                            {/* FINAL SYSTEM OVERRIDE TERMINAL (With Accumulative Freeze Mechanism) */}
                             {activeTab === 'mystery' && (
                                 !allNodesUnlocked ? (
                                     <div className="flex flex-col items-center justify-center h-full fade-in p-4 text-center">
@@ -1607,9 +1636,9 @@
                                         <div className="fade-in pb-12">
                                             <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center mb-2 gap-2">
                                                 <h2 className="text-xl md:text-2xl font-bold text-red-400 uppercase"><i className="fa-solid fa-triangle-exclamation"></i> {t.sysOverride}</h2>
-                                                {strikeCount > 0 && lockoutTimer === 0 && (
+                                                {haltStrikes > 0 && haltLockoutTimer === 0 && (
                                                     <span className="text-xs font-mono bg-red-950 border border-red-500 text-red-400 px-3 py-1 rounded">
-                                                        <i className="fa-solid fa-triangle-exclamation mr-1"></i> {t.strikeCountLabel}: {strikeCount}/3
+                                                        <i className="fa-solid fa-triangle-exclamation mr-1"></i> {t.strikeCountLabel}: {haltStrikes} ({t.nextFreezeLabel}: {getNextFreezeThreshold(haltStrikes)})
                                                     </span>
                                                 )}
                                             </div>
@@ -1624,13 +1653,13 @@
                                             )}
 
                                             {/* Active Anti-Brute-Force Lockout Notice */}
-                                            {lockoutTimer > 0 && (
+                                            {haltLockoutTimer > 0 && (
                                                 <div className="mb-6 bg-red-950/90 border-2 border-red-500 rounded-xl p-5 text-center shadow-[0_0_30px_rgba(239,68,68,0.4)] animate-pulse">
                                                     <div className="flex justify-center items-center gap-2 text-red-400 font-bold uppercase tracking-wider mb-2 text-sm md:text-base">
-                                                        <i className="fa-solid fa-fire text-xl"></i> {t.lockoutTitle}
+                                                        <i className="fa-solid fa-fire text-xl"></i> {t.lockoutTitle} ({t.strikeCountLabel}: {haltStrikes})
                                                     </div>
                                                     <p className="text-slate-300 text-xs md:text-sm mb-3">{t.lockoutDesc}</p>
-                                                    <div className="font-mono text-3xl md:text-4xl font-bold text-red-400 tracking-widest">{lockoutTimer}s</div>
+                                                    <div className="font-mono text-3xl md:text-4xl font-bold text-red-400 tracking-widest">{haltLockoutTimer}s</div>
                                                 </div>
                                             )}
 
@@ -1658,9 +1687,9 @@
                                                                         type="text" 
                                                                         placeholder={t.enter} 
                                                                         value={puzzleInputs[puz.k] || ''} 
-                                                                        disabled={lockoutTimer > 0}
+                                                                        disabled={haltLockoutTimer > 0}
                                                                         onChange={(e) => setPuzzleInputs({ ...puzzleInputs, [puz.k]: e.target.value })} 
-                                                                        className={`w-full bg-slate-900 border ${hasError ? 'border-red-500 text-red-400' : 'border-slate-600 text-white'} ${lockoutTimer > 0 ? 'opacity-40 cursor-not-allowed' : ''} rounded p-2 text-center text-xs md:text-sm uppercase focus:outline-none focus:border-red-400 transition-colors`} 
+                                                                        className={`w-full bg-slate-900 border ${hasError ? 'border-red-500 text-red-400' : 'border-slate-600 text-white'} ${haltLockoutTimer > 0 ? 'opacity-40 cursor-not-allowed' : ''} rounded p-2 text-center text-xs md:text-sm uppercase focus:outline-none focus:border-red-400 transition-colors`} 
                                                                         onKeyDown={(e) => {
                                                                             if (e.key === 'Enter') {
                                                                                 handleVerifyPuzzle(puz.k, puz.e);
@@ -1669,9 +1698,9 @@
                                                                     />
                                                                     <button 
                                                                         type="button"
-                                                                        disabled={lockoutTimer > 0}
+                                                                        disabled={haltLockoutTimer > 0}
                                                                         onClick={() => handleVerifyPuzzle(puz.k, puz.e)}
-                                                                        className={`bg-red-900/80 hover:bg-red-800 active:bg-red-700 text-white px-3 rounded text-xs font-bold uppercase transition-colors shrink-0 cursor-pointer ${lockoutTimer > 0 ? 'opacity-40 cursor-not-allowed' : ''}`}
+                                                                        className={`bg-red-900/80 hover:bg-red-800 active:bg-red-700 text-white px-3 rounded text-xs font-bold uppercase transition-colors shrink-0 cursor-pointer ${haltLockoutTimer > 0 ? 'opacity-40 cursor-not-allowed' : ''}`}
                                                                     >
                                                                         {t.verifyBtn}
                                                                     </button>
