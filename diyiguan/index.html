@@ -106,6 +106,7 @@
                 secretText: "When did Deloitte open the first office in China?",
                 taskTitle: "Task",
                 taskText: "Find the name of the employee who committed the violation",
+                mainSiteBtn: "Access Main Terminal",
                 awaiting: "Awaiting input at main terminal..."
             },
             zh: {
@@ -117,6 +118,7 @@
                 secretText: "德勤最早在中国开设办公室的年份是？",
                 taskTitle: "任务",
                 taskText: "找出违规操作的员工的姓名",
+                mainSiteBtn: "访问主终端",
                 awaiting: "等待主终端输入..."
             }
         };
@@ -168,9 +170,18 @@
                             <h3 className="text-red-400 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-2 flex items-center gap-2">
                                 <i className="fa-solid fa-crosshairs"></i> {t.taskTitle}
                             </h3>
-                            <p className="text-slate-200 text-sm md:text-base font-medium leading-relaxed">
+                            <p className="text-slate-200 text-sm md:text-base font-medium leading-relaxed mb-4">
                                 {t.taskText}
                             </p>
+                            <a 
+                                href="https://projectsunrise.win/sunrise" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 bg-red-600/80 hover:bg-red-500 text-white text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded border border-red-400/50 shadow-[0_0_10px_rgba(239,68,68,0.3)] hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] transition-all cursor-pointer"
+                            >
+                                <span>{t.mainSiteBtn}</span>
+                                <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            </a>
                         </div>
                     </div>
 
