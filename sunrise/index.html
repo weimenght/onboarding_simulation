@@ -408,10 +408,10 @@
                 n1RootModalBody: "针对 EMP042 在凌晨 02:26 发起的 ROOT_LOGIN_ATTEMPT 调查表明：该员工毫无财务恶意。Daniel Patel 当时正试图通过 SSH 入侵 DU 谷仓后厨的智能烤箱摄像头，以确认新鲜出炉的双倍巧克力曲奇是否已经装盘。",
                 n1RootModalCmd: "$ ssh root@barn-oven-cam.du.local --watch-cookies --alert-when-warm",
                 n1CoffeeLogEvent: "COFFEE_MACHINE_KERNEL_PANIC: B座咖啡机燕麦奶库存耗尽。高级审计师生产力骤降 94%。",
-                n2PizzaVendor: "DU 谷仓午夜曲奇辛迪加 (Midnight Cookie Syndicate)",
+                n2PizzaVendor: "The DU Barn Midnight Cookie Syndicate",
                 n2PizzaApprover: "饥肠辘辘的高级审计师",
                 n2PizzaStatus: "已驳回 (想得美)",
-                n3EasterHint: "连点3次标题：隐藏协议",
+                n3EasterHint: "3x Click Title: Secret Tier",
                 n3Tier6: "末日级 (Tier 6)",
                 n3Tier6Jur: "DU 谷仓曲奇罐",
                 n3Tier6Anom: "合伙人在周五下午 16:55 突然发起“5分钟快速对齐会”",
@@ -992,16 +992,16 @@
             
                 // DISTRACTOR 1: Anomaly Trap (Missing PO vs Shell Mismatch)
                 { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom2, code: "REJECT-TRANSFER-UNAUTH", gateway: "GATE-PANAMA-FLAG", hash: "HASH-6620" },
-                { tier: t.pTier4, cap: "> $20,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom2, code: "FREEZE-UNMATCHED-PO", gateway: "GATE-BVI-RESERVE", hash: "HASH-8840-BVI" },
+                { tier: t.pTier4, cap: "> $20,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom2, code: "FREEZE-UNMATCHED-PO", gateway: "GATE-BVI-RESERVE", hash: "HASH-8840" },
             
                 // DISTRACTOR 2: Channel Trap (CHIPS International USD Wire)
-                { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "CHIPS", anomaly: t.pAnom5, code: "INTERCEPT-OFFSHORE-USD", gateway: "CHP-BVI-ROUTING", hash: "HASH-8815-BVI" },
+                { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "CHIPS", anomaly: t.pAnom5, code: "INTERCEPT-OFFSHORE-USD", gateway: "CHP-BVI-ROUTING", hash: "HASH-8815" },
             
                 // DISTRACTOR 3: Signatory Trap (Unauthorized Signatory in EDD)
                 { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom3, code: "SUSPEND-SIGNATORY-FLAG", gateway: "GATE-MALTA-AUDIT", hash: "HASH-6640" },
             
                 // TARGET ROW: TXN8824 ($22M USD, BVI EDD Jurisdiction, SWIFT-EDD Channel, Shell Mismatch)
-                { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom5, code: "VOID-WIRE-INTERCEPT", gateway: "GATE-BVI-INTERCEPT", hash: "HASH-9988-BVI" },
+                { tier: t.pTier4, cap: "> $10,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom5, code: "VOID-WIRE-INTERCEPT", gateway: "GATE-BVI-INTERCEPT", hash: "HASH-9988" },
             
                 { tier: t.pTier4, cap: "< $10,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom5, code: "FLAG-ACCOUNT-SUSPEND", gateway: "GATE-CAYMAN-ESCROW", hash: "HASH-5510" },
                 { tier: t.pTier4, cap: "> $20,000,000", jur: t.pJur2, channel: "SWIFT-EDD", anomaly: t.pAnom4, code: "FLAG-VELOCITY-SPIKE", gateway: "GATE-EMIRATES-AUDIT", hash: "HASH-7714" },
@@ -1767,7 +1767,7 @@
                                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
                                         <div className="flex items-center justify-between sm:justify-start gap-3">
                                             <h3 className="text-amber-400 font-bold uppercase text-sm md:text-base"><i className="fa-solid fa-database mr-1.5"></i> {t.n2Title}</h3>
-                                            <span className="text-[10px] text-slate-500 italic">(3x Click TXN8892 for the memo)</span>
+                                            <span className="text-[10px] text-slate-500 italic">(3x Click TXN8892: Memo)</span>
                                         </div>
                                         <div className="relative w-full sm:w-64">
                                             <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
