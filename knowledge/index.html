@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>勤业智库 Knowledge Clash</title>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Tone.js for Web Audio Synthesis -->
@@ -90,6 +92,13 @@
       animation: pulseRing 2.4s infinite ease-in-out;
     }
 
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake-error { animation: shake 0.4s ease-in-out; }
+
     @media (min-aspect-ratio: 16/10) {
       .game-viewport {
         max-height: 94vh;
@@ -99,6 +108,60 @@
 </head>
 
 <body class="text-white font-sans flex flex-col justify-between min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden selection:bg-deloitte-green selection:text-black">
+
+  <!-- Gate / Login Overlay -->
+  <div id="passwordGate" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#080b11] p-4">
+    <div id="gateCard" class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center animate-pop-in relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-32 h-32 bg-deloitte-green/15 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="space-y-3 relative z-10">
+        <div class="w-16 h-16 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-2xl mx-auto shadow-lg shadow-deloitte-green/20">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-black text-white">勤业智库<span class="deloitte-dot"></span></h1>
+          <p class="text-xs text-gray-400 mt-1 font-cn">请登录管理员账号以访问智库问答<br><span class="text-[11px] text-gray-500">Sign in to access Knowledge Clash</span></p>
+        </div>
+      </div>
+
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-3.5 relative z-10 text-left">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">账号 / Email</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-envelope"></i>
+            </span>
+            <input id="emailInput" type="email" placeholder="admin@deloitte.com" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">密码 / Password</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-10 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs transition-colors" title="显示/隐藏密码">
+              <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <p id="errorMessage" class="hidden text-xs text-rose-400 font-semibold font-cn flex items-center gap-1.5 pt-1">
+          <i class="fa-solid fa-circle-exclamation text-rose-500 shrink-0"></i>
+          <span id="errorText">账号或密码错误 / Invalid credentials</span>
+        </p>
+
+        <button id="submitBtn" type="submit" class="button-press w-full mt-2 py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+          <span id="btnText">验证并登录 · Sign In</span>
+        </button>
+      </form>
+
+      <p class="text-[11px] text-gray-500 font-mono relative z-10 pt-2 border-t border-white/10">Protected by Supabase Auth</p>
+    </div>
+  </div>
 
   <!-- Top Navigation Bar -->
   <header class="w-full border-b border-white/10 bg-deloitte-black/70 backdrop-blur-md sticky top-0 z-50 flex-shrink-0">
@@ -127,6 +190,12 @@
         <button onclick="restartTrivia()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all flex items-center space-x-1.5">
           <i class="fa-solid fa-rotate-right text-xs"></i>
           <span class="hidden sm:inline">Restart</span>
+        </button>
+
+        <!-- Sign Out Button -->
+        <button type="button" onclick="handleLogout()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 hover:border-rose-500/30 border border-white/10 text-gray-300 hover:text-rose-300 transition-all flex items-center space-x-1.5" title="退出登录">
+          <i class="fa-solid fa-arrow-right-from-bracket text-xs text-deloitte-green"></i>
+          <span class="hidden md:inline">退出</span>
         </button>
       </div>
     </div>
@@ -249,7 +318,7 @@
           </div>
         </div>
 
-        <!-- TIMEOUT ALERT BANNER (Revealed on 0s countdown expiry) -->
+        <!-- TIMEOUT ALERT BANNER -->
         <div id="timeoutWarningBanner" class="hidden py-1.5 px-3 rounded-xl bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 animate-pulse">
           <i class="fa-solid fa-bell text-amber-400"></i>
           <span>倒计时已结束，请点击你的最终选项 / Time's up! Please choose your answer.</span>
@@ -296,18 +365,14 @@
 
         <!-- RESULT & MULTI-TRY ACTION FOOTER -->
         <div id="bottomActionBanner" class="hidden flex flex-col sm:flex-row items-center justify-between bg-white/[0.04] border border-white/10 px-3.5 py-2.5 rounded-xl sm:rounded-2xl gap-2 animate-pop-in">
-          <div id="answerStatusMessage" class="flex items-center space-x-2 text-xs sm:text-sm font-extrabold">
-            <!-- Dynamic feedback message -->
-          </div>
+          <div id="answerStatusMessage" class="flex items-center space-x-2 text-xs sm:text-sm font-extrabold"></div>
 
           <div class="flex items-center space-x-2 self-end sm:self-auto">
-            <!-- Retry Button (Visible when attempt fails and retries remain) -->
             <button id="retryQuestionBtn" onclick="retryCurrentQuestion()" class="hidden button-press px-4 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 text-amber-300 font-bold text-xs sm:text-sm transition-all flex items-center space-x-1.5 shadow-md shadow-amber-500/10">
               <i class="fa-solid fa-rotate-left text-xs"></i>
               <span id="retryBtnText">重试 (还剩 2 次) · Retry</span>
             </button>
 
-            <!-- Next Question Button -->
             <button id="nextQuestionBtn" onclick="goToNextQuestion()" class="button-press px-4 py-1.5 sm:px-5 sm:py-2 rounded-lg sm:rounded-xl bg-deloitte-green text-black font-bold text-xs sm:text-sm hover:bg-emerald-400 transition-all flex items-center space-x-1.5 shadow-lg shadow-deloitte-green/20">
               <span id="nextBtnText">下一题 · Next Question</span>
               <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -317,7 +382,7 @@
 
       </section>
 
-      <!-- SUMMARY & SCORE CARD VIEW (Appears after 15 questions) -->
+      <!-- SUMMARY & SCORE CARD VIEW -->
       <section id="summaryScoreView" class="hidden space-y-6 animate-pop-in text-center">
         <div class="bg-gradient-to-b from-deloitte-cardbg to-[#12151b] border-2 border-white/10 p-8 sm:p-14 rounded-3xl card-shadow space-y-6">
           <div class="w-20 h-20 rounded-full bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/40 flex items-center justify-center mx-auto text-3xl shadow-lg shadow-deloitte-green/20">
@@ -427,6 +492,159 @@
 
   <script>
     /* ==========================================================
+       0. SUPABASE AUTHENTICATION & REMOTE CONFIG SYNC
+       ========================================================== */
+    const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
+    let supabaseClient = null;
+
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    async function loadRemoteKnowledgeQuestions() {
+      // 1. Check localStorage fallback first
+      try {
+        const cached = localStorage.getItem('knowledge_config_v1');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+            currentQuestions = parsed.questions;
+            renderCurrentQuestion();
+          }
+        }
+      } catch (e) {}
+
+      // 2. Fetch from Supabase
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('knowledge_config')
+          .select('questions')
+          .eq('id', 1)
+          .maybeSingle();
+
+        if (!error && data && Array.isArray(data.questions) && data.questions.length > 0) {
+          currentQuestions = data.questions;
+          localStorage.setItem('knowledge_config_v1', JSON.stringify({ questions: data.questions }));
+          renderCurrentQuestion();
+        }
+      } catch (err) {
+        console.warn("Could not load knowledge_config from Supabase:", err);
+      }
+    }
+
+    function subscribeKnowledgeRealtime() {
+      if (!supabaseClient) return;
+      try {
+        supabaseClient
+          .channel('knowledge_config_live')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'knowledge_config' }, (payload) => {
+            if (payload.new && Array.isArray(payload.new.questions) && payload.new.questions.length > 0) {
+              currentQuestions = payload.new.questions;
+              localStorage.setItem('knowledge_config_v1', JSON.stringify({ questions: currentQuestions }));
+              showToast(`Admin updated question bank (${currentQuestions.length} questions)`);
+              if (isTestMode || currentIndex >= currentQuestions.length) {
+                renderCurrentQuestion();
+              }
+            }
+          })
+          .subscribe();
+      } catch (e) {}
+    }
+
+    async function initAuth() {
+      if (!supabaseClient) {
+        showAuthError("Supabase 脚本加载失败，请检查网络");
+        return;
+      }
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          renderAuthorized();
+        } else {
+          document.getElementById('emailInput').focus();
+        }
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_IN' && session) renderAuthorized();
+          else if (event === 'SIGNED_OUT') renderLocked();
+        });
+      } catch (err) {
+        console.error("Auth init error:", err);
+      }
+    }
+
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+
+      if (!supabaseClient) {
+        showAuthError("无法连接到认证服务");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      btnText.textContent = "验证中 · Verifying...";
+      submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+          showAuthError(error.message);
+        } else if (data?.user) {
+          document.getElementById('errorMessage').classList.add('hidden');
+          renderAuthorized();
+        }
+      } catch (err) {
+        showAuthError("请求异常: " + (err.message || "Network Error"));
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = "验证并登录 · Sign In";
+        submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+      }
+    }
+
+    function showAuthError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      const gateCard = document.getElementById('gateCard');
+      errorText.textContent = message;
+      errorEl.classList.remove('hidden');
+      gateCard.classList.remove('shake-error');
+      void gateCard.offsetWidth;
+      gateCard.classList.add('shake-error');
+    }
+
+    async function handleLogout() {
+      stopQuestionTimer();
+      if (supabaseClient) await supabaseClient.auth.signOut();
+    }
+
+    function renderAuthorized() {
+      document.getElementById('passwordGate').classList.add('hidden');
+      loadRemoteKnowledgeQuestions();
+    }
+
+    function renderLocked() {
+      stopQuestionTimer();
+      document.getElementById('passwordGate').classList.remove('hidden');
+      const passwordInput = document.getElementById('passwordInput');
+      if (passwordInput) passwordInput.value = '';
+      document.getElementById('errorMessage').classList.add('hidden');
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('passwordInput');
+      const icon = document.getElementById('toggleEyeIcon');
+      const visible = input.type === 'password';
+      input.type = visible ? 'text' : 'password';
+      icon.className = visible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    }
+
+    /* ==========================================================
        1. SOUND ENGINE (Tone.js Synthesis)
        ========================================================== */
     let audioEnabled = true;
@@ -477,7 +695,6 @@
         }).toDestination();
         clickSynth.volume.value = -10;
 
-        // Normal countdown tick synth (clean wooden pip)
         tickSynth = new Tone.MembraneSynth({
           pitchDecay: 0.008,
           octaves: 1.5,
@@ -485,14 +702,12 @@
         }).toDestination();
         tickSynth.volume.value = -11;
 
-        // High-intensity sharp pulse synth for final 3 seconds
         urgentTickSynth = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "square" },
           envelope: { attack: 0.002, decay: 0.08, sustain: 0.01, release: 0.04 }
         }).toDestination();
         urgentTickSynth.volume.value = -3;
 
-        // Timeout completion synth
         timeoutSynth = new Tone.PolySynth(Tone.Synth, {
           oscillator: { type: "triangle" },
           envelope: { attack: 0.005, decay: 0.18, sustain: 0.02, release: 0.25 }
@@ -542,7 +757,6 @@
         } else if (type === 'tick' && tickSynth) {
           tickSynth.triggerAttackRelease("G3", "32n", now);
         } else if (type === 'urgent-tick' && urgentTickSynth) {
-          // Escalating pitch intensity for 3s -> 2s -> 1s
           const pitch = payload === 3 ? "G5" : (payload === 2 ? "Bb5" : "D6");
           urgentTickSynth.triggerAttackRelease(pitch, "32n", now);
           urgentTickSynth.triggerAttackRelease(pitch, "32n", now + 0.09);
@@ -557,11 +771,8 @@
     }
 
     /* ==========================================================
-       2. BILINGUAL TRIVIA KNOWLEDGE DATASET (All 15 Fully Translated)
+       2. BILINGUAL TRIVIA KNOWLEDGE DATASET
        ========================================================== */
-    <!-- 需要严格按照这个格式，注意不要使用逗号, 
-      const dictionary = ["quetion 1 CH / question 1 EN, option 1 CH / option 1 EN, [option 2 CH / option 2 EN (正确的答案用方括号)], option 3 CH / option 3 EN, option 4 CH / option 4 EN,"] -->
-      
     const DEFAULT_QUESTIONS_RAW = [
       "德勤品牌于哪一年在全球创立？德勤前身于哪一年在上海设立第一家办公室？ / In what year was Deloitte founded globally, and when was its first office opened in Shanghai?, [1845年与1917年 / 1845 & 1917], 1895年与1945年 / 1895 & 1945, 1917年与1980年 / 1917 & 1980, 1945年与1992年 / 1945 & 1992",
       "德勤当前的全球品牌标语（Brand Tagline）是什么？ / What is Deloitte's current global brand tagline?, 因我不同 成就不凡 / To make an impact that matters, [众行致远 / Together makes progress], 以诚信成就不凡 以宗旨驱动进步 / Progress with purpose through integrity and impact, 清晰敏锐 信而有征 人文关怀 / Clear Confident Human",
@@ -713,7 +924,7 @@
       }, 2200);
     }
 
-    function saveAdminQuestions() {
+    async function saveAdminQuestions() {
       const raw = document.getElementById("adminQuestionInput").value;
       const parsed = parseQuestionsFromText(raw);
 
@@ -723,8 +934,22 @@
       }
 
       currentQuestions = parsed;
+      const rawFormatted = formatQuestionsForAdmin(parsed);
+      localStorage.setItem('knowledge_config_v1', JSON.stringify({ questions: parsed, raw_text: rawFormatted }));
+
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('knowledge_config').upsert({
+            id: 1,
+            questions: parsed,
+            raw_text: rawFormatted,
+            updated_at: new Date().toISOString()
+          });
+        } catch (e) {}
+      }
+
       closeAdminModal();
-      showToast(`Updated! Loaded ${parsed.length} questions`);
+      showToast(`Updated & Synced! Loaded ${parsed.length} questions`);
       restartTrivia();
     }
 
@@ -743,7 +968,7 @@
     let questionTimerInterval = null;
     let isTimerPaused = false;
     let isTimeoutOccurred = false;
-    const CIRCLE_CIRCUMFERENCE = 147.65; // 2 * PI * 23.5
+    const CIRCLE_CIRCUMFERENCE = 147.65;
 
     function formatTimeSeconds(seconds) {
       const mins = Math.floor(seconds / 60);
@@ -772,7 +997,6 @@
         arc.style.strokeDashoffset = offset;
       }
 
-      // Intensify visual colors when in final 3 seconds
       if (questionTimeRemaining <= 3 && questionTimeRemaining > 0) {
         if (display && !isTimeoutOccurred) {
           display.className = "font-mono text-sm sm:text-base font-black text-rose-300 tracking-wider px-2 py-0.5 rounded-lg bg-rose-950/80 border-2 border-rose-500 shadow-lg shadow-rose-950/60 animate-ping";
@@ -856,10 +1080,8 @@
           if (questionTimeRemaining <= 0) {
             triggerCountdownOver();
           } else if (questionTimeRemaining <= 3) {
-            // Intense escalating audio alert for 3s, 2s, 1s
             playSound('urgent-tick', questionTimeRemaining);
           } else {
-            // Normal audio tick
             playSound('tick');
           }
         }
@@ -1313,6 +1535,8 @@
        7. KEYBOARD SHORTCUTS & INITIALIZATION
        ========================================================== */
     window.addEventListener("keydown", (e) => {
+      const gate = document.getElementById("passwordGate");
+      if (gate && !gate.classList.contains("hidden")) return;
       const adminModal = document.getElementById("adminModal");
       if (adminModal && !adminModal.classList.contains("hidden")) return;
       if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
@@ -1351,10 +1575,13 @@
       }
     });
 
-    window.onload = function() {
+    window.addEventListener("load", () => {
       initQuestions();
       renderCurrentQuestion();
-    };
+      loadRemoteKnowledgeQuestions();
+      subscribeKnowledgeRealtime();
+      initAuth();
+    });
 
     document.addEventListener("click", () => {
       if (!audioReady && audioEnabled) {
