@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Onboarding Admin Portal 管理控制台</title>
+  <title>Onboarding Admin Portal</title>
+  
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -81,6 +85,8 @@
 </head>
 
 <body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+
+  <!-- Gate / Login Overlay -->
   <div id="passwordGate" class="fixed inset-0 z-50 flex items-center justify-center bg-[#080b11] p-4">
     <div id="gateCard" class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center animate-fade-in relative overflow-hidden">
       <div class="absolute -right-12 -top-12 w-32 h-32 bg-deloitte-green/15 rounded-full blur-2xl pointer-events-none"></div>
@@ -91,43 +97,71 @@
         </div>
         <div>
           <h1 class="text-2xl sm:text-3xl font-black text-white">Onboarding<span class="deloitte-dot"></span> Admin</h1>
-          <p class="text-xs text-gray-400 mt-1 font-cn">请输入管理密码以访问控制台<br><span class="text-[11px] text-gray-500">Please enter password to unlock</span></p>
+          <p class="text-xs text-gray-400 mt-1 font-cn">请登录管理员账号以访问控制台<br><span class="text-[11px] text-gray-500">Sign in with authorized administrator credentials</span></p>
         </div>
       </div>
 
-      <form onsubmit="handlePasswordSubmit(event)" class="space-y-4 relative z-10">
-        <div class="relative">
-          <input id="passwordInput" type="password" placeholder="••••••••••" autocomplete="current-password" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-2xl py-3.5 px-4 text-center font-mono text-lg text-white placeholder-gray-600 transition-colors" required>
-          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs transition-colors" title="显示/隐藏密码" aria-label="显示/隐藏密码">
-            <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
-          </button>
+      <!-- Supabase Login Form -->
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-3.5 relative z-10 text-left">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">账号 / Email</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-envelope"></i>
+            </span>
+            <input id="emailInput" type="email" placeholder="admin@deloitte.com.cn" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+          </div>
         </div>
 
-        <p id="errorMessage" class="hidden text-xs text-rose-400 font-semibold font-cn flex items-center justify-center gap-1.5">
-          <i class="fa-solid fa-circle-exclamation text-rose-500"></i>
-          <span>密码错误，请重新输入 / Incorrect password</span>
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">密码 / Password</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-10 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs transition-colors" title="显示/隐藏密码">
+              <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <p id="errorMessage" class="hidden text-xs text-rose-400 font-semibold font-cn flex items-center gap-1.5 pt-1">
+          <i class="fa-solid fa-circle-exclamation text-rose-500 shrink-0"></i>
+          <span id="errorText">账号或密码错误 / Invalid credentials</span>
         </p>
 
-        <button type="submit" class="button-press w-full py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-lock-open text-xs"></i>
-          <span>验证并进入 · Unlock Portal</span>
+        <button id="submitBtn" type="submit" class="button-press w-full mt-2 py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+          <span id="btnText">验证并登录 · Sign In</span>
         </button>
       </form>
 
-      <p class="text-[11px] text-gray-500 font-mono relative z-10 pt-2 border-t border-white/10">Security Access Verification</p>
+      <!-- <p class="text-[11px] text-gray-500 font-mono relative z-10 pt-2 border-t border-white/10">Protected by Supabase Auth</p> -->
     </div>
   </div>
 
+  <!-- Main Authenticated Admin Portal -->
   <div id="mainAdminContent" class="hidden flex-col justify-between min-h-screen">
     <header class="w-full border-b border-white/10 bg-deloitte-black/80 backdrop-blur-md sticky top-0 z-40">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-sm"><i class="fa-solid fa-layer-group"></i></div>
-          <div><span class="font-black text-lg text-white">Onboarding<span class="deloitte-dot"></span></span><span class="ml-1 text-xs text-gray-400 font-bold">Admin Portal</span></div>
+          <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-sm">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div>
+            <span class="font-black text-lg text-white">Onboarding<span class="deloitte-dot"></span></span>
+            <span class="ml-1 text-xs text-gray-400 font-bold">Admin Portal</span>
+          </div>
         </div>
-        <button type="button" onclick="lockPortal()" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 hover:text-white transition-all flex items-center gap-2">
-          <i class="fa-solid fa-lock text-deloitte-green text-xs"></i><span>锁定 · Lock</span>
-        </button>
+        
+        <div class="flex items-center gap-3">
+          <span id="userEmailTag" class="hidden sm:inline-block text-xs font-mono text-gray-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full truncate max-w-[200px]"></span>
+          <button type="button" onclick="handleLogout()" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 hover:border-rose-500/30 border border-white/10 text-gray-300 hover:text-rose-300 transition-all flex items-center gap-2">
+            <i class="fa-solid fa-arrow-right-from-bracket text-xs text-deloitte-green"></i>
+            <span>退出 · Sign Out</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -278,30 +312,124 @@
     </main>
   </div>
 
+  <!-- Fix 2: Renamed client variable to avoid global namespace collision -->
   <script>
-    const REQUIRED_PASSWORD = "!@#$%^&*()";
-
-    function handlePasswordSubmit(event) {
+    const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
+  
+    let supabaseClient = null;
+  
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+      console.error("Supabase SDK failed to load. Check your network or CDN link.");
+    }
+  
+    window.addEventListener('load', async () => {
+      if (!supabaseClient) {
+        showError("Supabase 脚本加载失败，请检查网络或 CDN 连接");
+        return;
+      }
+  
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error) console.warn("Session check error:", error.message);
+        if (session) {
+          renderAuthorized(session.user);
+        } else {
+          document.getElementById('emailInput').focus();
+        }
+  
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_IN' && session) {
+            renderAuthorized(session.user);
+          } else if (event === 'SIGNED_OUT') {
+            renderLocked();
+          }
+        });
+      } catch (err) {
+        console.error("Initialization error:", err);
+      }
+    });
+  
+    async function handleLoginSubmit(event) {
       event.preventDefault();
-      const input = document.getElementById('passwordInput');
-      const errorMessage = document.getElementById('errorMessage');
-      const gateCard = document.getElementById('gateCard');
-
-      if (input.value === REQUIRED_PASSWORD) {
-        errorMessage.classList.add('hidden');
-        document.getElementById('passwordGate').classList.add('hidden');
-        document.getElementById('mainAdminContent').classList.remove('hidden');
-        document.getElementById('mainAdminContent').classList.add('flex');
-      } else {
-        errorMessage.classList.remove('hidden');
-        gateCard.classList.remove('shake-error');
-        void gateCard.offsetWidth;
-        gateCard.classList.add('shake-error');
-        input.value = '';
-        input.focus();
+  
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+  
+      if (!supabaseClient) {
+        showError("无法连接到认证服务 (Supabase SDK 未加载)");
+        return;
+      }
+  
+      submitBtn.disabled = true;
+      btnText.textContent = "验证中 · Verifying...";
+      submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+  
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+  
+        if (error) {
+          showError(error.message);
+        } else if (data?.user) {
+          document.getElementById('errorMessage').classList.add('hidden');
+          renderAuthorized(data.user);
+        }
+      } catch (err) {
+        showError("请求异常: " + (err.message || "Network Error"));
+        console.error("Login catch error:", err);
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = "验证并登录 · Sign In";
+        submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
       }
     }
-
+  
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      const gateCard = document.getElementById('gateCard');
+  
+      errorText.textContent = message;
+      errorEl.classList.remove('hidden');
+  
+      gateCard.classList.remove('shake-error');
+      void gateCard.offsetWidth;
+      gateCard.classList.add('shake-error');
+    }
+  
+    async function handleLogout() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+    }
+  
+    function renderAuthorized(user) {
+      document.getElementById('passwordGate').classList.add('hidden');
+      document.getElementById('mainAdminContent').classList.remove('hidden');
+      document.getElementById('mainAdminContent').classList.add('flex');
+  
+      if (user && user.email) {
+        const userTag = document.getElementById('userEmailTag');
+        userTag.textContent = user.email;
+        userTag.classList.remove('hidden');
+      }
+    }
+  
+    function renderLocked() {
+      document.getElementById('mainAdminContent').classList.add('hidden');
+      document.getElementById('mainAdminContent').classList.remove('flex');
+      document.getElementById('passwordGate').classList.remove('hidden');
+  
+      const passwordInput = document.getElementById('passwordInput');
+      if (passwordInput) passwordInput.value = '';
+      document.getElementById('errorMessage').classList.add('hidden');
+    }
+  
     function togglePasswordVisibility() {
       const input = document.getElementById('passwordInput');
       const icon = document.getElementById('toggleEyeIcon');
@@ -309,18 +437,6 @@
       input.type = visible ? 'text' : 'password';
       icon.className = visible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
     }
-
-    function lockPortal() {
-      const input = document.getElementById('passwordInput');
-      document.getElementById('errorMessage').classList.add('hidden');
-      input.value = '';
-      document.getElementById('mainAdminContent').classList.add('hidden');
-      document.getElementById('mainAdminContent').classList.remove('flex');
-      document.getElementById('passwordGate').classList.remove('hidden');
-      input.focus();
-    }
-
-    window.addEventListener('load', () => document.getElementById('passwordInput').focus());
   </script>
 </body>
 </html>
