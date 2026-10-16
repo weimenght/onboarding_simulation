@@ -46,6 +46,7 @@
       -webkit-user-select: none;
       -webkit-touch-callout: none;
       overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
     }
     html, body {
       height: 100%;
@@ -53,13 +54,15 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      touch-action: manipulation;
+      touch-action: none;
       background-color: #070a0f;
     }
     body {
       background-image: 
-        radial-gradient(circle at 50% 15%, rgba(134, 188, 37, 0.12) 0%, transparent 60%),
-        radial-gradient(circle at 85% 85%, rgba(0, 79, 89, 0.22) 0%, transparent 65%);
+        radial-gradient(circle at 50% 10%, rgba(134, 188, 37, 0.15) 0%, transparent 55%),
+        radial-gradient(circle at 50% 90%, rgba(0, 79, 89, 0.25) 0%, transparent 65%);
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
     }
     canvas {
       image-rendering: pixelated;
@@ -77,9 +80,9 @@
     }
     .pixel-box {
       box-shadow: 
-        inset -2px -2px 0px 0px rgba(0,0,0,0.6),
-        inset 2px 2px 0px 0px rgba(255,255,255,0.25),
-        0 3px 0 0 rgba(0,0,0,0.7);
+        inset -2px -2px 0px 0px rgba(0,0,0,0.65),
+        inset 2px 2px 0px 0px rgba(255,255,255,0.2),
+        0 3px 0 0 rgba(0,0,0,0.8);
     }
     .pixel-box-green {
       box-shadow: 
@@ -91,7 +94,7 @@
       transform: translateY(2px);
       box-shadow: 
         inset -1px -1px 0px 0px rgba(0,0,0,0.5),
-        inset 1px 1px 0px 0px rgba(255,255,255,0.2),
+        inset 1px 1px 0px 0px rgba(255,255,255,0.15),
         0 1px 0 0 rgba(0,0,0,0.7);
     }
     .deloitte-dot-pixel {
@@ -107,225 +110,200 @@
       50% { filter: drop-shadow(0 0 10px rgba(134, 188, 37, 0.9)); }
     }
     .glow-anim { animation: pulseGlow 2s infinite; }
-
-    @media (orientation: landscape) and (max-height: 520px) {
-      .header-container { padding-top: 0.2rem !important; padding-bottom: 0.2rem !important; }
-      .header-subtitle { display: none !important; }
-      .hud-banner { padding: 0.2rem 0.5rem !important; margin-bottom: 0.25rem !important; }
-      .touch-controls-bar {
-        position: absolute !important;
-        bottom: 0.4rem !important;
-        left: 0.5rem !important;
-        right: 0.5rem !important;
-        pointer-events: none !important;
-        margin-top: 0 !important;
-        z-index: 35 !important;
-      }
-      .touch-controls-bar button {
-        pointer-events: auto !important;
-        opacity: 0.85;
-        backdrop-filter: blur(6px);
-      }
-    }
   </style>
 </head>
 
 <body class="text-white font-sans flex flex-col justify-between selection:bg-deloitte-green selection:text-black">
 
-  <!-- Top Arcade Header -->
-  <header class="header-container w-full flex-shrink-0 border-b border-white/10 bg-deloitte-midnight/90 backdrop-blur-md z-40 py-1.5 sm:py-2 px-3 sm:px-6">
-    <div class="max-w-5xl mx-auto flex items-center justify-between">
+  <!-- Mobile Portrait Optimized Top Navigation Bar -->
+  <header class="w-full flex-shrink-0 border-b border-white/10 bg-deloitte-midnight/95 backdrop-blur-md z-40 py-2 px-3">
+    <div class="w-full max-w-lg mx-auto flex items-center justify-between">
       
-      <!-- Logo with 3-Tap Easter Egg -->
+      <!-- Logo Branding & Easter Egg -->
       <div class="flex items-center space-x-2 cursor-pointer active:scale-95 transition-transform" onclick="triggerEasterEggLogo()" title="Triple-tap for secret bonus!">
-        <div id="headerLogoBox" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-pixel text-xs font-black shadow-md shadow-deloitte-green/20">
+        <div id="headerLogoBox" class="w-7 h-7 rounded-lg bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-pixel text-xs font-black shadow-md shadow-deloitte-green/20">
           D.
         </div>
         <div class="flex flex-col">
-          <div class="flex items-center">
-            <span class="font-pixel text-[11px] sm:text-sm text-white tracking-wider">D-RUSH</span>
+          <div class="flex items-center leading-none">
+            <span class="font-pixel text-xs text-white tracking-wider">D-RUSH</span>
             <span class="deloitte-dot-pixel"></span>
           </div>
-          <span id="headerSubtitle" class="header-subtitle text-[8px] sm:text-[9px] text-deloitte-gray tracking-tight">FRESH GRAD ONBOARDING RUNNER</span>
+          <span id="headerSubtitle" class="text-[7.5px] text-deloitte-gray tracking-tight font-sans">A1 ONBOARDING</span>
         </div>
       </div>
 
-      <!-- Quick Toggles -->
-      <div class="flex items-center space-x-1.5 sm:space-x-2">
-        <button onclick="openLeaderboardModal()" class="px-2 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-[10px] font-bold flex items-center space-x-1 text-amber-400 transition-all">
+      <!-- Icon-Based Action Dock for Mobile -->
+      <div class="flex items-center space-x-1.5">
+        <!-- Leaderboard -->
+        <button onclick="openLeaderboardModal()" class="w-8 h-8 rounded-lg bg-amber-500/15 active:bg-amber-500/30 border border-amber-500/40 text-amber-400 flex items-center justify-center text-xs">
           <i class="fa-solid fa-trophy"></i>
-          <span class="hidden sm:inline" id="leaderboardBtnText">RANKS</span>
         </button>
-        <button id="langToggleBtn" onclick="toggleLanguage()" class="px-2 py-1 rounded-md bg-deloitte-green/20 hover:bg-deloitte-green/30 border border-deloitte-green/50 text-[10px] font-bold flex items-center space-x-1 text-deloitte-green transition-all">
-          <i class="fa-solid fa-language"></i>
-          <span id="langBtnText">EN / 中文</span>
+
+        <!-- Language Toggle -->
+        <button id="langToggleBtn" onclick="toggleLanguage()" class="h-8 px-2 rounded-lg bg-deloitte-green/15 active:bg-deloitte-green/30 border border-deloitte-green/40 text-deloitte-green font-bold text-[9px] flex items-center space-x-1">
+          <i class="fa-solid fa-language text-xs"></i>
+          <span id="langBtnText">EN</span>
         </button>
-        <button id="sfxToggleBtn" onclick="toggleAudio()" class="px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-pixel flex items-center space-x-1 text-gray-300">
+
+        <!-- SFX Toggle -->
+        <button id="sfxToggleBtn" onclick="toggleAudio()" class="w-8 h-8 rounded-lg bg-white/5 active:bg-white/15 border border-white/10 text-gray-300 flex items-center justify-center text-xs">
           <i id="sfxIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
-          <span class="hidden sm:inline">SFX</span>
         </button>
-        <button onclick="toggleCRT()" class="px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-pixel flex items-center space-x-1 text-gray-300">
-          <i class="fa-solid fa-tv text-cyan-400"></i>
-          <span class="hidden sm:inline">CRT</span>
-        </button>
-        <button onclick="openHelpModal()" class="px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] text-deloitte-lightgray hover:text-white">
+
+        <!-- Rules/Help Modal -->
+        <button onclick="openHelpModal()" class="w-8 h-8 rounded-lg bg-white/5 active:bg-white/15 border border-white/10 text-deloitte-lightgray flex items-center justify-center text-xs">
           <i class="fa-solid fa-circle-question"></i>
         </button>
       </div>
+
     </div>
   </header>
 
-  <!-- Arcade Bezel Viewport -->
-  <main class="flex-1 min-h-0 w-full max-w-5xl mx-auto flex flex-col items-center justify-between p-1.5 sm:p-2.5 overflow-hidden relative">
-    <div class="flex-1 min-h-0 w-full bg-[#0e1219] border border-white/10 sm:border-2 rounded-xl p-1.5 sm:p-2 shadow-2xl relative flex flex-col justify-between items-center overflow-hidden">
+  <!-- Arcade Main Viewport (Mobile Portrait Layout) -->
+  <main class="flex-1 min-h-0 w-full max-w-lg mx-auto flex flex-col justify-between p-2 relative overflow-hidden">
+    
+    <div class="flex-1 min-h-0 w-full bg-[#0e1219] border border-white/10 rounded-2xl p-2 shadow-2xl flex flex-col justify-between items-center relative overflow-hidden">
       
-      <!-- Top HUD Banner -->
-      <div class="hud-banner w-full flex-shrink-0 flex items-center justify-between px-2 sm:px-3 py-1 mb-1 bg-[#090c12] border border-white/10 rounded-lg font-pixel text-[8px] sm:text-[10px]">
-        <div class="flex items-center space-x-3 sm:space-x-5">
-          <div class="flex flex-col">
-            <span id="hudLabelScore" class="text-gray-400 text-[7px] uppercase">SCORE</span>
-            <span id="hudScore" class="text-deloitte-green font-bold text-xs sm:text-sm">000000</span>
+      <!-- Mobile Portrait 2-Tier HUD -->
+      <div class="w-full flex-shrink-0 bg-[#090c12]/90 border border-white/10 rounded-xl p-2 mb-2 font-pixel">
+        <!-- Upper HUD Row: Metrics -->
+        <div class="grid grid-cols-2 gap-2 text-left">
+          <!-- Left Column: Scores -->
+          <div class="flex flex-col space-y-0.5">
+            <div class="flex items-center justify-between pr-2 border-r border-white/10">
+              <span id="hudLabelScore" class="text-[7px] text-gray-400">SCORE</span>
+              <span id="hudScore" class="text-deloitte-green text-xs font-bold">000000</span>
+            </div>
+            <div class="flex items-center justify-between pr-2 border-r border-white/10">
+              <span id="hudLabelHigh" class="text-[7px] text-gray-400">RECORD</span>
+              <span id="hudHighScore" class="text-white text-[10px]">000000</span>
+            </div>
           </div>
-          <div class="flex flex-col">
-            <span id="hudLabelHigh" class="text-gray-400 text-[7px] uppercase">RECORD</span>
-            <span id="hudHighScore" class="text-white font-bold text-xs sm:text-sm">000000</span>
+
+          <!-- Right Column: Career & Distance -->
+          <div class="flex flex-col space-y-0.5 pl-1">
+            <div class="flex items-center justify-between cursor-pointer" onclick="handleRankBadgeTap()">
+              <span id="hudLabelRank" class="text-[7px] text-gray-400">RANK</span>
+              <span id="hudRank" class="text-cyan-400 text-[8.5px] truncate max-w-[105px]">DAY 1 NEW HIRE</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span id="hudLabelMeters" class="text-[7px] text-gray-400">SPRINT</span>
+              <span id="hudMeters" class="text-deloitte-green text-[10px]">0m</span>
+            </div>
           </div>
         </div>
 
-        <!-- Dynamic Location & Weather Info Banner -->
-        <div class="hidden sm:flex items-center space-x-2 text-deloitte-lightgray text-[8px] border border-white/10 px-2 py-0.5 rounded bg-white/5">
-          <i id="hudWeatherIcon" class="fa-solid fa-cloud-sun text-cyan-400"></i>
-          <span id="hudLocationText" class="font-sans font-bold">Hong Kong Office</span>
-        </div>
-
-        <div class="flex items-center space-x-3 sm:space-x-5">
-          <div class="flex flex-col text-right cursor-pointer" onclick="handleRankBadgeTap()" title="Double tap for founding Easter Egg!">
-            <span id="hudLabelRank" class="text-gray-400 text-[7px] uppercase">CAREER LEVEL</span>
-            <span id="hudRank" class="text-cyan-400 font-bold text-[8px] sm:text-xs">DAY 1 NEW HIRE</span>
+        <!-- Lower HUD Row: Location & Weather Pill -->
+        <div class="mt-1.5 pt-1 border-t border-white/10 flex items-center justify-between text-[8px] font-sans text-gray-300">
+          <div class="flex items-center space-x-1.5 truncate">
+            <i id="hudWeatherIcon" class="fa-solid fa-cloud-sun text-cyan-400"></i>
+            <span id="hudLocationText" class="truncate font-semibold text-white/90">Hong Kong Two IFC</span>
           </div>
-          <div class="flex flex-col text-right">
-            <span id="hudLabelMeters" class="text-gray-400 text-[7px] uppercase">SPRINT</span>
-            <span id="hudMeters" class="text-deloitte-green font-bold text-xs sm:text-sm">0m</span>
+          <div class="flex items-center space-x-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-deloitte-green animate-ping"></span>
+            <span class="text-[7.5px] text-gray-400 uppercase tracking-wider font-pixel">LIVE</span>
           </div>
         </div>
       </div>
 
-      <!-- Canvas Box -->
-      <div class="flex-1 min-h-0 w-full relative aspect-[16/9] max-h-full rounded-lg overflow-hidden border border-white/15 bg-black flex items-center justify-center shadow-inner">
+      <!-- Canvas Area Container -->
+      <div class="w-full flex-1 min-h-0 relative aspect-[16/9] rounded-xl overflow-hidden border border-white/15 bg-black flex items-center justify-center shadow-inner">
         <canvas id="gameCanvas" width="480" height="270" class="w-full h-full object-contain block"></canvas>
-        <div id="crtOverlay" class="crt-scanlines pointer-events-none absolute inset-0 z-10 opacity-50"></div>
+        <div id="crtOverlay" class="crt-scanlines pointer-events-none absolute inset-0 z-10 opacity-40"></div>
 
-        <!-- Floating Live Notifications -->
-        <div id="inGameToast" class="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-25 hidden px-3 py-1 rounded-full bg-black/90 border border-deloitte-green/70 text-[9px] font-bold text-deloitte-green shadow-lg flex items-center space-x-2 animate-bounce">
+        <!-- Floating Live Toasts -->
+        <div id="inGameToast" class="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-25 hidden px-3 py-1 rounded-full bg-black/90 border border-deloitte-green/70 text-[8.5px] font-bold text-deloitte-green shadow-lg flex items-center space-x-2 animate-bounce">
           <i id="inGameToastIcon" class="fa-solid fa-sparkles text-amber-300"></i>
           <span id="inGameToastText">COFFEE CHAT ALIGNED!</span>
         </div>
 
-        <!-- Powerup Pill -->
-        <div id="powerupStatusBar" class="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 z-20 hidden items-center gap-1.5 text-[8px] sm:text-[9px] font-pixel text-deloitte-green bg-black/90 border border-deloitte-green/50 py-0.5 px-2.5 rounded-full animate-pulse">
+        <!-- Invincibility Status Bar -->
+        <div id="powerupStatusBar" class="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 z-20 hidden items-center gap-1.5 text-[8px] font-pixel text-deloitte-green bg-black/90 border border-deloitte-green/50 py-0.5 px-2.5 rounded-full animate-pulse">
           <i id="powerupIcon" class="fa-solid fa-mug-hot text-amber-400"></i>
           <span id="powerupText">BUDDY BOOST: 4s</span>
         </div>
 
-        <!-- START SCREEN OVERLAY -->
-        <div id="startOverlay" class="absolute inset-0 z-20 bg-deloitte-midnight/95 backdrop-blur-sm flex flex-col items-center justify-center p-3 text-center space-y-2">
-          <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green text-[8px] sm:text-[9px] font-bold">
+        <!-- START SCREEN MODAL OVERLAY -->
+        <div id="startOverlay" class="absolute inset-0 z-20 bg-deloitte-midnight/95 backdrop-blur-md flex flex-col items-center justify-center p-3 text-center space-y-2 overflow-y-auto">
+          <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green text-[8px] font-bold">
             <i class="fa-solid fa-graduation-cap"></i>
             <span id="startBadge">DELOITTE ONBOARDING ARCADE</span>
           </div>
 
-          <h1 class="font-pixel text-base sm:text-2xl text-white tracking-wide glow-anim">
+          <h1 class="font-pixel text-xl sm:text-2xl text-white tracking-wide glow-anim leading-tight">
             D-RUSH<span class="deloitte-dot-pixel"></span>
           </h1>
 
           <!-- User Name Registration Box -->
-          <div class="w-full max-w-xs space-y-1">
-            <div class="text-[9px] text-gray-300 flex items-center justify-between px-1">
+          <div class="w-full max-w-[240px] space-y-1">
+            <div class="text-[8.5px] text-gray-300 flex items-center justify-between px-1">
               <span id="nameInputPrompt">Your Nickname:</span>
-              <span class="text-deloitte-green text-[8px]"><i class="fa-solid fa-cloud-arrow-up"></i> Mystery</span>
+              <span class="text-deloitte-green text-[7.5px]"><i class="fa-solid fa-cloud-arrow-up"></i> Supabase</span>
             </div>
-            <input id="playerNameInput" type="text" maxlength="16" placeholder="A1 Analyst" class="w-full px-2.5 py-1.5 rounded-lg bg-black/60 border border-white/20 text-white text-xs font-mono focus:border-deloitte-green focus:outline-none text-center">
+            <input id="playerNameInput" type="text" maxlength="16" placeholder="A1 Analyst" class="w-full px-2 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-mono focus:border-deloitte-green focus:outline-none text-center">
           </div>
 
-          <p id="startSubtitle" class="text-[10px] sm:text-xs text-deloitte-lightgray max-w-sm leading-relaxed">
-            Begin your onboarding sprint! Connect with your <strong class="text-amber-300">Buddy & Coach</strong>, dodge #REF! errors & scope creep, and rise to Partner!
+          <p id="startSubtitle" class="text-[9.5px] text-deloitte-lightgray max-w-[260px] leading-relaxed">
+            Begin your onboarding sprint! Connect with your <strong class="text-amber-300">Buddy & Coach</strong>, dodge #REF! errors, and rise to Partner!
           </p>
 
-          <div class="bg-white/5 border border-white/10 rounded-lg py-1 px-2.5 max-w-xs w-full text-[9px] sm:text-[10px] text-gray-300 flex items-center justify-center gap-2">
-            <i class="fa-solid fa-mobile-screen-button text-deloitte-green"></i>
-            <span id="startProgressionNote">Mobile tuned: Smooth initial pace scaling into high-gear!</span>
-          </div>
-
-          <div class="flex items-center justify-center gap-2 pt-0.5">
-            <button onclick="startGame()" class="pixel-btn-press pixel-box-green px-5 py-2 rounded-lg bg-deloitte-green text-black font-pixel text-[10px] sm:text-xs font-black hover:bg-emerald-400 cursor-pointer flex items-center space-x-1.5">
-              <i class="fa-solid fa-play text-[8px]"></i>
+          <div class="w-full max-w-[240px] pt-1">
+            <button onclick="startGame()" class="w-full pixel-btn-press pixel-box-green py-2.5 rounded-xl bg-deloitte-green text-black font-pixel text-xs font-black hover:bg-emerald-400 cursor-pointer flex items-center justify-center space-x-1.5">
+              <i class="fa-solid fa-play text-[9px]"></i>
               <span id="startBtn">START SPRINT</span>
-            </button>
-            <button onclick="openLeaderboardModal()" class="pixel-btn-press pixel-box px-3 py-2 rounded-lg bg-amber-500/20 text-amber-300 font-pixel text-[10px] sm:text-xs hover:bg-amber-500/30">
-              <i class="fa-solid fa-trophy text-[9px]"></i>
-            </button>
-            <button onclick="openHelpModal()" class="pixel-btn-press pixel-box px-3 py-2 rounded-lg bg-white/10 text-white font-pixel text-[10px] sm:text-xs hover:bg-white/20">
-              <span id="helpBtn">RULES</span>
             </button>
           </div>
         </div>
 
         <!-- PAUSE SCREEN OVERLAY -->
-        <div id="pauseOverlay" class="hidden absolute inset-0 z-20 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-2 font-pixel">
-          <div class="text-lg sm:text-xl text-deloitte-green tracking-widest" id="pauseTitle">PAUSED</div>
-          <p class="text-[9px] sm:text-xs text-gray-300 font-sans" id="pauseSubtitle">Aligning on next steps with the engagement team...</p>
-          <button onclick="togglePause()" class="pixel-btn-press pixel-box-green px-4 py-1.5 bg-deloitte-green text-black text-[9px] sm:text-[10px] font-bold rounded-md" id="resumeBtn">
-            RESUME [P]
+        <div id="pauseOverlay" class="hidden absolute inset-0 z-20 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-2.5 font-pixel p-4">
+          <div class="text-lg text-deloitte-green tracking-widest" id="pauseTitle">PAUSED</div>
+          <p class="text-[10px] text-gray-300 font-sans text-center" id="pauseSubtitle">Aligning on next steps with engagement team...</p>
+          <button onclick="togglePause()" class="pixel-btn-press pixel-box-green px-5 py-2 bg-deloitte-green text-black text-[10px] font-bold rounded-lg" id="resumeBtn">
+            RESUME
           </button>
         </div>
 
         <!-- GAME OVER OVERLAY -->
-        <div id="gameOverOverlay" class="hidden absolute inset-0 z-30 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-2.5 sm:p-4 text-center space-y-1.5 font-sans overflow-y-auto">
-          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-400 text-xs sm:text-sm mx-auto">
-            <i class="fa-solid fa-clipboard-check"></i>
+        <div id="gameOverOverlay" class="hidden absolute inset-0 z-30 bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-3 text-center font-sans overflow-y-auto">
+          <div class="space-y-1 w-full max-w-sm">
+            <div class="w-6 h-6 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-400 text-xs mx-auto">
+              <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+            <div id="gameOverTitle" class="font-pixel text-[11px] text-rose-400">PROJECT RETROSPECTIVE</div>
+            <p id="gameOverReason" class="text-[9px] text-gray-300"></p>
           </div>
 
-          <div id="gameOverTitle" class="font-pixel text-xs sm:text-sm text-rose-400">PROJECT RETROSPECTIVE</div>
-          <p id="gameOverReason" class="text-[9px] sm:text-[10px] text-gray-300 max-w-sm"></p>
-
           <!-- Score Metrics -->
-          <div class="bg-white/5 border border-white/15 rounded-lg px-2.5 py-1 w-full max-w-sm flex items-center justify-between text-[9px] font-pixel">
+          <div class="bg-white/5 border border-white/15 rounded-lg px-3 py-1.5 w-full max-w-sm flex items-center justify-between text-[9px] font-pixel my-1">
             <span class="text-gray-400" id="goScoreLabel">SCORE:</span>
             <span id="finalScore" class="text-deloitte-green font-bold text-xs">000000</span>
-            <span class="text-gray-400" id="goDistLabel">DISTANCE:</span>
+            <span class="text-gray-400" id="goDistLabel">DIST:</span>
             <span id="finalDistance" class="text-white font-bold text-xs">0m</span>
           </div>
 
           <!-- Supabase Status Toast -->
-          <div id="supabaseSyncStatus" class="text-[9px] text-deloitte-lightgray flex items-center justify-center space-x-1.5">
+          <div id="supabaseSyncStatus" class="text-[8.5px] text-deloitte-lightgray flex items-center justify-center space-x-1">
             <i class="fa-solid fa-circle-notch fa-spin text-deloitte-green"></i>
             <span id="supabaseSyncText">Syncing deliverable to firm leaderboard...</span>
           </div>
 
-          <!-- Practical Work Tip Card -->
-          <div class="bg-[#121924] border-l-4 border-deloitte-green rounded-r-lg p-2 text-left w-full max-w-sm space-y-0.5 shadow">
-            <div class="flex items-center space-x-1.5 text-deloitte-green text-[9px] font-bold uppercase tracking-wider">
+          <!-- Work Tip Card -->
+          <div class="bg-[#121924] border-l-2 border-deloitte-green rounded-r-lg p-2 text-left w-full max-w-sm space-y-0.5 my-1">
+            <div class="flex items-center space-x-1.5 text-deloitte-green text-[8.5px] font-bold uppercase tracking-wider">
               <i class="fa-solid fa-lightbulb"></i>
               <span id="tipCardHeader">Fresh Grad Pro-Tip</span>
             </div>
-            <p id="freshGradTipText" class="text-[10px] sm:text-[11px] text-gray-200 leading-snug"></p>
+            <p id="freshGradTipText" class="text-[9.5px] text-gray-200 leading-snug"></p>
           </div>
 
-          <!-- Social Icebreaker -->
-          <div class="bg-[#181a24] border-l-4 border-amber-400 rounded-r-lg p-2 text-left w-full max-w-sm space-y-0.5 shadow">
-            <div class="flex items-center space-x-1.5 text-amber-400 text-[9px] font-bold uppercase tracking-wider">
-              <i class="fa-solid fa-comments"></i>
-              <span id="icebreakerCardHeader">Social Icebreaker (Ask your neighbor!)</span>
-            </div>
-            <p id="icebreakerPromptText" class="text-[10px] sm:text-[11px] text-amber-100/90 leading-snug"></p>
-          </div>
-
-          <div class="pt-0.5 flex gap-2">
-            <button onclick="restartGame()" class="pixel-btn-press pixel-box-green px-4 py-1.5 sm:py-2 rounded-lg bg-deloitte-green text-black font-pixel text-[9px] sm:text-[10px] font-bold flex items-center space-x-1.5">
+          <div class="w-full max-w-sm flex gap-2 pt-1">
+            <button onclick="restartGame()" class="flex-1 pixel-btn-press pixel-box-green py-2 rounded-xl bg-deloitte-green text-black font-pixel text-[9px] font-bold flex items-center justify-center space-x-1">
               <i class="fa-solid fa-rotate-right"></i>
-              <span id="retryBtn">TRY NEXT SPRINT</span>
+              <span id="retryBtn">TRY AGAIN</span>
             </button>
-            <button onclick="openLeaderboardModal()" class="pixel-btn-press pixel-box px-3 py-1.5 sm:py-2 rounded-lg bg-amber-500/20 text-amber-300 font-pixel text-[9px] sm:text-[10px] font-bold flex items-center space-x-1">
+            <button onclick="openLeaderboardModal()" class="pixel-btn-press pixel-box px-3 py-2 rounded-xl bg-amber-500/20 text-amber-300 font-pixel text-[9px] font-bold flex items-center space-x-1">
               <i class="fa-solid fa-trophy"></i>
               <span>RANKS</span>
             </button>
@@ -333,20 +311,24 @@
         </div>
       </div>
 
-      <!-- Touch Controls -->
-      <div class="touch-controls-bar w-full flex-shrink-0 mt-1 sm:mt-1.5 flex items-center justify-between gap-2 select-none font-pixel">
-        <button id="btnTouchSlide" class="flex-1 pixel-btn-press pixel-box bg-deloitte-slate/90 border border-white/15 py-2.5 sm:py-3 rounded-xl flex items-center justify-center space-x-1 text-[11px] text-cyan-300">
-          <i class="fa-solid fa-arrow-down text-[9px]"></i>
-          <span id="slideTouchLabel">SLIDE [▼]</span>
+      <!-- Thumb-Friendly Dual Touch Controls Area -->
+      <div class="touch-controls-bar w-full flex-shrink-0 mt-2 flex items-center justify-between gap-2 select-none font-pixel">
+        <!-- Giant Slide Button (Left Thumb) -->
+        <button id="btnTouchSlide" class="flex-1 h-16 pixel-btn-press pixel-box bg-deloitte-slate border border-cyan-500/30 active:bg-cyan-950/80 rounded-2xl flex flex-col items-center justify-center space-y-1 text-cyan-300">
+          <i class="fa-solid fa-arrow-down text-sm"></i>
+          <span id="slideTouchLabel" class="text-[10px] font-bold tracking-wider">SLIDE</span>
         </button>
 
-        <button onclick="togglePause()" class="w-12 sm:w-14 pixel-btn-press pixel-box bg-white/5 border border-white/15 py-2.5 sm:py-3 rounded-xl flex items-center justify-center text-xs text-gray-300">
-          <i id="pauseBtnIcon" class="fa-solid fa-pause"></i>
+        <!-- Pause Quick Tap -->
+        <button onclick="togglePause()" class="w-12 h-16 pixel-btn-press pixel-box bg-white/5 active:bg-white/10 border border-white/15 rounded-2xl flex flex-col items-center justify-center space-y-1 text-gray-400">
+          <i id="pauseBtnIcon" class="fa-solid fa-pause text-xs"></i>
+          <span class="text-[7px]">PAUSE</span>
         </button>
 
-        <button id="btnTouchJump" class="flex-1 pixel-btn-press pixel-box-green bg-deloitte-green/90 border border-deloitte-green py-2.5 sm:py-3 rounded-xl flex items-center justify-center space-x-1 text-[11px] text-black font-black">
-          <i class="fa-solid fa-arrow-up text-[9px]"></i>
-          <span id="jumpTouchLabel">JUMP [▲]</span>
+        <!-- Giant Jump Button (Right Thumb) -->
+        <button id="btnTouchJump" class="flex-1 h-16 pixel-btn-press pixel-box-green bg-deloitte-green border border-emerald-400 active:bg-emerald-500 rounded-2xl flex flex-col items-center justify-center space-y-1 text-black font-black">
+          <i class="fa-solid fa-arrow-up text-sm"></i>
+          <span id="jumpTouchLabel" class="text-[10px] font-black tracking-wider">JUMP</span>
         </button>
       </div>
 
@@ -355,12 +337,12 @@
 
   <!-- Leaderboard Modal (Supabase Driven) -->
   <div id="leaderboardModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3">
-    <div class="bg-deloitte-cardbg border border-amber-500/30 rounded-2xl p-4 max-w-md w-full shadow-2xl space-y-3 max-h-[90vh] flex flex-col">
+    <div class="bg-deloitte-cardbg border border-amber-500/30 rounded-2xl p-3.5 max-w-sm w-full shadow-2xl space-y-2.5 max-h-[88vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-white/10 pb-2">
-        <h3 class="text-xs sm:text-sm font-bold text-amber-400 flex items-center gap-2 font-pixel">
+        <h3 class="text-xs font-bold text-amber-400 flex items-center gap-1.5 font-pixel">
           <i class="fa-solid fa-trophy"></i> <span id="lbModalHeader">GLOBAL HIGH ACHIEVERS</span>
         </h3>
-        <button onclick="closeLeaderboardModal()" class="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
+        <button onclick="closeLeaderboardModal()" class="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
           <i class="fa-solid fa-xmark text-xs"></i>
         </button>
       </div>
@@ -368,13 +350,13 @@
       <div class="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-[220px]" id="leaderboardRowsContainer">
         <div class="text-center py-8 text-gray-400 text-xs flex flex-col items-center gap-2">
           <i class="fa-solid fa-circle-notch fa-spin text-deloitte-green text-lg"></i>
-          <span>Retrieving rankings ...</span>
+          <span>Retrieving rankings...</span>
         </div>
       </div>
 
-      <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[9px] text-gray-400">
-        <span id="lbFooterNote">Records refreshed automatically</span>
-        <button onclick="fetchLeaderboard()" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-white font-mono text-[9px]">
+      <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[8px] text-gray-400">
+        <span id="lbFooterNote">Synced via Cloud</span>
+        <button onclick="fetchLeaderboard()" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-white font-mono text-[8px]">
           <i class="fa-solid fa-arrows-rotate"></i> Refresh
         </button>
       </div>
@@ -383,22 +365,22 @@
 
   <!-- Help & Rules Modal -->
   <div id="helpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3">
-    <div class="bg-deloitte-cardbg border border-white/20 rounded-2xl p-4 max-w-md w-full shadow-2xl space-y-2.5 max-h-[92vh] overflow-y-auto">
+    <div class="bg-deloitte-cardbg border border-white/20 rounded-2xl p-4 max-w-sm w-full shadow-2xl space-y-2.5 max-h-[88vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-white/10 pb-2">
-        <h3 id="helpModalTitle" class="text-xs sm:text-sm font-bold text-deloitte-green flex items-center gap-2">
+        <h3 id="helpModalTitle" class="text-xs font-bold text-deloitte-green flex items-center gap-1.5">
           <i class="fa-solid fa-gamepad"></i> ONBOARDING BRIEFING
         </h3>
-        <button onclick="closeHelpModal()" class="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
+        <button onclick="closeHelpModal()" class="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
           <i class="fa-solid fa-xmark text-xs"></i>
         </button>
       </div>
 
-      <div class="space-y-2 text-xs text-gray-300">
+      <div class="space-y-2 text-[10.5px] text-gray-300">
         <p id="helpAlliesTitle" class="font-bold text-white">Workplace Allies & Power-ups:</p>
-        <div class="grid grid-cols-2 gap-2 text-[10px] sm:text-[11px]">
+        <div class="grid grid-cols-2 gap-2 text-[9.5px]">
           <div class="p-2 rounded bg-white/5 border border-amber-500/30">
             <span class="text-amber-400 font-bold block" id="helpBuddyTitle">🤝 Buddy / Coach</span>
-            <span id="helpBuddyDesc">Align with your Buddy for guidance & bonus points!</span>
+            <span id="helpBuddyDesc">Guidance & bonus score boost!</span>
           </div>
           <div class="p-2 rounded bg-white/5 border border-deloitte-green/30">
             <span class="text-deloitte-green font-bold block" id="helpCoffeeTitle">☕ Coffee Chat</span>
@@ -406,26 +388,26 @@
           </div>
         </div>
 
-        <p id="helpEasterTitle" class="font-bold text-amber-300 pt-0.5">Secret Easter Eggs:</p>
-        <ul class="text-[10px] sm:text-[11px] space-y-1 text-gray-300 list-disc list-inside">
-          <li><strong>Logo 3-Tap:</strong> Tap the top-left "D." logo 3x for Executive Turbo & +1845 pts!</li>
-          <li><strong>Code 1845:</strong> Type "1845" or double-tap Career Level to clear hazards!</li>
+        <p id="helpEasterTitle" class="font-bold text-amber-300 pt-1">Secret Easter Eggs:</p>
+        <ul class="text-[9.5px] space-y-1 text-gray-300 list-disc list-inside">
+          <li><strong>Logo 3-Tap:</strong> Tap top-left "D." 3x for Executive Turbo & +1845 pts!</li>
+          <li><strong>Code 1845:</strong> Double-tap Career Rank to clear screen hazards!</li>
         </ul>
 
-        <p id="helpHazardsTitle" class="font-bold text-white pt-0.5">Hazards to Dodge:</p>
-        <p id="helpHazardsDesc" class="text-[10px] sm:text-[11px] leading-relaxed">
-          • <strong class="text-rose-400">#REF! Errors & Scope Creep:</strong> Jump over them!<br>
-          • <strong class="text-sky-300">Friday 6PM RFP & Email Storms:</strong> Slide underneath!
+        <p id="helpHazardsTitle" class="font-bold text-white pt-1">Hazards to Dodge:</p>
+        <p id="helpHazardsDesc" class="text-[9.5px] leading-relaxed">
+          • <strong class="text-rose-400">#REF! Errors:</strong> Jump over them!<br>
+          • <strong class="text-sky-300">Email Storms:</strong> Slide underneath!
         </p>
 
-        <p id="helpControlsTitle" class="font-bold text-white pt-0.5">Controls:</p>
-        <div class="text-[10px] sm:text-[11px] grid grid-cols-2 gap-1 text-gray-300">
-          <div><strong class="text-deloitte-green">Jump:</strong> [SPACE], [W], [▲] or Tap Canvas Upper Area</div>
-          <div><strong class="text-cyan-300">Slide:</strong> [S], [▼] or Tap Canvas Lower Area</div>
+        <p id="helpControlsTitle" class="font-bold text-white pt-1">Mobile Touch Controls:</p>
+        <div class="text-[9.5px] grid grid-cols-2 gap-1 text-gray-300">
+          <div><strong class="text-deloitte-green">Jump:</strong> Tap [JUMP] or Upper Canvas</div>
+          <div><strong class="text-cyan-300">Slide:</strong> Tap [SLIDE] or Lower Canvas</div>
         </div>
       </div>
 
-      <button onclick="closeHelpModal()" class="w-full py-2 rounded-xl bg-deloitte-green text-black font-bold text-xs hover:bg-emerald-400 transition-all" id="helpCloseBtn">
+      <button onclick="closeHelpModal()" class="w-full py-2.5 rounded-xl bg-deloitte-green text-black font-bold text-xs hover:bg-emerald-400 transition-all" id="helpCloseBtn">
         READY TO DELIVER
       </button>
     </div>
@@ -439,7 +421,7 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
 
     let supabase = null;
-    if (window.supabase && SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY") {
+    if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
       try {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       } catch (err) {
@@ -463,7 +445,7 @@
       if (statusEl) statusEl.classList.remove("hidden");
 
       if (!supabase) {
-        if (statusText) statusText.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-hard-drive"></i> Saved locally (Supabase keys not configured)</span>`;
+        if (statusText) statusText.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-hard-drive"></i> Saved locally</span>`;
         saveLocalLeaderboard(currentPlayerName, finalScoreVal, finalDistVal, finalRankTitle);
         return;
       }
@@ -481,10 +463,10 @@
           ]);
 
         if (error) throw error;
-        if (statusText) statusText.innerHTML = `<span class="text-deloitte-green"><i class="fa-solid fa-check"></i> Score successfully synced to Firm Leaderboard!</span>`;
+        if (statusText) statusText.innerHTML = `<span class="text-deloitte-green"><i class="fa-solid fa-check"></i> Deliverable synced to Leaderboard!</span>`;
       } catch (e) {
         console.error("Supabase record error:", e);
-        if (statusText) statusText.innerHTML = `<span class="text-gray-400"><i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Sync failed. Saved locally.</span>`;
+        if (statusText) statusText.innerHTML = `<span class="text-gray-400"><i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Saved locally.</span>`;
         saveLocalLeaderboard(currentPlayerName, finalScoreVal, finalDistVal, finalRankTitle);
       }
     }
@@ -524,14 +506,6 @@
         }
       } else {
         records = JSON.parse(localStorage.getItem('drush_local_lb') || '[]');
-        if (records.length === 0) {
-          records = [
-            { player_name: "Senior Partner Alex", score: 9240, distance: 1120, career_rank: "PARTNER TRACK" },
-            { player_name: "Manager Sarah", score: 6850, distance: 840, career_rank: "MANAGER" },
-            { player_name: "Consultant Leo", score: 4120, distance: 510, career_rank: "A2 CONSULTANT" },
-            { player_name: "A1 Champion", score: 2600, distance: 310, career_rank: "A1 ANALYST" }
-          ];
-        }
       }
 
       if (!records || records.length === 0) {
@@ -546,17 +520,16 @@
         else if (idx === 2) badge = `<span class="w-5 text-center text-amber-700 text-sm"><i class="fa-solid fa-medal"></i></span>`;
 
         return `
-          <div class="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/5 hover:border-deloitte-green/40 transition-colors">
-            <div class="flex items-center space-x-2.5 overflow-hidden">
+          <div class="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/5">
+            <div class="flex items-center space-x-2 overflow-hidden">
               ${badge}
               <div class="flex flex-col truncate">
                 <span class="text-xs font-bold text-white truncate">${escapeHtml(item.player_name || 'Consultant')}</span>
-                <span class="text-[8px] text-cyan-300">${escapeHtml(item.career_rank || 'A1 Analyst')} • ${item.distance || 0}m</span>
+                <span class="text-[7.5px] text-cyan-300">${escapeHtml(item.career_rank || 'A1 Analyst')} • ${item.distance || 0}m</span>
               </div>
             </div>
             <div class="text-right flex-shrink-0 font-pixel">
               <span class="text-xs text-deloitte-green font-bold">${item.score.toLocaleString()}</span>
-              <span class="text-[7px] text-gray-400 block">PTS</span>
             </div>
           </div>
         `;
@@ -584,70 +557,66 @@
 
     const I18N = {
       en: {
-        subtitle: "FRESH GRAD ONBOARDING RUNNER",
+        subtitle: "A1 ONBOARDING",
         hudScore: "SCORE",
         hudRecord: "RECORD",
-        hudRank: "CAREER LEVEL",
+        hudRank: "RANK",
         hudSprint: "SPRINT",
         startBadge: "DELOITTE ONBOARDING ARCADE",
-        startSubtitle: "Begin your onboarding sprint! Connect with your Coach & Buddy, dodge #REF! errors and scope creep, and rise from New Hire to Partner!",
-        startProgressionNote: "Mobile tuned: Smooth initial pace scaling into high-gear!",
+        startSubtitle: "Begin your onboarding sprint! Connect with your Coach & Buddy, dodge #REF! errors, and rise to Partner!",
         startBtn: "START SPRINT",
         helpBtn: "RULES",
         pauseTitle: "PAUSED",
-        pauseSubtitle: "Aligning on next steps with the engagement team...",
-        resumeBtn: "RESUME [P]",
-        slideTouch: "SLIDE [▼]",
-        jumpTouch: "JUMP [▲]",
+        pauseSubtitle: "Aligning on next steps with engagement team...",
+        resumeBtn: "RESUME",
+        slideTouch: "SLIDE",
+        jumpTouch: "JUMP",
         goTitle: "PROJECT RETROSPECTIVE",
-        retryBtn: "TRY NEXT SPRINT",
+        retryBtn: "TRY AGAIN",
         tipHeader: "Fresh Grad Pro-Tip",
-        icebreakerHeader: "Social Icebreaker (Ask your neighbor!)",
         helpTitle: "ONBOARDING BRIEFING",
         helpAllies: "Workplace Allies & Power-ups:",
         helpBuddy: "🤝 Buddy / Coach",
-        helpBuddyDesc: "Align with your Buddy for guidance & bonus points!",
+        helpBuddyDesc: "Guidance & bonus score boost!",
         helpCoffee: "☕ Coffee Chat",
         helpCoffeeDesc: "Grants invincibility turbo boost!",
         helpEaster: "Secret Easter Eggs:",
         helpHazards: "Hazards to Dodge:",
-        helpHazardsText: "• #REF! Errors & Scope Creep: Jump over them!\n• Friday 6PM RFP & Email Storms: Slide underneath!",
-        helpControls: "Controls:",
+        helpHazardsText: "• #REF! Errors: Jump over them!\n• Email Storms: Slide underneath!",
+        helpControls: "Mobile Touch Controls:",
         helpClose: "READY TO DELIVER",
         ranks: ["DAY 1 NEW HIRE", "A1 ANALYST", "A2 CONSULTANT", "SENIOR CONSULTANT", "MANAGER", "PARTNER TRACK"]
       },
       zh: {
-        subtitle: "校招新人专属跑酷",
+        subtitle: "校招新人跑酷",
         hudScore: "积分",
-        hudRecord: "最佳纪录",
-        hudRank: "职场进阶",
-        hudSprint: "冲刺距离",
+        hudRecord: "纪录",
+        hudRank: "职级",
+        hudSprint: "冲刺",
         startBadge: "德勤新人破冰街机",
-        startSubtitle: "开启你的新人进阶之旅！与你的 Buddy 和 Coach 快速对齐，躲避 #REF! 错误与需求蔓延，一路晋升至合伙人！",
-        startProgressionNote: "手机端优化：开局平稳友好，后期加速富有挑战！",
+        startSubtitle: "开启新人进阶之旅！与导师伙伴快速对齐，躲避 #REF! 错误与需求蔓延，晋升合伙人！",
         startBtn: "开始冲刺",
-        helpBtn: "玩法规则",
+        helpBtn: "玩法",
         pauseTitle: "暂停对齐",
-        pauseSubtitle: "先喝杯咖啡，理清思路再出发...",
-        resumeBtn: "继续游戏 [P]",
-        slideTouch: "滑行 [▼]",
-        jumpTouch: "起跳 [▲]",
+        pauseSubtitle: "喝杯咖啡，理清思路再出发...",
+        resumeBtn: "继续游戏",
+        slideTouch: "滑行",
+        jumpTouch: "起跳",
         goTitle: "项目复盘 (GAME OVER)",
-        retryBtn: "开启下一轮冲刺",
+        retryBtn: "再次尝试",
         tipHeader: "职场萌新实用锦囊",
-        icebreakerHeader: "破冰话题（和身边的同事聊聊吧！）",
         helpTitle: "新人上岗指南",
         helpAllies: "职场助力与道具：",
         helpBuddy: "🤝 导师与伙伴 (Buddy / Coach)",
-        helpBuddyDesc: "主动对齐获取指导并斩获高额加分！",
+        helpBuddyDesc: "对齐指导并斩获高额加分！",
         helpCoffee: "☕ 咖啡社交 (Coffee Chat)",
         helpCoffeeDesc: "提供短暂无敌冲刺护盾！",
         helpEaster: "趣味彩蛋：",
         helpHazards: "职场避坑指南：",
-        helpHazardsText: "• #REF! 表格报错与需求蔓延：起跳跃过！\n• 周五傍晚紧急RFP与邮件风暴：向下滑铲避让！",
-        helpControls: "操作按键：",
+        helpHazardsText: "• #REF! 表格报错：起跳跃过！\n• 紧急邮件风暴：向下滑铲避让！",
+        helpControls: "手机触控操作：",
         helpClose: "准备好交付了！",
-        ranks: ["入职第1天", "A1 初级分析师", "A2 顾问", "高级顾问 (SC)", "项目经理 (Manager)", "合伙人 (Partner)"]
+        ranks: ["入职第1天", "A1 分析师", "A2 顾问", "高级顾问", "项目经理", "合伙人"]
       }
     };
 
@@ -667,37 +636,6 @@
       {
         en: "Proactive Deadline Alerts: If analysis is delayed by missing client data, flag it immediately with 2 contingency options.",
         zh: "预警沟通法则：当因缺少客户数据可能导致延期时，提前带上2套备选方案主动汇报，绝不压哨报备。"
-      },
-      {
-        en: "Networking Coffee Chats: Book casual 15-minute introductory coffee chats across cross-functional service lines in month one.",
-        zh: "建立人脉网络：入职首月积极发起 15 分钟虚拟或线下 Coffee Chat，向跨业务线的学长学姐取经。"
-      },
-      {
-        en: "Deliverable Hygiene: Audit cell formats, spell-check deck slides, and ensure footnotes cite reputable benchmark sources.",
-        zh: "交付细节至上：发送前检查拼写、核对表格小数位格式，确保 PPT 底部的引用与数据口径完全一致。"
-      }
-    ];
-
-    const ICEBREAKERS = [
-      {
-        en: "Topic: What is one college habit or routine you think you will need to adjust first in corporate life?",
-        zh: "破冰话题：你觉得大学期间的哪一个作息或做事习惯，是踏入职场后最需要调整的？"
-      },
-      {
-        en: "Topic: Show the person next to you your favorite computer shortcut or hidden phone productivity tool!",
-        zh: "破冰话题：向身边的同事展示一个你平时最爱用的电脑快捷键或手机效率工具！"
-      },
-      {
-        en: "Topic: If our project team had an unofficial walk-up theme song for high-stakes deliverables, what would it be?",
-        zh: "破冰话题：如果给团队赶项目冲刺或去客户现场提案选一首出场战歌，你会选哪首？"
-      },
-      {
-        en: "Topic: Coffee, matcha, sparkling water, or zero-sugar energy drink: What will power your morning sprints?",
-        zh: "破冰话题：美式黑咖、抹茶拿铁、气泡水还是无糖能量饮：谁是你的早八'续命神饮'？"
-      },
-      {
-        en: "Topic: What was the most memorable or humorous insight you learned during today's orientation session?",
-        zh: "破冰话题：今天的新人培训和交流中，哪一个知识点或细节让你印象最深、觉得最接地气？"
       }
     ];
 
@@ -709,7 +647,7 @@
     function applyLanguage() {
       const t = I18N[currentLang];
       const langText = document.getElementById("langBtnText");
-      if (langText) langText.textContent = currentLang === 'en' ? "EN / 中文" : "中文 / EN";
+      if (langText) langText.textContent = currentLang === 'en' ? "EN" : "中文";
 
       const subEl = document.getElementById("headerSubtitle");
       if (subEl) subEl.textContent = t.subtitle;
@@ -725,9 +663,7 @@
       setText("hudLabelMeters", t.hudSprint);
       setText("startBadge", t.startBadge);
       setText("startSubtitle", t.startSubtitle);
-      setText("startProgressionNote", t.startProgressionNote);
       setText("startBtn", t.startBtn);
-      setText("helpBtn", t.helpBtn);
       setText("pauseTitle", t.pauseTitle);
       setText("pauseSubtitle", t.pauseSubtitle);
       setText("resumeBtn", t.resumeBtn);
@@ -736,7 +672,6 @@
       setText("gameOverTitle", t.goTitle);
       setText("retryBtn", t.retryBtn);
       setText("tipCardHeader", t.tipHeader);
-      setText("icebreakerCardHeader", t.icebreakerHeader);
 
       const helpTitleEl = document.getElementById("helpModalTitle");
       if (helpTitleEl) helpTitleEl.innerHTML = `<i class="fa-solid fa-gamepad"></i> ${t.helpTitle}`;
@@ -829,17 +764,17 @@
     let coffeeTimer = 0;
     let frameCount = 0;
 
-    // Mobile-friendly initial curve
-    const BASE_SPEED = 3.3; // Starts relaxed for mobile touch reaction
+    // Mobile calibrated speed
+    const BASE_SPEED = 3.2;
     let gameSpeed = BASE_SPEED;
-    const SPEED_RAMP_FACTOR = 0.0024;
-    const MAX_SPEED = 8.2;
+    const SPEED_RAMP_FACTOR = 0.0022;
+    const MAX_SPEED = 8.0;
 
     const hudHighEl = document.getElementById("hudHighScore");
     if (hudHighEl) hudHighEl.textContent = highScore.toString().padStart(6, '0');
 
     /* ==========================================================
-       RANDOMIZATION SYSTEMS (Location, Weather, Character)
+       RANDOMIZATION SYSTEMS
        ========================================================== */
     const LOCATIONS = [
       {
@@ -851,7 +786,7 @@
         accentColor: "#86BC25"
       },
       {
-        name: "London 1 New Street Square",
+        name: "London 1 New Street",
         skyGradient: ["#050811", "#151e2e", "#2c3b52"],
         buildingColor: "#121721",
         windowColors: ["#F59E0B", "#FCD34D", "#94A3B8"],
@@ -859,7 +794,7 @@
         accentColor: "#568819"
       },
       {
-        name: "Singapore Marina Bay Hub",
+        name: "Singapore Marina Bay",
         skyGradient: ["#08020f", "#2b0938", "#004F59"],
         buildingColor: "#140e21",
         windowColors: ["#38BDF8", "#E879F9", "#86BC25"],
@@ -867,7 +802,7 @@
         accentColor: "#38BDF8"
       },
       {
-        name: "New York 30 Rock Skyline",
+        name: "New York 30 Rock",
         skyGradient: ["#020617", "#0f172a", "#1e293b"],
         buildingColor: "#090d16",
         windowColors: ["#FBBF24", "#F59E0B", "#E2E8F0"],
@@ -877,10 +812,10 @@
     ];
 
     const WEATHERS = [
-      { type: 'CLEAR', icon: 'fa-moon', name: 'Clear Evening' },
-      { type: 'RAIN', icon: 'fa-cloud-rain', name: 'Corporate Rain' },
-      { type: 'SPARKLE', icon: 'fa-wand-magic-sparkles', name: 'Neon Matrix' },
-      { type: 'SUNSET', icon: 'fa-sun', name: 'Golden Hour' }
+      { type: 'CLEAR', icon: 'fa-moon', name: 'Clear' },
+      { type: 'RAIN', icon: 'fa-cloud-rain', name: 'Rain' },
+      { type: 'SPARKLE', icon: 'fa-wand-magic-sparkles', name: 'Matrix' },
+      { type: 'SUNSET', icon: 'fa-sun', name: 'Sunset' }
     ];
 
     const CHARACTER_CONFIGS = {
@@ -888,7 +823,7 @@
       hairs: ['#2d1d14', '#111827', '#b45309', '#f59e0b', '#7c2d12'],
       suits: ['#002776', '#1E232A', '#004F59', '#374151', '#1e1b4b'],
       ties: ['#86BC25', '#38BDF8', '#F59E0B', '#EF4444', '#10B981'],
-      accessories: ['BACKPACK', 'BRIEFCASE', 'LANYARD']
+      accessories: ['BACKPACK', 'BRIEFCASE']
     };
 
     let activeLocation = LOCATIONS[0];
@@ -921,7 +856,7 @@
 
       weatherParticles.length = 0;
       if (activeWeather.type === 'RAIN') {
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 35; i++) {
           weatherParticles.push({
             x: Math.random() * V_WIDTH,
             y: Math.random() * FLOOR_Y,
@@ -931,7 +866,7 @@
           });
         }
       } else if (activeWeather.type === 'SPARKLE') {
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 20; i++) {
           weatherParticles.push({
             x: Math.random() * V_WIDTH,
             y: Math.random() * FLOOR_Y,
@@ -980,7 +915,6 @@
     let logoTapTimer = null;
     let rankTapCount = 0;
     let rankTapTimer = null;
-    let secretKeyBuffer = "";
 
     function triggerEasterEggLogo() {
       initAudio();
@@ -1012,22 +946,13 @@
       }
     }
 
-    window.addEventListener("keydown", (e) => {
-      secretKeyBuffer += e.key.toLowerCase();
-      if (secretKeyBuffer.length > 8) secretKeyBuffer = secretKeyBuffer.slice(-8);
-      if (secretKeyBuffer.endsWith("1845")) {
-        secretKeyBuffer = "";
-        activateFoundingYearEasterEgg();
-      }
-    });
-
     function activateExecutiveSuiteEasterEgg() {
       playSfx('easteregg');
       score += 1845;
       coffeeTimer = 420;
-      showToast(currentLang === 'en' ? "🎉 EXECUTIVE SUITE! +1845 PTS & TURBO!" : "🎉 合伙人套房彩蛋！+1845分并开启极速冲刺！", "fa-crown");
-      showPowerupStatus(currentLang === 'en' ? "EXECUTIVE ESPRESSO BOOST: 7s" : "合伙人特浓咖啡：无敌 7秒");
-      createExplosion(player.x + 10, player.y + 10, "#F59E0B", 24);
+      showToast(currentLang === 'en' ? "🎉 EXECUTIVE SUITE! +1845 PTS!" : "🎉 合伙人套房彩蛋！+1845分！", "fa-crown");
+      showPowerupStatus(currentLang === 'en' ? "EXECUTIVE BOOST: 7s" : "合伙人咖啡：无敌 7秒");
+      createExplosion(player.x + 10, player.y + 10, "#F59E0B", 20);
     }
 
     function activateFoundingYearEasterEgg() {
@@ -1041,11 +966,11 @@
         convertedCount++;
       }
       obstacles.length = 0;
-      showToast(currentLang === 'en' ? `🥚 1845 AUDIT: CLEARED ${convertedCount} HAZARDS!` : `🥚 1845 创办年份彩蛋：清空并转化 ${convertedCount} 个障碍！`, "fa-wand-magic-sparkles");
+      showToast(currentLang === 'en' ? `🥚 1845 AUDIT: CLEARED HAZARDS!` : `🥚 1845 创办年份彩蛋：清空障碍！`, "fa-wand-magic-sparkles");
     }
 
     /* ==========================================================
-       PLAYER CHARACTER (Procedurally Styled)
+       PLAYER CHARACTER
        ========================================================== */
     const player = {
       x: 52,
@@ -1145,37 +1070,29 @@
         } else {
           const legPhase = Math.floor(this.runFrame) % 4;
 
-          // Hair
           ctx.fillStyle = hair;
           ctx.fillRect(px + 4, py, 11, 5);
-          // Face & Skin
           ctx.fillStyle = skin;
           ctx.fillRect(px + 5, py + 4, 10, 8);
-          // Eyes
           ctx.fillStyle = "#0a0e14";
           ctx.fillRect(px + 12, py + 6, 2, 2);
-          // Glasses or accent
           ctx.fillStyle = tie;
           ctx.fillRect(px + 10, py + 5, 5, 2);
 
-          // Suit Jacket
           ctx.fillStyle = suit;
           ctx.fillRect(px + 3, py + 12, 13, 11);
-          // Shirt
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(px + 7, py + 12, 5, 7);
-          // Tie
           ctx.fillStyle = tie;
           ctx.fillRect(px + 8, py + 13, 3, 7);
 
-          // Accessory (Backpack or Briefcase)
           if (activeCharacter.accessory === 'BACKPACK') {
             ctx.fillStyle = "#374151";
             const bagY = this.isGrounded ? (py + 14 + (legPhase % 2)) : (py + 10);
             ctx.fillRect(px - 3, bagY, 7, 8);
             ctx.fillStyle = "#86BC25";
             ctx.fillRect(px, bagY + 2, 2, 2);
-          } else if (activeCharacter.accessory === 'BRIEFCASE') {
+          } else {
             ctx.fillStyle = "#78350f";
             const caseY = this.isGrounded ? (py + 18 + (legPhase % 2)) : (py + 15);
             ctx.fillRect(px + 12, caseY, 8, 6);
@@ -1183,7 +1100,6 @@
             ctx.fillRect(px + 15, caseY + 1, 2, 1);
           }
 
-          // Pants & Shoes
           ctx.fillStyle = "#0c1015";
           if (!this.isGrounded) {
             ctx.fillRect(px + 2, py + 23, 5, 7);
@@ -1209,15 +1125,15 @@
     };
 
     /* ==========================================================
-       OBSTACLES, COLLECTIBLES & PROGRESSION ENGINE
+       PROGRESSION ENGINE
        ========================================================== */
     const obstacles = [];
     const collectibles = [];
     const npcs = [];
     const particles = [];
-    let nextObstacleDistance = 65; // Relaxed initial gap for mobile
+    let nextObstacleDistance = 65;
     let nextCollectibleDistance = 25;
-    let nextNpcDistance = 75;
+    let nextNpcDistance = 80;
 
     class Obstacle {
       constructor(type, x) {
@@ -1329,8 +1245,8 @@
         playSfx('powerup');
         createExplosion(this.x + 10, this.y + 10, this.isPartner ? "#F59E0B" : "#86BC25", 14);
         const txt = this.isPartner 
-          ? (currentLang === 'en' ? "PARTNER ENDORSEMENT! +600 PTS" : "合伙人亲自点赞！+600 分")
-          : (currentLang === 'en' ? "BUDDY ALIGNMENT! +350 PTS" : "导师对齐指导！+350 分");
+          ? (currentLang === 'en' ? "PARTNER ENDORSEMENT! +600" : "合伙人点赞！+600 分")
+          : (currentLang === 'en' ? "BUDDY ALIGNMENT! +350" : "导师对齐！+350 分");
         showToast(txt, this.isPartner ? "fa-star" : "fa-user-check");
       }
       draw() {
@@ -1339,9 +1255,7 @@
         ctx.fillStyle = this.isPartner ? "#F59E0B" : "#38BDF8";
         ctx.font = "6px 'Press Start 2P', monospace";
         ctx.textAlign = "center";
-        const tag = this.isPartner 
-          ? (currentLang === 'en' ? "[PARTNER]" : "[合伙人]") 
-          : (currentLang === 'en' ? "[BUDDY]" : "[导师]");
+        const tag = this.isPartner ? "[PARTNER]" : "[BUDDY]";
         ctx.fillText(tag, nx + 10, ny - 8);
 
         ctx.fillStyle = this.isPartner ? "#E2E8F0" : "#64748B";
@@ -1366,7 +1280,7 @@
         this.vx = (Math.random() - 0.5) * 4 - (gameSpeed * 0.2);
         this.vy = (Math.random() - 0.8) * 3;
         this.size = Math.floor(Math.random() * 3) + 2;
-        this.life = 20;
+        this.life = 18;
       }
       update() {
         this.x += this.vx;
@@ -1379,15 +1293,12 @@
       }
     }
 
-    function createExplosion(x, y, color = "#86BC25", count = 10) {
+    function createExplosion(x, y, color = "#86BC25", count = 8) {
       for (let i = 0; i < count; i++) {
         particles.push(new Particle(x, y, color));
       }
     }
 
-    /* ==========================================================
-       PARALLAX BACKGROUND WITH LOCATION THEMING
-       ========================================================== */
     function drawPixelBackground() {
       const grad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
       grad.addColorStop(0, activeLocation.skyGradient[0]);
@@ -1396,14 +1307,12 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, V_WIDTH, FLOOR_Y);
 
-      // Stars / Atmospheric Glow
-      ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
-      for (let s = 0; s < 14; s++) {
+      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+      for (let s = 0; s < 12; s++) {
         const sx = ((s * 41) - (frameCount * 0.15)) % V_WIDTH;
         ctx.fillRect(sx < 0 ? sx + V_WIDTH : sx, (s * 13) % 110, 1, 1);
       }
 
-      // Parallax Buildings
       const fgOffset = (distance * 0.6) % 64;
       for (let i = -1; i < 9; i++) {
         const fx = i * 64 - fgOffset;
@@ -1411,7 +1320,6 @@
         ctx.fillStyle = activeLocation.buildingColor;
         ctx.fillRect(fx, FLOOR_Y - bHeight, 56, bHeight);
 
-        // Windows with dynamic colors
         for (let w = 0; w < 3; w++) {
           for (let row = 0; row < 3; row++) {
             if ((i + w + row) % 2 === 0) {
@@ -1423,7 +1331,6 @@
         }
       }
 
-      // Floor & Running Track
       ctx.fillStyle = activeLocation.groundColor;
       ctx.fillRect(0, FLOOR_Y, V_WIDTH, V_HEIGHT - FLOOR_Y);
       ctx.fillStyle = activeLocation.accentColor;
@@ -1434,9 +1341,6 @@
       updateAndDrawWeather();
     }
 
-    /* ==========================================================
-       PROGRESSIVE DIFFICULTY SPAWNER
-       ========================================================== */
     function checkCollision(r1, r2) {
       const pad = 4;
       return (
@@ -1454,22 +1358,20 @@
 
       if (nextObstacleDistance <= 0) {
         let pool = ['REF_ERROR'];
-        // Gradual hazard progression
         if (distance > 40) pool.push('SCOPE_CREEP');
-        if (distance > 90) pool.push('EMAIL_STORM'); // Unlocks slide challenge smoothly
+        if (distance > 90) pool.push('EMAIL_STORM');
 
         const chosen = pool[Math.floor(Math.random() * pool.length)];
         obstacles.push(new Obstacle(chosen, V_WIDTH + 20));
 
-        // Spacing curve ensures high mobile playability at the start
-        const baseSpacing = Math.max(40, 68 - (gameSpeed * 2.5));
-        nextObstacleDistance = baseSpacing + Math.random() * 22;
+        const baseSpacing = Math.max(42, 70 - (gameSpeed * 2.5));
+        nextObstacleDistance = baseSpacing + Math.random() * 20;
       }
 
       if (nextCollectibleDistance <= 0) {
-        const isCoffee = Math.random() > 0.84;
+        const isCoffee = Math.random() > 0.85;
         collectibles.push(new Collectible(isCoffee ? 'COFFEE' : 'DOT', V_WIDTH + 15, isCoffee ? FLOOR_Y - 30 : FLOOR_Y - 26));
-        nextCollectibleDistance = 24 + Math.random() * 28;
+        nextCollectibleDistance = 24 + Math.random() * 26;
       }
 
       if (nextNpcDistance <= 0) {
@@ -1534,7 +1436,7 @@
         c.update();
 
         if (checkCollision(player, c)) {
-          createExplosion(c.x + 6, c.y + 6, "#86BC25", 8);
+          createExplosion(c.x + 6, c.y + 6, "#86BC25", 6);
           if (c.type === 'DOT') {
             dotsCollected++;
             score += 100;
@@ -1610,7 +1512,7 @@
       if (textEl) textEl.textContent = text;
       if (toast) {
         toast.classList.remove("hidden");
-        setTimeout(() => toast.classList.add("hidden"), 2200);
+        setTimeout(() => toast.classList.add("hidden"), 2000);
       }
     }
 
@@ -1664,11 +1566,11 @@
       if (gameState === 'PLAYING') {
         gameState = 'PAUSED';
         document.getElementById("pauseOverlay").classList.remove("hidden");
-        document.getElementById("pauseBtnIcon").className = "fa-solid fa-play";
+        document.getElementById("pauseBtnIcon").className = "fa-solid fa-play text-xs";
       } else if (gameState === 'PAUSED') {
         gameState = 'PLAYING';
         document.getElementById("pauseOverlay").classList.add("hidden");
-        document.getElementById("pauseBtnIcon").className = "fa-solid fa-pause";
+        document.getElementById("pauseBtnIcon").className = "fa-solid fa-pause text-xs";
       }
     }
 
@@ -1686,14 +1588,14 @@
       }
 
       const reasons = {
-        'REF_ERROR': currentLang === 'en' ? "Caught by an unexpected #REF! formula error in the financial model." : "被财务模型中突发的 #REF! 表格引用错误绊住了脚步。",
-        'SCOPE_CREEP': currentLang === 'en' ? "Stumbled into unaligned client scope creep late in the sprint." : "在冲刺阶段遭遇未经提前对齐的需求蔓延（Scope Creep）。",
-        'EMAIL_STORM': currentLang === 'en' ? "Overwhelmed by an urgent Friday 6 PM reply-all email storm." : "在周五傍晚被全员抄送的紧急突发邮件风暴打乱了节奏。"
+        'REF_ERROR': currentLang === 'en' ? "Caught by an unexpected #REF! formula error in the model." : "被财务模型中突发的 #REF! 表格引用错误绊住了脚步。",
+        'SCOPE_CREEP': currentLang === 'en' ? "Stumbled into unaligned client scope creep." : "在冲刺阶段遭遇未经提前对齐的需求蔓延。",
+        'EMAIL_STORM': currentLang === 'en' ? "Overwhelmed by an urgent Friday 6 PM reply-all storm." : "在周五傍晚被全员抄送的紧急突发邮件打乱了节奏。"
       };
       
       const reasonEl = document.getElementById("gameOverReason");
       if (reasonEl) {
-        reasonEl.textContent = reasons[hazardType] || (currentLang === 'en' ? "Sprint paused for team alignment." : "冲刺结束，进入复盘对齐时刻。");
+        reasonEl.textContent = reasons[hazardType] || (currentLang === 'en' ? "Sprint paused for alignment." : "冲刺结束，进入复盘时刻。");
       }
 
       const finalScoreEl = document.getElementById("finalScore");
@@ -1702,21 +1604,11 @@
       if (finalDistEl) finalDistEl.textContent = `${Math.floor(distance)}m`;
 
       const tip = WORK_TIPS[Math.floor(Math.random() * WORK_TIPS.length)];
-      const icebreaker = ICEBREAKERS[Math.floor(Math.random() * ICEBREAKERS.length)];
-      
       const tipEl = document.getElementById("freshGradTipText");
-      const iceEl = document.getElementById("icebreakerPromptText");
       if (tipEl) tipEl.textContent = tip[currentLang];
-      if (iceEl) iceEl.textContent = icebreaker[currentLang];
 
-      // Record to Supabase Cloud
       recordScoreToSupabase(score, distance, getCurrentRank());
-
       document.getElementById("gameOverOverlay").classList.remove("hidden");
-    }
-
-    function toggleCRT() {
-      document.getElementById("crtOverlay").classList.toggle("hidden");
     }
 
     function openHelpModal() {
@@ -1729,8 +1621,47 @@
     }
 
     /* ==========================================================
-       KEYBOARD & MOBILE TOUCH CONTROLS
+       TOUCH & KEYBOARD CONTROLS (Ergonomic Dual Thumb)
        ========================================================== */
+    const btnJump = document.getElementById("btnTouchJump");
+    const btnSlide = document.getElementById("btnTouchSlide");
+
+    const handleJumpInput = (e) => {
+      if (e) e.preventDefault();
+      initAudio();
+      if (gameState === 'PLAYING') player.jump();
+      else if (gameState === 'START' || gameState === 'GAMEOVER') startGame();
+    };
+
+    const handleSlideInput = (e) => {
+      if (e) e.preventDefault();
+      initAudio();
+      if (gameState === 'PLAYING') player.slide();
+    };
+
+    if (btnJump) {
+      btnJump.addEventListener("touchstart", handleJumpInput, { passive: false });
+      btnJump.addEventListener("mousedown", handleJumpInput);
+    }
+
+    if (btnSlide) {
+      btnSlide.addEventListener("touchstart", handleSlideInput, { passive: false });
+      btnSlide.addEventListener("mousedown", handleSlideInput);
+    }
+
+    canvas.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      initAudio();
+      if (gameState !== 'PLAYING') {
+        startGame();
+        return;
+      }
+      const rect = canvas.getBoundingClientRect();
+      const relY = e.touches[0].clientY - rect.top;
+      if (relY > rect.height * 0.55) player.slide();
+      else player.jump();
+    }, { passive: false });
+
     window.addEventListener("keydown", (e) => {
       if (gameState === 'START' || gameState === 'GAMEOVER') {
         if (e.code === "Space" || e.code === "Enter") {
@@ -1753,42 +1684,6 @@
         player.slide();
       }
     });
-
-    const btnJump = document.getElementById("btnTouchJump");
-    const btnSlide = document.getElementById("btnTouchSlide");
-
-    if (btnJump) {
-      btnJump.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        if (gameState === 'PLAYING') player.jump();
-        else if (gameState === 'START' || gameState === 'GAMEOVER') startGame();
-      });
-      btnJump.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        if (gameState === 'PLAYING') player.jump();
-        else if (gameState === 'START' || gameState === 'GAMEOVER') startGame();
-      });
-    }
-
-    if (btnSlide) {
-      btnSlide.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        if (gameState === 'PLAYING') player.slide();
-      });
-      btnSlide.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        if (gameState === 'PLAYING') player.slide();
-      });
-    }
-
-    canvas.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      if (gameState !== 'PLAYING') return;
-      const rect = canvas.getBoundingClientRect();
-      const relY = e.touches[0].clientY - rect.top;
-      if (relY > rect.height * 0.58) player.slide();
-      else player.jump();
-    }, { passive: false });
 
     window.onload = function () {
       applyLanguage();
