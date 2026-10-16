@@ -225,7 +225,6 @@
           <span data-i18n="tabBroadcast">现场广播</span>
         </button>
 
-        <!-- New Dedicated Reset Tab -->
         <button type="button" onclick="switchAdminMainTab('reset')" id="tabBtn-reset"
           class="button-press flex-1 min-w-[75px] sm:min-w-[85px] py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-rose-500/10 hover:text-rose-300">
           <i class="fa-solid fa-arrows-rotate text-[11px] text-rose-400"></i>
@@ -363,7 +362,7 @@
           </div>
         </div>
 
-        <!-- 03: FastPass Navigation (Launcher Only - Scale selection moved to Reset tab) -->
+        <!-- 03: FastPass Direct Portals -->
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             <div class="space-y-1">
@@ -382,7 +381,7 @@
               </div>
             </div>
 
-            <!-- Direct Launch Links (No scale switching here) -->
+            <!-- Direct Launch Links -->
             <div class="grid grid-cols-3 gap-2 w-full lg:w-auto">
               <a href="https://projectsunrise.win/fastpass/24" target="_blank" rel="noopener noreferrer"
                 class="button-press py-2.5 px-3 rounded-xl bg-deloitte-cardbg border border-white/15 text-gray-300 hover:text-white hover:border-lime-400/50 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm">
@@ -509,7 +508,7 @@
       </section>
 
       <!-- ==========================================================
-           TAB 2: SCORING MATRIX (READ-ONLY COHORT SCALE BADGE)
+           TAB 2: SCORING MATRIX (REVISED & ROBUST)
            ========================================================== -->
       <section id="panel-scores" class="hidden space-y-4 animate-fade-in">
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
@@ -520,7 +519,7 @@
               <p class="text-xs text-gray-400" id="matrixSubtitleHint">三层架构：站点 ➔ 轮次 ➔ 战队队号与得分录入</p>
             </div>
             
-            <!-- Read-only Cohort Scale Badge (Set in Reset Tab) -->
+            <!-- Read-only Cohort Scale Badge -->
             <div class="flex items-center gap-2 bg-black/50 px-3 py-1.5 rounded-xl border border-white/10 self-start xs:self-auto">
               <span class="text-xs text-gray-400 font-bold" data-i18n="lblActiveScale">当前规模:</span>
               <span id="scoresActiveScaleBadge" class="text-xs font-mono font-bold text-amber-400">36 Teams</span>
@@ -569,8 +568,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1" id="twelveBoxesContainer"></div>
 
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
-              <span class="text-[11px] text-gray-400">💡 录入后实时更新总榜，点击右侧同步学员端 TOP 10。</span>
-              <button type="button" onclick="saveScoresToSupabase()"
+              <div id="scoresSaveStatusBadge" class="text-xs text-gray-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info text-amber-400"></i>
+                <span>录入后即刻更新总榜，点击右侧同步学员端 TOP 10。</span>
+              </div>
+              <button type="button" onclick="saveScoresToSupabase()" id="btnSaveScoresMain"
                 class="button-press w-full sm:w-auto px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
                 <span data-i18n="btnSyncLeaderboard">保存并推送风云榜</span>
@@ -596,7 +598,7 @@
                 <input type="text" id="leaderboardSearchInput" oninput="renderAdminLeaderboardTable()" placeholder="搜索队伍 (如 08)..."
                   class="w-full sm:w-44 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-8 pr-3 py-1.5 text-xs text-white">
               </div>
-              <button type="button" onclick="saveScoresToSupabase()" class="button-press px-3.5 py-1.5 rounded-xl bg-deloitte-green text-black font-bold text-xs flex items-center gap-1 shadow-sm shrink-0">
+              <button type="button" onclick="renderAdminLeaderboardTable()" class="button-press px-3.5 py-1.5 rounded-xl bg-deloitte-green text-black font-bold text-xs flex items-center gap-1 shadow-sm shrink-0">
                 <i class="fa-solid fa-rotate-right"></i>
                 <span>刷新</span>
               </button>
@@ -626,7 +628,7 @@
       </section>
 
       <!-- ==========================================================
-           TAB 4: BROADCAST & LIVE DISPATCH (D-RUSH REMOVED)
+           TAB 4: BROADCAST & LIVE DISPATCH
            ========================================================== -->
       <section id="panel-broadcast" class="hidden space-y-4 animate-fade-in">
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-deloitte-green/30 card-shadow space-y-4">
@@ -641,7 +643,6 @@
             <span id="announcementSyncBadge" class="text-[10px] font-mono text-gray-500"></span>
           </div>
 
-          <!-- Announcement Input ZH & EN -->
           <div class="space-y-3.5">
             <div>
               <label class="block text-xs font-bold text-gray-300 mb-1" data-i18n="lblAnnouncementZH">广播公告内容 (中文) · 学员端顶部通知栏</label>
@@ -655,7 +656,6 @@
                 class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs text-white leading-relaxed resize-none"></textarea>
             </div>
 
-            <!-- Active Target Route Readout (Synchronized from Reset Tab) -->
             <div class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-route text-lime-400 text-xs"></i>
@@ -677,7 +677,7 @@
       </section>
 
       <!-- ==========================================================
-           TAB 5: DEDICATED RESET TAB (NEW)
+           TAB 5: DEDICATED RESET TAB
            ========================================================== -->
       <section id="panel-reset" class="hidden space-y-4 animate-fade-in">
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-rose-500/30 card-shadow space-y-5">
@@ -690,7 +690,7 @@
             <p class="text-xs text-gray-400 mt-1" data-i18n="resetSubtitle">在此统一切换全局战队规模，或按需清理各项活动数据（支持两段防误触确认）。</p>
           </div>
 
-          <!-- 01. Global Cohort Scale Switcher (Sole place to choose team number) -->
+          <!-- Cohort Scale Setting -->
           <div class="p-4 rounded-xl bg-black/40 border border-white/10 space-y-3">
             <div class="flex items-center justify-between">
               <div>
@@ -722,7 +722,7 @@
             </div>
           </div>
 
-          <!-- 02. Core Granular Reset Actions -->
+          <!-- Granular Reset Actions -->
           <div class="space-y-3">
             <h3 class="text-xs font-extrabold uppercase tracking-wider text-rose-400" data-i18n="granularResetTitle">专项数据清理 (Granular Clear Actions)</h3>
             
@@ -777,25 +777,22 @@
             </div>
           </div>
 
-          <!-- 03. Additional Helpful Reset Actions -->
+          <!-- Auxiliary Resets -->
           <div class="p-4 rounded-xl bg-black/30 border border-white/5 space-y-3">
             <h4 class="text-xs font-bold text-gray-300" data-i18n="extraResetsTitle">其他常用重置功能 (Recommended Auxiliaries)</h4>
             <div class="flex flex-wrap gap-2">
-              <!-- Clear Messages -->
               <button type="button" onclick="confirmResetAction('messages')"
                 class="button-press px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 flex items-center gap-1.5">
                 <i class="fa-regular fa-comments text-teal-400"></i>
                 <span data-i18n="btnResetMessages">清空学员留言墙</span>
               </button>
 
-              <!-- Clear Announcement -->
               <button type="button" onclick="confirmResetAction('announcement')"
                 class="button-press px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 flex items-center gap-1.5">
                 <i class="fa-solid fa-bullhorn text-deloitte-green"></i>
                 <span data-i18n="btnResetAnnouncement">清空广播横幅</span>
               </button>
 
-              <!-- Master Factory Reset -->
               <button type="button" onclick="confirmResetAction('master')"
                 class="button-press px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-xs text-rose-300 font-bold flex items-center gap-1.5 ml-auto">
                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -985,6 +982,8 @@
         if (I18N[lang] && I18N[lang][key]) el.textContent = I18N[lang][key];
       });
       updateLayer3TitleAndBoxes();
+      renderStationButtons();
+      renderRoundButtons();
     }
 
     function toggleLanguage() {
@@ -1010,6 +1009,16 @@
           }
         }
       });
+
+      // Defensive re-rendering upon tab switch
+      if (activeTab === 'scores') {
+        renderStationButtons();
+        renderRoundButtons();
+        renderRoundInputs();
+        renderAdminLeaderboardTable();
+      } else if (activeTab === 'leaderboard') {
+        renderAdminLeaderboardTable();
+      }
     }
 
     function togglePanel(panelId, chevronId) {
@@ -1027,7 +1036,7 @@
     }
 
     /* ==========================================================
-       GLOBAL COHORT SCALE CONTROLLER (CENTRALIZED IN RESET TAB)
+       GLOBAL COHORT SCALE CONTROLLER (CENTRALIZED)
        ========================================================== */
     let currentCohortScale = 36; // 24, 36, or 48
 
@@ -1052,7 +1061,7 @@
 
       // 2. Update Scores Tab Read-Only Indicator & Input Matrix
       const scoresBadge = document.getElementById('scoresActiveScaleBadge');
-      if (scoresBadge) scoresBadge.textContent = `${currentCohortScale} Teams`;
+      if (scoresBadge) scoresBadge.textContent = `${currentCohortScale} Teams (${getTeamCountPerStation()} 队/站)`;
       updateLayer3TitleAndBoxes();
       renderAdminLeaderboardTable();
 
@@ -1060,7 +1069,6 @@
       const broadcastBadge = document.getElementById('broadcastActiveRouteBadge');
       if (broadcastBadge) broadcastBadge.textContent = `FP-${currentCohortScale}`;
 
-      // Push active cohort scale to portal_announcements so participant portal synchronizes
       syncCohortScaleToSupabase(currentCohortScale);
     }
 
@@ -1106,6 +1114,317 @@
       }
 
       renderRoundInputs();
+    }
+
+    /* ==========================================================
+       ROBUST SCORES MATRIX STATE (CRASH-PROOF NORMALIZATION)
+       ========================================================== */
+    const STATIONS = [
+      { id: 0, zh: "一起拼未来", en: "Piece by piece", icon: "fa-puzzle-piece" },
+      { id: 1, zh: "培育职业道德之树", en: "Ethical Tree", icon: "fa-tree" },
+      { id: 2, zh: "信号解密", en: "D.Signal", icon: "fa-tower-broadcast" },
+      { id: 3, zh: "勤业智库", en: "Knowledge Clash", icon: "fa-brain" },
+      { id: 4, zh: "情商罗盘", en: "EQ Matrix", icon: "fa-compass" },
+      { id: 5, zh: "AI纪元", en: "The AI Era", icon: "fa-microchip" }
+    ];
+
+    let activeStationIndex = 0;
+    let activeRoundIndex = 0;
+    let scoresGrid = {};
+
+    // Guaranteed deep initialization for 6 stations x 6 rounds x 8 slots
+    function normalizeScoresGrid(source) {
+      const result = {};
+      for (let s = 0; s < 6; s++) {
+        result[s] = {};
+        for (let r = 0; r < 6; r++) {
+          result[s][r] = [];
+          const existingRound = (source && source[s] && source[s][r]) || [];
+          for (let p = 0; p < 8; p++) {
+            const item = existingRound[p] || {};
+            result[s][r].push({
+              team: item.team !== undefined && item.team !== null ? String(item.team) : "",
+              score: item.score !== undefined && item.score !== null ? String(item.score) : ""
+            });
+          }
+        }
+      }
+      return result;
+    }
+
+    function renderStationButtons() {
+      const container = document.getElementById('stationButtonsGrid');
+      if (!container) return;
+      container.innerHTML = STATIONS.map(st => `
+        <button type="button" onclick="selectStation(${st.id})" id="stBtn-${st.id}"
+          class="button-press p-2 rounded-xl border text-left transition-all ${st.id === activeStationIndex ? 'bg-amber-400 text-black border-amber-400 font-extrabold shadow-md' : 'bg-black/40 border-white/10 text-gray-300 hover:bg-white/5'}">
+          <div class="flex items-center gap-1.5 text-xs truncate">
+            <i class="fa-solid ${st.icon} text-[11px]"></i>
+            <span class="truncate">${st[currentLang === 'zh' ? 'zh' : 'en']}</span>
+          </div>
+          <div class="text-[9px] ${st.id === activeStationIndex ? 'text-black/80' : 'text-gray-500'} truncate font-mono">${st.en}</div>
+        </button>
+      `).join('');
+    }
+
+    function renderRoundButtons() {
+      const container = document.getElementById('roundButtonsGrid');
+      if (!container) return;
+      container.innerHTML = [0, 1, 2, 3, 4, 5].map(r => `
+        <button type="button" onclick="selectRound(${r})" id="rdBtn-${r}"
+          class="button-press py-2 rounded-xl border text-xs font-mono font-bold transition-all text-center ${r === activeRoundIndex ? 'bg-deloitte-green text-black border-deloitte-green shadow-md' : 'bg-black/40 border-white/10 text-gray-400 hover:bg-white/5'}">
+          R${r + 1}
+        </button>
+      `).join('');
+      updateActiveBadge();
+    }
+
+    function updateActiveBadge() {
+      const badge = document.getElementById('activeStationRoundBadge');
+      if (badge) {
+        const stName = STATIONS[activeStationIndex] ? STATIONS[activeStationIndex][currentLang === 'zh' ? 'zh' : 'en'] : `Station ${activeStationIndex + 1}`;
+        badge.textContent = `${stName} · Round ${activeRoundIndex + 1}`;
+      }
+    }
+
+    function selectStation(stId) {
+      syncCurrentInputsToMemory();
+      activeStationIndex = stId;
+      renderStationButtons();
+      renderRoundInputs();
+    }
+
+    function selectRound(rdId) {
+      syncCurrentInputsToMemory();
+      activeRoundIndex = rdId;
+      renderRoundButtons();
+      renderRoundInputs();
+    }
+
+    function renderRoundInputs() {
+      updateActiveBadge();
+      const container = document.getElementById('twelveBoxesContainer');
+      if (!container) return;
+
+      const teamsCount = getTeamCountPerStation();
+      const currentStationData = scoresGrid[activeStationIndex] || {};
+      const pairs = currentStationData[activeRoundIndex] || [];
+
+      let html = '';
+      for (let idx = 0; idx < teamsCount; idx++) {
+        const pair = pairs[idx] || { team: "", score: "" };
+        const boxNum1 = idx * 2 + 1;
+        const boxNum2 = idx * 2 + 2;
+
+        html += `
+          <div class="p-2.5 rounded-xl bg-deloitte-cardbg border border-white/10 space-y-1">
+            <div class="flex items-center justify-between text-[10px] font-mono text-gray-400">
+              <span class="font-bold text-amber-300">战队 Slot ${idx + 1}</span>
+              <span>Box #${boxNum1} & #${boxNum2}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <input type="number" inputmode="numeric" min="1" max="${currentCohortScale}" id="input-team-${idx}" value="${pair.team}" placeholder="队号 (1-${currentCohortScale})"
+                  oninput="handleLiveInputChange()"
+                  class="w-full bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-lg px-2 py-1.5 text-xs font-mono text-white text-center">
+              </div>
+              <div>
+                <input type="number" inputmode="numeric" min="0" max="100" id="input-score-${idx}" value="${pair.score}" placeholder="得分"
+                  oninput="handleLiveInputChange()"
+                  class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-lg px-2 py-1.5 text-xs font-mono text-deloitte-green font-bold text-center">
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function syncCurrentInputsToMemory() {
+      if (!scoresGrid[activeStationIndex] || !scoresGrid[activeStationIndex][activeRoundIndex]) return;
+      const teamsCount = getTeamCountPerStation();
+      for (let idx = 0; idx < teamsCount; idx++) {
+        const teamEl = document.getElementById(`input-team-${idx}`);
+        const scoreEl = document.getElementById(`input-score-${idx}`);
+        if (teamEl && scoreEl) {
+          scoresGrid[activeStationIndex][activeRoundIndex][idx] = {
+            team: teamEl.value.trim(),
+            score: scoreEl.value.trim()
+          };
+        }
+      }
+      // Cache locally in background to prevent accidental data loss
+      localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
+    }
+
+    function handleLiveInputChange() {
+      syncCurrentInputsToMemory();
+      renderAdminLeaderboardTable();
+    }
+
+    function autoFillMockRoundScores() {
+      const teamsCount = getTeamCountPerStation();
+      for (let idx = 0; idx < teamsCount; idx++) {
+        const teamInput = document.getElementById(`input-team-${idx}`);
+        const scoreInput = document.getElementById(`input-score-${idx}`);
+        if (teamInput && scoreInput) {
+          const simulatedTeam = (activeRoundIndex * teamsCount + idx + 1) % currentCohortScale || currentCohortScale;
+          const simulatedScore = Math.floor(75 + Math.random() * 24);
+          teamInput.value = simulatedTeam;
+          scoreInput.value = simulatedScore;
+        }
+      }
+      syncCurrentInputsToMemory();
+      renderAdminLeaderboardTable();
+    }
+
+    function clearActiveRoundInputs() {
+      const teamsCount = getTeamCountPerStation();
+      for (let idx = 0; idx < teamsCount; idx++) {
+        const teamInput = document.getElementById(`input-team-${idx}`);
+        const scoreInput = document.getElementById(`input-score-${idx}`);
+        if (teamInput && scoreInput) {
+          teamInput.value = "";
+          scoreInput.value = "";
+        }
+      }
+      syncCurrentInputsToMemory();
+      renderAdminLeaderboardTable();
+    }
+
+    function calculateFullStandings() {
+      const teamsMap = {};
+      for (let t = 1; t <= currentCohortScale; t++) {
+        const teamName = `Team ${String(t).padStart(2, '0')}`;
+        teamsMap[t] = { teamId: t, team: teamName, stations: [0, 0, 0, 0, 0, 0], total: 0 };
+      }
+
+      const teamsCount = getTeamCountPerStation();
+      for (let s = 0; s < 6; s++) {
+        for (let r = 0; r < 6; r++) {
+          const pairs = (scoresGrid[s] && scoresGrid[s][r]) ? scoresGrid[s][r] : [];
+          for (let pIdx = 0; pIdx < teamsCount; pIdx++) {
+            const p = pairs[pIdx];
+            if (!p) continue;
+            const teamNum = parseInt(p.team, 10);
+            const scoreNum = parseInt(p.score, 10);
+            if (teamNum && !isNaN(scoreNum) && teamsMap[teamNum]) {
+              teamsMap[teamNum].stations[s] += scoreNum;
+            }
+          }
+        }
+      }
+
+      const teamList = Object.values(teamsMap).map(item => {
+        item.total = item.stations.reduce((a, b) => a + b, 0);
+        return item;
+      });
+
+      teamList.sort((a, b) => b.total - a.total);
+      return teamList;
+    }
+
+    function renderAdminLeaderboardTable() {
+      const tbody = document.getElementById('adminLeaderboardTableBody');
+      const search = (document.getElementById('leaderboardSearchInput')?.value || '').trim().toLowerCase();
+      if (!tbody) return;
+
+      const standings = calculateFullStandings();
+      const filtered = search ? standings.filter(item => item.team.toLowerCase().includes(search)) : standings;
+
+      tbody.innerHTML = filtered.map((item, idx) => `
+        <tr class="hover:bg-white/[0.04] transition-colors">
+          <td class="py-2.5 px-3 font-bold text-gray-400">#${idx + 1}</td>
+          <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">${item.team}</td>
+          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[0]}</td>
+          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[1]}</td>
+          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[2]}</td>
+          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[3]}</td>
+          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[4]}</td>
+          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[5]}</td>
+          <td class="py-2.5 px-3 text-right text-deloitte-green font-bold text-sm">${item.total}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function saveScoresToSupabase() {
+      syncCurrentInputsToMemory();
+      const standings = calculateFullStandings();
+      const statusEl = document.getElementById('scoresSaveStatusBadge');
+      const saveBtn = document.getElementById('btnSaveScoresMain');
+
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400"></i><span>同步中...</span>`;
+      }
+      if (saveBtn) saveBtn.disabled = true;
+
+      localStorage.setItem('leaderboard_data_cache', JSON.stringify(standings));
+      localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
+
+      try {
+        if (supabaseClient) {
+          const { error } = await supabaseClient.from('station_leaderboards').upsert({
+            id: 1,
+            team_scores: standings,
+            grid_raw: scoresGrid,
+            updated_at: new Date().toISOString()
+          });
+          if (error) throw error;
+        }
+
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (statusEl) {
+          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green"></i><span class="text-deloitte-green">${currentLang === 'zh' ? `已同步至风云榜 (${nowStr})` : `Standings Synced (${nowStr})`}</span>`;
+        }
+        if (window.confetti) {
+          confetti({ particleCount: 30, spread: 50, origin: { x: 0.5, y: 0.6 } });
+        }
+      } catch (err) {
+        console.warn("Supabase leaderboard upsert err:", err);
+        if (statusEl) {
+          statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-400">本地已存，云端写入提醒: ${err.message}</span>`;
+        }
+      } finally {
+        if (saveBtn) saveBtn.disabled = false;
+      }
+    }
+
+    async function loadSavedScores() {
+      let loadedFromCloud = false;
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient
+            .from('station_leaderboards')
+            .select('*')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (!error && data && data.grid_raw && typeof data.grid_raw === 'object' && Object.keys(data.grid_raw).length > 0) {
+            scoresGrid = normalizeScoresGrid(data.grid_raw);
+            loadedFromCloud = true;
+          }
+        }
+      } catch (e) {
+        console.warn("Scores fetch err:", e);
+      }
+
+      if (!loadedFromCloud) {
+        try {
+          const cachedGrid = localStorage.getItem('scores_grid_cache');
+          if (cachedGrid) {
+            scoresGrid = normalizeScoresGrid(JSON.parse(cachedGrid));
+          } else {
+            scoresGrid = normalizeScoresGrid({});
+          }
+        } catch (e) {
+          scoresGrid = normalizeScoresGrid({});
+        }
+      }
+
+      renderStationButtons();
+      renderRoundButtons();
+      renderRoundInputs();
+      renderAdminLeaderboardTable();
     }
 
     /* ==========================================================
@@ -1187,7 +1506,7 @@
     }
 
     async function resetScoresData(showAlert = true) {
-      initScoresGrid();
+      scoresGrid = normalizeScoresGrid({});
       renderRoundInputs();
       renderAdminLeaderboardTable();
 
@@ -1240,293 +1559,6 @@
       } catch (err) {
         if (showAlert) alert("公告清空提醒：" + err.message);
       }
-    }
-
-    /* ==========================================================
-       MOOD ORACLE
-       ========================================================== */
-    const MOOD_QUOTES = [
-      { text: "Make an impact that matters — starting with not breaking production. | 成就不凡，先从别点崩系统开始 🛡️", icon: "fa-shield-halved" },
-      { text: "Coffee in, deliverables out. | 咖啡入腹，交付物神速，优雅闭环 ☕", icon: "fa-mug-hot" },
-      { text: "Green dot glowing, sanity loading... 99%. | 绿点长明，理智值正在飞速回血中 🔋", icon: "fa-battery-three-quarters" },
-      { text: "Aligned, granular, and heavily caffeinated. | 颗粒度已对齐，底层逻辑已打通，咖啡因全面就绪 🎯", icon: "fa-bullseye" }
-    ];
-    let quoteIdx = 0;
-
-    function nextOracleQuote(e) {
-      if (e && window.confetti) {
-        confetti({ particleCount: 25, spread: 40, origin: { x: 0.5, y: 0.2 }, colors: ['#86BC25', '#a3e635'] });
-      }
-      quoteIdx = (quoteIdx + 1) % MOOD_QUOTES.length;
-      const q = MOOD_QUOTES[quoteIdx];
-      document.getElementById('oracleQuote').textContent = q.text;
-      document.getElementById('oracleIcon').className = `fa-solid ${q.icon}`;
-    }
-
-    /* ==========================================================
-       TAB 2: SCORING MATRIX LOGIC (DYNAMIC BOXES)
-       ========================================================== */
-    const STATIONS = [
-      { id: 0, zh: "一起拼未来", en: "Piece by piece", icon: "fa-puzzle-piece" },
-      { id: 1, zh: "培育职业道德之树", en: "Ethical Tree", icon: "fa-tree" },
-      { id: 2, zh: "信号解密", en: "D.Signal", icon: "fa-tower-broadcast" },
-      { id: 3, zh: "勤业智库", en: "Knowledge Clash", icon: "fa-brain" },
-      { id: 4, zh: "情商罗盘", en: "EQ Matrix", icon: "fa-compass" },
-      { id: 5, zh: "AI纪元", en: "The AI Era", icon: "fa-microchip" }
-    ];
-
-    let activeStationIndex = 0;
-    let activeRoundIndex = 0;
-    let scoresGrid = {};
-
-    function initScoresGrid() {
-      for (let s = 0; s < 6; s++) {
-        scoresGrid[s] = {};
-        for (let r = 0; r < 6; r++) {
-          scoresGrid[s][r] = [];
-          for (let p = 0; p < 8; p++) {
-            scoresGrid[s][r].push({ team: "", score: "" });
-          }
-        }
-      }
-    }
-
-    function renderStationButtons() {
-      const container = document.getElementById('stationButtonsGrid');
-      container.innerHTML = STATIONS.map(st => `
-        <button type="button" onclick="selectStation(${st.id})" id="stBtn-${st.id}"
-          class="button-press p-2 rounded-xl border text-left transition-all ${st.id === activeStationIndex ? 'bg-amber-400 text-black border-amber-400 font-extrabold shadow-md' : 'bg-black/40 border-white/10 text-gray-300 hover:bg-white/5'}">
-          <div class="flex items-center gap-1.5 text-xs truncate">
-            <i class="fa-solid ${st.icon} text-[11px]"></i>
-            <span class="truncate">${st.zh}</span>
-          </div>
-          <div class="text-[9px] ${st.id === activeStationIndex ? 'text-black/80' : 'text-gray-500'} truncate font-mono">${st.en}</div>
-        </button>
-      `).join('');
-    }
-
-    function renderRoundButtons() {
-      const container = document.getElementById('roundButtonsGrid');
-      container.innerHTML = [0, 1, 2, 3, 4, 5].map(r => `
-        <button type="button" onclick="selectRound(${r})" id="rdBtn-${r}"
-          class="button-press py-2 rounded-xl border text-xs font-mono font-bold transition-all text-center ${r === activeRoundIndex ? 'bg-deloitte-green text-black border-deloitte-green shadow-md' : 'bg-black/40 border-white/10 text-gray-400 hover:bg-white/5'}">
-          R${r + 1}
-        </button>
-      `).join('');
-      updateActiveBadge();
-    }
-
-    function updateActiveBadge() {
-      const badge = document.getElementById('activeStationRoundBadge');
-      if (badge) {
-        badge.textContent = `${STATIONS[activeStationIndex].zh} · R${activeRoundIndex + 1}`;
-      }
-    }
-
-    function selectStation(stId) {
-      syncCurrentInputsToMemory();
-      activeStationIndex = stId;
-      renderStationButtons();
-      renderRoundInputs();
-    }
-
-    function selectRound(rdId) {
-      syncCurrentInputsToMemory();
-      activeRoundIndex = rdId;
-      renderRoundButtons();
-      renderRoundInputs();
-    }
-
-    function renderRoundInputs() {
-      updateActiveBadge();
-      const container = document.getElementById('twelveBoxesContainer');
-      const teamsCount = getTeamCountPerStation();
-      const pairs = scoresGrid[activeStationIndex][activeRoundIndex] || [];
-
-      let html = '';
-      for (let idx = 0; idx < teamsCount; idx++) {
-        const pair = pairs[idx] || { team: "", score: "" };
-        const boxNum1 = idx * 2 + 1;
-        const boxNum2 = idx * 2 + 2;
-
-        html += `
-          <div class="p-2.5 rounded-xl bg-deloitte-cardbg border border-white/10 space-y-1">
-            <div class="flex items-center justify-between text-[10px] font-mono text-gray-400">
-              <span class="font-bold text-amber-300">战队 Slot ${idx + 1}</span>
-              <span>Box #${boxNum1} & #${boxNum2}</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <input type="number" inputmode="numeric" min="1" max="${currentCohortScale}" id="input-team-${idx}" value="${pair.team}" placeholder="队号 (1-${currentCohortScale})"
-                  oninput="handleLiveInputChange()"
-                  class="w-full bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-lg px-2 py-1.5 text-xs font-mono text-white text-center">
-              </div>
-              <div>
-                <input type="number" inputmode="numeric" min="0" max="100" id="input-score-${idx}" value="${pair.score}" placeholder="得分"
-                  oninput="handleLiveInputChange()"
-                  class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-lg px-2 py-1.5 text-xs font-mono text-deloitte-green font-bold text-center">
-              </div>
-            </div>
-          </div>
-        `;
-      }
-      container.innerHTML = html;
-    }
-
-    function syncCurrentInputsToMemory() {
-      if (!scoresGrid[activeStationIndex] || !scoresGrid[activeStationIndex][activeRoundIndex]) return;
-      const teamsCount = getTeamCountPerStation();
-      for (let idx = 0; idx < teamsCount; idx++) {
-        const teamEl = document.getElementById(`input-team-${idx}`);
-        const scoreEl = document.getElementById(`input-score-${idx}`);
-        if (teamEl && scoreEl) {
-          scoresGrid[activeStationIndex][activeRoundIndex][idx] = {
-            team: teamEl.value.trim(),
-            score: scoreEl.value.trim()
-          };
-        }
-      }
-    }
-
-    function handleLiveInputChange() {
-      syncCurrentInputsToMemory();
-      renderAdminLeaderboardTable();
-    }
-
-    function autoFillMockRoundScores() {
-      const teamsCount = getTeamCountPerStation();
-      for (let idx = 0; idx < teamsCount; idx++) {
-        const teamInput = document.getElementById(`input-team-${idx}`);
-        const scoreInput = document.getElementById(`input-score-${idx}`);
-        if (teamInput && scoreInput) {
-          const simulatedTeam = (activeRoundIndex * teamsCount + idx + 1) % currentCohortScale || currentCohortScale;
-          const simulatedScore = Math.floor(75 + Math.random() * 24);
-          teamInput.value = simulatedTeam;
-          scoreInput.value = simulatedScore;
-        }
-      }
-      syncCurrentInputsToMemory();
-      renderAdminLeaderboardTable();
-    }
-
-    function clearActiveRoundInputs() {
-      const teamsCount = getTeamCountPerStation();
-      for (let idx = 0; idx < teamsCount; idx++) {
-        const teamInput = document.getElementById(`input-team-${idx}`);
-        const scoreInput = document.getElementById(`input-score-${idx}`);
-        if (teamInput && scoreInput) {
-          teamInput.value = "";
-          scoreInput.value = "";
-        }
-      }
-      syncCurrentInputsToMemory();
-      renderAdminLeaderboardTable();
-    }
-
-    function calculateFullStandings() {
-      const teamsMap = {};
-      for (let t = 1; t <= currentCohortScale; t++) {
-        const teamName = `Team ${String(t).padStart(2, '0')}`;
-        teamsMap[t] = { teamId: t, team: teamName, stations: [0, 0, 0, 0, 0, 0], total: 0 };
-      }
-
-      const teamsCount = getTeamCountPerStation();
-      for (let s = 0; s < 6; s++) {
-        for (let r = 0; r < 6; r++) {
-          const pairs = scoresGrid[s][r] || [];
-          for (let pIdx = 0; pIdx < teamsCount; pIdx++) {
-            const p = pairs[pIdx];
-            if (!p) continue;
-            const teamNum = parseInt(p.team, 10);
-            const scoreNum = parseInt(p.score, 10);
-            if (teamNum && !isNaN(scoreNum) && teamsMap[teamNum]) {
-              teamsMap[teamNum].stations[s] += scoreNum;
-            }
-          }
-        }
-      }
-
-      const teamList = Object.values(teamsMap).map(item => {
-        item.total = item.stations.reduce((a, b) => a + b, 0);
-        return item;
-      });
-
-      teamList.sort((a, b) => b.total - a.total);
-      return teamList;
-    }
-
-    function renderAdminLeaderboardTable() {
-      const tbody = document.getElementById('adminLeaderboardTableBody');
-      const search = (document.getElementById('leaderboardSearchInput')?.value || '').trim().toLowerCase();
-      if (!tbody) return;
-
-      const standings = calculateFullStandings();
-      const filtered = search ? standings.filter(item => item.team.toLowerCase().includes(search)) : standings;
-
-      tbody.innerHTML = filtered.map((item, idx) => `
-        <tr class="hover:bg-white/[0.04] transition-colors">
-          <td class="py-2.5 px-3 font-bold text-gray-400">#${idx + 1}</td>
-          <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">${item.team}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[0]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[1]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[2]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[3]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[4]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[5]}</td>
-          <td class="py-2.5 px-3 text-right text-deloitte-green font-bold text-sm">${item.total}</td>
-        </tr>
-      `).join('');
-    }
-
-    async function saveScoresToSupabase() {
-      syncCurrentInputsToMemory();
-      const standings = calculateFullStandings();
-
-      localStorage.setItem('leaderboard_data_cache', JSON.stringify(standings));
-      localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
-
-      try {
-        if (supabaseClient) {
-          const { error } = await supabaseClient.from('station_leaderboards').upsert({
-            id: 1,
-            team_scores: standings,
-            grid_raw: scoresGrid,
-            updated_at: new Date().toISOString()
-          });
-          if (error) throw error;
-        }
-
-        if (window.confetti) {
-          confetti({ particleCount: 30, spread: 50, origin: { x: 0.5, y: 0.6 } });
-        }
-        alert(currentLang === 'zh' ? "✅ 计分矩阵已保存并推送到学员端排行榜！" : "✅ Scores saved and pushed to participant leaderboard!");
-      } catch (err) {
-        console.warn("Supabase leaderboard upsert err:", err);
-        alert(currentLang === 'zh' ? "本地已保存，云端提醒: " + err.message : "Saved locally, cloud note: " + err.message);
-      }
-    }
-
-    async function loadSavedScores() {
-      try {
-        if (supabaseClient) {
-          const { data, error } = await supabaseClient.from('station_leaderboards').select('*').eq('id', 1).maybeSingle();
-          if (!error && data && data.grid_raw) {
-            scoresGrid = data.grid_raw;
-            renderRoundInputs();
-            renderAdminLeaderboardTable();
-            return;
-          }
-        }
-      } catch (e) {
-        console.warn("Scores fetch err:", e);
-      }
-
-      const cachedGrid = localStorage.getItem('scores_grid_cache');
-      if (cachedGrid) {
-        scoresGrid = JSON.parse(cachedGrid);
-      }
-      renderRoundInputs();
-      renderAdminLeaderboardTable();
     }
 
     /* ==========================================================
@@ -1586,7 +1618,7 @@
     }
 
     /* ==========================================================
-       D.SIGNAL CONFIG
+       D.SIGNAL & KNOWLEDGE CLASH & FASTPASS CONFIGURATIONS
        ========================================================== */
     const DEFAULT_SIGNAL_ROUND_DATA = {
       1: { title: "Round 1", words: [{ cn: "大熊猫", en: "Giant Panda" }, { cn: "金丝猴", en: "Golden Monkey" }] },
@@ -1718,9 +1750,6 @@
       }
     }
 
-    /* ==========================================================
-       KNOWLEDGE CLASH CONFIG
-       ========================================================== */
     const DEFAULT_KC_RAW = [
       "德勤品牌于哪一年在全球创立？ / Founded year?, [1845年 / 1845], 1895年 / 1895, 1917年 / 1917, 1945年 / 1945",
       "德勤当前的全球品牌标语是什么？ / Brand tagline?, 因我不同 / To make an impact that matters, [众行致远 / Together makes progress], 清晰敏锐 / Clear Confident, 诚信至上 / Integrity First"
@@ -1798,18 +1827,6 @@
       } catch (err) {}
     }
 
-    /* ==========================================================
-       FASTPASS VENUE & TIME CONFIG
-       ========================================================== */
-    const FP_STATIONS = [
-      { id: 0, zh: '一起拼未来', en: 'Piece by piece', icon: 'fa-puzzle-piece' },
-      { id: 1, zh: '培育职业道德之树', en: 'Ethical Tree', icon: 'fa-tree' },
-      { id: 2, zh: '信号解密', en: 'D.Signal', icon: 'fa-tower-broadcast' },
-      { id: 3, zh: '勤业智库', en: 'Knowledge Clash', icon: 'fa-brain' },
-      { id: 4, zh: '情商罗盘', en: 'EQ Matrix', icon: 'fa-compass' },
-      { id: 5, zh: 'AI纪元', en: 'The AI Era', icon: 'fa-microchip' }
-    ];
-
     const DEFAULT_FP_VENUES = {
       0: { zh: '场地 1', en: 'Venue 1' }, 1: { zh: '场地 2', en: 'Venue 2' },
       2: { zh: '场地 3', en: 'Venue 3' }, 3: { zh: '场地 4', en: 'Venue 4' },
@@ -1826,27 +1843,31 @@
 
     function renderFastPassEditorInputs() {
       const venueContainer = document.getElementById('fpVenueInputsContainer');
-      venueContainer.innerHTML = FP_STATIONS.map(st => {
-        const v = fpConfigState.venues[st.id] || { zh: `场地 ${st.id + 1}`, en: `Venue ${st.id + 1}` };
-        return `
-          <div class="grid grid-cols-2 gap-1.5">
-            <input type="text" id="fp-venue-zh-${st.id}" value="${v.zh}" placeholder="${st.zh}" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2 py-1 text-xs text-white">
-            <input type="text" id="fp-venue-en-${st.id}" value="${v.en}" placeholder="${st.en}" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2 py-1 text-xs text-white">
-          </div>
-        `;
-      }).join('');
+      if (venueContainer) {
+        venueContainer.innerHTML = STATIONS.map(st => {
+          const v = fpConfigState.venues[st.id] || { zh: `场地 ${st.id + 1}`, en: `Venue ${st.id + 1}` };
+          return `
+            <div class="grid grid-cols-2 gap-1.5">
+              <input type="text" id="fp-venue-zh-${st.id}" value="${v.zh}" placeholder="${st.zh}" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2 py-1 text-xs text-white">
+              <input type="text" id="fp-venue-en-${st.id}" value="${v.en}" placeholder="${st.en}" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2 py-1 text-xs text-white">
+            </div>
+          `;
+        }).join('');
+      }
 
       const timeContainer = document.getElementById('fpTimeInputsContainer');
-      timeContainer.innerHTML = fpConfigState.time_slots.map((slot, idx) => `
-        <div class="flex items-center justify-between gap-1 bg-deloitte-cardbg border border-white/10 rounded-lg px-2 py-1">
-          <span class="text-xs font-mono font-bold text-gray-400">R${idx + 1}</span>
-          <div class="flex items-center gap-1 font-mono">
-            <input type="time" id="fp-time-start-${idx}" value="${slot.start}" class="bg-black/60 border border-white/15 rounded px-1 py-0.5 text-xs text-white text-center">
-            <span class="text-gray-500 text-[10px]">~</span>
-            <input type="time" id="fp-time-end-${idx}" value="${slot.end}" class="bg-black/60 border border-white/15 rounded px-1 py-0.5 text-xs text-white text-center">
+      if (timeContainer) {
+        timeContainer.innerHTML = fpConfigState.time_slots.map((slot, idx) => `
+          <div class="flex items-center justify-between gap-1 bg-deloitte-cardbg border border-white/10 rounded-lg px-2 py-1">
+            <span class="text-xs font-mono font-bold text-gray-400">R${idx + 1}</span>
+            <div class="flex items-center gap-1 font-mono">
+              <input type="time" id="fp-time-start-${idx}" value="${slot.start}" class="bg-black/60 border border-white/15 rounded px-1 py-0.5 text-xs text-white text-center">
+              <span class="text-gray-500 text-[10px]">~</span>
+              <input type="time" id="fp-time-end-${idx}" value="${slot.end}" class="bg-black/60 border border-white/15 rounded px-1 py-0.5 text-xs text-white text-center">
+            </div>
           </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
     }
 
     function autoFillTimeSlots() {
@@ -1908,7 +1929,7 @@
        ========================================================== */
     window.addEventListener('load', async () => {
       setLanguage(currentLang);
-      initScoresGrid();
+      scoresGrid = normalizeScoresGrid({});
       renderStationButtons();
       renderRoundButtons();
 
@@ -2001,6 +2022,20 @@
       const visible = input.type === 'password';
       input.type = visible ? 'text' : 'password';
       icon.className = visible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    }
+
+    function nextOracleQuote(e) {
+      if (e && window.confetti) {
+        confetti({ particleCount: 25, spread: 40, origin: { x: 0.5, y: 0.2 }, colors: ['#86BC25', '#a3e635'] });
+      }
+      const MOOD_QUOTES = [
+        "Make an impact that matters — starting with not breaking production. | 成就不凡，先从别点崩系统开始 🛡️",
+        "Coffee in, deliverables out. | 咖啡入腹，交付物神速，优雅闭环 ☕",
+        "Green dot glowing, sanity loading... 99%. | 绿点长明，理智值正在飞速回血中 🔋",
+        "Aligned, granular, and heavily caffeinated. | 颗粒度已对齐，底层逻辑已打通，咖啡因全面就绪 🎯"
+      ];
+      const q = MOOD_QUOTES[Math.floor(Math.random() * MOOD_QUOTES.length)];
+      document.getElementById('oracleQuote').textContent = q;
     }
   </script>
 </body>
