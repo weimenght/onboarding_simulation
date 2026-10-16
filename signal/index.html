@@ -335,6 +335,35 @@
         <h3 class="text-2xl font-black text-white">Time's Up!</h3>
         <p class="text-sm font-mono text-rose-400">00:00</p>
       </div>
+
+      <!-- Final Score Summary -->
+      <div class="bg-black/50 border border-white/10 rounded-2xl p-4">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Final Score · 最终得分</div>
+        <div class="text-4xl font-extrabold text-deloitte-green mb-3">
+          <span id="finalScoreTotal">0</span> <span class="text-sm font-normal text-gray-400">pts</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-white/10 text-xs">
+          <div class="flex flex-col items-center">
+            <span class="text-emerald-400 font-bold flex items-center gap-1">
+              <i class="fa-solid fa-check text-[10px]"></i> <span id="finalStatCorrect">0</span>
+            </span>
+            <span class="text-[10px] text-gray-400 mt-0.5">Correct</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <span class="text-amber-300 font-bold flex items-center gap-1">
+              <i class="fa-solid fa-forward text-[10px]"></i> <span id="finalStatPass">0</span>
+            </span>
+            <span class="text-[10px] text-gray-400 mt-0.5">Pass</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <span class="text-rose-400 font-bold flex items-center gap-1">
+              <i class="fa-solid fa-xmark text-[10px]"></i> <span id="finalStatIncorrect">0</span>
+            </span>
+            <span class="text-[10px] text-gray-400 mt-0.5">Incorrect</span>
+          </div>
+        </div>
+      </div>
+
       <div class="flex gap-3 pt-2">
         <button onclick="dismissAlarmAndRestart()" class="flex-1 py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-bold text-sm transition-all">
           Restart
@@ -797,6 +826,13 @@
 
     function handleTimeUp() {
       pauseTimerCountdown();
+      
+      // Populate final scores on modal popup
+      document.getElementById("finalScoreTotal").textContent = roundStats.correct;
+      document.getElementById("finalStatCorrect").textContent = roundStats.correct;
+      document.getElementById("finalStatPass").textContent = roundStats.pass;
+      document.getElementById("finalStatIncorrect").textContent = roundStats.incorrect;
+      
       document.getElementById("alarmModal").classList.remove("hidden");
       triggerAlarmAudio();
     }
