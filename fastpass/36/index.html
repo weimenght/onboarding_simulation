@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FastPass | 36 Teams Schedule</title>
+  <title>FastPass | Team Schedule</title>
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -54,23 +54,33 @@
     }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .shake {
+      animation: shake 0.35s ease-in-out;
+    }
   </style>
 </head>
 
 <body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
 
+  <!-- Header -->
   <header class="w-full border-b border-white/10 bg-deloitte-bg/80 backdrop-blur-md sticky top-0 z-50">
     <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="selectTeam(1)">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="showInputScreen()">
         <div class="w-9 h-9 rounded-xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green font-extrabold text-sm">
-          36
+          <i class="fa-solid fa-bolt"></i>
         </div>
         <div class="flex flex-col">
           <div class="flex items-center leading-tight">
             <span class="font-extrabold text-lg tracking-tight text-white">FastPass<span class="deloitte-dot"></span></span>
           </div>
           <span id="headerSubtitle" class="text-[11px] text-deloitte-green font-semibold tracking-wider">
-            团队日程追踪 (36组)
+            团队日程追踪
           </span>
         </div>
       </div>
@@ -91,50 +101,67 @@
     </div>
   </header>
 
-  <main class="flex-grow max-w-3xl mx-auto w-full px-4 py-6 space-y-5">
-    <div class="bg-deloitte-card border border-white/10 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
-      <div class="flex items-center justify-between gap-3">
-        <button onclick="changeGroup(-1)" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-white font-bold text-sm transition-all flex items-center justify-center gap-2">
-          <i class="fa-solid fa-chevron-left text-xs text-deloitte-green"></i>
-          <span id="prevBtnText">上一组</span>
-        </button>
+  <main class="flex-grow max-w-3xl mx-auto w-full px-4 py-8 flex flex-col justify-center">
 
-        <div class="relative flex-1 max-w-[200px]">
-          <select id="teamSelect" onchange="selectTeam(parseInt(this.value, 10))" 
-            class="w-full appearance-none bg-deloitte-slate border border-white/15 text-white font-extrabold text-sm sm:text-base py-2.5 pl-4 pr-9 rounded-xl focus:outline-none focus:border-deloitte-green text-center cursor-pointer">
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-deloitte-green">
-            <i class="fa-solid fa-chevron-down text-xs"></i>
+    <!-- Screen 1: Team Input Prompt -->
+    <div id="teamInputScreen" class="w-full max-w-md mx-auto bg-deloitte-card border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+      <div class="text-center space-y-2">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green text-2xl mb-2">
+          <i class="fa-solid fa-users-viewfinder"></i>
+        </div>
+        <h1 id="promptTitle" class="text-2xl font-black text-white tracking-tight">
+          请输入您的组号
+        </h1>
+        <p id="promptSubtitle" class="text-xs text-gray-400">
+          支持第 1 - 36 组，输入后即可直接查看专属活动日程
+        </p>
+      </div>
+
+      <form onsubmit="handleTeamSubmit(event)" class="space-y-4">
+        <div>
+          <label id="inputLabel" for="teamInputNumber" class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+            团队编号
+          </label>
+          <div class="relative">
+            <input 
+              type="number" 
+              id="teamInputNumber" 
+              min="1" 
+              max="36" 
+              placeholder="1 - 36"
+              class="w-full bg-deloitte-slate border border-white/20 rounded-xl px-4 py-3.5 text-center text-2xl font-black text-deloitte-green focus:outline-none focus:border-deloitte-green transition-all"
+              autofocus
+              required
+            >
+            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-xs text-gray-500 font-mono">
+              / 36
+            </div>
           </div>
+          <p id="inputErrorMsg" class="hidden text-xs text-rose-400 font-semibold mt-2 text-center"></p>
         </div>
 
-        <button onclick="changeGroup(1)" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-white font-bold text-sm transition-all flex items-center justify-center gap-2">
-          <span id="nextBtnText">下一组</span>
-          <i class="fa-solid fa-chevron-right text-xs text-deloitte-green"></i>
+        <button 
+          type="submit" 
+          id="submitBtn" 
+          class="w-full py-3.5 rounded-xl bg-deloitte-green hover:bg-[#97d428] active:scale-[0.98] text-black font-extrabold text-sm tracking-wide transition-all shadow-lg shadow-deloitte-green/20 flex items-center justify-center gap-2">
+          <span id="submitBtnText">查看我的日程</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
         </button>
-      </div>
-
-      <div class="pt-2 border-t border-white/5">
-        <div id="teamPillsTrack" class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-1 scroll-smooth">
-        </div>
-      </div>
+      </form>
     </div>
 
-    <section class="bg-deloitte-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-      <div class="p-5 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div class="flex items-center gap-2 mb-1">
-            <span class="w-2 h-2 rounded-full bg-deloitte-green animate-pulse"></span>
-            <span id="scheduleBadge" class="text-xs uppercase font-extrabold tracking-wider text-deloitte-green">
-              日程详情
-            </span>
-          </div>
-          <h2 class="text-xl sm:text-2xl font-black text-white" id="scheduleTitle">
-            第 1 组 · 活动日程
-          </h2>
-        </div>
+    <!-- Screen 2: Time Table View -->
+    <div id="scheduleScreen" class="hidden space-y-4 w-full">
+      <!-- Quick Bar: Back / Change Team Button -->
+      <div class="flex items-center justify-between">
+        <button 
+          onclick="showInputScreen()" 
+          class="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 text-xs font-bold text-gray-300 transition-all flex items-center gap-2">
+          <i class="fa-solid fa-arrow-left text-deloitte-green"></i>
+          <span id="backBtnText">更换组号</span>
+        </button>
 
-        <div class="flex items-center gap-2 font-mono text-xs text-gray-400 bg-black/40 border border-white/10 px-3 py-1.5 rounded-xl self-start sm:self-auto">
+        <div class="flex items-center gap-2 font-mono text-xs text-gray-400 bg-black/40 border border-white/10 px-3 py-1.5 rounded-xl">
           <i class="fa-regular fa-clock text-deloitte-green"></i>
           <span id="overallTimeRange">13:50 - 17:50</span>
           <span>•</span>
@@ -142,26 +169,48 @@
         </div>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[560px] sm:min-w-full">
-          <thead>
-            <tr class="border-b border-white/10 text-xs font-bold text-gray-400 bg-white/[0.02]">
-              <th id="thTime" class="py-3 px-4 w-32 sm:w-36 font-mono">时间段</th>
-              <th id="thStation" class="py-3 px-4">环节项目</th>
-              <th id="thVenue" class="py-3 px-4 w-36 sm:w-44">活动地点</th>
-              <th id="thStatus" class="py-3 px-4 text-right w-28">状态</th>
-            </tr>
-          </thead>
-          <tbody id="scheduleTableBody" class="divide-y divide-white/5 text-sm">
-          </tbody>
-        </table>
-      </div>
+      <!-- Schedule Table Section -->
+      <section class="bg-deloitte-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+        <div class="p-5 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-2 h-2 rounded-full bg-deloitte-green animate-pulse"></span>
+              <span id="scheduleBadge" class="text-xs uppercase font-extrabold tracking-wider text-deloitte-green">
+                日程详情
+              </span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-white" id="scheduleTitle">
+              第 1 组 · 活动日程
+            </h2>
+          </div>
 
-      <div class="px-5 py-3 border-t border-white/10 bg-black/30 flex items-center justify-between text-xs text-gray-400">
-        <span id="footerDuration">每环节 30 分钟 · 轮转 10 分钟</span>
-        <span class="font-mono text-[11px] text-deloitte-gray">36-Team FastPass</span>
-      </div>
-    </section>
+          <div class="px-3 py-1.5 rounded-xl bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green font-mono text-xs font-extrabold self-start sm:self-auto">
+            <span id="selectedTeamBadge">TEAM #1</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse min-w-[560px] sm:min-w-full">
+            <thead>
+              <tr class="border-b border-white/10 text-xs font-bold text-gray-400 bg-white/[0.02]">
+                <th id="thTime" class="py-3 px-4 w-32 sm:w-36 font-mono">时间段</th>
+                <th id="thStation" class="py-3 px-4">环节项目</th>
+                <th id="thVenue" class="py-3 px-4 w-36 sm:w-44">活动地点</th>
+                <th id="thStatus" class="py-3 px-4 text-right w-28">状态</th>
+              </tr>
+            </thead>
+            <tbody id="scheduleTableBody" class="divide-y divide-white/5 text-sm">
+            </tbody>
+          </table>
+        </div>
+
+        <div class="px-5 py-3 border-t border-white/10 bg-black/30 flex items-center justify-between text-xs text-gray-400">
+          <span id="footerDuration">每环节 30 分钟 · 轮转 10 分钟</span>
+          <span class="font-mono text-[11px] text-deloitte-gray">36-Team FastPass</span>
+        </div>
+      </section>
+    </div>
+
   </main>
 
   <script>
@@ -173,7 +222,7 @@
 
     const TOTAL_TEAMS = 36;
     let currentLang = 'zh';
-    let currentTeam = 1;
+    let currentTeam = null;
     let audioEnabled = true;
     let audioReady = false;
     let switchSynth = null;
@@ -246,12 +295,16 @@
 
     const I18N = {
       zh: {
-        subtitle: '团队日程追踪 (36组)',
-        prev: '上一组',
-        next: '下一组',
-        groupOption: (i) => `第 ${i} 组`,
+        subtitle: '团队日程追踪',
+        promptTitle: '请输入您的组号',
+        promptSubtitle: '支持第 1 - 36 组，输入后即可直接查看专属活动日程',
+        inputLabel: '团队编号',
+        submitBtn: '查看我的日程',
+        backBtn: '更换组号',
+        errorRange: '请输入 1 至 36 之间的有效组号',
         scheduleBadge: '日程详情',
         scheduleTitle: (i) => `第 ${i} 组 · 活动日程`,
+        teamBadge: (i) => `第 ${i} 组`,
         thTime: '时间段',
         thStation: '环节项目',
         thVenue: '活动地点',
@@ -265,12 +318,16 @@
         liveActive: '进行中'
       },
       en: {
-        subtitle: 'Team Schedule Tracker (36 Teams)',
-        prev: 'Previous',
-        next: 'Next',
-        groupOption: (i) => `Team ${i}`,
+        subtitle: 'Team Schedule Tracker',
+        promptTitle: 'Enter Your Team Number',
+        promptSubtitle: 'Teams 1 - 36 supported. Enter to directly load your schedule.',
+        inputLabel: 'Team Number',
+        submitBtn: 'View Schedule',
+        backBtn: 'Change Team',
+        errorRange: 'Please enter a valid team number between 1 and 36',
         scheduleBadge: 'Schedule Route',
         scheduleTitle: (i) => `Team ${i} · Schedule`,
+        teamBadge: (i) => `TEAM #${i}`,
         thTime: 'Time Slot',
         thStation: 'Station / Activity',
         thVenue: 'Venue',
@@ -313,7 +370,7 @@
         changed = true;
       }
 
-      if (changed) renderScheduleView();
+      if (changed && currentTeam) renderScheduleView();
       return changed;
     }
 
@@ -386,7 +443,6 @@
     }
 
     async function loadVenueData() {
-      // 1. Primary: Load from Supabase Admin Configuration
       if (supabaseClient) {
         try {
           const { data, error } = await supabaseClient
@@ -402,7 +458,6 @@
         } catch (err) {}
       }
 
-      // 2. Secondary: Same-browser localStorage cache
       try {
         const cached = localStorage.getItem('fastpass_config_v1');
         if (cached && applyConfigPayload(JSON.parse(cached))) {
@@ -410,7 +465,6 @@
         }
       } catch (e) {}
 
-      // 3. Fallback: Legacy venue.txt
       const candidates = ['../venue.txt', 'venue.txt'];
       for (const path of candidates) {
         try {
@@ -420,7 +474,7 @@
             const parsed = parseVenueText(text);
             if (Object.keys(parsed).length > 0) {
               stationVenues = { ...stationVenues, ...parsed };
-              renderScheduleView();
+              if (currentTeam) renderScheduleView();
               return;
             }
           }
@@ -503,15 +557,17 @@
         zhBtn.className = "px-2.5 py-1 rounded-full font-semibold transition-all text-gray-400 hover:text-white";
       }
       updateStaticTranslations();
-      renderDropdownOptions();
-      renderScheduleView();
+      if (currentTeam) renderScheduleView();
     }
 
     function updateStaticTranslations() {
       const t = I18N[currentLang];
       document.getElementById("headerSubtitle").textContent = t.subtitle;
-      document.getElementById("prevBtnText").textContent = t.prev;
-      document.getElementById("nextBtnText").textContent = t.next;
+      document.getElementById("promptTitle").textContent = t.promptTitle;
+      document.getElementById("promptSubtitle").textContent = t.promptSubtitle;
+      document.getElementById("inputLabel").textContent = t.inputLabel;
+      document.getElementById("submitBtnText").textContent = t.submitBtn;
+      document.getElementById("backBtnText").textContent = t.backBtn;
       document.getElementById("thTime").textContent = t.thTime;
       document.getElementById("thStation").textContent = t.thStation;
       document.getElementById("thVenue").textContent = t.thVenue;
@@ -520,64 +576,52 @@
       document.getElementById("footerDuration").textContent = t.footerDuration;
     }
 
-    function renderDropdownOptions() {
-      const select = document.getElementById("teamSelect");
-      const t = I18N[currentLang];
-      select.innerHTML = "";
-      for (let i = 1; i <= TOTAL_TEAMS; i++) {
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = t.groupOption(i);
-        if (i === currentTeam) opt.selected = true;
-        select.appendChild(opt);
-      }
-    }
-
-    function renderPills() {
-      const container = document.getElementById("teamPillsTrack");
-      let html = "";
-      for (let i = 1; i <= TOTAL_TEAMS; i++) {
-        const isSelected = (i === currentTeam);
-        const pillClass = isSelected
-          ? "bg-deloitte-green text-black font-extrabold shadow-md border-deloitte-green scale-105"
-          : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-white/10";
-
-        html += `
-          <button id="teamPill-${i}" onclick="selectTeam(${i})" class="flex-shrink-0 w-8 h-8 rounded-lg text-xs font-mono border transition-all flex items-center justify-center ${pillClass}">
-            ${i}
-          </button>
-        `;
-      }
-      container.innerHTML = html;
-
-      const activePill = document.getElementById(`teamPill-${currentTeam}`);
-      if (activePill) {
-        activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      }
-    }
-
-    function selectTeam(num) {
+    function showInputScreen() {
       playSwitchSound();
-      currentTeam = Math.max(1, Math.min(TOTAL_TEAMS, num));
-      const select = document.getElementById("teamSelect");
-      if (select) select.value = currentTeam;
-      renderPills();
+      document.getElementById("scheduleScreen").classList.add("hidden");
+      const inputScreen = document.getElementById("teamInputScreen");
+      inputScreen.classList.remove("hidden");
+      const input = document.getElementById("teamInputNumber");
+      input.value = currentTeam || "";
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function handleTeamSubmit(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById("teamInputNumber");
+      const errorMsg = document.getElementById("inputErrorMsg");
+      const card = document.getElementById("teamInputScreen");
+      const t = I18N[currentLang];
+
+      const val = parseInt(input.value, 10);
+      if (isNaN(val) || val < 1 || val > TOTAL_TEAMS) {
+        errorMsg.textContent = t.errorRange;
+        errorMsg.classList.remove("hidden");
+        card.classList.remove("shake");
+        void card.offsetWidth; // trigger reflow
+        card.classList.add("shake");
+        input.focus();
+        return;
+      }
+
+      errorMsg.classList.add("hidden");
+      currentTeam = val;
+      playSwitchSound();
+
+      // Switch views
+      document.getElementById("teamInputScreen").classList.add("hidden");
+      document.getElementById("scheduleScreen").classList.remove("hidden");
       renderScheduleView();
     }
 
-    function changeGroup(delta) {
-      let next = currentTeam + delta;
-      if (next < 1) next = TOTAL_TEAMS;
-      if (next > TOTAL_TEAMS) next = 1;
-      selectTeam(next);
-    }
-
     function renderScheduleView() {
+      if (!currentTeam) return;
       const t = I18N[currentLang];
       const schedule = SCHEDULE_MATRIX_36[currentTeam - 1];
       const activeSlot = getActiveSlotIndex();
 
       document.getElementById("scheduleTitle").textContent = t.scheduleTitle(currentTeam);
+      document.getElementById("selectedTeamBadge").textContent = t.teamBadge(currentTeam);
 
       const liveBadge = document.getElementById("liveStatusBadge");
       if (activeSlot === 99) {
@@ -658,33 +702,13 @@
       tbody.innerHTML = rowsHtml;
     }
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") changeGroup(-1);
-      if (e.key === "ArrowRight") changeGroup(1);
-    });
-
-    let touchStartX = 0;
-    document.addEventListener("touchstart", (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    document.addEventListener("touchend", (e) => {
-      const touchEndX = e.changedTouches[0].screenX;
-      const diff = touchEndX - touchStartX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) changeGroup(-1);
-        else changeGroup(1);
-      }
-    }, { passive: true });
-
     window.onload = function() {
       updateStaticTranslations();
-      renderDropdownOptions();
-      renderPills();
-      renderScheduleView();
       loadVenueData();
       subscribeRealtimeConfig();
-      setInterval(renderScheduleView, 30000);
+      setInterval(() => {
+        if (currentTeam) renderScheduleView();
+      }, 30000);
       setInterval(loadVenueData, 60000);
     };
 
