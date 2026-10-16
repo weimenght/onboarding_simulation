@@ -128,11 +128,11 @@
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-extrabold uppercase tracking-widest text-deloitte-green" data-i18n="announcementTag">Host Announcement · 现场广播</span>
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-deloitte-green" data-i18n="announcementTag">现场广播</span>
             <span id="announcementTime" class="text-[10px] font-mono text-gray-500">Live</span>
           </div>
           <p id="announcementBody" class="text-xs sm:text-sm font-semibold text-gray-100 mt-1 leading-relaxed">
-            欢迎加入德勤新星破冰之旅！请根据 FastPass 路线前往各关卡站点。
+            欢迎来到德勤乐园。
           </p>
         </div>
       </div>
@@ -171,7 +171,7 @@
         </div>
         <div class="mt-3">
           <div class="text-xs font-black text-white group-hover:text-deloitte-green transition-colors">D-Rush Odyssey</div>
-          <div class="text-[10px] text-gray-400 mt-0.5" data-i18n="drushSub">像素破冰 · 刷最高分</div>
+          <div class="text-[10px] text-gray-400 mt-0.5" data-i18n="drushSub">刷最高分</div>
         </div>
       </a>
     </div>
@@ -183,14 +183,14 @@
           <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
             <i class="fa-solid fa-sun"></i>
           </div>
-          <h2 class="text-xs font-extrabold text-white uppercase tracking-wider" data-i18n="sunriseGateTitle">Project Sunrise 日出秘钥</h2>
+          <h2 class="text-xs font-extrabold text-white uppercase tracking-wider" data-i18n="sunriseGateTitle">Project Sunrise 日出计划</h2>
         </div>
         <span id="sunriseStatusBadge" class="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">LOCKED</span>
       </div>
 
       <!-- Locked State Input -->
       <div id="sunriseInputSection" class="space-y-2">
-        <p class="text-[11px] text-gray-400" data-i18n="sunrisePasscodePrompt">输入主持人公布的主题秘钥以解锁日出关卡站点：</p>
+        <p class="text-[11px] text-gray-400" data-i18n="sunrisePasscodePrompt">输入主持人公布的秘钥解锁：</p>
         <div class="flex gap-2">
           <input id="sunrisePasscodeInput" type="text" placeholder="Passcode (14 chars)"
             class="flex-1 bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-gray-600 uppercase">
@@ -209,26 +209,14 @@
       <!-- Unlocked State Links (Initially Hidden) -->
       <div id="sunriseUnlockedLinks" class="hidden pt-1 space-y-2.5">
         <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
-          <span class="text-xs font-bold text-amber-300" data-i18n="unlockedSuccess">✨ 关卡站点已就绪</span>
+          <span class="text-xs font-bold text-amber-300" data-i18n="unlockedSuccess">关卡站点已就绪</span>
           <span class="text-[10px] text-gray-400 font-mono">esirnustcejorp</span>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <a href="https://www.projectsunrise.win/sunrise" target="_blank" rel="noopener noreferrer"
             class="button-press p-2.5 rounded-xl bg-amber-400 text-black font-extrabold text-xs text-center col-span-2 flex items-center justify-center gap-1.5 shadow-md shadow-amber-400/20">
-            <span data-i18n="launchMainSunrise">进入 Project Sunrise 主站</span>
+            <span data-i18n="launchMainSunrise">进入日出计划主站</span>
             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-          </a>
-          <a href="https://www.projectsunrise.win/diyiguan" target="_blank" rel="noopener noreferrer"
-            class="button-press p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-center text-amber-200">
-            Node 1 (第一关)
-          </a>
-          <a href="https://www.projectsunrise.win/niveldos" target="_blank" rel="noopener noreferrer"
-            class="button-press p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-center text-amber-200">
-            Node 2 (第二关)
-          </a>
-          <a href="https://www.projectsunrise.win/sankyu" target="_blank" rel="noopener noreferrer"
-            class="button-press p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-center text-amber-200 col-span-2">
-            Node 3 (第三关)
           </a>
         </div>
       </div>
@@ -242,7 +230,7 @@
             <i class="fa-solid fa-ranking-star"></i>
           </div>
           <div>
-            <h2 class="text-xs font-black text-white uppercase tracking-wider" data-i18n="leaderboardTitle">关卡风云榜 · Top 10</h2>
+            <h2 class="text-xs font-black text-white uppercase tracking-wider" data-i18n="leaderboardTitle">Top 10</h2>
             <div class="text-[10px] text-gray-500" data-i18n="leaderboardSub">6 大站点实时综合排行</div>
           </div>
         </div>
@@ -254,19 +242,19 @@
       <!-- Station Filter Chips -->
       <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
         <button type="button" onclick="filterLeaderboardStation('ALL')" id="stFilterBtn-ALL" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-deloitte-green text-black whitespace-nowrap">
-          ALL · 总分
+          总分
         </button>
         <button type="button" onclick="filterLeaderboardStation('0')" id="stFilterBtn-0" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          拼未来
+          一起拼未来
         </button>
         <button type="button" onclick="filterLeaderboardStation('1')" id="stFilterBtn-1" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
           道德之树
         </button>
         <button type="button" onclick="filterLeaderboardStation('2')" id="stFilterBtn-2" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          D.Signal
+          信号解密
         </button>
         <button type="button" onclick="filterLeaderboardStation('3')" id="stFilterBtn-3" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          智库
+          勤业智库
         </button>
         <button type="button" onclick="filterLeaderboardStation('4')" id="stFilterBtn-4" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
           情商罗盘
@@ -290,8 +278,8 @@
             <i class="fa-solid fa-comments"></i>
           </div>
           <div>
-            <h2 class="text-xs font-black text-white uppercase tracking-wider" data-i18n="msgBoardTitle">互动留言墙 · Community</h2>
-            <div class="text-[10px] text-gray-500" data-i18n="msgBoardSub">团队打气与现场心得交流</div>
+            <h2 class="text-xs font-black text-white uppercase tracking-wider" data-i18n="msgBoardTitle">互动留言墙</h2>
+            <div class="text-[10px] text-gray-500" data-i18n="msgBoardSub">说点什么</div>
           </div>
         </div>
         <span id="msgCountBadge" class="text-[10px] font-mono text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded-full border border-teal-500/20">0 msgs</span>
@@ -300,14 +288,14 @@
       <!-- Message Input Form -->
       <form onsubmit="handlePostMessage(event)" class="space-y-2 bg-black/40 p-2.5 rounded-xl border border-white/10">
         <div class="grid grid-cols-3 gap-2">
-          <input id="msgNickname" type="text" placeholder="昵称 / Team" maxlength="15" required
+          <input id="msgNickname" type="text" placeholder="昵称" maxlength="15" required
             class="col-span-1 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-gray-600">
           <input id="msgContent" type="text" placeholder="说点什么为队友打气..." maxlength="100" required
             class="col-span-2 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-gray-600">
         </div>
         <div class="flex items-center justify-between pt-1">
           <div class="flex items-center gap-1 text-[11px] text-gray-500">
-            <span>✨ 友善互动</span>
+            <span>友善互动</span>
           </div>
           <button type="submit" id="msgSubmitBtn"
             class="button-press px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-extrabold text-xs rounded-lg flex items-center gap-1">
@@ -326,7 +314,7 @@
     <!-- Hidden Easter Egg #2 Trigger Area -->
     <div class="text-center pt-2">
       <button type="button" onclick="handleSecretEggTrigger()" class="text-[10px] font-mono text-gray-700 hover:text-deloitte-green transition-colors">
-        • DELOITTE IMPACT 2026 •
+        • DELOITTELAND 2026 •
       </button>
     </div>
 
@@ -339,9 +327,9 @@
         <i class="fa-solid fa-gift"></i>
       </div>
       <div>
-        <h3 class="text-base font-black text-white" data-i18n="eggFoundTitle">🎉 发现隐藏彩蛋！</h3>
+        <h3 class="text-base font-black text-white" data-i18n="eggFoundTitle">发现隐藏彩蛋！</h3>
         <p id="easterEggText" class="text-xs text-gray-300 mt-1 leading-relaxed">
-          你找到了隐藏的绿点脉冲！“众行致远，成就不凡”。你的探索精神已获得系统 +100 幸运值！
+          你找到了隐藏的绿点脉冲！你的探索精神已获得系统 +100 幸运值！
         </p>
       </div>
       <button type="button" onclick="closeEasterEggModal()" class="button-press w-full py-2.5 rounded-xl bg-deloitte-green text-black font-extrabold text-xs">
@@ -369,42 +357,42 @@
       zh: {
         langToggle: "EN",
         subTitle: "学员专属空间",
-        announcementTag: "现场广播 · Announcement",
+        announcementTag: "现场广播",
         fastpassTitle: "FastPass 通行证",
         fastpassSub: "查看队伍轮转时刻与场地",
-        drushSub: "像素破冰 · 刷最高分",
-        sunriseGateTitle: "Project Sunrise 日出秘钥",
+        drushSub: "刷最高分",
+        sunriseGateTitle: "日出计划秘钥",
         sunrisePasscodePrompt: "输入主持人现场公布的主题秘钥解锁主站：",
         btnUnlock: "解锁",
         errPasscode: "秘钥不匹配，请倾听主持人现场口令",
-        unlockedSuccess: "✨ 关卡站点已就绪",
-        launchMainSunrise: "进入 Project Sunrise 主站",
-        leaderboardTitle: "关卡风云榜 · Top 10",
+        unlockedSuccess: "关卡站点已就绪",
+        launchMainSunrise: "进入日出计划主站",
+        leaderboardTitle: "Top 10",
         leaderboardSub: "6 大站点实时综合排行",
-        msgBoardTitle: "互动留言墙 · Community",
+        msgBoardTitle: "互动留言墙",
         msgBoardSub: "团队打气与现场心得交流",
         btnSendMsg: "发送",
-        eggFoundTitle: "🎉 发现隐藏彩蛋！"
+        eggFoundTitle: "发现隐藏彩蛋！"
       },
       en: {
         langToggle: "中",
         subTitle: "Participant Portal",
-        announcementTag: "Live Broadcast · Announcement",
+        announcementTag: "Live Broadcast",
         fastpassTitle: "FastPass Navigation",
         fastpassSub: "Cohort itinerary & venue rotation",
-        drushSub: "Pixel challenge & score sprint",
+        drushSub: "Pixel Challenge",
         sunriseGateTitle: "Project Sunrise Vault",
         sunrisePasscodePrompt: "Enter host's announced quest passcode to unlock:",
         btnUnlock: "Unlock",
         errPasscode: "Invalid passcode. Check with your session host.",
-        unlockedSuccess: "✨ Quests Unlocked",
-        launchMainSunrise: "Launch Sunrise Main Portal",
-        leaderboardTitle: "Challenge Leaderboard · Top 10",
+        unlockedSuccess: "Quest Unlocked",
+        launchMainSunrise: "Launch Project Sunrise Main Portal",
+        leaderboardTitle: "Top 10",
         leaderboardSub: "Live rankings across 6 stations",
-        msgBoardTitle: "Team Message Board · Live",
+        msgBoardTitle: "Team Message Board",
         msgBoardSub: "Share cheers and battle notes",
         btnSendMsg: "Post",
-        eggFoundTitle: "🎉 Easter Egg Discovered!"
+        eggFoundTitle: "Easter Egg Discovered!"
       }
     };
 
@@ -696,8 +684,8 @@
       btn.disabled = true;
 
       // Easter Egg #3: Secret Trigger Word
-      if (content.toLowerCase().includes("impact that matters") || content.includes("成就不凡")) {
-        showEasterEggModal("💫 你解锁了终极价值观彩蛋：'To make an impact that matters.' 荣誉徽章已入驻！");
+      if (content.toLowerCase().includes("together makes progress") || content.includes("众行致远")) {
+        showEasterEggModal("💫 你解锁了终极价值观彩蛋：'Together makes progress.' 荣誉徽章已入驻！");
       }
 
       const newMsg = {
@@ -743,7 +731,7 @@
     }
 
     function handleSecretEggTrigger() {
-      showEasterEggModal("⚡【彩蛋2】隐藏极客代码：Deloitte 2026 Onboarding 系统全速运转中。探索永无止境！");
+      showEasterEggModal("⚡【彩蛋2】隐藏极客代码：DeloitteLand 2026 系统全速运转中。探索永无止境！");
       triggerPartyConfetti();
     }
 
