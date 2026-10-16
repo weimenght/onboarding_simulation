@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D.Signal 信号解密</title>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Tone.js for web audio sound effects -->
@@ -88,10 +90,71 @@
     .glow-pulse {
       animation: pulseGlow 3s infinite ease-in-out;
     }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake-error { animation: shake 0.4s ease-in-out; }
   </style>
 </head>
 
 <body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+
+  <!-- Gate / Login Overlay -->
+  <div id="passwordGate" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#080b11] p-4">
+    <div id="gateCard" class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center animate-pop-in relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-32 h-32 bg-deloitte-green/15 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="space-y-3 relative z-10">
+        <div class="w-16 h-16 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-2xl mx-auto shadow-lg shadow-deloitte-green/20">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-black text-white">D.Signal<span class="deloitte-dot"></span></h1>
+          <p class="text-xs text-gray-400 mt-1 font-cn">请登录管理员账号以访问信号解密<br><span class="text-[11px] text-gray-500">Sign in to access D.Signal</span></p>
+        </div>
+      </div>
+
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-3.5 relative z-10 text-left">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">账号 / Email</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-envelope"></i>
+            </span>
+            <input id="emailInput" type="email" placeholder="admin@deloitte.com" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">密码 / Password</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-10 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs transition-colors" title="显示/隐藏密码">
+              <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <p id="errorMessage" class="hidden text-xs text-rose-400 font-semibold font-cn flex items-center gap-1.5 pt-1">
+          <i class="fa-solid fa-circle-exclamation text-rose-500 shrink-0"></i>
+          <span id="errorText">账号或密码错误 / Invalid credentials</span>
+        </p>
+
+        <button id="submitBtn" type="submit" class="button-press w-full mt-2 py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+          <span id="btnText">验证并登录 · Sign In</span>
+        </button>
+      </form>
+
+      <p class="text-[11px] text-gray-500 font-mono relative z-10 pt-2 border-t border-white/10">Protected by Supabase Auth</p>
+    </div>
+  </div>
 
   <!-- Top Navigation Bar -->
   <header class="w-full border-b border-white/10 bg-deloitte-black/70 backdrop-blur-md sticky top-0 z-50">
@@ -111,6 +174,10 @@
         </button>
         <button id="navHomeBtn" onclick="goToHome()" class="hidden px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 transition-all">
           <i class="fa-solid fa-grid-2 mr-1.5"></i> Rounds
+        </button>
+        <button type="button" onclick="handleLogout()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 hover:border-rose-500/30 border border-white/10 text-gray-300 hover:text-rose-300 transition-all flex items-center space-x-1.5" title="退出登录">
+          <i class="fa-solid fa-arrow-right-from-bracket text-xs text-deloitte-green"></i>
+          <span class="hidden sm:inline">退出</span>
         </button>
       </div>
     </div>
@@ -207,14 +274,12 @@
         <!-- Central Flashcard -->
         <div id="wordCardElement" onclick="handleCardClick()" class="cursor-pointer group relative bg-gradient-to-b from-deloitte-cardbg to-[#12151b] border-2 border-white/10 hover:border-deloitte-green/40 p-10 sm:p-16 rounded-3xl card-shadow transition-all duration-300 text-center flex flex-col items-center justify-center min-h-[300px] sm:min-h-[360px] select-none">
           <div class="space-y-5 max-w-xl">
-            <!-- Chinese Word -->
             <div class="overflow-hidden">
               <h2 id="cardWordChinese" class="text-4xl sm:text-6xl font-black font-cn tracking-wide text-white transition-all duration-200">
                 加载中...
               </h2>
             </div>
 
-            <!-- English Meaning -->
             <div>
               <p id="cardWordEnglish" class="text-xl sm:text-2xl font-bold tracking-normal text-deloitte-green transition-all duration-200">
                 Loading...
@@ -377,6 +442,162 @@
   </div>
 
   <script>
+    /* ==========================================================
+       0. SUPABASE AUTHENTICATION & REMOTE CONFIG SYNC
+       ========================================================== */
+    const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
+    let supabaseClient = null;
+
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    async function loadRemoteSignalWords() {
+      // 1. Check localStorage fallback first
+      try {
+        const cached = localStorage.getItem('signal_config_v1');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed[1] && parsed[2] && parsed[3]) {
+            ROUND_DATA = parsed;
+            for (let r = 1; r <= 3; r++) initRoundPool(r);
+            updateAdminUI();
+          }
+        }
+      } catch (e) {}
+
+      // 2. Fetch from Supabase
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('signal_config')
+          .select('round_data')
+          .eq('id', 1)
+          .maybeSingle();
+
+        if (!error && data && data.round_data) {
+          ROUND_DATA = data.round_data;
+          localStorage.setItem('signal_config_v1', JSON.stringify(ROUND_DATA));
+          for (let r = 1; r <= 3; r++) initRoundPool(r);
+          updateAdminUI();
+        }
+      } catch (err) {
+        console.warn("Could not load signal_config from Supabase:", err);
+      }
+    }
+
+    function subscribeSignalRealtime() {
+      if (!supabaseClient) return;
+      try {
+        supabaseClient
+          .channel('signal_config_live')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'signal_config' }, (payload) => {
+            if (payload.new && payload.new.round_data) {
+              ROUND_DATA = payload.new.round_data;
+              localStorage.setItem('signal_config_v1', JSON.stringify(ROUND_DATA));
+              for (let r = 1; r <= 3; r++) initRoundPool(r);
+              updateAdminUI();
+              showToast("Admin synced new word lists!");
+            }
+          })
+          .subscribe();
+      } catch (e) {}
+    }
+
+    async function initAuth() {
+      if (!supabaseClient) {
+        showAuthError("Supabase 脚本加载失败，请检查网络");
+        return;
+      }
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          renderAuthorized();
+        } else {
+          document.getElementById('emailInput').focus();
+        }
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_IN' && session) renderAuthorized();
+          else if (event === 'SIGNED_OUT') renderLocked();
+        });
+      } catch (err) {
+        console.error("Auth init error:", err);
+      }
+    }
+
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+
+      if (!supabaseClient) {
+        showAuthError("无法连接到认证服务");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      btnText.textContent = "验证中 · Verifying...";
+      submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+          showAuthError(error.message);
+        } else if (data?.user) {
+          document.getElementById('errorMessage').classList.add('hidden');
+          renderAuthorized();
+        }
+      } catch (err) {
+        showAuthError("请求异常: " + (err.message || "Network Error"));
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = "验证并登录 · Sign In";
+        submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+      }
+    }
+
+    function showAuthError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      const gateCard = document.getElementById('gateCard');
+      errorText.textContent = message;
+      errorEl.classList.remove('hidden');
+      gateCard.classList.remove('shake-error');
+      void gateCard.offsetWidth;
+      gateCard.classList.add('shake-error');
+    }
+
+    async function handleLogout() {
+      pauseTimerCountdown();
+      stopAlarm();
+      if (supabaseClient) await supabaseClient.auth.signOut();
+    }
+
+    function renderAuthorized() {
+      document.getElementById('passwordGate').classList.add('hidden');
+      loadRemoteSignalWords();
+    }
+
+    function renderLocked() {
+      pauseTimerCountdown();
+      stopAlarm();
+      document.getElementById('passwordGate').classList.remove('hidden');
+      const passwordInput = document.getElementById('passwordInput');
+      if (passwordInput) passwordInput.value = '';
+      document.getElementById('errorMessage').classList.add('hidden');
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('passwordInput');
+      const icon = document.getElementById('toggleEyeIcon');
+      const visible = input.type === 'password';
+      input.type = visible ? 'text' : 'password';
+      icon.className = visible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    }
+
     /* ==========================================================
        1. SOUND ENGINE (Tone.js Synthesis)
        ========================================================== */
@@ -682,27 +903,20 @@
 
     let ROUND_DATA = JSON.parse(JSON.stringify(DEFAULT_ROUND_DATA));
 
-    // Exhaustion decks tracking unseen indices per round
     let roundWordPools = { 1: [], 2: [], 3: [] };
     let currentRoundId = 1;
     let currentWordIndex = -1;
     let roundStats = { correct: 0, pass: 0, incorrect: 0 };
 
-    /**
-     * Initializes a shuffled deck of word indices for a specified round.
-     * Guaranteed Fisher-Yates randomization.
-     */
     function initRoundPool(roundId) {
       const words = ROUND_DATA[roundId]?.words || [];
       const indices = Array.from({ length: words.length }, (_, i) => i);
 
-      // Fisher-Yates Shuffle
       for (let i = indices.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [indices[i], indices[j]] = [indices[j], indices[i]];
       }
 
-      // If the newly generated pool's first popped word matches the word currently on screen, swap it
       if (indices.length > 1 && indices[indices.length - 1] === currentWordIndex) {
         [indices[indices.length - 1], indices[0]] = [indices[0], indices[indices.length - 1]];
       }
@@ -710,15 +924,10 @@
       roundWordPools[roundId] = indices;
     }
 
-    /**
-     * Retrieves next word index from the unshown pool.
-     * Refills and reshuffles only after every word in the round has appeared.
-     */
     function getNextDeprioritizedWordIndex() {
       const words = ROUND_DATA[currentRoundId]?.words || [];
       if (words.length <= 1) return 0;
 
-      // If current pool is uninitialized or completely exhausted, rebuild
       if (!roundWordPools[currentRoundId] || roundWordPools[currentRoundId].length === 0) {
         initRoundPool(currentRoundId);
       }
@@ -868,7 +1077,7 @@
       }, 2500);
     }
 
-    function saveAdminWords() {
+    async function saveAdminWords() {
       let updatedRounds = [];
 
       for (let r = 1; r <= 3; r++) {
@@ -879,11 +1088,22 @@
             const parsed = parseWordListInput(rawValue);
             if (parsed && parsed.length > 0) {
               ROUND_DATA[r].words = parsed;
-              initRoundPool(r); // Invalidate and rebuild exhaustion deck
+              initRoundPool(r);
               updatedRounds.push(`Round ${r} (${parsed.length})`);
             }
           }
         }
+      }
+
+      localStorage.setItem('signal_config_v1', JSON.stringify(ROUND_DATA));
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('signal_config').upsert({
+            id: 1,
+            round_data: ROUND_DATA,
+            updated_at: new Date().toISOString()
+          });
+        } catch (e) {}
       }
 
       updateAdminUI();
@@ -895,7 +1115,7 @@
       }
 
       if (updatedRounds.length > 0) {
-        showToast(`Saved: ${updatedRounds.join(", ")}`);
+        showToast(`Saved & Synced: ${updatedRounds.join(", ")}`);
       } else {
         showToast("Word lists remained unchanged");
       }
@@ -904,7 +1124,7 @@
     function restoreDefaultDatasets() {
       ROUND_DATA = JSON.parse(JSON.stringify(DEFAULT_ROUND_DATA));
       for (let r = 1; r <= 3; r++) {
-        initRoundPool(r); // Rebuild default exhaustion decks
+        initRoundPool(r);
         const textarea = document.getElementById(`adminInputRound${r}`);
         if (textarea) {
           textarea.value = formatWordsForTextarea(ROUND_DATA[r].words);
@@ -922,7 +1142,6 @@
       currentRoundId = roundNum;
       currentWordIndex = -1;
 
-      // Initialize fresh deck for this round session
       initRoundPool(roundNum);
 
       roundStats = { correct: 0, pass: 0, incorrect: 0 };
@@ -986,6 +1205,8 @@
 
     /* Keyboard Shortcuts */
     window.addEventListener("keydown", (e) => {
+      const gate = document.getElementById("passwordGate");
+      if (gate && !gate.classList.contains("hidden")) return;
       const adminModal = document.getElementById("adminModal");
       if (adminModal && !adminModal.classList.contains("hidden")) return;
       if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
@@ -1003,6 +1224,12 @@
         e.preventDefault();
         handleCardClick();
       }
+    });
+
+    window.addEventListener("load", () => {
+      loadRemoteSignalWords();
+      subscribeSignalRealtime();
+      initAuth();
     });
 
     document.addEventListener("click", () => {
