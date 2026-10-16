@@ -6,6 +6,7 @@
   <title>D-Rush: A1 Onboarding Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -107,7 +108,6 @@
     }
     .glow-anim { animation: pulseGlow 2s infinite; }
 
-    /* Mobile Landscape Optimization */
     @media (orientation: landscape) and (max-height: 520px) {
       .header-container { padding-top: 0.2rem !important; padding-bottom: 0.2rem !important; }
       .header-subtitle { display: none !important; }
@@ -152,6 +152,10 @@
 
       <!-- Quick Toggles -->
       <div class="flex items-center space-x-1.5 sm:space-x-2">
+        <button onclick="openLeaderboardModal()" class="px-2 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-[10px] font-bold flex items-center space-x-1 text-amber-400 transition-all">
+          <i class="fa-solid fa-trophy"></i>
+          <span class="hidden sm:inline" id="leaderboardBtnText">RANKS</span>
+        </button>
         <button id="langToggleBtn" onclick="toggleLanguage()" class="px-2 py-1 rounded-md bg-deloitte-green/20 hover:bg-deloitte-green/30 border border-deloitte-green/50 text-[10px] font-bold flex items-center space-x-1 text-deloitte-green transition-all">
           <i class="fa-solid fa-language"></i>
           <span id="langBtnText">EN / 中文</span>
@@ -186,6 +190,12 @@
             <span id="hudLabelHigh" class="text-gray-400 text-[7px] uppercase">RECORD</span>
             <span id="hudHighScore" class="text-white font-bold text-xs sm:text-sm">000000</span>
           </div>
+        </div>
+
+        <!-- Dynamic Location & Weather Info Banner -->
+        <div class="hidden sm:flex items-center space-x-2 text-deloitte-lightgray text-[8px] border border-white/10 px-2 py-0.5 rounded bg-white/5">
+          <i id="hudWeatherIcon" class="fa-solid fa-cloud-sun text-cyan-400"></i>
+          <span id="hudLocationText" class="font-sans font-bold">Hong Kong Office</span>
         </div>
 
         <div class="flex items-center space-x-3 sm:space-x-5">
@@ -228,19 +238,31 @@
             D-RUSH<span class="deloitte-dot-pixel"></span>
           </h1>
 
+          <!-- User Name Registration Box -->
+          <div class="w-full max-w-xs space-y-1">
+            <div class="text-[9px] text-gray-300 flex items-center justify-between px-1">
+              <span id="nameInputPrompt">Your Nickname:</span>
+              <span class="text-deloitte-green text-[8px]"><i class="fa-solid fa-cloud-arrow-up"></i> Mystery</span>
+            </div>
+            <input id="playerNameInput" type="text" maxlength="16" placeholder="A1 Analyst" class="w-full px-2.5 py-1.5 rounded-lg bg-black/60 border border-white/20 text-white text-xs font-mono focus:border-deloitte-green focus:outline-none text-center">
+          </div>
+
           <p id="startSubtitle" class="text-[10px] sm:text-xs text-deloitte-lightgray max-w-sm leading-relaxed">
             Begin your onboarding sprint! Connect with your <strong class="text-amber-300">Buddy & Coach</strong>, dodge #REF! errors & scope creep, and rise to Partner!
           </p>
 
           <div class="bg-white/5 border border-white/10 rounded-lg py-1 px-2.5 max-w-xs w-full text-[9px] sm:text-[10px] text-gray-300 flex items-center justify-center gap-2">
-            <i class="fa-solid fa-bolt text-deloitte-green"></i>
-            <span id="startProgressionNote">Snappy initial pace: accelerates as your deliverables scale!</span>
+            <i class="fa-solid fa-mobile-screen-button text-deloitte-green"></i>
+            <span id="startProgressionNote">Mobile tuned: Smooth initial pace scaling into high-gear!</span>
           </div>
 
           <div class="flex items-center justify-center gap-2 pt-0.5">
             <button onclick="startGame()" class="pixel-btn-press pixel-box-green px-5 py-2 rounded-lg bg-deloitte-green text-black font-pixel text-[10px] sm:text-xs font-black hover:bg-emerald-400 cursor-pointer flex items-center space-x-1.5">
               <i class="fa-solid fa-play text-[8px]"></i>
               <span id="startBtn">START SPRINT</span>
+            </button>
+            <button onclick="openLeaderboardModal()" class="pixel-btn-press pixel-box px-3 py-2 rounded-lg bg-amber-500/20 text-amber-300 font-pixel text-[10px] sm:text-xs hover:bg-amber-500/30">
+              <i class="fa-solid fa-trophy text-[9px]"></i>
             </button>
             <button onclick="openHelpModal()" class="pixel-btn-press pixel-box px-3 py-2 rounded-lg bg-white/10 text-white font-pixel text-[10px] sm:text-xs hover:bg-white/20">
               <span id="helpBtn">RULES</span>
@@ -274,6 +296,12 @@
             <span id="finalDistance" class="text-white font-bold text-xs">0m</span>
           </div>
 
+          <!-- Supabase Status Toast -->
+          <div id="supabaseSyncStatus" class="text-[9px] text-deloitte-lightgray flex items-center justify-center space-x-1.5">
+            <i class="fa-solid fa-circle-notch fa-spin text-deloitte-green"></i>
+            <span id="supabaseSyncText">Syncing deliverable to firm leaderboard...</span>
+          </div>
+
           <!-- Practical Work Tip Card -->
           <div class="bg-[#121924] border-l-4 border-deloitte-green rounded-r-lg p-2 text-left w-full max-w-sm space-y-0.5 shadow">
             <div class="flex items-center space-x-1.5 text-deloitte-green text-[9px] font-bold uppercase tracking-wider">
@@ -292,10 +320,14 @@
             <p id="icebreakerPromptText" class="text-[10px] sm:text-[11px] text-amber-100/90 leading-snug"></p>
           </div>
 
-          <div class="pt-0.5">
+          <div class="pt-0.5 flex gap-2">
             <button onclick="restartGame()" class="pixel-btn-press pixel-box-green px-4 py-1.5 sm:py-2 rounded-lg bg-deloitte-green text-black font-pixel text-[9px] sm:text-[10px] font-bold flex items-center space-x-1.5">
               <i class="fa-solid fa-rotate-right"></i>
               <span id="retryBtn">TRY NEXT SPRINT</span>
+            </button>
+            <button onclick="openLeaderboardModal()" class="pixel-btn-press pixel-box px-3 py-1.5 sm:py-2 rounded-lg bg-amber-500/20 text-amber-300 font-pixel text-[9px] sm:text-[10px] font-bold flex items-center space-x-1">
+              <i class="fa-solid fa-trophy"></i>
+              <span>RANKS</span>
             </button>
           </div>
         </div>
@@ -303,23 +335,51 @@
 
       <!-- Touch Controls -->
       <div class="touch-controls-bar w-full flex-shrink-0 mt-1 sm:mt-1.5 flex items-center justify-between gap-2 select-none font-pixel">
-        <button id="btnTouchSlide" class="flex-1 pixel-btn-press pixel-box bg-deloitte-slate/90 border border-white/15 py-2 sm:py-2.5 rounded-xl flex items-center justify-center space-x-1 text-[10px] text-cyan-300">
-          <i class="fa-solid fa-arrow-down text-[8px]"></i>
+        <button id="btnTouchSlide" class="flex-1 pixel-btn-press pixel-box bg-deloitte-slate/90 border border-white/15 py-2.5 sm:py-3 rounded-xl flex items-center justify-center space-x-1 text-[11px] text-cyan-300">
+          <i class="fa-solid fa-arrow-down text-[9px]"></i>
           <span id="slideTouchLabel">SLIDE [▼]</span>
         </button>
 
-        <button onclick="togglePause()" class="w-10 sm:w-12 pixel-btn-press pixel-box bg-white/5 border border-white/15 py-2 sm:py-2.5 rounded-xl flex items-center justify-center text-xs text-gray-300">
+        <button onclick="togglePause()" class="w-12 sm:w-14 pixel-btn-press pixel-box bg-white/5 border border-white/15 py-2.5 sm:py-3 rounded-xl flex items-center justify-center text-xs text-gray-300">
           <i id="pauseBtnIcon" class="fa-solid fa-pause"></i>
         </button>
 
-        <button id="btnTouchJump" class="flex-1 pixel-btn-press pixel-box-green bg-deloitte-green/90 border border-deloitte-green py-2 sm:py-2.5 rounded-xl flex items-center justify-center space-x-1 text-[10px] text-black font-black">
-          <i class="fa-solid fa-arrow-up text-[8px]"></i>
+        <button id="btnTouchJump" class="flex-1 pixel-btn-press pixel-box-green bg-deloitte-green/90 border border-deloitte-green py-2.5 sm:py-3 rounded-xl flex items-center justify-center space-x-1 text-[11px] text-black font-black">
+          <i class="fa-solid fa-arrow-up text-[9px]"></i>
           <span id="jumpTouchLabel">JUMP [▲]</span>
         </button>
       </div>
 
     </div>
   </main>
+
+  <!-- Leaderboard Modal (Supabase Driven) -->
+  <div id="leaderboardModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3">
+    <div class="bg-deloitte-cardbg border border-amber-500/30 rounded-2xl p-4 max-w-md w-full shadow-2xl space-y-3 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-white/10 pb-2">
+        <h3 class="text-xs sm:text-sm font-bold text-amber-400 flex items-center gap-2 font-pixel">
+          <i class="fa-solid fa-trophy"></i> <span id="lbModalHeader">GLOBAL HIGH ACHIEVERS</span>
+        </h3>
+        <button onclick="closeLeaderboardModal()" class="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-[220px]" id="leaderboardRowsContainer">
+        <div class="text-center py-8 text-gray-400 text-xs flex flex-col items-center gap-2">
+          <i class="fa-solid fa-circle-notch fa-spin text-deloitte-green text-lg"></i>
+          <span>Retrieving rankings ...</span>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[9px] text-gray-400">
+        <span id="lbFooterNote">Records refreshed automatically</span>
+        <button onclick="fetchLeaderboard()" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-white font-mono text-[9px]">
+          <i class="fa-solid fa-arrows-rotate"></i> Refresh
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Help & Rules Modal -->
   <div id="helpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3">
@@ -373,6 +433,151 @@
 
   <script>
     /* ==========================================================
+       SUPABASE CONFIGURATION & LEADERBOARD SYSTEM
+       ========================================================== */
+    const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
+
+    let supabase = null;
+    if (window.supabase && SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY") {
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } catch (err) {
+        console.warn("Supabase initialization error:", err);
+      }
+    }
+
+    let currentPlayerName = localStorage.getItem('drush_player_name') || "A1 Analyst";
+    const nameInputEl = document.getElementById("playerNameInput");
+    if (nameInputEl) {
+      nameInputEl.value = currentPlayerName;
+      nameInputEl.addEventListener("change", (e) => {
+        currentPlayerName = e.target.value.trim() || "A1 Analyst";
+        localStorage.setItem('drush_player_name', currentPlayerName);
+      });
+    }
+
+    async function recordScoreToSupabase(finalScoreVal, finalDistVal, finalRankTitle) {
+      const statusEl = document.getElementById("supabaseSyncStatus");
+      const statusText = document.getElementById("supabaseSyncText");
+      if (statusEl) statusEl.classList.remove("hidden");
+
+      if (!supabase) {
+        if (statusText) statusText.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-hard-drive"></i> Saved locally (Supabase keys not configured)</span>`;
+        saveLocalLeaderboard(currentPlayerName, finalScoreVal, finalDistVal, finalRankTitle);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('leaderboard')
+          .insert([
+            {
+              player_name: currentPlayerName,
+              score: Math.floor(finalScoreVal),
+              distance: Math.floor(finalDistVal),
+              career_rank: finalRankTitle
+            }
+          ]);
+
+        if (error) throw error;
+        if (statusText) statusText.innerHTML = `<span class="text-deloitte-green"><i class="fa-solid fa-check"></i> Score successfully synced to Firm Leaderboard!</span>`;
+      } catch (e) {
+        console.error("Supabase record error:", e);
+        if (statusText) statusText.innerHTML = `<span class="text-gray-400"><i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Sync failed. Saved locally.</span>`;
+        saveLocalLeaderboard(currentPlayerName, finalScoreVal, finalDistVal, finalRankTitle);
+      }
+    }
+
+    function saveLocalLeaderboard(name, s, d, r) {
+      try {
+        const list = JSON.parse(localStorage.getItem('drush_local_lb') || '[]');
+        list.push({ player_name: name, score: Math.floor(s), distance: Math.floor(d), career_rank: r, created_at: new Date().toISOString() });
+        list.sort((a, b) => b.score - a.score);
+        localStorage.setItem('drush_local_lb', JSON.stringify(list.slice(0, 15)));
+      } catch (e) {}
+    }
+
+    async function fetchLeaderboard() {
+      const container = document.getElementById("leaderboardRowsContainer");
+      if (!container) return;
+      container.innerHTML = `
+        <div class="text-center py-8 text-gray-400 text-xs flex flex-col items-center gap-2">
+          <i class="fa-solid fa-circle-notch fa-spin text-deloitte-green text-lg"></i>
+          <span>Retrieving rankings...</span>
+        </div>`;
+
+      let records = [];
+
+      if (supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('leaderboard')
+            .select('*')
+            .order('score', { ascending: false })
+            .limit(10);
+          if (error) throw error;
+          records = data || [];
+        } catch (e) {
+          console.warn("Falling back to local leaderboard:", e);
+          records = JSON.parse(localStorage.getItem('drush_local_lb') || '[]');
+        }
+      } else {
+        records = JSON.parse(localStorage.getItem('drush_local_lb') || '[]');
+        if (records.length === 0) {
+          records = [
+            { player_name: "Senior Partner Alex", score: 9240, distance: 1120, career_rank: "PARTNER TRACK" },
+            { player_name: "Manager Sarah", score: 6850, distance: 840, career_rank: "MANAGER" },
+            { player_name: "Consultant Leo", score: 4120, distance: 510, career_rank: "A2 CONSULTANT" },
+            { player_name: "A1 Champion", score: 2600, distance: 310, career_rank: "A1 ANALYST" }
+          ];
+        }
+      }
+
+      if (!records || records.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">No project submissions yet. Be the first!</div>`;
+        return;
+      }
+
+      container.innerHTML = records.map((item, idx) => {
+        let badge = `<span class="w-5 text-center font-mono font-bold text-gray-400 text-xs">${idx + 1}</span>`;
+        if (idx === 0) badge = `<span class="w-5 text-center text-amber-400 text-sm"><i class="fa-solid fa-crown"></i></span>`;
+        else if (idx === 1) badge = `<span class="w-5 text-center text-slate-300 text-sm"><i class="fa-solid fa-medal"></i></span>`;
+        else if (idx === 2) badge = `<span class="w-5 text-center text-amber-700 text-sm"><i class="fa-solid fa-medal"></i></span>`;
+
+        return `
+          <div class="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/5 hover:border-deloitte-green/40 transition-colors">
+            <div class="flex items-center space-x-2.5 overflow-hidden">
+              ${badge}
+              <div class="flex flex-col truncate">
+                <span class="text-xs font-bold text-white truncate">${escapeHtml(item.player_name || 'Consultant')}</span>
+                <span class="text-[8px] text-cyan-300">${escapeHtml(item.career_rank || 'A1 Analyst')} • ${item.distance || 0}m</span>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0 font-pixel">
+              <span class="text-xs text-deloitte-green font-bold">${item.score.toLocaleString()}</span>
+              <span class="text-[7px] text-gray-400 block">PTS</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    function openLeaderboardModal() {
+      if (gameState === 'PLAYING') togglePause();
+      document.getElementById("leaderboardModal").classList.remove("hidden");
+      fetchLeaderboard();
+    }
+
+    function closeLeaderboardModal() {
+      document.getElementById("leaderboardModal").classList.add("hidden");
+    }
+
+    /* ==========================================================
        I18N BILINGUAL SYSTEM (EN <-> ZH)
        ========================================================== */
     let currentLang = 'en';
@@ -386,7 +591,7 @@
         hudSprint: "SPRINT",
         startBadge: "DELOITTE ONBOARDING ARCADE",
         startSubtitle: "Begin your onboarding sprint! Connect with your Coach & Buddy, dodge #REF! errors and scope creep, and rise from New Hire to Partner!",
-        startProgressionNote: "Snappy initial pace: accelerates as your deliverables scale!",
+        startProgressionNote: "Mobile tuned: Smooth initial pace scaling into high-gear!",
         startBtn: "START SPRINT",
         helpBtn: "RULES",
         pauseTitle: "PAUSED",
@@ -412,14 +617,14 @@
         ranks: ["DAY 1 NEW HIRE", "A1 ANALYST", "A2 CONSULTANT", "SENIOR CONSULTANT", "MANAGER", "PARTNER TRACK"]
       },
       zh: {
-        subtitle: "德勤校招新人专属跑酷",
+        subtitle: "校招新人专属跑酷",
         hudScore: "积分",
         hudRecord: "最佳纪录",
         hudRank: "职场进阶",
         hudSprint: "冲刺距离",
         startBadge: "德勤新人破冰街机",
         startSubtitle: "开启你的新人进阶之旅！与你的 Buddy 和 Coach 快速对齐，躲避 #REF! 错误与需求蔓延，一路晋升至合伙人！",
-        startProgressionNote: "开局节奏紧凑爽快：随着交付推进渐进提速！",
+        startProgressionNote: "手机端优化：开局平稳友好，后期加速富有挑战！",
         startBtn: "开始冲刺",
         helpBtn: "玩法规则",
         pauseTitle: "暂停对齐",
@@ -442,7 +647,7 @@
         helpHazardsText: "• #REF! 表格报错与需求蔓延：起跳跃过！\n• 周五傍晚紧急RFP与邮件风暴：向下滑铲避让！",
         helpControls: "操作按键：",
         helpClose: "准备好交付了！",
-        ranks: ["入职第1天", "A1 初级分析师", "A2 顾问", "高级顾问 (SC)", "项目经理 (Manager)", "合伙人赛道 (Partner)"]
+        ranks: ["入职第1天", "A1 初级分析师", "A2 顾问", "高级顾问 (SC)", "项目经理 (Manager)", "合伙人 (Partner)"]
       }
     };
 
@@ -624,13 +829,149 @@
     let coffeeTimer = 0;
     let frameCount = 0;
 
-    const BASE_SPEED = 4.4;
+    // Mobile-friendly initial curve
+    const BASE_SPEED = 3.3; // Starts relaxed for mobile touch reaction
     let gameSpeed = BASE_SPEED;
-    const SPEED_RAMP_FACTOR = 0.0028;
-    const MAX_SPEED = 8.8;
+    const SPEED_RAMP_FACTOR = 0.0024;
+    const MAX_SPEED = 8.2;
 
     const hudHighEl = document.getElementById("hudHighScore");
     if (hudHighEl) hudHighEl.textContent = highScore.toString().padStart(6, '0');
+
+    /* ==========================================================
+       RANDOMIZATION SYSTEMS (Location, Weather, Character)
+       ========================================================== */
+    const LOCATIONS = [
+      {
+        name: "Hong Kong Two IFC",
+        skyGradient: ["#030712", "#002776", "#004F59"],
+        buildingColor: "#0a131e",
+        windowColors: ["#86BC25", "#38BDF8", "#F59E0B"],
+        groundColor: "#111720",
+        accentColor: "#86BC25"
+      },
+      {
+        name: "London 1 New Street Square",
+        skyGradient: ["#050811", "#151e2e", "#2c3b52"],
+        buildingColor: "#121721",
+        windowColors: ["#F59E0B", "#FCD34D", "#94A3B8"],
+        groundColor: "#1a1f29",
+        accentColor: "#568819"
+      },
+      {
+        name: "Singapore Marina Bay Hub",
+        skyGradient: ["#08020f", "#2b0938", "#004F59"],
+        buildingColor: "#140e21",
+        windowColors: ["#38BDF8", "#E879F9", "#86BC25"],
+        groundColor: "#151021",
+        accentColor: "#38BDF8"
+      },
+      {
+        name: "New York 30 Rock Skyline",
+        skyGradient: ["#020617", "#0f172a", "#1e293b"],
+        buildingColor: "#090d16",
+        windowColors: ["#FBBF24", "#F59E0B", "#E2E8F0"],
+        groundColor: "#0d111a",
+        accentColor: "#F59E0B"
+      }
+    ];
+
+    const WEATHERS = [
+      { type: 'CLEAR', icon: 'fa-moon', name: 'Clear Evening' },
+      { type: 'RAIN', icon: 'fa-cloud-rain', name: 'Corporate Rain' },
+      { type: 'SPARKLE', icon: 'fa-wand-magic-sparkles', name: 'Neon Matrix' },
+      { type: 'SUNSET', icon: 'fa-sun', name: 'Golden Hour' }
+    ];
+
+    const CHARACTER_CONFIGS = {
+      skins: ['#f3c299', '#fcd5b5', '#d49a6a', '#8d5524', '#ffdbac'],
+      hairs: ['#2d1d14', '#111827', '#b45309', '#f59e0b', '#7c2d12'],
+      suits: ['#002776', '#1E232A', '#004F59', '#374151', '#1e1b4b'],
+      ties: ['#86BC25', '#38BDF8', '#F59E0B', '#EF4444', '#10B981'],
+      accessories: ['BACKPACK', 'BRIEFCASE', 'LANYARD']
+    };
+
+    let activeLocation = LOCATIONS[0];
+    let activeWeather = WEATHERS[0];
+    let activeCharacter = {
+      skin: CHARACTER_CONFIGS.skins[0],
+      hair: CHARACTER_CONFIGS.hairs[0],
+      suit: CHARACTER_CONFIGS.suits[0],
+      tie: CHARACTER_CONFIGS.ties[0],
+      accessory: CHARACTER_CONFIGS.accessories[0]
+    };
+
+    const weatherParticles = [];
+
+    function randomizeGameSession() {
+      activeLocation = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
+      activeWeather = WEATHERS[Math.floor(Math.random() * WEATHERS.length)];
+      activeCharacter = {
+        skin: CHARACTER_CONFIGS.skins[Math.floor(Math.random() * CHARACTER_CONFIGS.skins.length)],
+        hair: CHARACTER_CONFIGS.hairs[Math.floor(Math.random() * CHARACTER_CONFIGS.hairs.length)],
+        suit: CHARACTER_CONFIGS.suits[Math.floor(Math.random() * CHARACTER_CONFIGS.suits.length)],
+        tie: CHARACTER_CONFIGS.ties[Math.floor(Math.random() * CHARACTER_CONFIGS.ties.length)],
+        accessory: CHARACTER_CONFIGS.accessories[Math.floor(Math.random() * CHARACTER_CONFIGS.accessories.length)]
+      };
+
+      const locEl = document.getElementById("hudLocationText");
+      const wIconEl = document.getElementById("hudWeatherIcon");
+      if (locEl) locEl.textContent = `${activeLocation.name} (${activeWeather.name})`;
+      if (wIconEl) wIconEl.className = `fa-solid ${activeWeather.icon} text-cyan-400`;
+
+      weatherParticles.length = 0;
+      if (activeWeather.type === 'RAIN') {
+        for (let i = 0; i < 40; i++) {
+          weatherParticles.push({
+            x: Math.random() * V_WIDTH,
+            y: Math.random() * FLOOR_Y,
+            speedY: 5 + Math.random() * 4,
+            speedX: -2,
+            length: 6 + Math.random() * 4
+          });
+        }
+      } else if (activeWeather.type === 'SPARKLE') {
+        for (let i = 0; i < 25; i++) {
+          weatherParticles.push({
+            x: Math.random() * V_WIDTH,
+            y: Math.random() * FLOOR_Y,
+            speedY: -0.3 - Math.random() * 0.5,
+            speedX: -0.5 + Math.random() * 1,
+            size: 1 + Math.random() * 2
+          });
+        }
+      }
+    }
+
+    function updateAndDrawWeather() {
+      if (activeWeather.type === 'RAIN') {
+        ctx.strokeStyle = "rgba(147, 197, 253, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let p of weatherParticles) {
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x + p.speedX, p.y + p.length);
+          p.x += p.speedX;
+          p.y += p.speedY;
+          if (p.y > FLOOR_Y) {
+            p.y = 0;
+            p.x = Math.random() * V_WIDTH;
+          }
+        }
+        ctx.stroke();
+      } else if (activeWeather.type === 'SPARKLE') {
+        ctx.fillStyle = "rgba(134, 188, 37, 0.7)";
+        for (let p of weatherParticles) {
+          ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+          p.x += p.speedX;
+          p.y += p.speedY;
+          if (p.y < 0) {
+            p.y = FLOOR_Y;
+            p.x = Math.random() * V_WIDTH;
+          }
+        }
+      }
+    }
 
     /* ==========================================================
        EASTER EGGS SYSTEM
@@ -704,7 +1045,7 @@
     }
 
     /* ==========================================================
-       PLAYER CHARACTER
+       PLAYER CHARACTER (Procedurally Styled)
        ========================================================== */
     const player = {
       x: 52,
@@ -783,44 +1124,66 @@
           ctx.shadowBlur = 10;
         }
 
+        const skin = activeCharacter.skin;
+        const hair = activeCharacter.hair;
+        const suit = activeCharacter.suit;
+        const tie = activeCharacter.tie;
+
         if (this.isSliding) {
-          ctx.fillStyle = "#1E232A";
+          ctx.fillStyle = suit;
           ctx.fillRect(px, py + 6, 26, 8);
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(px + 4, py + 5, 5, 4);
-          ctx.fillStyle = "#86BC25";
+          ctx.fillStyle = tie;
           ctx.fillRect(px + 7, py + 7, 6, 3);
-          ctx.fillStyle = "#f3c299";
+          ctx.fillStyle = skin;
           ctx.fillRect(px + 18, py + 2, 8, 7);
-          ctx.fillStyle = "#2d1d14";
+          ctx.fillStyle = hair;
           ctx.fillRect(px + 20, py, 7, 4);
-          ctx.fillStyle = "#8b4513";
+          ctx.fillStyle = "#1e293b";
           ctx.fillRect(px + 10, py + 11, 8, 6);
         } else {
           const legPhase = Math.floor(this.runFrame) % 4;
 
-          ctx.fillStyle = "#2d1d14";
+          // Hair
+          ctx.fillStyle = hair;
           ctx.fillRect(px + 4, py, 11, 5);
-          ctx.fillStyle = "#f3c299";
+          // Face & Skin
+          ctx.fillStyle = skin;
           ctx.fillRect(px + 5, py + 4, 10, 8);
+          // Eyes
           ctx.fillStyle = "#0a0e14";
           ctx.fillRect(px + 12, py + 6, 2, 2);
-          ctx.fillStyle = "#86BC25";
+          // Glasses or accent
+          ctx.fillStyle = tie;
           ctx.fillRect(px + 10, py + 5, 5, 2);
 
-          ctx.fillStyle = "#002776";
+          // Suit Jacket
+          ctx.fillStyle = suit;
           ctx.fillRect(px + 3, py + 12, 13, 11);
+          // Shirt
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(px + 7, py + 12, 5, 7);
-          ctx.fillStyle = "#86BC25";
+          // Tie
+          ctx.fillStyle = tie;
           ctx.fillRect(px + 8, py + 13, 3, 7);
 
-          ctx.fillStyle = "#374151";
-          const bagY = this.isGrounded ? (py + 14 + (legPhase % 2)) : (py + 10);
-          ctx.fillRect(px - 3, bagY, 7, 8);
-          ctx.fillStyle = "#86BC25";
-          ctx.fillRect(px, bagY + 2, 2, 2);
+          // Accessory (Backpack or Briefcase)
+          if (activeCharacter.accessory === 'BACKPACK') {
+            ctx.fillStyle = "#374151";
+            const bagY = this.isGrounded ? (py + 14 + (legPhase % 2)) : (py + 10);
+            ctx.fillRect(px - 3, bagY, 7, 8);
+            ctx.fillStyle = "#86BC25";
+            ctx.fillRect(px, bagY + 2, 2, 2);
+          } else if (activeCharacter.accessory === 'BRIEFCASE') {
+            ctx.fillStyle = "#78350f";
+            const caseY = this.isGrounded ? (py + 18 + (legPhase % 2)) : (py + 15);
+            ctx.fillRect(px + 12, caseY, 8, 6);
+            ctx.fillStyle = "#F59E0B";
+            ctx.fillRect(px + 15, caseY + 1, 2, 1);
+          }
 
+          // Pants & Shoes
           ctx.fillStyle = "#0c1015";
           if (!this.isGrounded) {
             ctx.fillRect(px + 2, py + 23, 5, 7);
@@ -846,15 +1209,15 @@
     };
 
     /* ==========================================================
-       OBSTACLES, COLLECTIBLES & PARTICLES
+       OBSTACLES, COLLECTIBLES & PROGRESSION ENGINE
        ========================================================== */
     const obstacles = [];
     const collectibles = [];
     const npcs = [];
     const particles = [];
-    let nextObstacleDistance = 45;
-    let nextCollectibleDistance = 22;
-    let nextNpcDistance = 65;
+    let nextObstacleDistance = 65; // Relaxed initial gap for mobile
+    let nextCollectibleDistance = 25;
+    let nextNpcDistance = 75;
 
     class Obstacle {
       constructor(type, x) {
@@ -873,7 +1236,6 @@
         } else if (this.type === 'EMAIL_STORM') {
           this.width = 26;
           this.height = 16;
-          // Calibrated so running hits it, jumping hits it, sliding passes safely
           this.y = FLOOR_Y - 36;
         }
       }
@@ -1024,49 +1386,56 @@
     }
 
     /* ==========================================================
-       PARALLAX BACKGROUND
+       PARALLAX BACKGROUND WITH LOCATION THEMING
        ========================================================== */
     function drawPixelBackground() {
       const grad = ctx.createLinearGradient(0, 0, 0, FLOOR_Y);
-      grad.addColorStop(0, "#030712");
-      grad.addColorStop(0.6, "#001e2b");
-      grad.addColorStop(1, "#004F59");
+      grad.addColorStop(0, activeLocation.skyGradient[0]);
+      grad.addColorStop(0.5, activeLocation.skyGradient[1]);
+      grad.addColorStop(1, activeLocation.skyGradient[2]);
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, V_WIDTH, FLOOR_Y);
 
-      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+      // Stars / Atmospheric Glow
+      ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
       for (let s = 0; s < 14; s++) {
         const sx = ((s * 41) - (frameCount * 0.15)) % V_WIDTH;
         ctx.fillRect(sx < 0 ? sx + V_WIDTH : sx, (s * 13) % 110, 1, 1);
       }
 
+      // Parallax Buildings
       const fgOffset = (distance * 0.6) % 64;
       for (let i = -1; i < 9; i++) {
         const fx = i * 64 - fgOffset;
-        const bHeight = 55 + ((i * 17) % 50);
-        ctx.fillStyle = "#0c1824";
+        const bHeight = 55 + ((i * 19) % 55);
+        ctx.fillStyle = activeLocation.buildingColor;
         ctx.fillRect(fx, FLOOR_Y - bHeight, 56, bHeight);
 
-        ctx.fillStyle = "#86BC25";
+        // Windows with dynamic colors
         for (let w = 0; w < 3; w++) {
           for (let row = 0; row < 3; row++) {
             if ((i + w + row) % 2 === 0) {
+              const winColor = activeLocation.windowColors[(i + w) % activeLocation.windowColors.length];
+              ctx.fillStyle = winColor;
               ctx.fillRect(fx + 6 + (w * 15), FLOOR_Y - bHeight + 8 + (row * 12), 5, 4);
             }
           }
         }
       }
 
-      ctx.fillStyle = "#111720";
+      // Floor & Running Track
+      ctx.fillStyle = activeLocation.groundColor;
       ctx.fillRect(0, FLOOR_Y, V_WIDTH, V_HEIGHT - FLOOR_Y);
-      ctx.fillStyle = "#86BC25";
+      ctx.fillStyle = activeLocation.accentColor;
       ctx.fillRect(0, FLOOR_Y, V_WIDTH, 3);
-      ctx.fillStyle = "#568819";
+      ctx.fillStyle = "#1e293b";
       ctx.fillRect(0, FLOOR_Y + 3, V_WIDTH, 2);
+
+      updateAndDrawWeather();
     }
 
     /* ==========================================================
-       GAME ENGINE & PROGRESSION
+       PROGRESSIVE DIFFICULTY SPAWNER
        ========================================================== */
     function checkCollision(r1, r2) {
       const pad = 4;
@@ -1084,20 +1453,28 @@
       nextNpcDistance -= gameSpeed * 0.16;
 
       if (nextObstacleDistance <= 0) {
-        const types = ['REF_ERROR', 'SCOPE_CREEP', 'EMAIL_STORM'];
-        obstacles.push(new Obstacle(types[Math.floor(Math.random() * types.length)], V_WIDTH + 20));
-        nextObstacleDistance = Math.max(34, 52 - (gameSpeed * 2.2) + Math.random() * 20);
+        let pool = ['REF_ERROR'];
+        // Gradual hazard progression
+        if (distance > 40) pool.push('SCOPE_CREEP');
+        if (distance > 90) pool.push('EMAIL_STORM'); // Unlocks slide challenge smoothly
+
+        const chosen = pool[Math.floor(Math.random() * pool.length)];
+        obstacles.push(new Obstacle(chosen, V_WIDTH + 20));
+
+        // Spacing curve ensures high mobile playability at the start
+        const baseSpacing = Math.max(40, 68 - (gameSpeed * 2.5));
+        nextObstacleDistance = baseSpacing + Math.random() * 22;
       }
 
       if (nextCollectibleDistance <= 0) {
-        const isCoffee = Math.random() > 0.82;
+        const isCoffee = Math.random() > 0.84;
         collectibles.push(new Collectible(isCoffee ? 'COFFEE' : 'DOT', V_WIDTH + 15, isCoffee ? FLOOR_Y - 30 : FLOOR_Y - 26));
-        nextCollectibleDistance = 22 + Math.random() * 28;
+        nextCollectibleDistance = 24 + Math.random() * 28;
       }
 
       if (nextNpcDistance <= 0) {
         npcs.push(new NPC(V_WIDTH + 20));
-        nextNpcDistance = 95 + Math.random() * 70;
+        nextNpcDistance = 100 + Math.random() * 70;
       }
     }
 
@@ -1105,7 +1482,7 @@
       if (gameState !== 'PLAYING') return;
 
       frameCount++;
-      distance += 0.22;
+      distance += 0.20;
       gameSpeed = Math.min(MAX_SPEED, BASE_SPEED + (distance * SPEED_RAMP_FACTOR));
 
       if (coffeeTimer > 0) {
@@ -1210,16 +1587,19 @@
       updateRankDisplay();
     }
 
-    function updateRankDisplay() {
+    function getCurrentRank() {
       const ranks = I18N[currentLang].ranks;
-      let rank = ranks[0];
-      if (distance > 1000) rank = ranks[5];
-      else if (distance > 700) rank = ranks[4];
-      else if (distance > 450) rank = ranks[3];
-      else if (distance > 240) rank = ranks[2];
-      else if (distance > 90) rank = ranks[1];
+      if (distance > 1000) return ranks[5];
+      if (distance > 700) return ranks[4];
+      if (distance > 450) return ranks[3];
+      if (distance > 240) return ranks[2];
+      if (distance > 90) return ranks[1];
+      return ranks[0];
+    }
+
+    function updateRankDisplay() {
       const rankEl = document.getElementById("hudRank");
-      if (rankEl) rankEl.textContent = rank;
+      if (rankEl) rankEl.textContent = getCurrentRank();
     }
 
     function showToast(text, icon = "fa-sparkles") {
@@ -1245,10 +1625,12 @@
     }
 
     /* ==========================================================
-       GAME FLOW & WORK TIPS
+       GAME FLOW & LIFECYCLE
        ========================================================== */
     function startGame() {
       initAudio();
+      randomizeGameSession();
+
       document.getElementById("startOverlay").classList.add("hidden");
       document.getElementById("gameOverOverlay").classList.add("hidden");
       document.getElementById("pauseOverlay").classList.add("hidden");
@@ -1264,6 +1646,7 @@
       dotsCollected = 0;
       coffeeTimer = 0;
       gameSpeed = BASE_SPEED;
+      nextObstacleDistance = 65;
       obstacles.length = 0;
       collectibles.length = 0;
       npcs.length = 0;
@@ -1325,6 +1708,9 @@
       const iceEl = document.getElementById("icebreakerPromptText");
       if (tipEl) tipEl.textContent = tip[currentLang];
       if (iceEl) iceEl.textContent = icebreaker[currentLang];
+
+      // Record to Supabase Cloud
+      recordScoreToSupabase(score, distance, getCurrentRank());
 
       document.getElementById("gameOverOverlay").classList.remove("hidden");
     }
@@ -1400,12 +1786,13 @@
       if (gameState !== 'PLAYING') return;
       const rect = canvas.getBoundingClientRect();
       const relY = e.touches[0].clientY - rect.top;
-      if (relY > rect.height * 0.6) player.slide();
+      if (relY > rect.height * 0.58) player.slide();
       else player.jump();
     }, { passive: false });
 
     window.onload = function () {
       applyLanguage();
+      randomizeGameSession();
       requestAnimationFrame(gameLoop);
     };
   </script>
