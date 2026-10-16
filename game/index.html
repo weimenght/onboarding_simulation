@@ -48,13 +48,16 @@
       overscroll-behavior: none;
       -webkit-tap-highlight-color: transparent;
     }
+    input {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
     html, body {
       height: 100%;
       height: 100dvh;
       margin: 0;
       padding: 0;
       overflow: hidden;
-      touch-action: none;
       background-color: #070a0f;
     }
     body {
@@ -115,11 +118,11 @@
 
 <body class="text-white font-sans flex flex-col justify-between selection:bg-deloitte-green selection:text-black">
 
-  <!-- Mobile Portrait Optimized Top Navigation Bar -->
+  <!-- Mobile Top Bar -->
   <header class="w-full flex-shrink-0 border-b border-white/10 bg-deloitte-midnight/95 backdrop-blur-md z-40 py-2 px-3">
     <div class="w-full max-w-lg mx-auto flex items-center justify-between">
       
-      <!-- Logo Branding & Easter Egg -->
+      <!-- Brand & Easter Egg -->
       <div class="flex items-center space-x-2 cursor-pointer active:scale-95 transition-transform" onclick="triggerEasterEggLogo()" title="Triple-tap for secret bonus!">
         <div id="headerLogoBox" class="w-7 h-7 rounded-lg bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-pixel text-xs font-black shadow-md shadow-deloitte-green/20">
           D.
@@ -133,25 +136,21 @@
         </div>
       </div>
 
-      <!-- Icon-Based Action Dock for Mobile -->
+      <!-- Action Dock -->
       <div class="flex items-center space-x-1.5">
-        <!-- Leaderboard -->
         <button onclick="openLeaderboardModal()" class="w-8 h-8 rounded-lg bg-amber-500/15 active:bg-amber-500/30 border border-amber-500/40 text-amber-400 flex items-center justify-center text-xs">
           <i class="fa-solid fa-trophy"></i>
         </button>
 
-        <!-- Language Toggle -->
         <button id="langToggleBtn" onclick="toggleLanguage()" class="h-8 px-2 rounded-lg bg-deloitte-green/15 active:bg-deloitte-green/30 border border-deloitte-green/40 text-deloitte-green font-bold text-[9px] flex items-center space-x-1">
           <i class="fa-solid fa-language text-xs"></i>
           <span id="langBtnText">EN</span>
         </button>
 
-        <!-- SFX Toggle -->
         <button id="sfxToggleBtn" onclick="toggleAudio()" class="w-8 h-8 rounded-lg bg-white/5 active:bg-white/15 border border-white/10 text-gray-300 flex items-center justify-center text-xs">
           <i id="sfxIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
         </button>
 
-        <!-- Rules/Help Modal -->
         <button onclick="openHelpModal()" class="w-8 h-8 rounded-lg bg-white/5 active:bg-white/15 border border-white/10 text-deloitte-lightgray flex items-center justify-center text-xs">
           <i class="fa-solid fa-circle-question"></i>
         </button>
@@ -160,16 +159,14 @@
     </div>
   </header>
 
-  <!-- Arcade Main Viewport (Mobile Portrait Layout) -->
+  <!-- Arcade Main Viewport -->
   <main class="flex-1 min-h-0 w-full max-w-lg mx-auto flex flex-col justify-between p-2 relative overflow-hidden">
     
     <div class="flex-1 min-h-0 w-full bg-[#0e1219] border border-white/10 rounded-2xl p-2 shadow-2xl flex flex-col justify-between items-center relative overflow-hidden">
       
-      <!-- Mobile Portrait 2-Tier HUD -->
+      <!-- 2-Tier Mobile HUD -->
       <div class="w-full flex-shrink-0 bg-[#090c12]/90 border border-white/10 rounded-xl p-2 mb-2 font-pixel">
-        <!-- Upper HUD Row: Metrics -->
         <div class="grid grid-cols-2 gap-2 text-left">
-          <!-- Left Column: Scores -->
           <div class="flex flex-col space-y-0.5">
             <div class="flex items-center justify-between pr-2 border-r border-white/10">
               <span id="hudLabelScore" class="text-[7px] text-gray-400">SCORE</span>
@@ -181,7 +178,6 @@
             </div>
           </div>
 
-          <!-- Right Column: Career & Distance -->
           <div class="flex flex-col space-y-0.5 pl-1">
             <div class="flex items-center justify-between cursor-pointer" onclick="handleRankBadgeTap()">
               <span id="hudLabelRank" class="text-[7px] text-gray-400">RANK</span>
@@ -194,7 +190,6 @@
           </div>
         </div>
 
-        <!-- Lower HUD Row: Location & Weather Pill -->
         <div class="mt-1.5 pt-1 border-t border-white/10 flex items-center justify-between text-[8px] font-sans text-gray-300">
           <div class="flex items-center space-x-1.5 truncate">
             <i id="hudWeatherIcon" class="fa-solid fa-cloud-sun text-cyan-400"></i>
@@ -202,30 +197,30 @@
           </div>
           <div class="flex items-center space-x-1">
             <span class="w-1.5 h-1.5 rounded-full bg-deloitte-green animate-ping"></span>
-            <span class="text-[7.5px] text-gray-400 uppercase tracking-wider font-pixel">LIVE</span>
+            <span class="text-[7.5px] text-gray-400 uppercase tracking-wider font-pixel">READY</span>
           </div>
         </div>
       </div>
 
-      <!-- Canvas Area Container -->
+      <!-- Canvas Box Container -->
       <div class="w-full flex-1 min-h-0 relative aspect-[16/9] rounded-xl overflow-hidden border border-white/15 bg-black flex items-center justify-center shadow-inner">
         <canvas id="gameCanvas" width="480" height="270" class="w-full h-full object-contain block"></canvas>
         <div id="crtOverlay" class="crt-scanlines pointer-events-none absolute inset-0 z-10 opacity-40"></div>
 
-        <!-- Floating Live Toasts -->
-        <div id="inGameToast" class="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-25 hidden px-3 py-1 rounded-full bg-black/90 border border-deloitte-green/70 text-[8.5px] font-bold text-deloitte-green shadow-lg flex items-center space-x-2 animate-bounce">
+        <!-- In-game Notification Toast -->
+        <div id="inGameToast" style="display: none;" class="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-25 px-3 py-1 rounded-full bg-black/90 border border-deloitte-green/70 text-[8.5px] font-bold text-deloitte-green shadow-lg items-center space-x-2 animate-bounce">
           <i id="inGameToastIcon" class="fa-solid fa-sparkles text-amber-300"></i>
           <span id="inGameToastText">COFFEE CHAT ALIGNED!</span>
         </div>
 
-        <!-- Invincibility Status Bar -->
-        <div id="powerupStatusBar" class="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 z-20 hidden items-center gap-1.5 text-[8px] font-pixel text-deloitte-green bg-black/90 border border-deloitte-green/50 py-0.5 px-2.5 rounded-full animate-pulse">
+        <!-- Powerup Status Pill -->
+        <div id="powerupStatusBar" style="display: none;" class="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 z-20 items-center gap-1.5 text-[8px] font-pixel text-deloitte-green bg-black/90 border border-deloitte-green/50 py-0.5 px-2.5 rounded-full animate-pulse">
           <i id="powerupIcon" class="fa-solid fa-mug-hot text-amber-400"></i>
           <span id="powerupText">BUDDY BOOST: 4s</span>
         </div>
 
-        <!-- START SCREEN MODAL OVERLAY -->
-        <div id="startOverlay" class="absolute inset-0 z-20 bg-deloitte-midnight/95 backdrop-blur-md flex flex-col items-center justify-center p-3 text-center space-y-2 overflow-y-auto">
+        <!-- START SCREEN OVERLAY (Explicitly visible on load) -->
+        <div id="startOverlay" style="display: flex;" class="absolute inset-0 z-20 bg-deloitte-midnight/95 backdrop-blur-md flex-col items-center justify-center p-3 text-center space-y-2 overflow-y-auto">
           <div class="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green text-[8px] font-bold">
             <i class="fa-solid fa-graduation-cap"></i>
             <span id="startBadge">DELOITTE ONBOARDING ARCADE</span>
@@ -235,11 +230,11 @@
             D-RUSH<span class="deloitte-dot-pixel"></span>
           </h1>
 
-          <!-- User Name Registration Box -->
+          <!-- Player Name Input -->
           <div class="w-full max-w-[240px] space-y-1">
             <div class="text-[8.5px] text-gray-300 flex items-center justify-between px-1">
               <span id="nameInputPrompt">Your Nickname:</span>
-              <span class="text-deloitte-green text-[7.5px]"><i class="fa-solid fa-cloud-arrow-up"></i> Supabase</span>
+              <span class="text-deloitte-green text-[7.5px]" id="dbStatusBadge"><i class="fa-solid fa-cloud"></i> Supabase</span>
             </div>
             <input id="playerNameInput" type="text" maxlength="16" placeholder="A1 Analyst" class="w-full px-2 py-1.5 rounded-lg bg-black/70 border border-white/20 text-white text-xs font-mono focus:border-deloitte-green focus:outline-none text-center">
           </div>
@@ -256,8 +251,8 @@
           </div>
         </div>
 
-        <!-- PAUSE SCREEN OVERLAY -->
-        <div id="pauseOverlay" class="hidden absolute inset-0 z-20 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center space-y-2.5 font-pixel p-4">
+        <!-- PAUSE SCREEN OVERLAY (Explicitly hidden) -->
+        <div id="pauseOverlay" style="display: none;" class="absolute inset-0 z-20 bg-black/85 backdrop-blur-sm flex-col items-center justify-center space-y-2.5 font-pixel p-4">
           <div class="text-lg text-deloitte-green tracking-widest" id="pauseTitle">PAUSED</div>
           <p class="text-[10px] text-gray-300 font-sans text-center" id="pauseSubtitle">Aligning on next steps with engagement team...</p>
           <button onclick="togglePause()" class="pixel-btn-press pixel-box-green px-5 py-2 bg-deloitte-green text-black text-[10px] font-bold rounded-lg" id="resumeBtn">
@@ -265,8 +260,8 @@
           </button>
         </div>
 
-        <!-- GAME OVER OVERLAY -->
-        <div id="gameOverOverlay" class="hidden absolute inset-0 z-30 bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-3 text-center font-sans overflow-y-auto">
+        <!-- GAME OVER OVERLAY (Explicitly hidden) -->
+        <div id="gameOverOverlay" style="display: none;" class="absolute inset-0 z-30 bg-black/95 backdrop-blur-md flex-col items-center justify-between p-3 text-center font-sans overflow-y-auto">
           <div class="space-y-1 w-full max-w-sm">
             <div class="w-6 h-6 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-400 text-xs mx-auto">
               <i class="fa-solid fa-clipboard-check"></i>
@@ -285,7 +280,7 @@
 
           <!-- Supabase Status Toast -->
           <div id="supabaseSyncStatus" class="text-[8.5px] text-deloitte-lightgray flex items-center justify-center space-x-1">
-            <i class="fa-solid fa-circle-notch fa-spin text-deloitte-green"></i>
+            <i class="fa-solid fa-circle-notch fa-spin text-deloitte-green" id="syncSpinnerIcon"></i>
             <span id="supabaseSyncText">Syncing deliverable to firm leaderboard...</span>
           </div>
 
@@ -311,21 +306,18 @@
         </div>
       </div>
 
-      <!-- Thumb-Friendly Dual Touch Controls Area -->
+      <!-- Ergonomic Touch Controls Bar -->
       <div class="touch-controls-bar w-full flex-shrink-0 mt-2 flex items-center justify-between gap-2 select-none font-pixel">
-        <!-- Giant Slide Button (Left Thumb) -->
         <button id="btnTouchSlide" class="flex-1 h-16 pixel-btn-press pixel-box bg-deloitte-slate border border-cyan-500/30 active:bg-cyan-950/80 rounded-2xl flex flex-col items-center justify-center space-y-1 text-cyan-300">
           <i class="fa-solid fa-arrow-down text-sm"></i>
           <span id="slideTouchLabel" class="text-[10px] font-bold tracking-wider">SLIDE</span>
         </button>
 
-        <!-- Pause Quick Tap -->
         <button onclick="togglePause()" class="w-12 h-16 pixel-btn-press pixel-box bg-white/5 active:bg-white/10 border border-white/15 rounded-2xl flex flex-col items-center justify-center space-y-1 text-gray-400">
           <i id="pauseBtnIcon" class="fa-solid fa-pause text-xs"></i>
           <span class="text-[7px]">PAUSE</span>
         </button>
 
-        <!-- Giant Jump Button (Right Thumb) -->
         <button id="btnTouchJump" class="flex-1 h-16 pixel-btn-press pixel-box-green bg-deloitte-green border border-emerald-400 active:bg-emerald-500 rounded-2xl flex flex-col items-center justify-center space-y-1 text-black font-black">
           <i class="fa-solid fa-arrow-up text-sm"></i>
           <span id="jumpTouchLabel" class="text-[10px] font-black tracking-wider">JUMP</span>
@@ -336,7 +328,7 @@
   </main>
 
   <!-- Leaderboard Modal (Supabase Driven) -->
-  <div id="leaderboardModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3">
+  <div id="leaderboardModal" style="display: none;" class="fixed inset-0 z-50 items-center justify-center bg-black/85 backdrop-blur-md p-3">
     <div class="bg-deloitte-cardbg border border-amber-500/30 rounded-2xl p-3.5 max-w-sm w-full shadow-2xl space-y-2.5 max-h-[88vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-white/10 pb-2">
         <h3 class="text-xs font-bold text-amber-400 flex items-center gap-1.5 font-pixel">
@@ -355,7 +347,7 @@
       </div>
 
       <div class="pt-2 border-t border-white/10 flex items-center justify-between text-[8px] text-gray-400">
-        <span id="lbFooterNote">Synced via Cloud</span>
+        <span id="lbFooterNote">Cloud synced</span>
         <button onclick="fetchLeaderboard()" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-white font-mono text-[8px]">
           <i class="fa-solid fa-arrows-rotate"></i> Refresh
         </button>
@@ -364,7 +356,7 @@
   </div>
 
   <!-- Help & Rules Modal -->
-  <div id="helpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3">
+  <div id="helpModal" style="display: none;" class="fixed inset-0 z-50 items-center justify-center bg-black/85 backdrop-blur-md p-3">
     <div class="bg-deloitte-cardbg border border-white/20 rounded-2xl p-4 max-w-sm w-full shadow-2xl space-y-2.5 max-h-[88vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-white/10 pb-2">
         <h3 id="helpModalTitle" class="text-xs font-bold text-deloitte-green flex items-center gap-1.5">
@@ -415,17 +407,36 @@
 
   <script>
     /* ==========================================================
-       SUPABASE CONFIGURATION & LEADERBOARD SYSTEM
+       FAIL-SAFE MODAL DISPLAY CONTROLLER
+       ========================================================== */
+    function showModal(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove("hidden");
+      el.style.display = "flex";
+    }
+
+    function hideModal(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add("hidden");
+      el.style.display = "none";
+    }
+
+    /* ==========================================================
+       SUPABASE CONFIGURATION & AUTO-FALLBACK
        ========================================================== */
     const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
 
     let supabase = null;
+    let targetTable = 'leaderboard'; // Will auto-switch to drush_scores if needed
+
     if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
       try {
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       } catch (err) {
-        console.warn("Supabase initialization error:", err);
+        console.warn("Supabase init error:", err);
       }
     }
 
@@ -439,34 +450,79 @@
       });
     }
 
+    // Helper timeout wrapper for network calls
+    function withTimeout(promise, ms = 4000) {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), ms))
+      ]);
+    }
+
+    // Read top score from Supabase on launch
+    async function syncGlobalHighScore() {
+      if (!supabase) return;
+      try {
+        let result = await withTimeout(
+          supabase.from(targetTable).select('score').order('score', { ascending: false }).limit(1)
+        );
+        if (result.error && targetTable === 'leaderboard') {
+          targetTable = 'drush_scores';
+          result = await withTimeout(
+            supabase.from(targetTable).select('score').order('score', { ascending: false }).limit(1)
+          );
+        }
+        if (!result.error && result.data && result.data.length > 0) {
+          const topScore = result.data[0].score;
+          if (topScore > highScore) {
+            highScore = topScore;
+            try { localStorage.setItem('drush_fg_high', highScore.toString()); } catch (e) {}
+            const highEl = document.getElementById("hudHighScore");
+            if (highEl) highEl.textContent = highScore.toString().padStart(6, '0');
+          }
+        }
+      } catch (e) {
+        console.warn("Supabase high score sync skipped:", e.message);
+      }
+    }
+
     async function recordScoreToSupabase(finalScoreVal, finalDistVal, finalRankTitle) {
       const statusEl = document.getElementById("supabaseSyncStatus");
       const statusText = document.getElementById("supabaseSyncText");
-      if (statusEl) statusEl.classList.remove("hidden");
+      const spinner = document.getElementById("syncSpinnerIcon");
+      if (statusEl) statusEl.style.display = "flex";
 
       if (!supabase) {
         if (statusText) statusText.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-hard-drive"></i> Saved locally</span>`;
+        if (spinner) spinner.style.display = "none";
         saveLocalLeaderboard(currentPlayerName, finalScoreVal, finalDistVal, finalRankTitle);
         return;
       }
 
       try {
-        const { data, error } = await supabase
-          .from('leaderboard')
-          .insert([
-            {
-              player_name: currentPlayerName,
-              score: Math.floor(finalScoreVal),
-              distance: Math.floor(finalDistVal),
-              career_rank: finalRankTitle
-            }
-          ]);
+        const payload = {
+          player_name: currentPlayerName,
+          score: Math.floor(finalScoreVal),
+          distance: Math.floor(finalDistVal),
+          career_rank: finalRankTitle
+        };
+
+        let { error } = await withTimeout(supabase.from(targetTable).insert([payload]));
+        
+        // If table doesn't exist, try alternate table
+        if (error && targetTable === 'leaderboard') {
+          targetTable = 'drush_scores';
+          const retry = await withTimeout(supabase.from(targetTable).insert([payload]));
+          error = retry.error;
+        }
 
         if (error) throw error;
+        
+        if (spinner) spinner.style.display = "none";
         if (statusText) statusText.innerHTML = `<span class="text-deloitte-green"><i class="fa-solid fa-check"></i> Deliverable synced to Leaderboard!</span>`;
       } catch (e) {
         console.error("Supabase record error:", e);
-        if (statusText) statusText.innerHTML = `<span class="text-gray-400"><i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Saved locally.</span>`;
+        if (spinner) spinner.style.display = "none";
+        if (statusText) statusText.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-triangle-exclamation"></i> Saved locally (${e.message || 'Sync error'})</span>`;
         saveLocalLeaderboard(currentPlayerName, finalScoreVal, finalDistVal, finalRankTitle);
       }
     }
@@ -493,15 +549,19 @@
 
       if (supabase) {
         try {
-          const { data, error } = await supabase
-            .from('leaderboard')
-            .select('*')
-            .order('score', { ascending: false })
-            .limit(10);
-          if (error) throw error;
-          records = data || [];
+          let result = await withTimeout(
+            supabase.from(targetTable).select('*').order('score', { ascending: false }).limit(10)
+          );
+          if (result.error && targetTable === 'leaderboard') {
+            targetTable = 'drush_scores';
+            result = await withTimeout(
+              supabase.from(targetTable).select('*').order('score', { ascending: false }).limit(10)
+            );
+          }
+          if (result.error) throw result.error;
+          records = result.data || [];
         } catch (e) {
-          console.warn("Falling back to local leaderboard:", e);
+          console.warn("Falling back to local records:", e);
           records = JSON.parse(localStorage.getItem('drush_local_lb') || '[]');
         }
       } else {
@@ -542,16 +602,16 @@
 
     function openLeaderboardModal() {
       if (gameState === 'PLAYING') togglePause();
-      document.getElementById("leaderboardModal").classList.remove("hidden");
+      showModal("leaderboardModal");
       fetchLeaderboard();
     }
 
     function closeLeaderboardModal() {
-      document.getElementById("leaderboardModal").classList.add("hidden");
+      hideModal("leaderboardModal");
     }
 
     /* ==========================================================
-       I18N BILINGUAL SYSTEM (EN <-> ZH)
+       I18N BILINGUAL SYSTEM
        ========================================================== */
     let currentLang = 'en';
 
@@ -703,18 +763,20 @@
     async function initAudio() {
       if (audioReady) return;
       try {
-        await Tone.start();
-        jumpSynth = new Tone.Synth({ oscillator: { type: "square" }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.05 } }).toDestination();
-        jumpSynth.volume.value = -7;
-        slideSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.01, decay: 0.12, sustain: 0 } }).toDestination();
-        slideSynth.volume.value = -12;
-        dotSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: "triangle" }, envelope: { attack: 0.005, decay: 0.08, sustain: 0.02, release: 0.1 } }).toDestination();
-        dotSynth.volume.value = -5;
-        powerupSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: "square" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.25 } }).toDestination();
-        powerupSynth.volume.value = -5;
-        hitSynth = new Tone.Synth({ oscillator: { type: "sawtooth" }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination();
-        hitSynth.volume.value = -5;
-        audioReady = true;
+        if (window.Tone) {
+          await Tone.start();
+          jumpSynth = new Tone.Synth({ oscillator: { type: "square" }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.05 } }).toDestination();
+          jumpSynth.volume.value = -7;
+          slideSynth = new Tone.NoiseSynth({ noise: { type: "pink" }, envelope: { attack: 0.01, decay: 0.12, sustain: 0 } }).toDestination();
+          slideSynth.volume.value = -12;
+          dotSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: "triangle" }, envelope: { attack: 0.005, decay: 0.08, sustain: 0.02, release: 0.1 } }).toDestination();
+          dotSynth.volume.value = -5;
+          powerupSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: "square" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.25 } }).toDestination();
+          powerupSynth.volume.value = -5;
+          hitSynth = new Tone.Synth({ oscillator: { type: "sawtooth" }, envelope: { attack: 0.01, decay: 0.3, sustain: 0, release: 0.1 } }).toDestination();
+          hitSynth.volume.value = -5;
+          audioReady = true;
+        }
       } catch (e) {}
     }
 
@@ -728,10 +790,9 @@
     }
 
     function playSfx(type) {
-      if (!audioEnabled) return;
-      initAudio();
-      const now = Tone.now();
+      if (!audioEnabled || !audioReady) return;
       try {
+        const now = Tone.now();
         if (type === 'jump' && jumpSynth) jumpSynth.triggerAttackRelease("A4", "16n", now);
         else if (type === 'slide' && slideSynth) slideSynth.triggerAttackRelease("16n", now);
         else if (type === 'dot' && dotSynth) dotSynth.triggerAttackRelease(["E5", "G#5"], "32n", now);
@@ -742,7 +803,7 @@
     }
 
     /* ==========================================================
-       CANVAS & GAME LOOP SETUP
+       CANVAS & GAME SETUP
        ========================================================== */
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
@@ -764,7 +825,6 @@
     let coffeeTimer = 0;
     let frameCount = 0;
 
-    // Mobile calibrated speed
     const BASE_SPEED = 3.2;
     let gameSpeed = BASE_SPEED;
     const SPEED_RAMP_FACTOR = 0.0022;
@@ -909,7 +969,7 @@
     }
 
     /* ==========================================================
-       EASTER EGGS SYSTEM
+       EASTER EGGS
        ========================================================== */
     let logoTapCount = 0;
     let logoTapTimer = null;
@@ -1391,10 +1451,7 @@
         coffeeTimer--;
         if (coffeeTimer === 0) {
           const bar = document.getElementById("powerupStatusBar");
-          if (bar) {
-            bar.classList.remove("flex");
-            bar.classList.add("hidden");
-          }
+          if (bar) bar.style.display = "none";
         }
       }
 
@@ -1511,8 +1568,8 @@
       if (iconEl) iconEl.className = `fa-solid ${icon} text-amber-300`;
       if (textEl) textEl.textContent = text;
       if (toast) {
-        toast.classList.remove("hidden");
-        setTimeout(() => toast.classList.add("hidden"), 2000);
+        toast.style.display = "flex";
+        setTimeout(() => { toast.style.display = "none"; }, 2000);
       }
     }
 
@@ -1520,28 +1577,23 @@
       const bar = document.getElementById("powerupStatusBar");
       const textEl = document.getElementById("powerupText");
       if (textEl) textEl.textContent = text;
-      if (bar) {
-        bar.classList.remove("hidden");
-        bar.classList.add("flex");
-      }
+      if (bar) bar.style.display = "flex";
     }
 
     /* ==========================================================
-       GAME FLOW & LIFECYCLE
+       CORE GAMEPLAY LIFECYCLE
        ========================================================== */
     function startGame() {
       initAudio();
       randomizeGameSession();
 
-      document.getElementById("startOverlay").classList.add("hidden");
-      document.getElementById("gameOverOverlay").classList.add("hidden");
-      document.getElementById("pauseOverlay").classList.add("hidden");
+      // Reliable modal dismissal
+      hideModal("startOverlay");
+      hideModal("gameOverOverlay");
+      hideModal("pauseOverlay");
 
       const bar = document.getElementById("powerupStatusBar");
-      if (bar) {
-        bar.classList.remove("flex");
-        bar.classList.add("hidden");
-      }
+      if (bar) bar.style.display = "none";
 
       score = 0;
       distance = 0;
@@ -1565,11 +1617,11 @@
     function togglePause() {
       if (gameState === 'PLAYING') {
         gameState = 'PAUSED';
-        document.getElementById("pauseOverlay").classList.remove("hidden");
+        showModal("pauseOverlay");
         document.getElementById("pauseBtnIcon").className = "fa-solid fa-play text-xs";
       } else if (gameState === 'PAUSED') {
         gameState = 'PLAYING';
-        document.getElementById("pauseOverlay").classList.add("hidden");
+        hideModal("pauseOverlay");
         document.getElementById("pauseBtnIcon").className = "fa-solid fa-pause text-xs";
       }
     }
@@ -1607,21 +1659,22 @@
       const tipEl = document.getElementById("freshGradTipText");
       if (tipEl) tipEl.textContent = tip[currentLang];
 
+      // Async record without blocking gameplay loop
       recordScoreToSupabase(score, distance, getCurrentRank());
-      document.getElementById("gameOverOverlay").classList.remove("hidden");
+      showModal("gameOverOverlay");
     }
 
     function openHelpModal() {
       if (gameState === 'PLAYING') togglePause();
-      document.getElementById("helpModal").classList.remove("hidden");
+      showModal("helpModal");
     }
 
     function closeHelpModal() {
-      document.getElementById("helpModal").classList.add("hidden");
+      hideModal("helpModal");
     }
 
     /* ==========================================================
-       TOUCH & KEYBOARD CONTROLS (Ergonomic Dual Thumb)
+       TOUCH & CONTROLS
        ========================================================== */
     const btnJump = document.getElementById("btnTouchJump");
     const btnSlide = document.getElementById("btnTouchSlide");
@@ -1685,9 +1738,11 @@
       }
     });
 
+    // Boot
     window.onload = function () {
       applyLanguage();
       randomizeGameSession();
+      syncGlobalHighScore();
       requestAnimationFrame(gameLoop);
     };
   </script>
