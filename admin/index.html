@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Onboarding Master Admin</title>
+  <title>DeloitteLand Admin</title>
   
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -30,7 +30,6 @@
               black: '#080b11',
               cardbg: '#121620',
               cardborder: '#1f2637',
-              slate: '#1a202c',
               gray: '#868D96',
               lightgray: '#DCE0E5'
             }
@@ -48,8 +47,8 @@
     body {
       background-color: #080b11;
       background-image:
-        radial-gradient(circle at 15% 15%, rgba(134, 188, 37, 0.08) 0%, transparent 45%),
-        radial-gradient(circle at 85% 85%, rgba(0, 79, 89, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 10% 10%, rgba(134, 188, 37, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 90% 85%, rgba(0, 79, 89, 0.16) 0%, transparent 50%),
         radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.06) 0%, transparent 60%);
       min-height: 100vh;
       -webkit-tap-highlight-color: transparent;
@@ -62,27 +61,44 @@
       background-color: #86BC25;
       border-radius: 50%;
       margin-left: 0.12em;
-      box-shadow: 0 0 14px rgba(134, 188, 37, 0.8);
+      vertical-align: baseline;
+      box-shadow: 0 0 14px rgba(134, 188, 37, 0.85);
     }
 
     .card-shadow {
-      box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.07);
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
-    .button-press { transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1); }
-    .button-press:active { transform: scale(0.97) translateY(2px); }
+    .button-press { 
+      transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+      touch-action: manipulation;
+    }
+    .button-press:active { transform: scale(0.96) translateY(1px); }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-8px); }
-      40%, 80% { transform: translateX(8px); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
     }
-    .shake-error { animation: shake 0.4s ease-in-out; }
+    .shake-error { animation: shake 0.35s ease-in-out; }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(4px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(1) brightness(0.85);
+      cursor: pointer;
+    }
 
     .safe-top { padding-top: env(safe-area-inset-top, 0px); }
     .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
 
-    /* Custom scrollbar */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
     ::-webkit-scrollbar-thumb { background: rgba(134,188,37,0.3); border-radius: 4px; }
@@ -92,7 +108,7 @@
 <body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
 
   <!-- Top Floating Utility Bar for Login Gate -->
-  <div id="gateUtilityBar" class="fixed top-4 right-4 z-50 flex items-center gap-2">
+  <div id="gateUtilityBar" class="fixed top-3 right-3 z-50 flex items-center gap-2">
     <button type="button" onclick="toggleLanguage()" class="button-press px-3 py-1.5 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-md flex items-center gap-1.5 shadow-lg">
       <i class="fa-solid fa-language text-deloitte-green"></i>
       <span class="lang-toggle-text">EN</span>
@@ -101,7 +117,7 @@
 
   <!-- Gate / Login Overlay -->
   <div id="passwordGate" class="fixed inset-0 z-40 flex items-center justify-center bg-[#080b11] p-4 safe-top safe-bottom">
-    <div id="gateCard" class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center relative overflow-hidden">
+    <div id="gateCard" class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center animate-fade-in relative overflow-hidden">
       <div class="absolute -right-12 -top-12 w-32 h-32 bg-deloitte-green/15 rounded-full blur-2xl pointer-events-none"></div>
 
       <div class="space-y-3 relative z-10">
@@ -150,202 +166,447 @@
 
   <!-- Authenticated Admin Portal Content -->
   <div id="mainAdminContent" class="hidden flex-col justify-between min-h-screen pb-16">
-    <!-- Header -->
-    <header class="w-full border-b border-white/10 bg-deloitte-black/90 backdrop-blur-md sticky top-0 z-40 safe-top">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-sm">
-            <i class="fa-solid fa-sliders"></i>
+    
+    <!-- Sticky Responsive Header -->
+    <header class="w-full border-b border-white/10 bg-deloitte-black/95 backdrop-blur-md sticky top-0 z-40 safe-top">
+      <div class="max-w-5xl mx-auto px-3 sm:px-6 h-14 flex items-center justify-between gap-2">
+        <div class="flex items-center space-x-2">
+          <div class="w-7 h-7 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-xs shrink-0">
+            <i class="fa-solid fa-layer-group"></i>
           </div>
-          <div>
-            <span class="font-black text-base sm:text-lg text-white">DeloitteLand<span class="deloitte-dot"></span></span>
-            <span class="ml-1.5 text-xs text-gray-400 font-bold" data-i18n="headerBadge">Master Control</span>
+          <div class="min-w-0">
+            <div class="flex items-baseline truncate">
+              <span class="font-black text-base sm:text-lg text-white">DeloitteLand<span class="deloitte-dot"></span></span>
+              <span class="ml-1 text-[10px] sm:text-xs text-gray-400 font-bold hidden xs:inline" data-i18n="headerBadge">Admin</span>
+            </div>
           </div>
         </div>
         
-        <div class="flex items-center gap-2">
-          <!-- Quick link to participant portal -->
-          <a href="./participant.html" target="_blank" class="button-press px-3 py-1.5 rounded-full text-xs font-bold bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30 flex items-center gap-1">
-            <i class="fa-solid fa-mobile-screen"></i>
-            <span class="hidden sm:inline">打开学员端</span>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <a href="./participant.html" target="_blank" class="button-press px-2.5 py-1.5 rounded-full text-[11px] font-bold bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30 flex items-center gap-1 shadow-sm">
+            <i class="fa-solid fa-mobile-screen text-xs"></i>
+            <span class="hidden xs:inline" data-i18n="btnOpenParticipant">学员端</span>
           </a>
-          <!-- Language Toggle -->
-          <button type="button" onclick="toggleLanguage()" class="button-press px-2.5 py-1.5 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/15 text-white flex items-center gap-1">
-            <i class="fa-solid fa-language text-deloitte-green"></i>
-            <span class="lang-toggle-text text-[11px]">EN</span>
+          <button type="button" onclick="toggleLanguage()" class="button-press px-2.5 py-1.5 rounded-full text-[11px] font-bold bg-white/10 hover:bg-white/20 border border-white/15 text-white flex items-center gap-1">
+            <i class="fa-solid fa-language text-deloitte-green text-xs"></i>
+            <span class="lang-toggle-text">EN</span>
           </button>
-          <!-- Logout -->
-          <button type="button" onclick="handleLogout()" class="button-press px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 border border-white/10 text-gray-300 hover:text-rose-300">
-            <i class="fa-solid fa-power-off"></i>
+          <button type="button" onclick="handleLogout()" class="button-press w-7 h-7 sm:w-8 sm:h-8 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 border border-white/10 text-gray-300 hover:text-rose-300 flex items-center justify-center">
+            <i class="fa-solid fa-power-off text-xs"></i>
           </button>
         </div>
       </div>
     </header>
 
-    <main class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+    <!-- Mobile-Optimized 4-Tab Navigation Bar -->
+    <nav class="w-full border-b border-white/10 bg-deloitte-black/95 backdrop-blur-md sticky top-14 z-30">
+      <div class="max-w-5xl mx-auto px-2 sm:px-6 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2">
+        <button type="button" onclick="switchAdminMainTab('hub')" id="tabBtn-hub"
+          class="button-press flex-1 min-w-[85px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-deloitte-green text-black shadow-lg shadow-deloitte-green/20">
+          <i class="fa-solid fa-cubes text-[11px]"></i>
+          <span data-i18n="tabHub">系统直达</span>
+        </button>
 
-      <!-- Top Title Bar -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-5">
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight" data-i18n="adminTitle">现场总控与实时分发中心</h1>
-          <p class="text-xs sm:text-sm text-gray-400 mt-1" data-i18n="adminSubtitle">广播通知实时推送、FastPass 默认分段路由、6 大关卡分轮计分录入与全员排行榜。</p>
-        </div>
-        <span id="userEmailTag" class="text-[11px] font-mono text-gray-400 bg-white/5 border border-white/10 px-3 py-1 rounded-full self-start sm:self-auto"></span>
+        <button type="button" onclick="switchAdminMainTab('scores')" id="tabBtn-scores"
+          class="button-press flex-1 min-w-[85px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
+          <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+          <span data-i18n="tabScores">计分录入</span>
+        </button>
+
+        <button type="button" onclick="switchAdminMainTab('leaderboard')" id="tabBtn-leaderboard"
+          class="button-press flex-1 min-w-[85px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
+          <i class="fa-solid fa-ranking-star text-[11px]"></i>
+          <span data-i18n="tabLeaderboard">风云总榜</span>
+        </button>
+
+        <button type="button" onclick="switchAdminMainTab('broadcast')" id="tabBtn-broadcast"
+          class="button-press flex-1 min-w-[85px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
+          <i class="fa-solid fa-bullhorn text-[11px]"></i>
+          <span data-i18n="tabBroadcast">现场广播</span>
+        </button>
       </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-5xl mx-auto w-full px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
       <!-- ==========================================================
-           NEW MODULE A: LIVE ANNOUNCEMENT & DISPATCH CONTROLLER
+           TAB 1: MAIN FUNCTIONS & LAUNCHERS (RESTORED BUTTONS)
            ========================================================== -->
-      <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-deloitte-green/30 card-shadow space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/20 text-deloitte-green border border-deloitte-green/40">NEW</span>
-            <h2 class="text-base sm:text-lg font-black text-white" data-i18n="secAnnouncement">现场广播与学员端调度 (Announcement & Dispatch)</h2>
+      <section id="panel-hub" class="space-y-3 sm:space-y-4 animate-fade-in">
+        
+        <!-- Quick Mood Oracle Card -->
+        <div id="moodOracleCard" class="bg-gradient-to-r from-deloitte-green/10 via-deloitte-teal/15 to-transparent border border-deloitte-green/30 rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3 shadow-lg">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-base shrink-0">
+              <i id="oracleIcon" class="fa-solid fa-face-smile"></i>
+            </div>
+            <div>
+              <div class="text-[10px] uppercase tracking-wider font-bold text-deloitte-green" data-i18n="oracleHeader">Daily Green Pulse</div>
+              <div id="oracleQuote" class="text-xs font-semibold text-gray-200 mt-0.5 line-clamp-2">今天也是让世界因你而不同的一天！点击右侧激发灵感绿光 ✨</div>
+            </div>
           </div>
-          <span id="announcementSyncBadge" class="text-[11px] font-mono text-gray-500"></span>
+          <button type="button" onclick="nextOracleQuote(event)" class="button-press shrink-0 px-2.5 py-1.5 rounded-xl bg-deloitte-green/20 hover:bg-deloitte-green/30 border border-deloitte-green/40 text-deloitte-green text-xs font-bold flex items-center gap-1">
+            <i class="fa-solid fa-rotate"></i>
+            <span class="hidden xs:inline" data-i18n="nextQuote">抽一句</span>
+          </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Announcement Input ZH & EN -->
-          <div class="md:col-span-2 space-y-2.5">
-            <label class="block text-xs font-bold text-gray-300" data-i18n="lblAnnouncementZH">广播公告内容 (中文) · Displayed on Participant Header</label>
-            <input type="text" id="adminAnnounceZH" placeholder="例：全员请注意，第 3 轮换场将在 5 分钟后开始，请准时就位！"
-              class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl px-3.5 py-2.5 text-xs text-white">
-
-            <label class="block text-xs font-bold text-gray-400" data-i18n="lblAnnouncementEN">Announcement Message (English)</label>
-            <input type="text" id="adminAnnounceEN" placeholder="e.g. Attention all teams: Round 3 rotation begins in 5 minutes!"
-              class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl px-3.5 py-2.5 text-xs text-white">
+        <!-- 01: D.Signal -->
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">01</span>
+                <h2 class="text-base sm:text-xl font-black text-white" data-i18n="signalTitle">D.Signal 信号解密</h2>
+              </div>
+              <p class="text-xs text-gray-400" data-i18n="signalDesc">三轮双语词库破译体验与展示互动</p>
+              <div class="flex flex-wrap items-center gap-2 pt-0.5">
+                <button type="button" onclick="togglePanel('signalConfigPanel', 'signalConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-deloitte-green bg-deloitte-green/10 hover:bg-deloitte-green/20 border border-deloitte-green/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
+                  <i class="fa-solid fa-sliders text-xs"></i>
+                  <span data-i18n="signalConfigBtn">配置 3 轮词库</span>
+                  <i id="signalConfigChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+                </button>
+                <span id="signalLastSavedBadge" class="text-[10px] font-mono text-gray-500"></span>
+              </div>
+            </div>
+            <a href="https://www.projectsunrise.win/signal" target="_blank" rel="noopener noreferrer" class="button-press w-full sm:w-auto px-5 py-2.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20">
+              <span data-i18n="launchSignal">打开 D.Signal</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
           </div>
 
-          <!-- Dispatch Config: FastPass route + D-Rush High Score -->
-          <div class="space-y-3 bg-black/40 p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
-            <div>
-              <label class="block text-xs font-bold text-lime-400 mb-1.5" data-i18n="lblFpDefaultRoute">学员端默认 FastPass 组数</label>
-              <div class="grid grid-cols-3 gap-2">
-                <label class="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-deloitte-cardbg border border-white/10 cursor-pointer hover:border-lime-400">
-                  <input type="radio" name="fpRouteTarget" value="24" class="accent-[#86BC25]">
-                  <span class="text-xs font-bold text-white">24 组</span>
-                </label>
-                <label class="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-deloitte-cardbg border border-white/10 cursor-pointer hover:border-lime-400">
-                  <input type="radio" name="fpRouteTarget" value="36" checked class="accent-[#86BC25]">
-                  <span class="text-xs font-bold text-white">36 组</span>
-                </label>
-                <label class="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-deloitte-cardbg border border-white/10 cursor-pointer hover:border-lime-400">
-                  <input type="radio" name="fpRouteTarget" value="48" class="accent-[#86BC25]">
-                  <span class="text-xs font-bold text-white">48 组</span>
-                </label>
+          <!-- Collapsible D.Signal Word List Editor -->
+          <div id="signalConfigPanel" class="hidden pt-3 border-t border-white/10 space-y-3 animate-fade-in">
+            <div class="bg-black/50 border border-deloitte-green/20 rounded-xl p-3 text-xs text-gray-300 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-deloitte-green">说明 · Guide</span>
+                <button type="button" onclick="insertSignalTemplate()" class="text-[11px] text-deloitte-green hover:underline font-bold">插入示例</button>
+              </div>
+              <p class="text-[11px] text-gray-400 font-mono">每行或空格输入：“中文 英文”，如 “大熊猫 Giant Panda”</p>
+            </div>
+
+            <!-- Round Tabs -->
+            <div class="flex items-center gap-1 p-1 bg-black/40 rounded-xl border border-white/10 overflow-x-auto no-scrollbar">
+              <button type="button" id="sigTabBtn1" onclick="switchSignalAdminTab(1)" class="flex-1 min-w-[85px] py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black whitespace-nowrap text-center">
+                Round 1 <span id="sigTabCount1" class="text-[10px]">(16)</span>
+              </button>
+              <button type="button" id="sigTabBtn2" onclick="switchSignalAdminTab(2)" class="flex-1 min-w-[85px] py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white/5 text-gray-300 whitespace-nowrap text-center">
+                Round 2 <span id="sigTabCount2" class="text-[10px]">(10)</span>
+              </button>
+              <button type="button" id="sigTabBtn3" onclick="switchSignalAdminTab(3)" class="flex-1 min-w-[85px] py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white/5 text-gray-300 whitespace-nowrap text-center">
+                Round 3 <span id="sigTabCount3" class="text-[10px]">(10)</span>
+              </button>
+            </div>
+
+            <div id="sigTabPanel1"><textarea id="sigInputRound1" rows="5" oninput="updateSignalLiveCounts()" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs font-mono text-gray-200 leading-relaxed"></textarea></div>
+            <div id="sigTabPanel2" class="hidden"><textarea id="sigInputRound2" rows="5" oninput="updateSignalLiveCounts()" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs font-mono text-gray-200 leading-relaxed"></textarea></div>
+            <div id="sigTabPanel3" class="hidden"><textarea id="sigInputRound3" rows="5" oninput="updateSignalLiveCounts()" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs font-mono text-gray-200 leading-relaxed"></textarea></div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white/[0.02] border border-white/10 rounded-xl p-2.5">
+              <span id="signalSaveStatus" class="text-xs text-gray-400">编辑任一轮词库后点击保存实时更新</span>
+              <button id="signalSaveBtn" type="button" onclick="saveSignalConfig()" class="button-press w-full sm:w-auto px-4 py-2 rounded-xl bg-deloitte-green text-black font-extrabold text-xs flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span id="signalSaveBtnText" data-i18n="saveWordsBtn">保存词库</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02: Knowledge Clash -->
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">02</span>
+                <h2 class="text-base sm:text-xl font-black text-white" data-i18n="kcTitle">Knowledge Clash 勤业智库</h2>
+              </div>
+              <p class="text-xs text-gray-400" data-i18n="kcDesc">双语多选极速问答对决题库</p>
+              <div class="flex flex-wrap items-center gap-2 pt-0.5">
+                <button type="button" onclick="togglePanel('kcConfigPanel', 'kcConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
+                  <i class="fa-solid fa-sliders text-xs text-emerald-400"></i>
+                  <span data-i18n="kcConfigBtn">配置智库题库</span>
+                  <i id="kcConfigChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+                </button>
+                <span id="kcLastSavedBadge" class="text-[10px] font-mono text-gray-500"></span>
+              </div>
+            </div>
+            <a href="https://www.projectsunrise.win/knowledge" target="_blank" rel="noopener noreferrer" class="button-press w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
+              <span data-i18n="launchKC">打开 Knowledge Clash</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+          </div>
+
+          <!-- Collapsible Knowledge Clash Editor -->
+          <div id="kcConfigPanel" class="hidden pt-3 border-t border-white/10 space-y-3 animate-fade-in">
+            <div class="bg-black/50 border border-emerald-500/20 rounded-xl p-3 text-xs text-gray-300 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-emerald-400">题目格式说明</span>
+                <button type="button" onclick="insertKcTemplate()" class="text-[11px] text-emerald-400 hover:underline font-bold">插入示例</button>
+              </div>
+              <p class="text-[11px] text-gray-400 font-mono">每行一题：题目, 选项A, [正确答案B], 选项C, 选项D</p>
+            </div>
+            <textarea id="kcQuestionTextarea" rows="6" oninput="updateKcParsedCount()" class="w-full bg-black/60 border border-white/15 focus:border-emerald-400 focus:outline-none rounded-xl p-2.5 text-xs font-mono text-gray-200 leading-relaxed"></textarea>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white/[0.02] border border-white/10 rounded-xl p-2.5">
+              <span id="kcSaveStatus" class="text-xs text-gray-400">修改后实时保存</span>
+              <button id="kcSaveBtn" type="button" onclick="saveKnowledgeConfig()" class="button-press w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-500 text-black font-extrabold text-xs flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span id="kcSaveBtnText" data-i18n="saveQuestionsBtn">保存题库</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03: FastPass Navigation (24 / 36 / 48) - RESTORED QUICK BUTTONS -->
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">03</span>
+                <h2 class="text-base sm:text-xl font-black text-white" data-i18n="fpTitle">FastPass 快速通行证</h2>
+              </div>
+              <p class="text-xs text-gray-400" data-i18n="fpDesc">多团队轮转路线指引与时间日程调度</p>
+              <div class="flex flex-wrap items-center gap-2 pt-0.5">
+                <button type="button" onclick="togglePanel('fastpassConfigPanel', 'fpConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-lime-300 bg-lime-500/10 hover:bg-lime-500/20 border border-lime-500/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
+                  <i class="fa-solid fa-sliders text-xs text-lime-400"></i>
+                  <span data-i18n="fpConfigBtn">配置场地与日程</span>
+                  <i id="fpConfigChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+                </button>
+                <span id="fpLastSavedBadge" class="text-[10px] font-mono text-gray-500"></span>
               </div>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-deloitte-green mb-1" data-i18n="lblDrushScore">D-Rush 最高记录 (High Score)</label>
-              <input type="number" id="adminDrushHighScore" value="980"
-                class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl px-3 py-2 text-xs font-mono text-white">
+            <!-- Quick Launch Buttons for 24, 36, 48 Cohorts -->
+            <div class="grid grid-cols-3 gap-2 w-full lg:w-auto">
+              <a href="https://projectsunrise.win/fastpass/24" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1 shadow-md shadow-lime-400/20">
+                <span>FP-24</span>
+                <i class="fa-solid fa-arrow-right text-[9px]"></i>
+              </a>
+              <a href="https://projectsunrise.win/fastpass/36" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1 shadow-md shadow-lime-400/20">
+                <span>FP-36</span>
+                <i class="fa-solid fa-arrow-right text-[9px]"></i>
+              </a>
+              <a href="https://projectsunrise.win/fastpass/48" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1 shadow-md shadow-lime-400/20">
+                <span>FP-48</span>
+                <i class="fa-solid fa-arrow-right text-[9px]"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Collapsible FastPass Editor -->
+          <div id="fastpassConfigPanel" class="hidden pt-3 border-t border-white/10 space-y-3 animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <div class="bg-black/40 border border-white/10 rounded-xl p-3 space-y-2">
+                <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
+                  <span class="text-xs font-extrabold text-white">6 站活动地点</span>
+                  <span class="text-[10px] text-gray-400 font-mono">中文 / EN</span>
+                </div>
+                <div id="fpVenueInputsContainer" class="space-y-1.5"></div>
+              </div>
+
+              <div class="bg-black/40 border border-white/10 rounded-xl p-3 space-y-2">
+                <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
+                  <span class="text-xs font-extrabold text-white">6 轮时间段</span>
+                  <button type="button" onclick="autoFillTimeSlots()" class="text-[11px] text-lime-400 hover:underline font-bold">首轮推算</button>
+                </div>
+                <div id="fpTimeInputsContainer" class="space-y-1.5"></div>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white/[0.02] border border-white/10 rounded-xl p-2.5">
+              <span id="fpSaveStatus" class="text-xs text-gray-400">修改后立即推送</span>
+              <button id="fpSaveBtn" type="button" onclick="saveFastPassConfig()" class="button-press w-full sm:w-auto px-4 py-2 rounded-xl bg-lime-400 text-black font-extrabold text-xs flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span id="fpSaveBtnText" data-i18n="saveFastpassBtn">保存配置</span>
+              </button>
             </div>
           </div>
         </div>
 
-        <div class="flex items-center justify-between pt-1">
-          <div id="announceSaveStatus" class="text-xs text-gray-400 flex items-center gap-1.5">
-            <i class="fa-solid fa-circle-info text-deloitte-green"></i>
-            <span data-i18n="tipSync">保存后学员手机端无需刷新即可同步更新</span>
-          </div>
-          <button type="button" onclick="savePortalAnnouncementConfig()"
-            class="button-press px-5 py-2.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-deloitte-green/20">
-            <i class="fa-solid fa-paper-plane"></i>
-            <span data-i18n="btnPublishAnnouncement">发布并同步学员端</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- ==========================================================
-           NEW MODULE B: 6 STATIONS & MULTI-ROUND SCORE ENTRY & LEADERBOARD
-           ========================================================== -->
-      <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-5">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <!-- 04: QR Code Stations -->
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">SCORING</span>
-              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="scoreEntryTitle">6 大站点计分矩阵 (6 Stations × 6 Rounds)</h2>
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-500/15 text-teal-400 border border-teal-500/30">04</span>
+              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="qrTitle">QR Code 打卡码站点</h2>
             </div>
-            <p class="text-xs text-gray-400" data-i18n="scoreEntryDesc">第 1 层选站点，第 2 层选轮次，第 3 层输入 12 个框（队伍编号与对应得分）。全员排行榜实时计算。</p>
+            <p class="text-xs text-gray-400" data-i18n="qrDesc">各环节专属打卡核销二维码展示页面</p>
           </div>
-          <!-- Cohort Size -->
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-gray-400 font-bold" data-i18n="lblCohortScale">规模:</span>
-            <select id="cohortTeamCountSelect" onchange="handleCohortScaleChange()" class="bg-black/60 border border-white/20 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400">
-              <option value="24">24 Teams</option>
-              <option value="36" selected>36 Teams</option>
-              <option value="48">48 Teams</option>
-            </select>
-          </div>
+          <a href="https://projectsunrise.win/qr" target="_blank" rel="noopener noreferrer" class="button-press w-full sm:w-auto px-5 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-teal-400/20">
+            <span data-i18n="launchQR">打开 QR 站点</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
         </div>
 
-        <!-- LAYER 1: 6 Stations Selector -->
-        <div class="space-y-1.5">
-          <label class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400" data-i18n="layer1Title">第一层：选择关卡站点 (Station)</label>
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="stationButtonsGrid">
-            <!-- Rendered by JS -->
-          </div>
-        </div>
-
-        <!-- LAYER 2: 6 Rounds Selector -->
-        <div class="space-y-1.5 pt-1">
-          <div class="flex items-center justify-between">
-            <label class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400" data-i18n="layer2Title">第二层：选择比赛轮次 (Round 1 ~ 6)</label>
-            <span id="activeStationRoundBadge" class="text-xs font-mono text-gray-400">Station 1 · Round 1</span>
-          </div>
-          <div class="grid grid-cols-6 gap-2" id="roundButtonsGrid">
-            <!-- Rendered by JS -->
-          </div>
-        </div>
-
-        <!-- LAYER 3: 12 Boxes Input (Pair 1 to 6: Team # and Score) -->
-        <div class="space-y-2 pt-2 bg-black/40 p-4 rounded-xl border border-white/10">
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-black text-white flex items-center gap-2">
-              <i class="fa-solid fa-table-cells text-amber-400"></i>
-              <span data-i18n="layer3Title">第三层：录入 12 个数据框（队伍编号 + 得分）</span>
-            </label>
+        <!-- 05: Business Chemistry (RESTORED BUTTON) -->
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1">
             <div class="flex items-center gap-2">
-              <button type="button" onclick="autoFillMockRoundScores()" class="text-[11px] text-amber-400 hover:underline font-bold">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="btnAutoFillSample">填入示例分</span>
-              </button>
-              <button type="button" onclick="clearActiveRoundInputs()" class="text-[11px] text-gray-400 hover:text-rose-400 font-bold">
-                <i class="fa-solid fa-trash"></i> <span data-i18n="btnClear">清空</span>
-              </button>
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">05</span>
+              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="bcTitle">Business Chemistry 商业化学指南</h2>
             </div>
+            <p class="text-xs text-gray-400" data-i18n="bcDesc">四种职场化学风格画像与团队协作指引</p>
           </div>
+          <a href="https://www.projectsunrise.win/bc" target="_blank" rel="noopener noreferrer" class="button-press w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-400/20">
+            <span data-i18n="launchBC">打开 Chemistry</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+        </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2" id="twelveBoxesContainer">
-            <!-- 6 Pairs (12 Boxes) injected via JS -->
-          </div>
-
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
-            <div class="text-xs text-gray-400">
-              <span data-i18n="scoreTip">提示：录入后即刻更新下方总榜，并同步学员端 TOP 10。</span>
+        <!-- 06: Project Sunrise & 3 Checkpoint Task Nodes (RESTORED BUTTONS) -->
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">06</span>
+              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="sunriseTitle">Project Sunrise 日出计划关卡</h2>
             </div>
-            <button type="button" onclick="saveScoresToSupabase()"
-              class="button-press px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20">
-              <i class="fa-solid fa-cloud-arrow-up"></i>
-              <span data-i18n="btnSyncLeaderboard">保存并推送风云榜</span>
-            </button>
+            <p class="text-xs text-gray-400" data-i18n="sunriseDesc">主门户与分段关卡站点直接访问通道</p>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full lg:w-auto">
+            <a href="https://www.projectsunrise.win/sunrise" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1 shadow-md shadow-amber-400/20">
+              <span data-i18n="portalHome">Sunrise 主站</span>
+              <i class="fa-solid fa-arrow-right text-[9px]"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/diyiguan" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-amber-400/90 hover:bg-amber-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1">
+              <span>Node 1 (第一关)</span>
+              <i class="fa-solid fa-arrow-right text-[9px]"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/niveldos" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-amber-400/90 hover:bg-amber-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1">
+              <span>Node 2 (第二关)</span>
+              <i class="fa-solid fa-arrow-right text-[9px]"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/sankyu" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-amber-400/90 hover:bg-amber-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1">
+              <span>Node 3 (第三关)</span>
+              <i class="fa-solid fa-arrow-right text-[9px]"></i>
+            </a>
           </div>
         </div>
 
-        <!-- ADMIN FULL LEADERBOARD TABLE -->
-        <div class="space-y-3 pt-4 border-t border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="fullLeaderboardTitle">总榜全貌 · Full Cohort Leaderboard</h3>
-              <p class="text-xs text-gray-500" data-i18n="fullLeaderboardSub">所有战队六关明细与总成绩（学员端仅展示前 10 名）</p>
+        <!-- 07: D-Rush: Green Dot Odyssey (RESTORED BUTTON) -->
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">bonus</span>
+              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="drushTitle">D-Rush: Green Dot Odyssey</h2>
             </div>
-            <input type="text" id="leaderboardSearchInput" oninput="renderAdminLeaderboardTable()" placeholder="搜队伍，如 05..."
-              class="bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-lg px-2.5 py-1 text-xs text-white w-32">
+            <p class="text-xs text-gray-400" data-i18n="drushDesc">像素小游戏与破冰挑战</p>
+          </div>
+          <a href="https://www.projectsunrise.win/game" target="_blank" rel="noopener noreferrer" class="button-press w-full sm:w-auto px-5 py-2.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20">
+            <span data-i18n="launchGame">进入 D-Rush</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+        </div>
+
+      </section>
+
+      <!-- ==========================================================
+           TAB 2: 6 STATIONS & 6 ROUNDS SCORE INPUT MATRIX (MOBILE OPTIMIZED)
+           ========================================================== -->
+      <section id="panel-scores" class="hidden space-y-4 animate-fade-in">
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
+          
+          <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
+            <div>
+              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="scoreEntryTitle">关卡计分录入矩阵</h2>
+              <p class="text-xs text-gray-400" data-i18n="scoreEntryDesc">三层架构：站点 ➔ 轮次 ➔ 12个队号与得分框</p>
+            </div>
+            
+            <!-- Cohort Scale (24 / 36 / 48) -->
+            <div class="flex items-center gap-1.5 bg-black/50 px-3 py-1.5 rounded-xl border border-white/10 self-start xs:self-auto">
+              <span class="text-xs text-gray-400 font-bold" data-i18n="lblCohortScale">规模:</span>
+              <select id="cohortTeamCountSelect" onchange="handleCohortScaleChange()" class="bg-transparent text-xs text-amber-400 font-bold focus:outline-none">
+                <option value="24" class="bg-deloitte-cardbg text-white">24 Teams</option>
+                <option value="36" selected class="bg-deloitte-cardbg text-white">36 Teams</option>
+                <option value="48" class="bg-deloitte-cardbg text-white">48 Teams</option>
+              </select>
+            </div>
           </div>
 
+          <!-- LAYER 1: 6 STATIONS (Mobile Touch Grid) -->
+          <div class="space-y-1.5">
+            <label class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px]">1</span>
+              <span data-i18n="layer1Title">第一层：选择关卡站点 (Station)</span>
+            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="stationButtonsGrid">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- LAYER 2: 6 ROUNDS -->
+          <div class="space-y-1.5 pt-1">
+            <div class="flex items-center justify-between">
+              <label class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px]">2</span>
+                <span data-i18n="layer2Title">第二层：选择比赛轮次 (Round 1 ~ 6)</span>
+              </label>
+              <span id="activeStationRoundBadge" class="text-xs font-mono text-deloitte-green font-bold"></span>
+            </div>
+            <div class="grid grid-cols-6 gap-1.5 sm:gap-2" id="roundButtonsGrid">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- LAYER 3: 12 BOXES (6 Pairs: Team # + Score) -->
+          <div class="space-y-3 pt-2 bg-black/50 p-3 sm:p-4 rounded-2xl border border-white/10">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-black text-white flex items-center gap-1.5">
+                <span class="w-4 h-4 rounded-full bg-deloitte-green text-black flex items-center justify-center text-[10px]">3</span>
+                <span data-i18n="layer3Title">第三层：录入 12 个数据框（队伍编号 + 得分）</span>
+              </label>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="autoFillMockRoundScores()" class="text-[11px] text-amber-400 hover:underline font-bold">
+                  <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i> <span>示例分</span>
+                </button>
+                <button type="button" onclick="clearActiveRoundInputs()" class="text-[11px] text-gray-400 hover:text-rose-400 font-bold">
+                  <i class="fa-solid fa-trash text-[10px]"></i> <span>清空</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 12 Boxes: 1 col on mobile, 2 col on tablet, 3 col on desktop -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1" id="twelveBoxesContainer">
+              <!-- Rendered by JS -->
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
+              <span class="text-[11px] text-gray-400">💡 录入后实时更新总榜，点击右侧同步学员端 TOP 10。</span>
+              <button type="button" onclick="saveScoresToSupabase()"
+                class="button-press w-full sm:w-auto px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span data-i18n="btnSyncLeaderboard">保存并推送风云榜</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           TAB 3: FULL LEADERBOARD (MOBILE SCROLLABLE TABLE)
+           ========================================================== -->
+      <section id="panel-leaderboard" class="hidden space-y-4 animate-fade-in">
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
+            <div>
+              <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider" data-i18n="fullLeaderboardTitle">总榜全貌 · Full Standings</h2>
+              <p class="text-xs text-gray-400" data-i18n="fullLeaderboardSub">所有战队六关明细与总成绩（学员端仅展示前 10 名）</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="relative flex-1 sm:flex-none">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                <input type="text" id="leaderboardSearchInput" oninput="renderAdminLeaderboardTable()" placeholder="搜索队伍 (如 08)..."
+                  class="w-full sm:w-44 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-8 pr-3 py-1.5 text-xs text-white">
+              </div>
+              <button type="button" onclick="saveScoresToSupabase()" class="button-press px-3.5 py-1.5 rounded-xl bg-deloitte-green text-black font-bold text-xs flex items-center gap-1 shadow-sm shrink-0">
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>刷新</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Standings Table -->
           <div class="overflow-x-auto rounded-xl border border-white/10">
-            <table class="w-full text-left text-xs border-collapse">
+            <table class="w-full text-left text-xs border-collapse min-w-[540px]">
               <thead>
                 <tr class="bg-white/5 border-b border-white/10 text-gray-400 text-[11px] font-mono">
                   <th class="py-2.5 px-3">RANK</th>
@@ -365,61 +626,88 @@
             </table>
           </div>
         </div>
+      </section>
 
-      </div>
-
-      <!-- Retain Previous Existing Feature Sections -->
-      <!-- ==========================================
-           01: D.Signal Config
-           ========================================== -->
-      <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-base sm:text-lg font-black text-white">01. D.Signal 词库配置</h2>
-            <p class="text-xs text-gray-400">三轮双语破译词汇</p>
+      <!-- ==========================================================
+           TAB 4: BROADCAST & LIVE DISPATCH (MOBILE OPTIMIZED)
+           ========================================================== -->
+      <section id="panel-broadcast" class="hidden space-y-4 animate-fade-in">
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-deloitte-green/30 card-shadow space-y-4">
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/20 text-deloitte-green border border-deloitte-green/40">LIVE</span>
+                <h2 class="text-base sm:text-xl font-black text-white" data-i18n="secAnnouncement">现场广播与学员端调度</h2>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5" data-i18n="broadcastDesc">实时更改学员端广播公告、FastPass 默认分段及 D-Rush 最高分展示。</p>
+            </div>
+            <span id="announcementSyncBadge" class="text-[10px] font-mono text-gray-500"></span>
           </div>
-          <a href="https://www.projectsunrise.win/signal" target="_blank" class="button-press px-4 py-2 bg-deloitte-green text-black font-extrabold text-xs rounded-xl">
-            打开 D.Signal
-          </a>
-        </div>
-      </div>
 
-      <!-- ==========================================
-           02: Knowledge Clash Config
-           ========================================== -->
-      <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-base sm:text-lg font-black text-white">02. Knowledge Clash 题库</h2>
-            <p class="text-xs text-gray-400">单选题与方括号标记答案配置</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            <!-- Announcement Input ZH & EN -->
+            <div class="md:col-span-2 space-y-3">
+              <div>
+                <label class="block text-xs font-bold text-gray-300 mb-1" data-i18n="lblAnnouncementZH">广播公告内容 (中文) · 学员端顶部通知栏</label>
+                <textarea id="adminAnnounceZH" rows="3" placeholder="例如：欢迎加入德勤新星破冰之旅！全员请根据 FastPass 路线前往各关卡站点就位。"
+                  class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs text-white leading-relaxed resize-none"></textarea>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-gray-400 mb-1" data-i18n="lblAnnouncementEN">Announcement Message (English)</label>
+                <textarea id="adminAnnounceEN" rows="2" placeholder="e.g. Welcome! Please follow your FastPass route to your designated stations."
+                  class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs text-white leading-relaxed resize-none"></textarea>
+              </div>
+            </div>
+
+            <!-- FastPass Route & D-Rush High Score -->
+            <div class="space-y-3 bg-black/50 p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
+              <div>
+                <label class="block text-xs font-bold text-lime-400 mb-2" data-i18n="lblFpDefaultRoute">学员端默认 FastPass 组数</label>
+                <div class="grid grid-cols-3 gap-1.5">
+                  <label class="flex items-center justify-center gap-1 p-2 rounded-xl bg-deloitte-cardbg border border-white/10 cursor-pointer hover:border-lime-400">
+                    <input type="radio" name="fpRouteTarget" value="24" class="accent-[#86BC25]">
+                    <span class="text-xs font-bold text-white">24 组</span>
+                  </label>
+                  <label class="flex items-center justify-center gap-1 p-2 rounded-xl bg-deloitte-cardbg border border-white/10 cursor-pointer hover:border-lime-400">
+                    <input type="radio" name="fpRouteTarget" value="36" checked class="accent-[#86BC25]">
+                    <span class="text-xs font-bold text-white">36 组</span>
+                  </label>
+                  <label class="flex items-center justify-center gap-1 p-2 rounded-xl bg-deloitte-cardbg border border-white/10 cursor-pointer hover:border-lime-400">
+                    <input type="radio" name="fpRouteTarget" value="48" class="accent-[#86BC25]">
+                    <span class="text-xs font-bold text-white">48 组</span>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-deloitte-green mb-1" data-i18n="lblDrushScore">D-Rush 破冰记录最高分 (High Score)</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-deloitte-green text-xs"><i class="fa-solid fa-trophy"></i></span>
+                  <input type="number" inputmode="numeric" id="adminDrushHighScore" value="980"
+                    class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-2 pl-8 pr-3 text-xs font-mono text-white">
+                </div>
+              </div>
+            </div>
           </div>
-          <a href="https://www.projectsunrise.win/knowledge" target="_blank" class="button-press px-4 py-2 bg-emerald-500 text-black font-extrabold text-xs rounded-xl">
-            打开 Knowledge Clash
-          </a>
-        </div>
-      </div>
 
-      <!-- ==========================================
-           03: FastPass Navigation (24 / 36 / 48)
-           ========================================== -->
-      <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex items-center justify-between">
-        <div>
-          <h2 class="text-base sm:text-lg font-black text-white">03. FastPass 路线直达</h2>
-          <p class="text-xs text-gray-400">24 / 36 / 48 组时间调度与地图</p>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+            <span id="announceSaveStatus" class="text-xs text-gray-400">发布后将存储于 Supabase 并即时广播至学员端</span>
+            <button type="button" onclick="savePortalAnnouncementConfig()"
+              class="button-press w-full sm:w-auto px-6 py-2.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span data-i18n="btnPublishAnnouncement">发布并推送至学员端</span>
+            </button>
+          </div>
         </div>
-        <div class="flex gap-1.5">
-          <a href="https://projectsunrise.win/fastpass/24" target="_blank" class="button-press px-3 py-1.5 bg-lime-400 text-black font-extrabold text-xs rounded-lg">FP-24</a>
-          <a href="https://projectsunrise.win/fastpass/36" target="_blank" class="button-press px-3 py-1.5 bg-lime-400 text-black font-extrabold text-xs rounded-lg">FP-36</a>
-          <a href="https://projectsunrise.win/fastpass/48" target="_blank" class="button-press px-3 py-1.5 bg-lime-400 text-black font-extrabold text-xs rounded-lg">FP-48</a>
-        </div>
-      </div>
+      </section>
 
     </main>
   </div>
 
   <script>
     /* ==========================================================
-       SUPABASE CONFIGURATION & AUTH
+       SUPABASE CONFIGURATION & INITIALIZATION
        ========================================================== */
     const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
@@ -429,6 +717,9 @@
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
+    /* ==========================================================
+       BILINGUAL (EN/ZH) I18N DICTIONARY
+       ========================================================== */
     const I18N = {
       zh: {
         langToggle: "EN",
@@ -436,28 +727,56 @@
         labelEmail: "账号邮箱",
         labelPassword: "登录密码",
         btnSignIn: "验证并登录",
-        headerBadge: "总控台",
-        adminTitle: "现场总控与实时分发中心",
-        adminSubtitle: "广播通知实时推送、FastPass 默认分段路由、6 大关卡分轮计分录入与全员排行榜。",
-        secAnnouncement: "现场广播与学员端调度 (Announcement & Dispatch)",
-        lblAnnouncementZH: "广播公告内容 (中文) · Displayed on Participant Header",
-        lblAnnouncementEN: "Announcement Message (English)",
-        lblFpDefaultRoute: "学员端默认 FastPass 组数",
-        lblDrushScore: "D-Rush 最高记录 (High Score)",
-        tipSync: "保存后学员手机端无需刷新即可同步更新",
-        btnPublishAnnouncement: "发布并同步学员端",
-        scoreEntryTitle: "6 大站点计分矩阵 (6 Stations × 6 Rounds)",
-        scoreEntryDesc: "第 1 层选站点，第 2 层选轮次，第 3 层输入 12 个框（队伍编号与对应得分）。全员排行榜实时计算。",
+        headerBadge: "Admin",
+        btnOpenParticipant: "学员端",
+        tabHub: "系统直达",
+        tabScores: "计分录入",
+        tabLeaderboard: "风云总榜",
+        tabBroadcast: "现场广播",
+        oracleHeader: "Daily Green Pulse",
+        nextQuote: "抽一句",
+        signalTitle: "D.Signal 信号解密",
+        signalDesc: "三轮双语词库破译体验与展示互动",
+        signalConfigBtn: "配置 3 轮词库",
+        launchSignal: "打开 D.Signal",
+        saveWordsBtn: "保存词库",
+        kcTitle: "Knowledge Clash 勤业智库",
+        kcDesc: "双语多选极速问答对决题库",
+        kcConfigBtn: "配置智库题库",
+        launchKC: "打开 Knowledge Clash",
+        saveQuestionsBtn: "保存题库",
+        fpTitle: "FastPass 快速通行证",
+        fpDesc: "多团队轮转路线指引与时间日程调度",
+        fpConfigBtn: "配置场地与日程",
+        saveFastpassBtn: "保存配置",
+        qrTitle: "QR Code 打卡码站点",
+        qrDesc: "各环节专属打卡核销二维码展示页面",
+        launchQR: "打开 QR 站点",
+        bcTitle: "Business Chemistry 商业化学指南",
+        bcDesc: "四种职场化学风格画像与团队协作指引",
+        launchBC: "打开 Chemistry",
+        sunriseTitle: "Project Sunrise 日出计划关卡",
+        sunriseDesc: "主门户与分段关卡站点直接访问通道",
+        portalHome: "Sunrise 主站",
+        drushTitle: "D-Rush: Green Dot Odyssey",
+        drushDesc: "像素小游戏与破冰挑战",
+        launchGame: "进入 D-Rush",
+        scoreEntryTitle: "关卡计分录入矩阵",
+        scoreEntryDesc: "三层架构：站点 ➔ 轮次 ➔ 12个队号与得分框",
         lblCohortScale: "规模:",
         layer1Title: "第一层：选择关卡站点 (Station)",
         layer2Title: "第二层：选择比赛轮次 (Round 1 ~ 6)",
         layer3Title: "第三层：录入 12 个数据框（队伍编号 + 得分）",
-        btnAutoFillSample: "填入示例分",
-        btnClear: "清空",
-        scoreTip: "提示：录入后即刻更新下方总榜，并同步学员端 TOP 10。",
         btnSyncLeaderboard: "保存并推送风云榜",
-        fullLeaderboardTitle: "总榜全貌 · Full Cohort Leaderboard",
-        fullLeaderboardSub: "所有战队六关明细与总成绩（学员端仅展示前 10 名）"
+        fullLeaderboardTitle: "总榜全貌 · Full Standings",
+        fullLeaderboardSub: "所有战队六关明细与总成绩（学员端仅展示前 10 名）",
+        secAnnouncement: "现场广播与学员端调度",
+        broadcastDesc: "实时更改学员端广播公告、FastPass 默认分段及 D-Rush 最高分展示。",
+        lblAnnouncementZH: "广播公告内容 (中文) · 学员端顶部通知栏",
+        lblAnnouncementEN: "Announcement Message (English)",
+        lblFpDefaultRoute: "学员端默认 FastPass 组数",
+        lblDrushScore: "D-Rush 破冰记录最高分 (High Score)",
+        btnPublishAnnouncement: "发布并推送至学员端"
       },
       en: {
         langToggle: "中",
@@ -465,28 +784,56 @@
         labelEmail: "Email Address",
         labelPassword: "Password",
         btnSignIn: "Verify & Sign In",
-        headerBadge: "Master Control",
-        adminTitle: "Operations Master Dispatcher",
-        adminSubtitle: "Real-time host announcements, FastPass route dispatcher, 6-station multi-round scoring, and full cohort leaderboard.",
-        secAnnouncement: "Live Broadcast & Dispatcher",
-        lblAnnouncementZH: "Broadcast Message (Chinese)",
-        lblAnnouncementEN: "Broadcast Message (English)",
-        lblFpDefaultRoute: "Participant Default FastPass Route",
-        lblDrushScore: "D-Rush High Score Record",
-        tipSync: "Saved updates push to participant mobile hubs instantly.",
-        btnPublishAnnouncement: "Publish & Push",
-        scoreEntryTitle: "6 Stations Scoring Matrix (6 Stations × 6 Rounds)",
-        scoreEntryDesc: "Layer 1: Station, Layer 2: Round, Layer 3: 12 boxes (Team # and Score pairs). Real-time leaderboard computed.",
+        headerBadge: "Admin",
+        btnOpenParticipant: "Participant",
+        tabHub: "Core Hub",
+        tabScores: "Scores",
+        tabLeaderboard: "Leaderboard",
+        tabBroadcast: "Broadcast",
+        oracleHeader: "Daily Green Pulse",
+        nextQuote: "Inspire",
+        signalTitle: "D.Signal Decoder",
+        signalDesc: "3-round bilingual word decoding interactive experience",
+        signalConfigBtn: "Configure 3 Rounds",
+        launchSignal: "Launch D.Signal",
+        saveWordsBtn: "Save Words",
+        kcTitle: "Knowledge Clash Trivia",
+        kcDesc: "Bilingual multiple-choice trivia challenge question deck",
+        kcConfigBtn: "Configure Questions",
+        launchKC: "Launch Knowledge Clash",
+        saveQuestionsBtn: "Save Questions",
+        fpTitle: "FastPass Navigation",
+        fpDesc: "Multi-cohort session routing & schedule dispatcher",
+        fpConfigBtn: "Configure Venues",
+        saveFastpassBtn: "Save Config",
+        qrTitle: "QR Code Check-in Hub",
+        qrDesc: "Station-specific check-in QR display and verification screens",
+        launchQR: "Launch QR Hub",
+        bcTitle: "Business Chemistry Guide",
+        bcDesc: "Four workplace chemistry archetype dossiers & team guides",
+        launchBC: "Launch Chemistry",
+        sunriseTitle: "Project Sunrise Quests",
+        sunriseDesc: "Main event portal & quest checkpoint nodes",
+        portalHome: "Sunrise Portal",
+        drushTitle: "D-Rush: Green Dot Odyssey",
+        drushDesc: "Interactive pixel mini-game & icebreaker adventure",
+        launchGame: "Launch D-Rush",
+        scoreEntryTitle: "Scoring Matrix (Score Input)",
+        scoreEntryDesc: "3 Layers: Station ➔ Round ➔ 12 Team/Score Input Boxes",
         lblCohortScale: "Scale:",
         layer1Title: "Layer 1: Select Station",
         layer2Title: "Layer 2: Select Round (1 to 6)",
         layer3Title: "Layer 3: Enter 12 Data Boxes (Team # and Score)",
-        btnAutoFillSample: "Fill Sample",
-        btnClear: "Clear",
-        scoreTip: "Note: Saving instantly recalculates standings and pushes Top 10 to participants.",
-        btnSyncLeaderboard: "Save & Push Leaderboard",
-        fullLeaderboardTitle: "Full Cohort Leaderboard",
-        fullLeaderboardSub: "All teams with 6-station breakdown (Participant hub shows Top 10 only)"
+        btnSyncLeaderboard: "Save & Push Standings",
+        fullLeaderboardTitle: "Full Standings",
+        fullLeaderboardSub: "All teams with 6-station breakdown (Participant hub shows Top 10 only)",
+        secAnnouncement: "Live Broadcast & Dispatcher",
+        broadcastDesc: "Update participant notice banner, default FastPass route, and D-Rush high score live.",
+        lblAnnouncementZH: "Broadcast Notice (Chinese) · Header Banner",
+        lblAnnouncementEN: "Announcement Message (English)",
+        lblFpDefaultRoute: "Default FastPass Route for Participants",
+        lblDrushScore: "D-Rush Record High Score",
+        btnPublishAnnouncement: "Publish & Push to Hub"
       }
     };
 
@@ -507,78 +854,63 @@
     }
 
     /* ==========================================================
-       MODULE A: ANNOUNCEMENT & FASTPASS DISPATCH
+       TAB SWITCHING CONTROLLER (4 TABS)
        ========================================================== */
-    async function loadPortalAnnouncementConfig() {
-      try {
-        if (supabaseClient) {
-          const { data, error } = await supabaseClient.from('portal_announcements').select('*').eq('id', 1).maybeSingle();
-          if (!error && data) {
-            document.getElementById('adminAnnounceZH').value = data.text_zh || data.text || '';
-            document.getElementById('adminAnnounceEN').value = data.text_en || '';
-            if (data.fastpass_target) {
-              const radio = document.querySelector(`input[name="fpRouteTarget"][value="${data.fastpass_target}"]`);
-              if (radio) radio.checked = true;
-            }
-            if (data.drush_high_score) {
-              document.getElementById('adminDrushHighScore').value = data.drush_high_score;
-            }
-            if (data.updated_at) {
-              const dt = new Date(data.updated_at);
-              document.getElementById('announcementSyncBadge').textContent = `Sync: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-            }
-            return;
+    const TABS = ['hub', 'scores', 'leaderboard', 'broadcast'];
+
+    function switchAdminMainTab(activeTab) {
+      TABS.forEach(tab => {
+        const btn = document.getElementById(`tabBtn-${tab}`);
+        const panel = document.getElementById(`panel-${tab}`);
+        if (btn && panel) {
+          if (tab === activeTab) {
+            btn.className = "button-press flex-1 min-w-[85px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-deloitte-green text-black shadow-lg shadow-deloitte-green/20";
+            panel.classList.remove('hidden');
+          } else {
+            btn.className = "button-press flex-1 min-w-[85px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white";
+            panel.classList.add('hidden');
           }
         }
-      } catch (err) {
-        console.warn("Announcement fetch err:", err);
-      }
+      });
     }
 
-    async function savePortalAnnouncementConfig() {
-      const zh = document.getElementById('adminAnnounceZH').value.trim();
-      const en = document.getElementById('adminAnnounceEN').value.trim();
-      const fpCohort = document.querySelector('input[name="fpRouteTarget"]:checked')?.value || '36';
-      const drushScore = parseInt(document.getElementById('adminDrushHighScore').value, 10) || 980;
-
-      const payload = {
-        id: 1,
-        text_zh: zh,
-        text_en: en,
-        text: zh || en,
-        fastpass_target: fpCohort,
-        drush_high_score: drushScore,
-        updated_at: new Date().toISOString()
-      };
-
-      localStorage.setItem('portal_announcement_cache', JSON.stringify(payload));
-
-      const statusEl = document.getElementById('announceSaveStatus');
-      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-deloitte-green"></i><span>正在推送...</span>`;
-
-      try {
-        if (supabaseClient) {
-          const { error } = await supabaseClient.from('portal_announcements').upsert(payload);
-          if (error) throw error;
-        }
-        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green"></i><span class="text-deloitte-green">已发布并同步至学员端 (${nowStr})</span>`;
-        document.getElementById('announcementSyncBadge').textContent = `Sync: ${nowStr}`;
-        if (window.confetti) confetti({ particleCount: 20, spread: 30, origin: { x: 0.5, y: 0.3 } });
-      } catch (e) {
-        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-400">本地已暂存，云端写入提示: ${e.message}</span>`;
+    function togglePanel(panelId, chevronId) {
+      const panel = document.getElementById(panelId);
+      const chevron = document.getElementById(chevronId);
+      if (!panel) return;
+      const isHidden = panel.classList.contains('hidden');
+      if (isHidden) {
+        panel.classList.remove('hidden');
+        if (chevron) chevron.classList.add('rotate-180');
+      } else {
+        panel.classList.add('hidden');
+        if (chevron) chevron.classList.remove('rotate-180');
       }
     }
 
     /* ==========================================================
-       MODULE B: 6 STATIONS & 6 ROUNDS SCORE ENTRY MATRIX
-       Stations:
-       0: Piece by Piece
-       1: Ethical Tree
-       2: D.Signal
-       3: Knowledge Clash
-       4: EQ Matrix
-       5: The AI Era
+       MOOD ORACLE
+       ========================================================== */
+    const MOOD_QUOTES = [
+      { text: "Make an impact that matters — starting with not breaking production. | 成就不凡，先从别点崩系统开始 🛡️", icon: "fa-shield-halved" },
+      { text: "Coffee in, deliverables out. | 咖啡入腹，交付物神速，优雅闭环 ☕", icon: "fa-mug-hot" },
+      { text: "Green dot glowing, sanity loading... 99%. | 绿点长明，理智值正在飞速回血中 🔋", icon: "fa-battery-three-quarters" },
+      { text: "Aligned, granular, and heavily caffeinated. | 颗粒度已对齐，底层逻辑已打通，咖啡因全面就绪 🎯", icon: "fa-bullseye" }
+    ];
+    let quoteIdx = 0;
+
+    function nextOracleQuote(e) {
+      if (e && window.confetti) {
+        confetti({ particleCount: 25, spread: 40, origin: { x: 0.5, y: 0.2 }, colors: ['#86BC25', '#a3e635'] });
+      }
+      quoteIdx = (quoteIdx + 1) % MOOD_QUOTES.length;
+      const q = MOOD_QUOTES[quoteIdx];
+      document.getElementById('oracleQuote').textContent = q.text;
+      document.getElementById('oracleIcon').className = `fa-solid ${q.icon}`;
+    }
+
+    /* ==========================================================
+       TAB 2: SCORING MATRIX LOGIC (6 STATIONS × 6 ROUNDS × 12 BOXES)
        ========================================================== */
     const STATIONS = [
       { id: 0, zh: "一起拼未来", en: "Piece by piece", icon: "fa-puzzle-piece" },
@@ -592,8 +924,6 @@
     let currentCohortSize = 36;
     let activeStationIndex = 0;
     let activeRoundIndex = 0;
-
-    // Data Structure: scoresGrid[stationIndex][roundIndex] = [ { team: 1, score: 85 }, ... 6 pairs ]
     let scoresGrid = {};
 
     function initScoresGrid() {
@@ -612,12 +942,12 @@
       const container = document.getElementById('stationButtonsGrid');
       container.innerHTML = STATIONS.map(st => `
         <button type="button" onclick="selectStation(${st.id})" id="stBtn-${st.id}"
-          class="button-press p-2.5 rounded-xl border text-left transition-all ${st.id === activeStationIndex ? 'bg-amber-400 text-black border-amber-400 font-extrabold shadow-md' : 'bg-black/40 border-white/10 text-gray-300 hover:bg-white/5'}">
+          class="button-press p-2 rounded-xl border text-left transition-all ${st.id === activeStationIndex ? 'bg-amber-400 text-black border-amber-400 font-extrabold shadow-md' : 'bg-black/40 border-white/10 text-gray-300 hover:bg-white/5'}">
           <div class="flex items-center gap-1.5 text-xs truncate">
-            <i class="fa-solid ${st.icon}"></i>
-            <span>${st.zh}</span>
+            <i class="fa-solid ${st.icon} text-[11px]"></i>
+            <span class="truncate">${st.zh}</span>
           </div>
-          <div class="text-[10px] ${st.id === activeStationIndex ? 'text-black/80' : 'text-gray-500'} truncate font-mono">${st.en}</div>
+          <div class="text-[9px] ${st.id === activeStationIndex ? 'text-black/80' : 'text-gray-500'} truncate font-mono">${st.en}</div>
         </button>
       `).join('');
     }
@@ -627,7 +957,7 @@
       container.innerHTML = [0, 1, 2, 3, 4, 5].map(r => `
         <button type="button" onclick="selectRound(${r})" id="rdBtn-${r}"
           class="button-press py-2 rounded-xl border text-xs font-mono font-bold transition-all text-center ${r === activeRoundIndex ? 'bg-deloitte-green text-black border-deloitte-green shadow-md' : 'bg-black/40 border-white/10 text-gray-400 hover:bg-white/5'}">
-          Round ${r + 1}
+          R${r + 1}
         </button>
       `).join('');
       updateActiveBadge();
@@ -636,7 +966,7 @@
     function updateActiveBadge() {
       const badge = document.getElementById('activeStationRoundBadge');
       if (badge) {
-        badge.textContent = `${STATIONS[activeStationIndex].zh} · Round ${activeRoundIndex + 1}`;
+        badge.textContent = `${STATIONS[activeStationIndex].zh} · R${activeRoundIndex + 1}`;
       }
     }
 
@@ -665,21 +995,19 @@
         const boxNum2 = idx * 2 + 2;
 
         return `
-          <div class="p-3 rounded-xl bg-deloitte-cardbg border border-white/10 space-y-1.5">
-            <div class="flex items-center justify-between text-[11px] font-mono text-gray-400">
+          <div class="p-2.5 rounded-xl bg-deloitte-cardbg border border-white/10 space-y-1">
+            <div class="flex items-center justify-between text-[10px] font-mono text-gray-400">
               <span class="font-bold text-amber-300">Pair ${idx + 1}</span>
-              <span>Boxes #${boxNum1} & #${boxNum2}</span>
+              <span>Box #${boxNum1} & #${boxNum2}</span>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-[10px] text-gray-400 font-mono">Team # (队号)</label>
-                <input type="number" min="1" max="${currentCohortSize}" id="input-team-${idx}" value="${pair.team}" placeholder="e.g. ${idx + 1}"
+                <input type="number" inputmode="numeric" min="1" max="${currentCohortSize}" id="input-team-${idx}" value="${pair.team}" placeholder="队号 (1-${currentCohortSize})"
                   oninput="handleLiveInputChange()"
                   class="w-full bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-lg px-2 py-1.5 text-xs font-mono text-white text-center">
               </div>
               <div>
-                <label class="block text-[10px] text-gray-400 font-mono">Score (得分)</label>
-                <input type="number" min="0" max="100" id="input-score-${idx}" value="${pair.score}" placeholder="e.g. 95"
+                <input type="number" inputmode="numeric" min="0" max="100" id="input-score-${idx}" value="${pair.score}" placeholder="得分"
                   oninput="handleLiveInputChange()"
                   class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-lg px-2 py-1.5 text-xs font-mono text-deloitte-green font-bold text-center">
               </div>
@@ -741,17 +1069,11 @@
       renderAdminLeaderboardTable();
     }
 
-    // Aggregate standings for all teams (Rank 1 to N)
     function calculateFullStandings() {
       const teamsMap = {};
       for (let t = 1; t <= currentCohortSize; t++) {
         const teamName = `Team ${String(t).padStart(2, '0')}`;
-        teamsMap[t] = {
-          teamId: t,
-          team: teamName,
-          stations: [0, 0, 0, 0, 0, 0],
-          total: 0
-        };
+        teamsMap[t] = { teamId: t, team: teamName, stations: [0, 0, 0, 0, 0, 0], total: 0 };
       }
 
       for (let s = 0; s < 6; s++) {
@@ -787,7 +1109,7 @@
       tbody.innerHTML = filtered.map((item, idx) => `
         <tr class="hover:bg-white/[0.04] transition-colors">
           <td class="py-2.5 px-3 font-bold text-gray-400">#${idx + 1}</td>
-          <td class="py-2.5 px-3 font-bold text-white">${item.team}</td>
+          <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">${item.team}</td>
           <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[0]}</td>
           <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[1]}</td>
           <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[2]}</td>
@@ -803,7 +1125,6 @@
       syncCurrentInputsToMemory();
       const standings = calculateFullStandings();
 
-      // Local storage cache
       localStorage.setItem('leaderboard_data_cache', JSON.stringify(standings));
       localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
 
@@ -824,7 +1145,7 @@
         alert(currentLang === 'zh' ? "✅ 计分矩阵已保存并推送到学员端排行榜！" : "✅ Scores saved and pushed to participant leaderboard!");
       } catch (err) {
         console.warn("Supabase leaderboard upsert err:", err);
-        alert(currentLang === 'zh' ? "本地已保存，云端同步提醒：" + err.message : "Saved locally, cloud note: " + err.message);
+        alert(currentLang === 'zh' ? "本地已保存，云端提醒: " + err.message : "Saved locally, cloud note: " + err.message);
       }
     }
 
@@ -852,6 +1173,387 @@
     }
 
     /* ==========================================================
+       TAB 4: BROADCAST & DISPATCH LOGIC
+       ========================================================== */
+    async function loadPortalAnnouncementConfig() {
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('portal_announcements').select('*').eq('id', 1).maybeSingle();
+          if (!error && data) {
+            document.getElementById('adminAnnounceZH').value = data.text_zh || data.text || '';
+            document.getElementById('adminAnnounceEN').value = data.text_en || '';
+            if (data.fastpass_target) {
+              const radio = document.querySelector(`input[name="fpRouteTarget"][value="${data.fastpass_target}"]`);
+              if (radio) radio.checked = true;
+            }
+            if (data.drush_high_score) {
+              document.getElementById('adminDrushHighScore').value = data.drush_high_score;
+            }
+            if (data.updated_at) {
+              const dt = new Date(data.updated_at);
+              document.getElementById('announcementSyncBadge').textContent = `Sync: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            }
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Announcement fetch err:", err);
+      }
+    }
+
+    async function savePortalAnnouncementConfig() {
+      const zh = document.getElementById('adminAnnounceZH').value.trim();
+      const en = document.getElementById('adminAnnounceEN').value.trim();
+      const fpCohort = document.querySelector('input[name="fpRouteTarget"]:checked')?.value || '36';
+      const drushScore = parseInt(document.getElementById('adminDrushHighScore').value, 10) || 980;
+
+      const payload = {
+        id: 1,
+        text_zh: zh,
+        text_en: en,
+        text: zh || en,
+        fastpass_target: fpCohort,
+        drush_high_score: drushScore,
+        updated_at: new Date().toISOString()
+      };
+
+      localStorage.setItem('portal_announcement_cache', JSON.stringify(payload));
+      const statusEl = document.getElementById('announceSaveStatus');
+      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-deloitte-green"></i><span>正在推送...</span>`;
+
+      try {
+        if (supabaseClient) {
+          const { error } = await supabaseClient.from('portal_announcements').upsert(payload);
+          if (error) throw error;
+        }
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green"></i><span class="text-deloitte-green">已发布并同步至学员端 (${nowStr})</span>`;
+        document.getElementById('announcementSyncBadge').textContent = `Sync: ${nowStr}`;
+        if (window.confetti) confetti({ particleCount: 20, spread: 30, origin: { x: 0.5, y: 0.3 } });
+      } catch (e) {
+        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-400">本地已暂存，云端写入提示: ${e.message}</span>`;
+      }
+    }
+
+    /* ==========================================================
+       D.SIGNAL CONFIG
+       ========================================================== */
+    const DEFAULT_SIGNAL_ROUND_DATA = {
+      1: { title: "Round 1", words: [{ cn: "大熊猫", en: "Giant Panda" }, { cn: "金丝猴", en: "Golden Monkey" }] },
+      2: { title: "Round 2", words: [{ cn: "合伙人", en: "Partner" }, { cn: "客户", en: "Client" }] },
+      3: { title: "Round 3", words: [{ cn: "审计及鉴证", en: "Audit & Assurance" }, { cn: "咨询", en: "Consulting" }] }
+    };
+    let signalRoundState = JSON.parse(JSON.stringify(DEFAULT_SIGNAL_ROUND_DATA));
+
+    function parseSignalWordListInput(inputStr) {
+      if (!inputStr) return null;
+      const tokens = inputStr.trim().split(/\s+/).filter(t => t.length > 0);
+      if (tokens.length === 0) return null;
+      const parsedList = [];
+      const hasChinese = /[\u4e00-\u9fa5]/;
+      if (hasChinese.test(inputStr)) {
+        let currentCn = null;
+        let currentEnParts = [];
+        for (let i = 0; i < tokens.length; i++) {
+          const token = tokens[i];
+          if (hasChinese.test(token)) {
+            if (currentCn) parsedList.push({ cn: currentCn, en: currentEnParts.length > 0 ? currentEnParts.join(" ") : currentCn });
+            currentCn = token;
+            currentEnParts = [];
+          } else {
+            if (currentCn) currentEnParts.push(token);
+            else currentCn = token;
+          }
+        }
+        if (currentCn) parsedList.push({ cn: currentCn, en: currentEnParts.length > 0 ? currentEnParts.join(" ") : currentCn });
+      } else {
+        for (let i = 0; i < tokens.length; i += 2) {
+          parsedList.push({ cn: tokens[i], en: tokens[i + 1] || tokens[i] });
+        }
+      }
+      return parsedList.length > 0 ? parsedList : null;
+    }
+
+    function formatSignalWordsForTextarea(wordList) {
+      return (wordList || []).map(w => `${w.cn} ${w.en}`).join("\n");
+    }
+
+    function renderSignalEditorInputs() {
+      for (let r = 1; r <= 3; r++) {
+        const el = document.getElementById(`sigInputRound${r}`);
+        if (el && signalRoundState[r]) el.value = formatSignalWordsForTextarea(signalRoundState[r].words);
+      }
+      updateSignalLiveCounts();
+    }
+
+    function updateSignalLiveCounts() {
+      for (let r = 1; r <= 3; r++) {
+        const el = document.getElementById(`sigInputRound${r}`);
+        const parsed = el ? parseSignalWordListInput(el.value) : [];
+        const count = parsed ? parsed.length : 0;
+        const tabCount = document.getElementById(`sigTabCount${r}`);
+        if (tabCount) tabCount.textContent = `(${count})`;
+      }
+    }
+
+    function switchSignalAdminTab(tabNum) {
+      for (let r = 1; r <= 3; r++) {
+        const btn = document.getElementById(`sigTabBtn${r}`);
+        const panel = document.getElementById(`sigTabPanel${r}`);
+        if (btn && panel) {
+          if (r === tabNum) {
+            btn.className = "flex-1 min-w-[85px] py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black whitespace-nowrap text-center";
+            panel.classList.remove("hidden");
+          } else {
+            btn.className = "flex-1 min-w-[85px] py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white/5 text-gray-300 whitespace-nowrap text-center";
+            panel.classList.add("hidden");
+          }
+        }
+      }
+    }
+
+    function insertSignalTemplate() {
+      const activeTab = [1,2,3].find(r => !document.getElementById(`sigTabPanel${r}`).classList.contains('hidden')) || 1;
+      const el = document.getElementById(`sigInputRound${activeTab}`);
+      if (el) {
+        el.value += (el.value.trim() ? "\n" : "") + "创新 Innovation\n共赢 Win-Win\n同理心 Empathy";
+        updateSignalLiveCounts();
+      }
+    }
+
+    async function loadSignalConfig() {
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('signal_config').select('*').eq('id', 1).maybeSingle();
+          if (!error && data && data.round_data) {
+            signalRoundState = data.round_data;
+            renderSignalEditorInputs();
+            if (data.updated_at) {
+              const dt = new Date(data.updated_at);
+              document.getElementById('signalLastSavedBadge').textContent = `Sync: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            }
+            return;
+          }
+        }
+      } catch (err) {}
+      renderSignalEditorInputs();
+    }
+
+    async function saveSignalConfig() {
+      const saveBtn = document.getElementById('signalSaveBtn');
+      const saveBtnText = document.getElementById('signalSaveBtnText');
+      const statusEl = document.getElementById('signalSaveStatus');
+
+      for (let r = 1; r <= 3; r++) {
+        const textarea = document.getElementById(`sigInputRound${r}`);
+        if (textarea && textarea.value.trim() !== "") {
+          const parsed = parseSignalWordListInput(textarea.value);
+          if (parsed && parsed.length > 0) signalRoundState[r].words = parsed;
+        }
+      }
+
+      saveBtn.disabled = true;
+      saveBtnText.textContent = "Saving...";
+
+      try {
+        if (supabaseClient) {
+          await supabaseClient.from('signal_config').upsert({ id: 1, round_data: signalRoundState, updated_at: new Date().toISOString() });
+        }
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green"></i><span class="text-deloitte-green">已同步</span>`;
+      } catch (err) {
+        statusEl.innerHTML = `<span class="text-amber-400">本地已存</span>`;
+      } finally {
+        saveBtn.disabled = false;
+        saveBtnText.textContent = I18N[currentLang].saveWordsBtn;
+      }
+    }
+
+    /* ==========================================================
+       KNOWLEDGE CLASH CONFIG
+       ========================================================== */
+    const DEFAULT_KC_RAW = [
+      "德勤品牌于哪一年在全球创立？ / Founded year?, [1845年 / 1845], 1895年 / 1895, 1917年 / 1917, 1945年 / 1945",
+      "德勤当前的全球品牌标语是什么？ / Brand tagline?, 因我不同 / To make an impact that matters, [众行致远 / Together makes progress], 清晰敏锐 / Clear Confident, 诚信至上 / Integrity First"
+    ];
+
+    function parseKcQuestionsFromText(rawText) {
+      if (!rawText || !rawText.trim()) return [];
+      const lines = rawText.split("\n");
+      const parsed = [];
+      for (let line of lines) {
+        line = line.trim();
+        if (!line || line.startsWith("#")) continue;
+        const parts = line.split(",").map(p => p.trim());
+        if (parts.length >= 3) {
+          const questionText = parts[0];
+          const rawOptions = parts.slice(1);
+          let correctIndex = 0;
+          const options = rawOptions.map((opt, idx) => {
+            const m = opt.match(/^[\[【](.*)[\]】]$/);
+            if (m) { correctIndex = idx; return m[1].trim(); }
+            return opt;
+          });
+          parsed.push({ question: questionText, options: options.slice(0, 4), correctIndex: Math.min(correctIndex, 3) });
+        }
+      }
+      return parsed;
+    }
+
+    function formatKcQuestionsToText(qList) {
+      return (qList || []).map(item => {
+        const formattedOpts = (item.options || []).map((opt, idx) => idx === item.correctIndex ? `[${opt}]` : opt);
+        return `${item.question}, ${formattedOpts.join(", ")}`;
+      }).join("\n");
+    }
+
+    function updateKcParsedCount() {
+      const textarea = document.getElementById('kcQuestionTextarea');
+      if (!textarea) return;
+      const count = parseKcQuestionsFromText(textarea.value).length;
+    }
+
+    function insertKcTemplate() {
+      const textarea = document.getElementById('kcQuestionTextarea');
+      if (textarea) {
+        textarea.value += (textarea.value.trim() ? "\n" : "") + "德勤安全可控的生成式AI平台是？ / GenAI platform?, D.Brain, [D.Nova], DeloitteGPT, AI.Pilot";
+        updateKcParsedCount();
+      }
+    }
+
+    async function loadKnowledgeConfig() {
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('knowledge_config').select('*').eq('id', 1).maybeSingle();
+          if (!error && data && data.questions) {
+            document.getElementById('kcQuestionTextarea').value = formatKcQuestionsToText(data.questions);
+            updateKcParsedCount();
+            return;
+          }
+        }
+      } catch (err) {}
+      document.getElementById('kcQuestionTextarea').value = DEFAULT_KC_RAW.join("\n");
+      updateKcParsedCount();
+    }
+
+    async function saveKnowledgeConfig() {
+      const textarea = document.getElementById('kcQuestionTextarea');
+      const parsed = parseKcQuestionsFromText(textarea.value);
+      if (parsed.length === 0) return;
+
+      try {
+        if (supabaseClient) {
+          await supabaseClient.from('knowledge_config').upsert({ id: 1, questions: parsed, updated_at: new Date().toISOString() });
+        }
+        document.getElementById('kcSaveStatus').innerHTML = `<span class="text-emerald-400">已同步 ${parsed.length} 题</span>`;
+      } catch (err) {}
+    }
+
+    /* ==========================================================
+       FASTPASS CONFIG
+       ========================================================== */
+    const FP_STATIONS = [
+      { id: 0, zh: '一起拼未来', en: 'Piece by piece', icon: 'fa-puzzle-piece' },
+      { id: 1, zh: '培育职业道德之树', en: 'Ethical Tree', icon: 'fa-tree' },
+      { id: 2, zh: '信号解密', en: 'D.Signal', icon: 'fa-tower-broadcast' },
+      { id: 3, zh: '勤业智库', en: 'Knowledge Clash', icon: 'fa-brain' },
+      { id: 4, zh: '情商罗盘', en: 'EQ Matrix', icon: 'fa-compass' },
+      { id: 5, zh: 'AI纪元', en: 'The AI Era', icon: 'fa-microchip' }
+    ];
+
+    const DEFAULT_FP_VENUES = {
+      0: { zh: '场地 1', en: 'Venue 1' }, 1: { zh: '场地 2', en: 'Venue 2' },
+      2: { zh: '场地 3', en: 'Venue 3' }, 3: { zh: '场地 4', en: 'Venue 4' },
+      4: { zh: '场地 5', en: 'Venue 5' }, 5: { zh: '场地 6', en: 'Venue 6' }
+    };
+
+    const DEFAULT_FP_TIME_SLOTS = [
+      { start: '13:50', end: '14:20' }, { start: '14:30', end: '15:00' },
+      { start: '15:10', end: '15:40' }, { start: '16:00', end: '16:30' },
+      { start: '16:40', end: '17:10' }, { start: '17:20', end: '17:50' }
+    ];
+
+    let fpConfigState = { venues: DEFAULT_FP_VENUES, time_slots: DEFAULT_FP_TIME_SLOTS };
+
+    function renderFastPassEditorInputs() {
+      const venueContainer = document.getElementById('fpVenueInputsContainer');
+      venueContainer.innerHTML = FP_STATIONS.map(st => {
+        const v = fpConfigState.venues[st.id] || { zh: `场地 ${st.id + 1}`, en: `Venue ${st.id + 1}` };
+        return `
+          <div class="grid grid-cols-2 gap-1.5">
+            <input type="text" id="fp-venue-zh-${st.id}" value="${v.zh}" placeholder="${st.zh}" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2 py-1 text-xs text-white">
+            <input type="text" id="fp-venue-en-${st.id}" value="${v.en}" placeholder="${st.en}" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2 py-1 text-xs text-white">
+          </div>
+        `;
+      }).join('');
+
+      const timeContainer = document.getElementById('fpTimeInputsContainer');
+      timeContainer.innerHTML = fpConfigState.time_slots.map((slot, idx) => `
+        <div class="flex items-center justify-between gap-1 bg-deloitte-cardbg border border-white/10 rounded-lg px-2 py-1">
+          <span class="text-xs font-mono font-bold text-gray-400">R${idx + 1}</span>
+          <div class="flex items-center gap-1 font-mono">
+            <input type="time" id="fp-time-start-${idx}" value="${slot.start}" class="bg-black/60 border border-white/15 rounded px-1 py-0.5 text-xs text-white text-center">
+            <span class="text-gray-500 text-[10px]">~</span>
+            <input type="time" id="fp-time-end-${idx}" value="${slot.end}" class="bg-black/60 border border-white/15 rounded px-1 py-0.5 text-xs text-white text-center">
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function autoFillTimeSlots() {
+      const firstStartEl = document.getElementById('fp-time-start-0');
+      if (!firstStartEl || !firstStartEl.value) return;
+      let [h, m] = firstStartEl.value.split(':').map(Number);
+      let cursor = (h || 0) * 60 + (m || 0);
+
+      for (let i = 0; i < 6; i++) {
+        const startStr = `${String(Math.floor((cursor % 1440) / 60)).padStart(2, '0')}:${String(cursor % 60).padStart(2, '0')}`;
+        const endCursor = cursor + 30;
+        const endStr = `${String(Math.floor((endCursor % 1440) / 60)).padStart(2, '0')}:${String(endCursor % 60).padStart(2, '0')}`;
+        document.getElementById(`fp-time-start-${i}`).value = startStr;
+        document.getElementById(`fp-time-end-${i}`).value = endStr;
+        cursor += 40;
+      }
+    }
+
+    async function loadFastPassConfig() {
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('fastpass_config').select('*').eq('id', 1).maybeSingle();
+          if (!error && data) {
+            if (data.venues) fpConfigState.venues = data.venues;
+            if (data.time_slots) fpConfigState.time_slots = data.time_slots;
+          }
+        }
+      } catch (err) {}
+      renderFastPassEditorInputs();
+    }
+
+    async function saveFastPassConfig() {
+      const newVenues = {};
+      for (let i = 0; i < 6; i++) {
+        newVenues[i] = {
+          zh: document.getElementById(`fp-venue-zh-${i}`).value.trim() || `场地 ${i + 1}`,
+          en: document.getElementById(`fp-venue-en-${i}`).value.trim() || `Venue ${i + 1}`
+        };
+      }
+      const newTimeSlots = [];
+      for (let i = 0; i < 6; i++) {
+        newTimeSlots.push({
+          start: document.getElementById(`fp-time-start-${i}`).value,
+          end: document.getElementById(`fp-time-end-${i}`).value
+        });
+      }
+      fpConfigState = { venues: newVenues, time_slots: newTimeSlots };
+
+      try {
+        if (supabaseClient) {
+          await supabaseClient.from('fastpass_config').upsert({ id: 1, venues: newVenues, time_slots: newTimeSlots, updated_at: new Date().toISOString() });
+        }
+        document.getElementById('fpSaveStatus').innerHTML = `<span class="text-lime-400">已同步</span>`;
+      } catch (e) {}
+    }
+
+    /* ==========================================================
        AUTH & INITIALIZATION
        ========================================================== */
     window.addEventListener('load', async () => {
@@ -861,10 +1563,7 @@
       renderRoundButtons();
       renderRoundInputs();
 
-      if (!supabaseClient) {
-        showError("Supabase script failed to load. Check connection.");
-        return;
-      }
+      if (!supabaseClient) return;
 
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -879,7 +1578,7 @@
           else if (event === 'SIGNED_OUT') renderLocked();
         });
       } catch (err) {
-        console.error("Auth init error:", err);
+        console.error("Auth init err:", err);
       }
     });
 
@@ -891,7 +1590,7 @@
       const btnText = document.getElementById('btnText');
 
       submitBtn.disabled = true;
-      btnText.textContent = currentLang === 'zh' ? "验证中..." : "Verifying...";
+      btnText.textContent = "Verifying...";
 
       try {
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
@@ -930,13 +1629,11 @@
       document.getElementById('mainAdminContent').classList.remove('hidden');
       document.getElementById('mainAdminContent').classList.add('flex');
 
-      if (user && user.email) {
-        const userTag = document.getElementById('userEmailTag');
-        userTag.textContent = user.email;
-      }
-
       loadPortalAnnouncementConfig();
       loadSavedScores();
+      loadSignalConfig();
+      loadKnowledgeConfig();
+      loadFastPassConfig();
     }
 
     function renderLocked() {
