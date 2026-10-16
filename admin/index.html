@@ -81,6 +81,11 @@
       100% { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(1) brightness(0.8);
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -136,8 +141,6 @@
           <span id="btnText">验证并登录 · Sign In</span>
         </button>
       </form>
-
-      <!-- <p class="text-[11px] text-gray-500 font-mono relative z-10 pt-2 border-t border-white/10">Protected by Supabase Auth</p> -->
     </div>
   </div>
 
@@ -202,32 +205,93 @@
           </a>
         </div>
 
-        <!-- 03: FastPass (24 / 36 / 48) -->
-        <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div class="space-y-2">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">03</span>
-              <h2 class="text-lg sm:text-xl font-black text-white">FastPass 快速通行证 (24 / 36 / 48 组)</h2>
+        <!-- 03: FastPass (24 / 36 / 48) + Live Settings Panel -->
+        <div class="p-5 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-5">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">03</span>
+                <h2 class="text-lg sm:text-xl font-black text-white">FastPass 快速通行证 (24 / 36 / 48 组)</h2>
+              </div>
+              <p class="text-xs text-gray-500">Multi-team session routing & real-time schedule tracking</p>
+              <div class="flex flex-wrap items-center gap-2 pt-0.5">
+                <button type="button" onclick="toggleFastPassConfig()" class="button-press inline-flex items-center gap-2 text-xs text-lime-300 bg-lime-500/10 hover:bg-lime-500/20 border border-lime-500/30 rounded-lg px-3 py-1.5 font-bold transition-all">
+                  <i class="fa-solid fa-sliders text-lime-400"></i>
+                  <span>配置活动地点与时间段 · Configure Venues & Time</span>
+                  <i id="fpConfigChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+                </button>
+                <span id="fpLastSavedBadge" class="text-[11px] font-mono text-gray-500"></span>
+              </div>
             </div>
-            <p class="text-xs text-gray-500">Multi-team session routing & real-time schedule tracking</p>
-            <div class="inline-flex items-center gap-2 text-[11px] text-gray-400 bg-black/40 border border-white/10 rounded-lg px-2.5 py-1.5 font-mono">
-              <i class="fa-solid fa-pen-to-square text-lime-400"></i>
-              <span>配置提示：编辑 <code class="text-lime-300 font-bold bg-white/5 px-1 py-0.5 rounded">~/fastpass/venue.txt</code> 可同步更新 6 站活动地点</span>
+
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <a href="https://projectsunrise.win/fastpass/24" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+                <span>FastPass (24)</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+              <a href="https://projectsunrise.win/fastpass/36" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+                <span>FastPass (36)</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+              <a href="https://projectsunrise.win/fastpass/48" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
+                <span>FastPass (48)</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
             </div>
           </div>
-          <div class="flex flex-wrap items-center gap-2 shrink-0">
-            <a href="https://projectsunrise.win/fastpass/24" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
-              <span>FastPass (24)</span>
-              <i class="fa-solid fa-arrow-right text-xs"></i>
-            </a>
-            <a href="https://projectsunrise.win/fastpass/36" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
-              <span>FastPass (36)</span>
-              <i class="fa-solid fa-arrow-right text-xs"></i>
-            </a>
-            <a href="https://projectsunrise.win/fastpass/48" target="_blank" rel="noopener noreferrer" class="button-press px-4 py-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center gap-1.5">
-              <span>FastPass (48)</span>
-              <i class="fa-solid fa-arrow-right text-xs"></i>
-            </a>
+
+          <!-- Collapsible FastPass Settings Editor -->
+          <div id="fastpassConfigPanel" class="hidden pt-5 border-t border-white/10 space-y-6 animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              <!-- Left Column: 6 Station Venues -->
+              <div class="bg-black/40 border border-white/10 rounded-xl p-4 space-y-3.5">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-location-dot text-lime-400 text-xs"></i>
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-white">6 站活动地点 · Station Venues</h3>
+                  </div>
+                  <span class="text-[11px] text-gray-400 font-mono">中文 / English</span>
+                </div>
+                <div id="fpVenueInputsContainer" class="space-y-3"></div>
+              </div>
+
+              <!-- Right Column: 6 Time Slots -->
+              <div class="bg-black/40 border border-white/10 rounded-xl p-4 space-y-3.5 flex flex-col justify-between">
+                <div class="space-y-3.5">
+                  <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-regular fa-clock text-lime-400 text-xs"></i>
+                      <h3 class="text-xs font-extrabold uppercase tracking-wider text-white">6 轮时间段 · Time Slots</h3>
+                    </div>
+                    <button type="button" onclick="autoFillTimeSlots()" class="text-[11px] text-lime-400 hover:underline font-semibold flex items-center gap-1" title="根据第1轮开始时间，按30分钟活动+10分钟轮转自动推算">
+                      <i class="fa-solid fa-wand-magic-sparkles"></i> 按首轮自动推算
+                    </button>
+                  </div>
+                  <div id="fpTimeInputsContainer" class="space-y-2.5"></div>
+                </div>
+
+                <div class="pt-3 border-t border-white/10 text-[11px] text-gray-400 flex items-center justify-between">
+                  <span>提示：保存后 FastPass 页面将实时同步更新</span>
+                  <button type="button" onclick="resetFastPassDefaults()" class="text-gray-400 hover:text-rose-400 transition-colors underline">
+                    恢复默认设置
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Save Bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/[0.02] border border-white/10 rounded-xl p-3.5">
+              <div id="fpSaveStatus" class="text-xs font-semibold text-gray-400 flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-lime-400"></i>
+                <span>修改上方场地或时间后点击右侧保存按钮即可生效</span>
+              </div>
+              <button id="fpSaveBtn" type="button" onclick="saveFastPassConfig()" class="button-press px-6 py-2.5 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shrink-0 shadow-lg shadow-lime-400/20">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span id="fpSaveBtnText">保存并同步配置 · Save Changes</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -312,7 +376,6 @@
     </main>
   </div>
 
-  <!-- Fix 2: Renamed client variable to avoid global namespace collision -->
   <script>
     const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
@@ -323,6 +386,210 @@
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     } else {
       console.error("Supabase SDK failed to load. Check your network or CDN link.");
+    }
+
+    // --- FastPass Default Metadata & State ---
+    const FP_STATIONS = [
+      { id: 0, zh: '一起拼未来', en: 'Piece by piece, we change', icon: 'fa-puzzle-piece' },
+      { id: 1, zh: '培育您的职业道德之树', en: 'Plant Your Ethical Tree', icon: 'fa-tree' },
+      { id: 2, zh: '信号解密', en: 'D.Signal', icon: 'fa-tower-broadcast' },
+      { id: 3, zh: '勤业智库', en: 'Knowledge Clash', icon: 'fa-brain' },
+      { id: 4, zh: '情商罗盘', en: 'EQ Matrix', icon: 'fa-compass' },
+      { id: 5, zh: 'AI纪元', en: 'The AI Era', icon: 'fa-microchip' }
+    ];
+
+    const DEFAULT_FP_VENUES = {
+      0: { zh: '场地 1', en: 'Venue 1' },
+      1: { zh: '场地 2', en: 'Venue 2' },
+      2: { zh: '场地 3', en: 'Venue 3' },
+      3: { zh: '场地 4', en: 'Venue 4' },
+      4: { zh: '场地 5', en: 'Venue 5' },
+      5: { zh: '场地 6', en: 'Venue 6' }
+    };
+
+    const DEFAULT_FP_TIME_SLOTS = [
+      { start: '13:50', end: '14:20' },
+      { start: '14:30', end: '15:00' },
+      { start: '15:10', end: '15:40' },
+      { start: '16:00', end: '16:30' },
+      { start: '16:40', end: '17:10' },
+      { start: '17:20', end: '17:50' }
+    ];
+
+    let fpConfigState = {
+      venues: JSON.parse(JSON.stringify(DEFAULT_FP_VENUES)),
+      time_slots: JSON.parse(JSON.stringify(DEFAULT_FP_TIME_SLOTS))
+    };
+
+    function renderFastPassEditorInputs() {
+      const venueContainer = document.getElementById('fpVenueInputsContainer');
+      venueContainer.innerHTML = FP_STATIONS.map(st => {
+        const v = fpConfigState.venues[st.id] || { zh: `场地 ${st.id + 1}`, en: `Venue ${st.id + 1}` };
+        return `
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-gray-300 flex items-center gap-1.5">
+              <i class="fa-solid ${st.icon} text-lime-400 w-3.5 text-center"></i>
+              <span>${st.zh}</span>
+              <span class="text-gray-500 font-normal truncate">· ${st.en}</span>
+            </label>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="fp-venue-zh-${st.id}" value="${v.zh.replace(/"/g, '&quot;')}" placeholder="中文地点 (如: 301室)"
+                class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2.5 py-1.5 text-xs text-white">
+              <input type="text" id="fp-venue-en-${st.id}" value="${v.en.replace(/"/g, '&quot;')}" placeholder="English Venue (e.g. Rm 301)"
+                class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2.5 py-1.5 text-xs text-white">
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const timeContainer = document.getElementById('fpTimeInputsContainer');
+      timeContainer.innerHTML = fpConfigState.time_slots.map((slot, idx) => `
+        <div class="flex items-center justify-between gap-2 bg-deloitte-cardbg/70 border border-white/10 rounded-lg px-3 py-2">
+          <span class="text-xs font-mono font-bold text-gray-400 w-16">第 ${idx + 1} 轮</span>
+          <div class="flex items-center gap-2 flex-1 justify-end font-mono">
+            <input type="time" id="fp-time-start-${idx}" value="${slot.start}"
+              class="bg-black/60 border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2.5 py-1 text-xs text-white">
+            <span class="text-gray-500 text-xs">至</span>
+            <input type="time" id="fp-time-end-${idx}" value="${slot.end}"
+              class="bg-black/60 border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2.5 py-1 text-xs text-white">
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleFastPassConfig() {
+      const panel = document.getElementById('fastpassConfigPanel');
+      const chevron = document.getElementById('fpConfigChevron');
+      const isHidden = panel.classList.contains('hidden');
+      if (isHidden) {
+        panel.classList.remove('hidden');
+        chevron.classList.add('rotate-180');
+      } else {
+        panel.classList.add('hidden');
+        chevron.classList.remove('rotate-180');
+      }
+    }
+
+    function minToTimeStr(mins) {
+      const h = Math.floor((mins % 1440) / 60);
+      const m = mins % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
+    function timeStrToMin(str) {
+      const [h, m] = (str || '00:00').split(':').map(Number);
+      return (h || 0) * 60 + (m || 0);
+    }
+
+    function autoFillTimeSlots() {
+      const firstStartEl = document.getElementById('fp-time-start-0');
+      if (!firstStartEl || !firstStartEl.value) return;
+      let cursor = timeStrToMin(firstStartEl.value);
+      for (let i = 0; i < 6; i++) {
+        const startStr = minToTimeStr(cursor);
+        const endStr = minToTimeStr(cursor + 30);
+        document.getElementById(`fp-time-start-${i}`).value = startStr;
+        document.getElementById(`fp-time-end-${i}`).value = endStr;
+        cursor += 40; // 30m session + 10m rotation
+      }
+    }
+
+    function resetFastPassDefaults() {
+      fpConfigState.venues = JSON.parse(JSON.stringify(DEFAULT_FP_VENUES));
+      fpConfigState.time_slots = JSON.parse(JSON.stringify(DEFAULT_FP_TIME_SLOTS));
+      renderFastPassEditorInputs();
+    }
+
+    async function loadFastPassConfig() {
+      renderFastPassEditorInputs();
+
+      // 1. Check localStorage fallback first
+      try {
+        const cached = localStorage.getItem('fastpass_config_v1');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.venues) fpConfigState.venues = parsed.venues;
+          if (parsed.time_slots) fpConfigState.time_slots = parsed.time_slots;
+          renderFastPassEditorInputs();
+        }
+      } catch (e) {}
+
+      // 2. Fetch from Supabase
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('fastpass_config')
+          .select('*')
+          .eq('id', 1)
+          .maybeSingle();
+
+        if (!error && data) {
+          if (data.venues) fpConfigState.venues = data.venues;
+          if (data.time_slots) fpConfigState.time_slots = data.time_slots;
+          renderFastPassEditorInputs();
+          localStorage.setItem('fastpass_config_v1', JSON.stringify(fpConfigState));
+          if (data.updated_at) {
+            const dt = new Date(data.updated_at);
+            document.getElementById('fpLastSavedBadge').textContent = `上次同步: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load fastpass_config from Supabase:", err);
+      }
+    }
+
+    async function saveFastPassConfig() {
+      const saveBtn = document.getElementById('fpSaveBtn');
+      const saveBtnText = document.getElementById('fpSaveBtnText');
+      const statusEl = document.getElementById('fpSaveStatus');
+
+      const newVenues = {};
+      for (let i = 0; i < 6; i++) {
+        const zhVal = document.getElementById(`fp-venue-zh-${i}`).value.trim() || `场地 ${i + 1}`;
+        const enVal = document.getElementById(`fp-venue-en-${i}`).value.trim() || zhVal;
+        newVenues[i] = { zh: zhVal, en: enVal };
+      }
+
+      const newTimeSlots = [];
+      for (let i = 0; i < 6; i++) {
+        const startVal = document.getElementById(`fp-time-start-${i}`).value || DEFAULT_FP_TIME_SLOTS[i].start;
+        const endVal = document.getElementById(`fp-time-end-${i}`).value || DEFAULT_FP_TIME_SLOTS[i].end;
+        newTimeSlots.push({
+          start: startVal,
+          end: endVal,
+          startMin: timeStrToMin(startVal),
+          endMin: timeStrToMin(endVal)
+        });
+      }
+
+      fpConfigState = { venues: newVenues, time_slots: newTimeSlots };
+      localStorage.setItem('fastpass_config_v1', JSON.stringify(fpConfigState));
+
+      saveBtn.disabled = true;
+      saveBtnText.textContent = "正在同步 · Saving...";
+
+      try {
+        const { error } = await supabaseClient
+          .from('fastpass_config')
+          .upsert({
+            id: 1,
+            venues: newVenues,
+            time_slots: newTimeSlots,
+            updated_at: new Date().toISOString()
+          });
+
+        if (error) throw error;
+
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-lime-400"></i><span class="text-lime-400">已同步至云端与 FastPass 页面 (${nowStr})</span>`;
+        document.getElementById('fpLastSavedBadge').textContent = `上次同步: ${nowStr}`;
+      } catch (err) {
+        console.error("Save fastpass_config error:", err);
+        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-400">已保存至本地浏览器，但云端表写入失败 (${err.message || '请确认已创建 fastpass_config 表'})</span>`;
+      } finally {
+        saveBtn.disabled = false;
+        saveBtnText.textContent = "保存并同步配置 · Save Changes";
+      }
     }
   
     window.addEventListener('load', async () => {
@@ -418,6 +685,8 @@
         userTag.textContent = user.email;
         userTag.classList.remove('hidden');
       }
+
+      loadFastPassConfig();
     }
   
     function renderLocked() {
