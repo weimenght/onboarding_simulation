@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Deloitte Onboarding | Participant Hub</title>
+  <title>DeloitteLand Participant Hub</title>
   
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -160,7 +160,7 @@
         </div>
       </a>
 
-      <!-- D-Rush Mini Game & Highest Score -->
+      <!-- D-Rush Mini Game & Highest Score (Fetched directly from Supabase) -->
       <a href="https://www.projectsunrise.win/game" target="_blank" rel="noopener noreferrer"
         class="button-press p-3.5 rounded-2xl bg-deloitte-cardbg border border-deloitte-green/30 hover:border-deloitte-green card-shadow flex flex-col justify-between group relative overflow-hidden">
         <div class="absolute -right-4 -top-4 w-16 h-16 bg-deloitte-green/10 rounded-full blur-xl pointer-events-none"></div>
@@ -170,7 +170,7 @@
           </div>
           <div class="flex items-center gap-1 text-[10px] font-mono text-deloitte-green font-bold bg-deloitte-green/15 px-2 py-0.5 rounded-full border border-deloitte-green/30">
             <i class="fa-solid fa-trophy text-[9px]"></i>
-            <span id="drushHighScoreBadge">980</span>
+            <span id="drushHighScoreBadge">--</span>
           </div>
         </div>
         <div class="mt-3">
@@ -196,7 +196,7 @@
       <div id="sunriseInputSection" class="space-y-2">
         <p class="text-[11px] text-gray-400" data-i18n="sunrisePasscodePrompt">输入主持人公布的秘钥解锁：</p>
         <div class="flex gap-2">
-          <input id="sunrisePasscodeInput" type="text" placeholder="Passcode (14 chars)"
+          <input id="sunrisePasscodeInput" type="text" placeholder="Passcode (14位口令)"
             class="flex-1 bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-gray-600 uppercase">
           <button type="button" onclick="verifySunrisePasscode()"
             class="button-press px-4 py-2 bg-amber-400 hover:bg-amber-300 text-black text-xs font-black rounded-xl flex items-center gap-1.5 shrink-0">
@@ -478,7 +478,52 @@
     }
 
     /* ==========================================================
-       01. ANNOUNCEMENT & FASTPASS DISPATCH SYNC
+       01. D-RUSH HIGHEST SCORE DIRECTLY FROM SUPABASE
+       ========================================================== */
+    async function loadDrushHighScore() {
+      const badge = document.getElementById('drushHighScoreBadge');
+      if (!badge) return;
+      try {
+        if (supabaseClient) {
+          // 1. Check dedicated drush_scores table ordered descending
+          const { data: scoreData, error: sErr } = await supabaseClient
+            .from('drush_scores')
+            .select('score')
+            .order('score', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (!sErr && scoreData && scoreData.score !== undefined && scoreData.score !== null) {
+            badge.textContent = scoreData.score;
+            localStorage.setItem('drush_high_score_cache', String(scoreData.score));
+            return;
+          }
+
+          // 2. Check portal_announcements table for synchronized drush_high_score field
+          const { data: annData, error: aErr } = await supabaseClient
+            .from('portal_announcements')
+            .select('drush_high_score')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (!aErr && annData && annData.drush_high_score !== undefined && annData.drush_high_score !== null) {
+            badge.textContent = annData.drush_high_score;
+            localStorage.setItem('drush_high_score_cache', String(annData.drush_high_score));
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("D-Rush Supabase high score fetch error:", err);
+      }
+
+      const cached = localStorage.getItem('drush_high_score_cache');
+      if (cached) {
+        badge.textContent = cached;
+      }
+    }
+
+    /* ==========================================================
+       02. ANNOUNCEMENT & FASTPASS DISPATCH SYNC
        ========================================================== */
     async function loadPortalAnnouncement() {
       try {
@@ -525,15 +570,10 @@
         fpLink.href = `https://projectsunrise.win/fastpass/${cohort}`;
         fpBadge.textContent = `FP-${cohort}`;
       }
-
-      // D-Rush high score sync
-      if (data.drush_high_score) {
-        document.getElementById('drushHighScoreBadge').textContent = data.drush_high_score;
-      }
     }
 
     /* ==========================================================
-       02. PROJECT SUNRISE PASSCODE UNLOCK LOGIC
+       03. PROJECT SUNRISE PASSCODE UNLOCK LOGIC
        Passcode: "esirnustcejorp"
        ========================================================== */
     const SUNRISE_PASSCODE = "esirnustcejorp";
@@ -571,7 +611,7 @@
     }
 
     /* ==========================================================
-       03. 6 STATIONS LEADERBOARD (STRICTLY NO FAKE DATA)
+       04. 6 STATIONS LEADERBOARD (STRICTLY NO FAKE DATA)
        ========================================================== */
     let currentSelectedStation = 'ALL';
     let fullScoresDataset = null;
@@ -603,7 +643,6 @@
           fullScoresDataset = null;
         }
       } else {
-        // STRICT: No fake random data generated
         fullScoresDataset = null;
       }
       renderLeaderboard();
@@ -628,7 +667,6 @@
       const listEl = document.getElementById('leaderboardList');
       if (!listEl) return;
 
-      // Handle true empty state when no scores are submitted
       if (!fullScoresDataset || fullScoresDataset.length === 0) {
         listEl.innerHTML = `
           <div class="p-6 rounded-xl bg-black/30 border border-white/5 text-center space-y-2">
@@ -641,7 +679,6 @@
         return;
       }
 
-      // Rank based on active filter
       let sorted = fullScoresDataset.map(item => {
         let scoreToRank = 0;
         if (currentSelectedStation === 'ALL') {
@@ -653,7 +690,6 @@
         return { team: item.team, score: scoreToRank };
       });
 
-      // Show teams that have actually scored (or Top 10)
       sorted.sort((a, b) => b.score - a.score);
       const top10 = sorted.slice(0, 10);
 
@@ -692,7 +728,7 @@
     }
 
     /* ==========================================================
-       04. PARTICIPANT MESSAGE BOARD
+       05. PARTICIPANT MESSAGE BOARD
        ========================================================== */
     let localMessages = [
       { id: 1, nickname: "Deloitte MC", content: "✨ 欢迎新同事！众行致远，成就不凡 🚀", time: "Live" }
@@ -752,7 +788,7 @@
 
       btn.disabled = true;
 
-      // Easter Egg #3: Secret Trigger Word
+      // Easter Egg Trigger Word
       if (content.toLowerCase().includes("together makes progress") || content.includes("众行致远")) {
         showEasterEggModal(I18N[currentLang].eggValueMsg);
       }
@@ -786,7 +822,7 @@
     }
 
     /* ==========================================================
-       05. EASTER EGGS LOGIC
+       06. EASTER EGGS LOGIC
        ========================================================== */
     let dotClickCount = 0;
     function handleDotEggClick() {
@@ -831,12 +867,14 @@
       setLanguage(currentLang);
       checkSunriseUnlockState();
       loadPortalAnnouncement();
+      loadDrushHighScore();
       fetchLiveLeaderboard();
       loadMessages();
 
-      // Poll Supabase messages and announcements every 12 seconds
+      // Poll Supabase data every 12 seconds
       setInterval(() => {
         loadPortalAnnouncement();
+        loadDrushHighScore();
         loadMessages();
         fetchLiveLeaderboard();
       }, 12000);
