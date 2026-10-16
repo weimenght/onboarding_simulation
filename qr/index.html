@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>6 Stations QR</title>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Tone.js for Web Audio Synthesis -->
@@ -90,10 +92,71 @@
     .scanner-line {
       animation: scanLine 2.2s ease-in-out infinite;
     }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake-error { animation: shake 0.4s ease-in-out; }
   </style>
 </head>
 
 <body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+
+  <!-- Gate / Login Overlay -->
+  <div id="passwordGate" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#080b11] p-4">
+    <div id="gateCard" class="bg-deloitte-card border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center animate-pop-in relative overflow-hidden">
+      <div class="absolute -right-12 -top-12 w-32 h-32 bg-deloitte-green/15 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="space-y-3 relative z-10">
+        <div class="w-16 h-16 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-2xl mx-auto shadow-lg shadow-deloitte-green/20">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-black text-white">Stations QR<span class="deloitte-dot"></span></h1>
+          <p class="text-xs text-gray-400 mt-1 font-cn">请登录管理员账号以访问站点二维码<br><span class="text-[11px] text-gray-500">Sign in to access QR Code Stations</span></p>
+        </div>
+      </div>
+
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-3.5 relative z-10 text-left">
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">账号 / Email</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-envelope"></i>
+            </span>
+            <input id="emailInput" type="email" placeholder="admin@deloitte.com" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">密码 / Password</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-10 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs transition-colors" title="显示/隐藏密码">
+              <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <p id="errorMessage" class="hidden text-xs text-rose-400 font-semibold font-cn flex items-center gap-1.5 pt-1">
+          <i class="fa-solid fa-circle-exclamation text-rose-500 shrink-0"></i>
+          <span id="errorText">账号或密码错误 / Invalid credentials</span>
+        </p>
+
+        <button id="submitBtn" type="submit" class="button-press w-full mt-2 py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+          <span id="btnText">验证并登录 · Sign In</span>
+        </button>
+      </form>
+
+      <p class="text-[11px] text-gray-500 font-mono relative z-10 pt-2 border-t border-white/10">Protected by Supabase Auth</p>
+    </div>
+  </div>
 
   <!-- Header -->
   <header class="w-full border-b border-white/10 bg-deloitte-bg/80 backdrop-blur-md sticky top-0 z-40">
@@ -117,6 +180,10 @@
           <i id="audioIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
           <span id="audioText" class="text-gray-300">SFX</span>
         </button>
+        <button type="button" onclick="handleLogout()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 hover:border-rose-500/30 border border-white/10 text-gray-300 hover:text-rose-300 transition-all flex items-center space-x-1.5" title="退出登录">
+          <i class="fa-solid fa-arrow-right-from-bracket text-xs text-deloitte-green"></i>
+          <span class="hidden sm:inline">退出</span>
+        </button>
       </div>
     </div>
   </header>
@@ -125,7 +192,7 @@
   <main class="flex-grow max-w-4xl mx-auto w-full px-4 py-8 flex flex-col justify-center">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
 
-      <!-- Station 1: 一起拼未来 / Piece by piece, we change -->
+      <!-- Station 1 -->
       <button onclick="openQrModal(0)" class="button-press group relative p-5 rounded-2xl bg-deloitte-card border border-white/10 hover:border-deloitte-green/50 text-left card-shadow hover:bg-deloitte-slate/60 transition-all flex items-center justify-between">
         <div class="flex items-center space-x-3.5 min-w-0 flex-1">
           <div class="w-11 h-11 rounded-xl bg-deloitte-green/10 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-lg group-hover:scale-105 group-hover:bg-deloitte-green group-hover:text-black transition-all flex-shrink-0">
@@ -140,7 +207,7 @@
         <i class="fa-solid fa-qrcode text-gray-500 group-hover:text-deloitte-green transition-colors ml-2 text-base"></i>
       </button>
 
-      <!-- Station 2: 培育您的职业道德之树 / Plant Your Ethical Tree -->
+      <!-- Station 2 -->
       <button onclick="openQrModal(1)" class="button-press group relative p-5 rounded-2xl bg-deloitte-card border border-white/10 hover:border-deloitte-green/50 text-left card-shadow hover:bg-deloitte-slate/60 transition-all flex items-center justify-between">
         <div class="flex items-center space-x-3.5 min-w-0 flex-1">
           <div class="w-11 h-11 rounded-xl bg-deloitte-green/10 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-lg group-hover:scale-105 group-hover:bg-deloitte-green group-hover:text-black transition-all flex-shrink-0">
@@ -155,7 +222,7 @@
         <i class="fa-solid fa-qrcode text-gray-500 group-hover:text-deloitte-green transition-colors ml-2 text-base"></i>
       </button>
 
-      <!-- Station 3: 信号解密 / D.Signal -->
+      <!-- Station 3 -->
       <button onclick="openQrModal(2)" class="button-press group relative p-5 rounded-2xl bg-deloitte-card border border-white/10 hover:border-deloitte-green/50 text-left card-shadow hover:bg-deloitte-slate/60 transition-all flex items-center justify-between">
         <div class="flex items-center space-x-3.5 min-w-0 flex-1">
           <div class="w-11 h-11 rounded-xl bg-deloitte-green/10 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-lg group-hover:scale-105 group-hover:bg-deloitte-green group-hover:text-black transition-all flex-shrink-0">
@@ -170,7 +237,7 @@
         <i class="fa-solid fa-qrcode text-gray-500 group-hover:text-deloitte-green transition-colors ml-2 text-base"></i>
       </button>
 
-      <!-- Station 4: 勤业智库 / Knowledge Clash -->
+      <!-- Station 4 -->
       <button onclick="openQrModal(3)" class="button-press group relative p-5 rounded-2xl bg-deloitte-card border border-white/10 hover:border-deloitte-green/50 text-left card-shadow hover:bg-deloitte-slate/60 transition-all flex items-center justify-between">
         <div class="flex items-center space-x-3.5 min-w-0 flex-1">
           <div class="w-11 h-11 rounded-xl bg-deloitte-green/10 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-lg group-hover:scale-105 group-hover:bg-deloitte-green group-hover:text-black transition-all flex-shrink-0">
@@ -185,7 +252,7 @@
         <i class="fa-solid fa-qrcode text-gray-500 group-hover:text-deloitte-green transition-colors ml-2 text-base"></i>
       </button>
 
-      <!-- Station 5: 情商罗盘 / EQ Matrix -->
+      <!-- Station 5 -->
       <button onclick="openQrModal(4)" class="button-press group relative p-5 rounded-2xl bg-deloitte-card border border-white/10 hover:border-deloitte-green/50 text-left card-shadow hover:bg-deloitte-slate/60 transition-all flex items-center justify-between">
         <div class="flex items-center space-x-3.5 min-w-0 flex-1">
           <div class="w-11 h-11 rounded-xl bg-deloitte-green/10 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-lg group-hover:scale-105 group-hover:bg-deloitte-green group-hover:text-black transition-all flex-shrink-0">
@@ -200,7 +267,7 @@
         <i class="fa-solid fa-qrcode text-gray-500 group-hover:text-deloitte-green transition-colors ml-2 text-base"></i>
       </button>
 
-      <!-- Station 6: AI纪元 / The AI Era -->
+      <!-- Station 6 -->
       <button onclick="openQrModal(5)" class="button-press group relative p-5 rounded-2xl bg-deloitte-card border border-white/10 hover:border-deloitte-green/50 text-left card-shadow hover:bg-deloitte-slate/60 transition-all flex items-center justify-between">
         <div class="flex items-center space-x-3.5 min-w-0 flex-1">
           <div class="w-11 h-11 rounded-xl bg-deloitte-green/10 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-lg group-hover:scale-105 group-hover:bg-deloitte-green group-hover:text-black transition-all flex-shrink-0">
@@ -262,6 +329,107 @@
   </div>
 
   <script>
+    /* ==========================================================
+       0. SUPABASE AUTHENTICATION
+       ========================================================== */
+    const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
+    let supabaseClient = null;
+
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    async function initAuth() {
+      if (!supabaseClient) {
+        showAuthError("Supabase 脚本加载失败，请检查网络");
+        return;
+      }
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          renderAuthorized();
+        } else {
+          document.getElementById('emailInput').focus();
+        }
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_IN' && session) renderAuthorized();
+          else if (event === 'SIGNED_OUT') renderLocked();
+        });
+      } catch (err) {
+        console.error("Auth init error:", err);
+      }
+    }
+
+    async function handleLoginSubmit(event) {
+      event.preventDefault();
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+
+      if (!supabaseClient) {
+        showAuthError("无法连接到认证服务");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      btnText.textContent = "验证中 · Verifying...";
+      submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+          showAuthError(error.message);
+        } else if (data?.user) {
+          document.getElementById('errorMessage').classList.add('hidden');
+          renderAuthorized();
+        }
+      } catch (err) {
+        showAuthError("请求异常: " + (err.message || "Network Error"));
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = "验证并登录 · Sign In";
+        submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+      }
+    }
+
+    function showAuthError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+      const gateCard = document.getElementById('gateCard');
+      errorText.textContent = message;
+      errorEl.classList.remove('hidden');
+      gateCard.classList.remove('shake-error');
+      void gateCard.offsetWidth;
+      gateCard.classList.add('shake-error');
+    }
+
+    async function handleLogout() {
+      closeQrModal();
+      if (supabaseClient) await supabaseClient.auth.signOut();
+    }
+
+    function renderAuthorized() {
+      document.getElementById('passwordGate').classList.add('hidden');
+    }
+
+    function renderLocked() {
+      document.getElementById("qrModal").classList.add("hidden");
+      document.getElementById('passwordGate').classList.remove('hidden');
+      const passwordInput = document.getElementById('passwordInput');
+      if (passwordInput) passwordInput.value = '';
+      document.getElementById('errorMessage').classList.add('hidden');
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('passwordInput');
+      const icon = document.getElementById('toggleEyeIcon');
+      const visible = input.type === 'password';
+      input.type = visible ? 'text' : 'password';
+      icon.className = visible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    }
+
     /* ==========================================================
        1. STATIONS METADATA (Synchronized with FastPass)
        ========================================================== */
@@ -382,12 +550,10 @@
       const img = document.getElementById("modalQrImg");
       const fallback = document.getElementById("modalQrFallback");
 
-      // Reset display
       img.classList.remove("hidden");
       fallback.classList.add("hidden");
       fallback.innerHTML = "";
 
-      // Fallback if image asset is missing
       img.onerror = function() {
         img.classList.add("hidden");
         fallback.classList.remove("hidden");
@@ -419,6 +585,10 @@
 
     /* Keyboard Shortcuts: 1-6 open stations, ESC closes modal */
     window.addEventListener("keydown", (e) => {
+      const gate = document.getElementById("passwordGate");
+      if (gate && !gate.classList.contains("hidden")) return;
+      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+
       const modal = document.getElementById("qrModal");
       if (e.key === "Escape") {
         if (!modal.classList.contains("hidden")) {
@@ -428,6 +598,10 @@
         const index = parseInt(e.key, 10) - 1;
         openQrModal(index);
       }
+    });
+
+    window.addEventListener("load", () => {
+      initAuth();
     });
 
     document.addEventListener("click", () => {
