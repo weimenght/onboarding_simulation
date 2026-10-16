@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>DeloitteLand Admin</title>
+  <title>DeloitteLand | Master Operations Admin</title>
   
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -286,7 +286,6 @@
               <p class="text-[11px] text-gray-400 font-mono">每行或空格输入：“中文 英文”，如 “大熊猫 Giant Panda”</p>
             </div>
 
-            <!-- Round Tabs -->
             <div class="flex items-center gap-1 p-1 bg-black/40 rounded-xl border border-white/10 overflow-x-auto no-scrollbar">
               <button type="button" id="sigTabBtn1" onclick="switchSignalAdminTab(1)" class="flex-1 min-w-[85px] py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black whitespace-nowrap text-center">
                 Round 1 <span id="sigTabCount1" class="text-[10px]">(16)</span>
@@ -357,7 +356,7 @@
           </div>
         </div>
 
-        <!-- 03: FastPass Navigation (24 / 36 / 48) - RESTORED QUICK BUTTONS -->
+        <!-- 03: FastPass Navigation (24 / 36 / 48) - ALIGNED WITH GLOBAL SCALE -->
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             <div class="space-y-1">
@@ -365,7 +364,7 @@
                 <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">03</span>
                 <h2 class="text-base sm:text-xl font-black text-white" data-i18n="fpTitle">FastPass 快速通行证</h2>
               </div>
-              <p class="text-xs text-gray-400" data-i18n="fpDesc">多团队轮转路线指引与时间日程调度</p>
+              <p class="text-xs text-gray-400" data-i18n="fpDesc">多团队轮转路线指引与时间日程调度（点击直接切换全局队伍规模）</p>
               <div class="flex flex-wrap items-center gap-2 pt-0.5">
                 <button type="button" onclick="togglePanel('fastpassConfigPanel', 'fpConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-lime-300 bg-lime-500/10 hover:bg-lime-500/20 border border-lime-500/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
                   <i class="fa-solid fa-sliders text-xs text-lime-400"></i>
@@ -376,20 +375,23 @@
               </div>
             </div>
 
-            <!-- Quick Launch Buttons for 24, 36, 48 Cohorts -->
+            <!-- Global-Switching FastPass Cohort Buttons -->
             <div class="grid grid-cols-3 gap-2 w-full lg:w-auto">
-              <a href="https://projectsunrise.win/fastpass/24" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1 shadow-md shadow-lime-400/20">
+              <button type="button" onclick="setGlobalCohortScale(24, true)" id="fpLaunchBtn-24"
+                class="button-press py-2.5 px-3 rounded-xl border text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-md">
                 <span>FP-24</span>
-                <i class="fa-solid fa-arrow-right text-[9px]"></i>
-              </a>
-              <a href="https://projectsunrise.win/fastpass/36" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1 shadow-md shadow-lime-400/20">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+              </button>
+              <button type="button" onclick="setGlobalCohortScale(36, true)" id="fpLaunchBtn-36"
+                class="button-press py-2.5 px-3 rounded-xl border text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-md">
                 <span>FP-36</span>
-                <i class="fa-solid fa-arrow-right text-[9px]"></i>
-              </a>
-              <a href="https://projectsunrise.win/fastpass/48" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1 shadow-md shadow-lime-400/20">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+              </button>
+              <button type="button" onclick="setGlobalCohortScale(48, true)" id="fpLaunchBtn-48"
+                class="button-press py-2.5 px-3 rounded-xl border text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-md">
                 <span>FP-48</span>
-                <i class="fa-solid fa-arrow-right text-[9px]"></i>
-              </a>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+              </button>
             </div>
           </div>
 
@@ -438,7 +440,7 @@
           </a>
         </div>
 
-        <!-- 05: Business Chemistry (RESTORED BUTTON) -->
+        <!-- 05: Business Chemistry -->
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
@@ -453,7 +455,7 @@
           </a>
         </div>
 
-        <!-- 06: Project Sunrise & 3 Checkpoint Task Nodes (RESTORED BUTTONS) -->
+        <!-- 06: Project Sunrise & 3 Checkpoint Task Nodes -->
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
@@ -468,21 +470,21 @@
               <i class="fa-solid fa-arrow-right text-[9px]"></i>
             </a>
             <a href="https://www.projectsunrise.win/diyiguan" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-amber-400/90 hover:bg-amber-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1">
-              <span>Node 1 (第一关)</span>
+              <span>Node 1</span>
               <i class="fa-solid fa-arrow-right text-[9px]"></i>
             </a>
             <a href="https://www.projectsunrise.win/niveldos" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-amber-400/90 hover:bg-amber-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1">
-              <span>Node 2 (第二关)</span>
+              <span>Node 2</span>
               <i class="fa-solid fa-arrow-right text-[9px]"></i>
             </a>
             <a href="https://www.projectsunrise.win/sankyu" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-amber-400/90 hover:bg-amber-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1">
-              <span>Node 3 (第三关)</span>
+              <span>Node 3</span>
               <i class="fa-solid fa-arrow-right text-[9px]"></i>
             </a>
           </div>
         </div>
 
-        <!-- 07: D-Rush: Green Dot Odyssey (RESTORED BUTTON) -->
+        <!-- 07: D-Rush Mini Game -->
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
@@ -500,7 +502,7 @@
       </section>
 
       <!-- ==========================================================
-           TAB 2: 6 STATIONS & 6 ROUNDS SCORE INPUT MATRIX (MOBILE OPTIMIZED)
+           TAB 2: SCORING MATRIX (DYNAMIC BOX COUNT: 4, 6, OR 8 TEAMS)
            ========================================================== -->
       <section id="panel-scores" class="hidden space-y-4 animate-fade-in">
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
@@ -508,29 +510,27 @@
           <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
             <div>
               <h2 class="text-base sm:text-xl font-black text-white" data-i18n="scoreEntryTitle">关卡计分录入矩阵</h2>
-              <p class="text-xs text-gray-400" data-i18n="scoreEntryDesc">三层架构：站点 ➔ 轮次 ➔ 12个队号与得分框</p>
+              <p class="text-xs text-gray-400" id="matrixSubtitleHint">三层架构：站点 ➔ 轮次 ➔ 本轮参赛战队得分录入</p>
             </div>
             
-            <!-- Cohort Scale (24 / 36 / 48) -->
+            <!-- Cohort Scale (Linked Globally) -->
             <div class="flex items-center gap-1.5 bg-black/50 px-3 py-1.5 rounded-xl border border-white/10 self-start xs:self-auto">
               <span class="text-xs text-gray-400 font-bold" data-i18n="lblCohortScale">规模:</span>
-              <select id="cohortTeamCountSelect" onchange="handleCohortScaleChange()" class="bg-transparent text-xs text-amber-400 font-bold focus:outline-none">
-                <option value="24" class="bg-deloitte-cardbg text-white">24 Teams</option>
-                <option value="36" selected class="bg-deloitte-cardbg text-white">36 Teams</option>
-                <option value="48" class="bg-deloitte-cardbg text-white">48 Teams</option>
+              <select id="cohortTeamCountSelect" onchange="setGlobalCohortScale(this.value, false)" class="bg-transparent text-xs text-amber-400 font-bold focus:outline-none">
+                <option value="24" class="bg-deloitte-cardbg text-white">24 Teams (4/站)</option>
+                <option value="36" class="bg-deloitte-cardbg text-white">36 Teams (6/站)</option>
+                <option value="48" class="bg-deloitte-cardbg text-white">48 Teams (8/站)</option>
               </select>
             </div>
           </div>
 
-          <!-- LAYER 1: 6 STATIONS (Mobile Touch Grid) -->
+          <!-- LAYER 1: 6 STATIONS -->
           <div class="space-y-1.5">
             <label class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
               <span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px]">1</span>
               <span data-i18n="layer1Title">第一层：选择关卡站点 (Station)</span>
             </label>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="stationButtonsGrid">
-              <!-- Rendered by JS -->
-            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="stationButtonsGrid"></div>
           </div>
 
           <!-- LAYER 2: 6 ROUNDS -->
@@ -542,17 +542,15 @@
               </label>
               <span id="activeStationRoundBadge" class="text-xs font-mono text-deloitte-green font-bold"></span>
             </div>
-            <div class="grid grid-cols-6 gap-1.5 sm:gap-2" id="roundButtonsGrid">
-              <!-- Rendered by JS -->
-            </div>
+            <div class="grid grid-cols-6 gap-1.5 sm:gap-2" id="roundButtonsGrid"></div>
           </div>
 
-          <!-- LAYER 3: 12 BOXES (6 Pairs: Team # + Score) -->
+          <!-- LAYER 3: DYNAMIC BOXES (4 Teams / 6 Teams / 8 Teams) -->
           <div class="space-y-3 pt-2 bg-black/50 p-3 sm:p-4 rounded-2xl border border-white/10">
             <div class="flex items-center justify-between">
               <label class="text-xs font-black text-white flex items-center gap-1.5">
                 <span class="w-4 h-4 rounded-full bg-deloitte-green text-black flex items-center justify-center text-[10px]">3</span>
-                <span data-i18n="layer3Title">第三层：录入 12 个数据框（队伍编号 + 得分）</span>
+                <span id="layer3TitleText">第三层：录入战队数据框</span>
               </label>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="autoFillMockRoundScores()" class="text-[11px] text-amber-400 hover:underline font-bold">
@@ -564,10 +562,8 @@
               </div>
             </div>
 
-            <!-- 12 Boxes: 1 col on mobile, 2 col on tablet, 3 col on desktop -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1" id="twelveBoxesContainer">
-              <!-- Rendered by JS -->
-            </div>
+            <!-- Dynamic Container based on Scale -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1" id="twelveBoxesContainer"></div>
 
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
               <span class="text-[11px] text-gray-400">💡 录入后实时更新总榜，点击右侧同步学员端 TOP 10。</span>
@@ -582,7 +578,7 @@
       </section>
 
       <!-- ==========================================================
-           TAB 3: FULL LEADERBOARD (MOBILE SCROLLABLE TABLE)
+           TAB 3: FULL LEADERBOARD
            ========================================================== -->
       <section id="panel-leaderboard" class="hidden space-y-4 animate-fade-in">
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
@@ -620,16 +616,14 @@
                   <th class="py-2.5 px-3 text-right text-deloitte-green font-bold">TOTAL</th>
                 </tr>
               </thead>
-              <tbody id="adminLeaderboardTableBody" class="divide-y divide-white/5 font-mono">
-                <!-- Injected via JS -->
-              </tbody>
+              <tbody id="adminLeaderboardTableBody" class="divide-y divide-white/5 font-mono"></tbody>
             </table>
           </div>
         </div>
       </section>
 
       <!-- ==========================================================
-           TAB 4: BROADCAST & LIVE DISPATCH (MOBILE OPTIMIZED)
+           TAB 4: BROADCAST & LIVE DISPATCH (D-RUSH FROM SUPABASE)
            ========================================================== -->
       <section id="panel-broadcast" class="hidden space-y-4 animate-fade-in">
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-deloitte-green/30 card-shadow space-y-4">
@@ -639,7 +633,7 @@
                 <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/20 text-deloitte-green border border-deloitte-green/40">LIVE</span>
                 <h2 class="text-base sm:text-xl font-black text-white" data-i18n="secAnnouncement">现场广播与学员端调度</h2>
               </div>
-              <p class="text-xs text-gray-400 mt-0.5" data-i18n="broadcastDesc">实时更改学员端广播公告、FastPass 默认分段及 D-Rush 最高分展示。</p>
+              <p class="text-xs text-gray-400 mt-0.5" data-i18n="broadcastDesc">实时更改学员端广播公告与全局 FastPass 路线调度。</p>
             </div>
             <span id="announcementSyncBadge" class="text-[10px] font-mono text-gray-500"></span>
           </div>
@@ -660,32 +654,40 @@
               </div>
             </div>
 
-            <!-- FastPass Route & D-Rush High Score -->
+            <!-- FastPass Route Dispatch & Automated D-Rush Readout -->
             <div class="space-y-3 bg-black/50 p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
               <div>
                 <label class="block text-xs font-bold text-lime-400 mb-2" data-i18n="lblFpDefaultRoute">学员端默认 FastPass 组数</label>
                 <div class="grid grid-cols-3 gap-1.5">
                   <label class="flex items-center justify-center gap-1 p-2 rounded-xl bg-deloitte-cardbg border border-white/10 cursor-pointer hover:border-lime-400">
-                    <input type="radio" name="fpRouteTarget" value="24" class="accent-[#86BC25]">
+                    <input type="radio" name="fpRouteTarget" value="24" onchange="setGlobalCohortScale(24, false)" class="accent-[#86BC25]">
                     <span class="text-xs font-bold text-white">24 组</span>
                   </label>
                   <label class="flex items-center justify-center gap-1 p-2 rounded-xl bg-deloitte-cardbg border border-white/10 cursor-pointer hover:border-lime-400">
-                    <input type="radio" name="fpRouteTarget" value="36" checked class="accent-[#86BC25]">
+                    <input type="radio" name="fpRouteTarget" value="36" checked onchange="setGlobalCohortScale(36, false)" class="accent-[#86BC25]">
                     <span class="text-xs font-bold text-white">36 组</span>
                   </label>
                   <label class="flex items-center justify-center gap-1 p-2 rounded-xl bg-deloitte-cardbg border border-white/10 cursor-pointer hover:border-lime-400">
-                    <input type="radio" name="fpRouteTarget" value="48" class="accent-[#86BC25]">
+                    <input type="radio" name="fpRouteTarget" value="48" onchange="setGlobalCohortScale(48, false)" class="accent-[#86BC25]">
                     <span class="text-xs font-bold text-white">48 组</span>
                   </label>
                 </div>
               </div>
 
-              <div>
-                <label class="block text-xs font-bold text-deloitte-green mb-1" data-i18n="lblDrushScore">D-Rush 破冰记录最高分 (High Score)</label>
-                <div class="relative">
-                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-deloitte-green text-xs"><i class="fa-solid fa-trophy"></i></span>
-                  <input type="number" inputmode="numeric" id="adminDrushHighScore" value="980"
-                    class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-2 pl-8 pr-3 text-xs font-mono text-white">
+              <!-- D-Rush High Score: Read-only live display directly from Supabase -->
+              <div class="p-3 rounded-xl bg-white/[0.03] border border-white/10 space-y-1">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-deloitte-green flex items-center gap-1.5">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span data-i18n="lblDrushScore">D-Rush 最高分记录</span>
+                  </span>
+                  <button type="button" onclick="loadDrushHighScoreFromSupabase()" class="text-[10px] text-gray-400 hover:text-deloitte-green" title="Refresh">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                  </button>
+                </div>
+                <div class="flex items-baseline gap-2 pt-1">
+                  <span id="drushLiveScoreDisplay" class="text-2xl font-black font-mono text-deloitte-green">--</span>
+                  <span class="text-[10px] text-gray-500">pts (Supabase 同步)</span>
                 </div>
               </div>
             </div>
@@ -707,7 +709,7 @@
 
   <script>
     /* ==========================================================
-       SUPABASE CONFIGURATION & INITIALIZATION
+       SUPABASE CONFIGURATION
        ========================================================== */
     const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
@@ -746,7 +748,7 @@
         launchKC: "打开 Knowledge Clash",
         saveQuestionsBtn: "保存题库",
         fpTitle: "FastPass 快速通行证",
-        fpDesc: "多团队轮转路线指引与时间日程调度",
+        fpDesc: "多团队轮转路线指引与时间日程调度（点击直接切换全局队伍规模）",
         fpConfigBtn: "配置场地与日程",
         saveFastpassBtn: "保存配置",
         qrTitle: "QR Code 打卡码站点",
@@ -762,20 +764,18 @@
         drushDesc: "像素小游戏与破冰挑战",
         launchGame: "进入 D-Rush",
         scoreEntryTitle: "关卡计分录入矩阵",
-        scoreEntryDesc: "三层架构：站点 ➔ 轮次 ➔ 12个队号与得分框",
         lblCohortScale: "规模:",
         layer1Title: "第一层：选择关卡站点 (Station)",
         layer2Title: "第二层：选择比赛轮次 (Round 1 ~ 6)",
-        layer3Title: "第三层：录入 12 个数据框（队伍编号 + 得分）",
         btnSyncLeaderboard: "保存并推送风云榜",
         fullLeaderboardTitle: "总榜全貌 · Full Standings",
         fullLeaderboardSub: "所有战队六关明细与总成绩（学员端仅展示前 10 名）",
         secAnnouncement: "现场广播与学员端调度",
-        broadcastDesc: "实时更改学员端广播公告、FastPass 默认分段及 D-Rush 最高分展示。",
+        broadcastDesc: "实时更改学员端广播公告与全局 FastPass 路线调度。",
         lblAnnouncementZH: "广播公告内容 (中文) · 学员端顶部通知栏",
         lblAnnouncementEN: "Announcement Message (English)",
         lblFpDefaultRoute: "学员端默认 FastPass 组数",
-        lblDrushScore: "D-Rush 破冰记录最高分 (High Score)",
+        lblDrushScore: "D-Rush 最高分记录",
         btnPublishAnnouncement: "发布并推送至学员端"
       },
       en: {
@@ -803,7 +803,7 @@
         launchKC: "Launch Knowledge Clash",
         saveQuestionsBtn: "Save Questions",
         fpTitle: "FastPass Navigation",
-        fpDesc: "Multi-cohort session routing & schedule dispatcher",
+        fpDesc: "Multi-cohort session routing & schedule dispatcher (Click to switch cohort scale)",
         fpConfigBtn: "Configure Venues",
         saveFastpassBtn: "Save Config",
         qrTitle: "QR Code Check-in Hub",
@@ -819,16 +819,14 @@
         drushDesc: "Interactive pixel mini-game & icebreaker adventure",
         launchGame: "Launch D-Rush",
         scoreEntryTitle: "Scoring Matrix (Score Input)",
-        scoreEntryDesc: "3 Layers: Station ➔ Round ➔ 12 Team/Score Input Boxes",
         lblCohortScale: "Scale:",
         layer1Title: "Layer 1: Select Station",
         layer2Title: "Layer 2: Select Round (1 to 6)",
-        layer3Title: "Layer 3: Enter 12 Data Boxes (Team # and Score)",
         btnSyncLeaderboard: "Save & Push Standings",
         fullLeaderboardTitle: "Full Standings",
         fullLeaderboardSub: "All teams with 6-station breakdown (Participant hub shows Top 10 only)",
         secAnnouncement: "Live Broadcast & Dispatcher",
-        broadcastDesc: "Update participant notice banner, default FastPass route, and D-Rush high score live.",
+        broadcastDesc: "Update participant notice banner and FastPass default cohort dispatch.",
         lblAnnouncementZH: "Broadcast Notice (Chinese) · Header Banner",
         lblAnnouncementEN: "Announcement Message (English)",
         lblFpDefaultRoute: "Default FastPass Route for Participants",
@@ -889,6 +887,82 @@
     }
 
     /* ==========================================================
+       GLOBAL COHORT SCALE SYNCHRONIZATION (24 / 36 / 48)
+       - Hub FastPass Buttons
+       - Scores Cohort Select & 3rd-Layer Box Count (4, 6, 8 teams)
+       - Broadcast Default Radio Button
+       ========================================================== */
+    let currentCohortScale = 36; // Default: 36 teams
+
+    function setGlobalCohortScale(scale, openFastpass = false) {
+      currentCohortScale = parseInt(scale, 10) || 36;
+      localStorage.setItem('admin_selected_cohort_scale', currentCohortScale);
+
+      // 1. Update Hub Buttons style
+      [24, 36, 48].forEach(sc => {
+        const btn = document.getElementById(`fpLaunchBtn-${sc}`);
+        if (btn) {
+          if (sc === currentCohortScale) {
+            btn.className = "button-press py-2.5 px-3 rounded-xl bg-lime-400 text-black border-lime-400 font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-md shadow-lime-400/20";
+          } else {
+            btn.className = "button-press py-2.5 px-3 rounded-xl bg-deloitte-cardbg border-white/15 text-gray-300 hover:text-white hover:border-lime-400/50 font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm";
+          }
+        }
+      });
+
+      // 2. Update Scores Tab Select Dropdown
+      const scoresSelect = document.getElementById('cohortTeamCountSelect');
+      if (scoresSelect) {
+        scoresSelect.value = String(currentCohortScale);
+      }
+
+      // 3. Update Broadcast Tab Radio Button
+      const broadcastRadio = document.querySelector(`input[name="fpRouteTarget"][value="${currentCohortScale}"]`);
+      if (broadcastRadio) {
+        broadcastRadio.checked = true;
+      }
+
+      // 4. Update Subtitles and Dynamic Boxes in Scores tab
+      updateLayer3TitleAndBoxes();
+      renderAdminLeaderboardTable();
+
+      // If user tapped on Hub button, launch the respective FastPass page in a new window
+      if (openFastpass) {
+        window.open(`https://projectsunrise.win/fastpass/${currentCohortScale}`, '_blank');
+      }
+    }
+
+    function getTeamCountPerStation() {
+      // 24 teams -> 4 teams/station
+      // 36 teams -> 6 teams/station
+      // 48 teams -> 8 teams/station
+      if (currentCohortScale === 24) return 4;
+      if (currentCohortScale === 48) return 8;
+      return 6; // default 36
+    }
+
+    function updateLayer3TitleAndBoxes() {
+      const teamsCount = getTeamCountPerStation();
+      const boxesCount = teamsCount * 2;
+      const titleEl = document.getElementById('layer3TitleText');
+      const hintEl = document.getElementById('matrixSubtitleHint');
+      
+      if (titleEl) {
+        titleEl.textContent = currentLang === 'zh' 
+          ? `第三层：录入 ${teamsCount} 支战队（共 ${boxesCount} 个队号与得分框）`
+          : `Layer 3: Enter ${teamsCount} Teams (${boxesCount} Team/Score Boxes)`;
+      }
+
+      if (hintEl) {
+        hintEl.textContent = currentLang === 'zh'
+          ? `当前规模：全场 ${currentCohortScale} 组（每站每轮 ${teamsCount} 组参赛）`
+          : `Current scale: ${currentCohortScale} teams total (${teamsCount} teams per station per round)`;
+      }
+
+      renderRoundInputs();
+    }
+
+    /* ==========================================================
        MOOD ORACLE
        ========================================================== */
     const MOOD_QUOTES = [
@@ -910,7 +984,7 @@
     }
 
     /* ==========================================================
-       TAB 2: SCORING MATRIX LOGIC (6 STATIONS × 6 ROUNDS × 12 BOXES)
+       TAB 2: SCORING MATRIX LOGIC (DYNAMIC BOXES)
        ========================================================== */
     const STATIONS = [
       { id: 0, zh: "一起拼未来", en: "Piece by piece", icon: "fa-puzzle-piece" },
@@ -921,7 +995,6 @@
       { id: 5, zh: "AI纪元", en: "The AI Era", icon: "fa-microchip" }
     ];
 
-    let currentCohortSize = 36;
     let activeStationIndex = 0;
     let activeRoundIndex = 0;
     let scoresGrid = {};
@@ -931,7 +1004,7 @@
         scoresGrid[s] = {};
         for (let r = 0; r < 6; r++) {
           scoresGrid[s][r] = [];
-          for (let p = 0; p < 6; p++) {
+          for (let p = 0; p < 8; p++) { // allocate up to max 8 teams
             scoresGrid[s][r].push({ team: "", score: "" });
           }
         }
@@ -987,22 +1060,25 @@
     function renderRoundInputs() {
       updateActiveBadge();
       const container = document.getElementById('twelveBoxesContainer');
+      const teamsCount = getTeamCountPerStation();
       const pairs = scoresGrid[activeStationIndex][activeRoundIndex] || [];
 
-      container.innerHTML = [0, 1, 2, 3, 4, 5].map(idx => {
+      // Generate exact number of team boxes: 4 (for 24), 6 (for 36), or 8 (for 48)
+      let html = '';
+      for (let idx = 0; idx < teamsCount; idx++) {
         const pair = pairs[idx] || { team: "", score: "" };
         const boxNum1 = idx * 2 + 1;
         const boxNum2 = idx * 2 + 2;
 
-        return `
+        html += `
           <div class="p-2.5 rounded-xl bg-deloitte-cardbg border border-white/10 space-y-1">
             <div class="flex items-center justify-between text-[10px] font-mono text-gray-400">
-              <span class="font-bold text-amber-300">Pair ${idx + 1}</span>
+              <span class="font-bold text-amber-300">战队 Slot ${idx + 1}</span>
               <span>Box #${boxNum1} & #${boxNum2}</span>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <input type="number" inputmode="numeric" min="1" max="${currentCohortSize}" id="input-team-${idx}" value="${pair.team}" placeholder="队号 (1-${currentCohortSize})"
+                <input type="number" inputmode="numeric" min="1" max="${currentCohortScale}" id="input-team-${idx}" value="${pair.team}" placeholder="队号 (1-${currentCohortScale})"
                   oninput="handleLiveInputChange()"
                   class="w-full bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-lg px-2 py-1.5 text-xs font-mono text-white text-center">
               </div>
@@ -1014,12 +1090,14 @@
             </div>
           </div>
         `;
-      }).join('');
+      }
+      container.innerHTML = html;
     }
 
     function syncCurrentInputsToMemory() {
       if (!scoresGrid[activeStationIndex] || !scoresGrid[activeStationIndex][activeRoundIndex]) return;
-      for (let idx = 0; idx < 6; idx++) {
+      const teamsCount = getTeamCountPerStation();
+      for (let idx = 0; idx < teamsCount; idx++) {
         const teamEl = document.getElementById(`input-team-${idx}`);
         const scoreEl = document.getElementById(`input-score-${idx}`);
         if (teamEl && scoreEl) {
@@ -1037,11 +1115,12 @@
     }
 
     function autoFillMockRoundScores() {
-      for (let idx = 0; idx < 6; idx++) {
+      const teamsCount = getTeamCountPerStation();
+      for (let idx = 0; idx < teamsCount; idx++) {
         const teamInput = document.getElementById(`input-team-${idx}`);
         const scoreInput = document.getElementById(`input-score-${idx}`);
         if (teamInput && scoreInput) {
-          const simulatedTeam = (activeRoundIndex * 6 + idx + 1) % currentCohortSize || currentCohortSize;
+          const simulatedTeam = (activeRoundIndex * teamsCount + idx + 1) % currentCohortScale || currentCohortScale;
           const simulatedScore = Math.floor(75 + Math.random() * 24);
           teamInput.value = simulatedTeam;
           scoreInput.value = simulatedScore;
@@ -1052,7 +1131,8 @@
     }
 
     function clearActiveRoundInputs() {
-      for (let idx = 0; idx < 6; idx++) {
+      const teamsCount = getTeamCountPerStation();
+      for (let idx = 0; idx < teamsCount; idx++) {
         const teamInput = document.getElementById(`input-team-${idx}`);
         const scoreInput = document.getElementById(`input-score-${idx}`);
         if (teamInput && scoreInput) {
@@ -1064,28 +1144,26 @@
       renderAdminLeaderboardTable();
     }
 
-    function handleCohortScaleChange() {
-      currentCohortSize = parseInt(document.getElementById('cohortTeamCountSelect').value, 10);
-      renderAdminLeaderboardTable();
-    }
-
     function calculateFullStandings() {
       const teamsMap = {};
-      for (let t = 1; t <= currentCohortSize; t++) {
+      for (let t = 1; t <= currentCohortScale; t++) {
         const teamName = `Team ${String(t).padStart(2, '0')}`;
         teamsMap[t] = { teamId: t, team: teamName, stations: [0, 0, 0, 0, 0, 0], total: 0 };
       }
 
+      const teamsCount = getTeamCountPerStation();
       for (let s = 0; s < 6; s++) {
         for (let r = 0; r < 6; r++) {
           const pairs = scoresGrid[s][r] || [];
-          pairs.forEach(p => {
+          for (let pIdx = 0; pIdx < teamsCount; pIdx++) {
+            const p = pairs[pIdx];
+            if (!p) continue;
             const teamNum = parseInt(p.team, 10);
             const scoreNum = parseInt(p.score, 10);
             if (teamNum && !isNaN(scoreNum) && teamsMap[teamNum]) {
               teamsMap[teamNum].stations[s] += scoreNum;
             }
-          });
+          }
         }
       }
 
@@ -1173,8 +1251,45 @@
     }
 
     /* ==========================================================
-       TAB 4: BROADCAST & DISPATCH LOGIC
+       TAB 4: BROADCAST & D-RUSH FROM SUPABASE
        ========================================================== */
+    async function loadDrushHighScoreFromSupabase() {
+      const display = document.getElementById('drushLiveScoreDisplay');
+      try {
+        if (supabaseClient) {
+          // Attempt 1: Fetch from dedicated drush_scores table if available
+          const { data: scoreData, error: scoreErr } = await supabaseClient
+            .from('drush_scores')
+            .select('score')
+            .order('score', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (!scoreErr && scoreData && scoreData.score !== undefined) {
+            display.textContent = scoreData.score;
+            return;
+          }
+
+          // Attempt 2: Fetch stored drush_high_score from portal_announcements
+          const { data: annData, error: annErr } = await supabaseClient
+            .from('portal_announcements')
+            .select('drush_high_score')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (!annErr && annData && annData.drush_high_score !== undefined) {
+            display.textContent = annData.drush_high_score;
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("D-Rush high score fetch err:", err);
+      }
+
+      // Fallback
+      display.textContent = "980";
+    }
+
     async function loadPortalAnnouncementConfig() {
       try {
         if (supabaseClient) {
@@ -1183,11 +1298,10 @@
             document.getElementById('adminAnnounceZH').value = data.text_zh || data.text || '';
             document.getElementById('adminAnnounceEN').value = data.text_en || '';
             if (data.fastpass_target) {
-              const radio = document.querySelector(`input[name="fpRouteTarget"][value="${data.fastpass_target}"]`);
-              if (radio) radio.checked = true;
+              setGlobalCohortScale(parseInt(data.fastpass_target, 10), false);
             }
             if (data.drush_high_score) {
-              document.getElementById('adminDrushHighScore').value = data.drush_high_score;
+              document.getElementById('drushLiveScoreDisplay').textContent = data.drush_high_score;
             }
             if (data.updated_at) {
               const dt = new Date(data.updated_at);
@@ -1204,16 +1318,13 @@
     async function savePortalAnnouncementConfig() {
       const zh = document.getElementById('adminAnnounceZH').value.trim();
       const en = document.getElementById('adminAnnounceEN').value.trim();
-      const fpCohort = document.querySelector('input[name="fpRouteTarget"]:checked')?.value || '36';
-      const drushScore = parseInt(document.getElementById('adminDrushHighScore').value, 10) || 980;
 
       const payload = {
         id: 1,
         text_zh: zh,
         text_en: en,
         text: zh || en,
-        fastpass_target: fpCohort,
-        drush_high_score: drushScore,
+        fastpass_target: String(currentCohortScale),
         updated_at: new Date().toISOString()
       };
 
@@ -1409,7 +1520,7 @@
     function updateKcParsedCount() {
       const textarea = document.getElementById('kcQuestionTextarea');
       if (!textarea) return;
-      const count = parseKcQuestionsFromText(textarea.value).length;
+      parseKcQuestionsFromText(textarea.value);
     }
 
     function insertKcTemplate() {
@@ -1449,7 +1560,7 @@
     }
 
     /* ==========================================================
-       FASTPASS CONFIG
+       FASTPASS VENUE & TIME CONFIG
        ========================================================== */
     const FP_STATIONS = [
       { id: 0, zh: '一起拼未来', en: 'Piece by piece', icon: 'fa-puzzle-piece' },
@@ -1561,7 +1672,10 @@
       initScoresGrid();
       renderStationButtons();
       renderRoundButtons();
-      renderRoundInputs();
+
+      // Retrieve saved scale or fallback to 36
+      const savedScale = localStorage.getItem('admin_selected_cohort_scale') || 36;
+      setGlobalCohortScale(savedScale, false);
 
       if (!supabaseClient) return;
 
@@ -1630,6 +1744,7 @@
       document.getElementById('mainAdminContent').classList.add('flex');
 
       loadPortalAnnouncementConfig();
+      loadDrushHighScoreFromSupabase();
       loadSavedScores();
       loadSignalConfig();
       loadKnowledgeConfig();
