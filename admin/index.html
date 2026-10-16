@@ -209,9 +209,6 @@
                 <span class="font-bold text-deloitte-green flex items-center gap-1.5">
                   <i class="fa-solid fa-circle-info"></i> 词库格式说明 · Word List Format
                 </span>
-                <button type="button" onclick="resetSignalDefaults()" class="text-[11px] text-gray-400 hover:text-rose-400 underline">
-                  恢复默认词库 · Reset Defaults
-                </button>
               </div>
               <p class="text-[11px] text-gray-400 font-mono">
                 每行或空格分隔：<code class="text-white bg-white/5 px-1.5 py-0.5 rounded">中文词汇 English Word</code>（例如：<code class="text-deloitte-green">大熊猫 Giant Panda 金丝猴 Golden Monkey</code>）
@@ -303,15 +300,9 @@
                 <span class="font-bold text-emerald-400 flex items-center gap-1.5">
                   <i class="fa-solid fa-circle-info"></i> 双语题库格式说明 · Question Format
                 </span>
-                <button type="button" onclick="resetKnowledgeDefaults()" class="text-[11px] text-gray-400 hover:text-rose-400 underline">
-                  恢复默认题库 · Reset Defaults
-                </button>
               </div>
               <p class="text-[11px] text-gray-400">
                 每行一题，格式：<code class="text-emerald-300 font-mono">问题中英文, 选项A, [正确选项B], 选项C, 选项D</code>（使用 <code class="text-white bg-white/10 px-1 rounded">/</code> 分隔中英文，方括号 <code class="text-white bg-white/10 px-1 rounded">[...]</code> 标记正确答案）
-              </p>
-              <p class="text-[11px] text-gray-500 font-mono truncate">
-                示例：德勤创立于哪一年？ / In which year was Deloitte founded?, 1880年 / 1880, [1845年 / 1845], 1900年 / 1900, 1913年 / 1913
               </p>
             </div>
 
@@ -407,9 +398,6 @@
 
                 <div class="pt-3 border-t border-white/10 text-[11px] text-gray-400 flex items-center justify-between">
                   <span>提示：保存后 FastPass 页面将实时同步更新</span>
-                  <button type="button" onclick="resetFastPassDefaults()" class="text-gray-400 hover:text-rose-400 transition-colors underline">
-                    恢复默认设置
-                  </button>
                 </div>
               </div>
 
@@ -732,13 +720,32 @@
       }
     }
 
-    function resetSignalDefaults() {
-      signalRoundState = JSON.parse(JSON.stringify(DEFAULT_SIGNAL_ROUND_DATA));
-      renderSignalEditorInputs();
-    }
-
     async function loadSignalConfig() {
-      renderSignalEditorInputs();
+      // 1. Fetch live info from Supabase database first
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('signal_config')
+            .select('*')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (!error && data && data.round_data) {
+            signalRoundState = data.round_data;
+            renderSignalEditorInputs();
+            localStorage.setItem('signal_config_v1', JSON.stringify(signalRoundState));
+            if (data.updated_at) {
+              const dt = new Date(data.updated_at);
+              document.getElementById('signalLastSavedBadge').textContent = `上次同步: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            }
+            return;
+          }
+        } catch (err) {
+          console.warn("Could not load signal_config from Supabase:", err);
+        }
+      }
+
+      // 2. Fallback to localStorage if offline
       try {
         const cached = localStorage.getItem('signal_config_v1');
         if (cached) {
@@ -746,30 +753,12 @@
           if (parsed && parsed[1] && parsed[2] && parsed[3]) {
             signalRoundState = parsed;
             renderSignalEditorInputs();
+            return;
           }
         }
       } catch (e) {}
 
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient
-          .from('signal_config')
-          .select('*')
-          .eq('id', 1)
-          .maybeSingle();
-
-        if (!error && data && data.round_data) {
-          signalRoundState = data.round_data;
-          renderSignalEditorInputs();
-          localStorage.setItem('signal_config_v1', JSON.stringify(signalRoundState));
-          if (data.updated_at) {
-            const dt = new Date(data.updated_at);
-            document.getElementById('signalLastSavedBadge').textContent = `上次同步: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-          }
-        }
-      } catch (err) {
-        console.warn("Could not load signal_config:", err);
-      }
+      renderSignalEditorInputs();
     }
 
     async function saveSignalConfig() {
@@ -913,16 +902,32 @@
       badge.textContent = `${count} questions valid`;
     }
 
-    function resetKnowledgeDefaults() {
-      const textarea = document.getElementById('kcQuestionTextarea');
-      if (textarea) {
-        textarea.value = DEFAULT_KC_QUESTIONS_RAW.join("\n");
-        updateKcParsedCount();
-      }
-    }
-
     async function loadKnowledgeConfig() {
-      resetKnowledgeDefaults();
+      // 1. Fetch live info from Supabase database first
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('knowledge_config')
+            .select('*')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (!error && data && Array.isArray(data.questions) && data.questions.length > 0) {
+            document.getElementById('kcQuestionTextarea').value = formatKcQuestionsToText(data.questions);
+            updateKcParsedCount();
+            localStorage.setItem('knowledge_config_v1', JSON.stringify({ questions: data.questions }));
+            if (data.updated_at) {
+              const dt = new Date(data.updated_at);
+              document.getElementById('kcLastSavedBadge').textContent = `上次同步: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            }
+            return;
+          }
+        } catch (err) {
+          console.warn("Could not load knowledge_config from Supabase:", err);
+        }
+      }
+
+      // 2. Fallback to localStorage or default
       try {
         const cached = localStorage.getItem('knowledge_config_v1');
         if (cached) {
@@ -930,30 +935,13 @@
           if (parsed && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
             document.getElementById('kcQuestionTextarea').value = formatKcQuestionsToText(parsed.questions);
             updateKcParsedCount();
+            return;
           }
         }
       } catch (e) {}
 
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient
-          .from('knowledge_config')
-          .select('*')
-          .eq('id', 1)
-          .maybeSingle();
-
-        if (!error && data && Array.isArray(data.questions) && data.questions.length > 0) {
-          document.getElementById('kcQuestionTextarea').value = formatKcQuestionsToText(data.questions);
-          updateKcParsedCount();
-          localStorage.setItem('knowledge_config_v1', JSON.stringify({ questions: data.questions }));
-          if (data.updated_at) {
-            const dt = new Date(data.updated_at);
-            document.getElementById('kcLastSavedBadge').textContent = `上次同步: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-          }
-        }
-      } catch (err) {
-        console.warn("Could not load knowledge_config:", err);
-      }
+      document.getElementById('kcQuestionTextarea').value = DEFAULT_KC_QUESTIONS_RAW.join("\n");
+      updateKcParsedCount();
     }
 
     async function saveKnowledgeConfig() {
@@ -1093,14 +1081,33 @@
       }
     }
 
-    function resetFastPassDefaults() {
-      fpConfigState.venues = JSON.parse(JSON.stringify(DEFAULT_FP_VENUES));
-      fpConfigState.time_slots = JSON.parse(JSON.stringify(DEFAULT_FP_TIME_SLOTS));
-      renderFastPassEditorInputs();
-    }
-
     async function loadFastPassConfig() {
-      renderFastPassEditorInputs();
+      // 1. Fetch live info from Supabase database first
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('fastpass_config')
+            .select('*')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (!error && data) {
+            if (data.venues) fpConfigState.venues = data.venues;
+            if (data.time_slots) fpConfigState.time_slots = data.time_slots;
+            renderFastPassEditorInputs();
+            localStorage.setItem('fastpass_config_v1', JSON.stringify(fpConfigState));
+            if (data.updated_at) {
+              const dt = new Date(data.updated_at);
+              document.getElementById('fpLastSavedBadge').textContent = `上次同步: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            }
+            return;
+          }
+        } catch (err) {
+          console.warn("Could not load fastpass_config from Supabase:", err);
+        }
+      }
+
+      // 2. Fallback to localStorage if offline
       try {
         const cached = localStorage.getItem('fastpass_config_v1');
         if (cached) {
@@ -1108,30 +1115,11 @@
           if (parsed.venues) fpConfigState.venues = parsed.venues;
           if (parsed.time_slots) fpConfigState.time_slots = parsed.time_slots;
           renderFastPassEditorInputs();
+          return;
         }
       } catch (e) {}
 
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient
-          .from('fastpass_config')
-          .select('*')
-          .eq('id', 1)
-          .maybeSingle();
-
-        if (!error && data) {
-          if (data.venues) fpConfigState.venues = data.venues;
-          if (data.time_slots) fpConfigState.time_slots = data.time_slots;
-          renderFastPassEditorInputs();
-          localStorage.setItem('fastpass_config_v1', JSON.stringify(fpConfigState));
-          if (data.updated_at) {
-            const dt = new Date(data.updated_at);
-            document.getElementById('fpLastSavedBadge').textContent = `上次同步: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-          }
-        }
-      } catch (err) {
-        console.warn("Could not load fastpass_config:", err);
-      }
+      renderFastPassEditorInputs();
     }
 
     async function saveFastPassConfig() {
