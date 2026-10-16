@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Onboarding Admin Portal/title>
+  <title>Onboarding Admin Portal</title>
   
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -312,42 +312,35 @@
     </main>
   </div>
 
+  <!-- Fix 2: Renamed client variable to avoid global namespace collision -->
   <script>
-    // -------------------------------------------------------------
-    // 1. SUPABASE CONFIGURATION
-    // Replace these values with your project credentials
-    // -------------------------------------------------------------
     const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
-
-    let supabase;
-
-    // Check if SDK loaded properly
+  
+    let supabaseClient = null;
+  
     if (window.supabase && typeof window.supabase.createClient === 'function') {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     } else {
       console.error("Supabase SDK failed to load. Check your network or CDN link.");
     }
-
-    // -------------------------------------------------------------
-    // 2. AUTH STATE & SESSION CHECK
-    // -------------------------------------------------------------
+  
     window.addEventListener('load', async () => {
-      if (!supabase) {
+      if (!supabaseClient) {
         showError("Supabase 脚本加载失败，请检查网络或 CDN 连接");
         return;
       }
-
+  
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
         if (error) console.warn("Session check error:", error.message);
         if (session) {
           renderAuthorized(session.user);
         } else {
           document.getElementById('emailInput').focus();
         }
-
-        supabase.auth.onAuthStateChange((event, session) => {
+  
+        supabaseClient.auth.onAuthStateChange((event, session) => {
           if (event === 'SIGNED_IN' && session) {
             renderAuthorized(session.user);
           } else if (event === 'SIGNED_OUT') {
@@ -358,34 +351,30 @@
         console.error("Initialization error:", err);
       }
     });
-
-    // -------------------------------------------------------------
-    // 3. LOGIN SUBMISSION WITH FULL TRY/CATCH
-    // -------------------------------------------------------------
+  
     async function handleLoginSubmit(event) {
       event.preventDefault();
-
+  
       const email = document.getElementById('emailInput').value.trim();
       const password = document.getElementById('passwordInput').value;
       const submitBtn = document.getElementById('submitBtn');
       const btnText = document.getElementById('btnText');
-
-      if (!supabase) {
+  
+      if (!supabaseClient) {
         showError("无法连接到认证服务 (Supabase SDK 未加载)");
         return;
       }
-
-      // UI Loading state
+  
       submitBtn.disabled = true;
       btnText.textContent = "验证中 · Verifying...";
       submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
-
+  
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
           email: email,
           password: password
         });
-
+  
         if (error) {
           showError(error.message);
         } else if (data?.user) {
@@ -401,49 +390,46 @@
         submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
       }
     }
-
+  
     function showError(message) {
       const errorEl = document.getElementById('errorMessage');
       const errorText = document.getElementById('errorText');
       const gateCard = document.getElementById('gateCard');
-
+  
       errorText.textContent = message;
       errorEl.classList.remove('hidden');
-
+  
       gateCard.classList.remove('shake-error');
-      void gateCard.offsetWidth; // Force CSS animation reset
+      void gateCard.offsetWidth;
       gateCard.classList.add('shake-error');
     }
-
-    // -------------------------------------------------------------
-    // 4. LOGOUT & VIEW HELPERS
-    // -------------------------------------------------------------
+  
     async function handleLogout() {
-      if (supabase) await supabase.auth.signOut();
+      if (supabaseClient) await supabaseClient.auth.signOut();
     }
-
+  
     function renderAuthorized(user) {
       document.getElementById('passwordGate').classList.add('hidden');
       document.getElementById('mainAdminContent').classList.remove('hidden');
       document.getElementById('mainAdminContent').classList.add('flex');
-
+  
       if (user && user.email) {
         const userTag = document.getElementById('userEmailTag');
         userTag.textContent = user.email;
         userTag.classList.remove('hidden');
       }
     }
-
+  
     function renderLocked() {
       document.getElementById('mainAdminContent').classList.add('hidden');
       document.getElementById('mainAdminContent').classList.remove('flex');
       document.getElementById('passwordGate').classList.remove('hidden');
-
+  
       const passwordInput = document.getElementById('passwordInput');
       if (passwordInput) passwordInput.value = '';
       document.getElementById('errorMessage').classList.add('hidden');
     }
-
+  
     function togglePasswordVisibility() {
       const input = document.getElementById('passwordInput');
       const icon = document.getElementById('toggleEyeIcon');
