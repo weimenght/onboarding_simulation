@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FastPass | 48 Teams Schedule</title>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -134,7 +136,7 @@
 
         <div class="flex items-center gap-2 font-mono text-xs text-gray-400 bg-black/40 border border-white/10 px-3 py-1.5 rounded-xl self-start sm:self-auto">
           <i class="fa-regular fa-clock text-deloitte-green"></i>
-          <span>13:50 - 17:50</span>
+          <span id="overallTimeRange">13:50 - 17:50</span>
           <span>•</span>
           <span id="liveStatusBadge" class="text-deloitte-green font-bold">进行中</span>
         </div>
@@ -163,6 +165,12 @@
   </main>
 
   <script>
+    const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
+    const supabaseClient = (window.supabase && typeof window.supabase.createClient === 'function')
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
     const TOTAL_TEAMS = 48;
     let currentLang = 'zh';
     let currentTeam = 1;
@@ -170,7 +178,7 @@
     let audioReady = false;
     let switchSynth = null;
 
-    const TIME_SLOTS = [
+    let TIME_SLOTS = [
       { start: '13:50', end: '14:20', startMin: 830, endMin: 860 },
       { start: '14:30', end: '15:00', startMin: 870, endMin: 900 },
       { start: '15:10', end: '15:40', startMin: 910, endMin: 940 },
@@ -270,6 +278,38 @@
       }
     };
 
+    function timeStrToMin(str) {
+      const [h, m] = (str || '00:00').split(':').map(Number);
+      return (h || 0) * 60 + (m || 0);
+    }
+
+    function applyConfigPayload(payload) {
+      if (!payload) return false;
+      let changed = false;
+
+      if (payload.venues && typeof payload.venues === 'object') {
+        stationVenues = { ...stationVenues, ...payload.venues };
+        changed = true;
+      }
+
+      if (Array.isArray(payload.time_slots) && payload.time_slots.length === 6) {
+        TIME_SLOTS = payload.time_slots.map(slot => ({
+          start: slot.start,
+          end: slot.end,
+          startMin: typeof slot.startMin === 'number' ? slot.startMin : timeStrToMin(slot.start),
+          endMin: typeof slot.endMin === 'number' ? slot.endMin : timeStrToMin(slot.end)
+        }));
+        const rangeEl = document.getElementById('overallTimeRange');
+        if (rangeEl) {
+          rangeEl.textContent = `${TIME_SLOTS[0].start} - ${TIME_SLOTS[TIME_SLOTS.length - 1].end}`;
+        }
+        changed = true;
+      }
+
+      if (changed) renderScheduleView();
+      return changed;
+    }
+
     function parseVenueText(text) {
       const venues = {};
       if (!text || typeof text !== 'string') return venues;
@@ -294,315 +334,4 @@
         const sepIdx = line.search(/[:=：]/);
         if (sepIdx !== -1) {
           const key = line.slice(0, sepIdx).trim();
-          const val = line.slice(sepIdx + 1).trim();
-          kvPairs.push({ key, val });
-        }
-      }
-
-      if (kvPairs.length > 0) {
-        const hasZero = kvPairs.some(p => p.key.replace(/\D/g, '') === '0');
-        let matchedAny = false;
-
-        for (const { key, val } of kvPairs) {
-          const cleanKey = key.toLowerCase();
-          
-          let nameMatched = false;
-          for (const [idStr, stObj] of Object.entries(STATIONS)) {
-            if (cleanKey.includes(stObj.zh.toLowerCase()) || cleanKey.includes(stObj.en.toLowerCase())) {
-              venues[parseInt(idStr, 10)] = parseBilingual(val);
-              nameMatched = true;
-              matchedAny = true;
-              break;
-            }
-          }
-          if (nameMatched) continue;
-
-          const numMatch = cleanKey.match(/\d+/);
-          if (numMatch) {
-            const num = parseInt(numMatch[0], 10);
-            const idx = hasZero ? num : (num >= 1 && num <= 6 ? num - 1 : num);
-            if (idx >= 0 && idx <= 5) {
-              venues[idx] = parseBilingual(val);
-              matchedAny = true;
-            }
-          }
-        }
-
-        if (matchedAny) return venues;
-      }
-
-      for (let i = 0; i < Math.min(rawLines.length, 6); i++) {
-        venues[i] = parseBilingual(rawLines[i]);
-      }
-
-      return venues;
-    }
-
-    async function loadVenueData() {
-      const candidates = ['../venue.txt', 'venue.txt'];
-      for (const path of candidates) {
-        try {
-          const res = await fetch(path);
-          if (res.ok) {
-            const text = await res.text();
-            const parsed = parseVenueText(text);
-            if (Object.keys(parsed).length > 0) {
-              stationVenues = { ...stationVenues, ...parsed };
-              renderScheduleView();
-              return;
-            }
-          }
-        } catch (err) {}
-      }
-    }
-
-    function getActiveSlotIndex() {
-      const now = new Date();
-      const currentMin = now.getHours() * 60 + now.getMinutes();
-      for (let i = 0; i < TIME_SLOTS.length; i++) {
-        if (currentMin >= TIME_SLOTS[i].startMin && currentMin <= TIME_SLOTS[i].endMin) return i;
-      }
-      if (currentMin < TIME_SLOTS[0].startMin) return -1;
-      if (currentMin > TIME_SLOTS[TIME_SLOTS.length - 1].endMin) return 99;
-      for (let i = 0; i < TIME_SLOTS.length - 1; i++) {
-        if (currentMin > TIME_SLOTS[i].endMin && currentMin < TIME_SLOTS[i + 1].startMin) return i + 1;
-      }
-      return -1;
-    }
-
-    async function initAudioEngine() {
-      if (audioReady) return;
-      try {
-        await Tone.start();
-        switchSynth = new Tone.MembraneSynth({
-          pitchDecay: 0.02,
-          octaves: 2,
-          envelope: { attack: 0.001, decay: 0.08, sustain: 0.01, release: 0.08 }
-        }).toDestination();
-        switchSynth.volume.value = -12;
-        audioReady = true;
-      } catch (err) {}
-    }
-
-    function playSwitchSound() {
-      if (!audioEnabled) return;
-      initAudioEngine();
-      try {
-        if (switchSynth) switchSynth.triggerAttackRelease("C3", "32n", Tone.now());
-      } catch (e) {}
-    }
-
-    function toggleAudio() {
-      audioEnabled = !audioEnabled;
-      const icon = document.getElementById("audioIcon");
-      if (audioEnabled) {
-        if (icon) icon.className = "fa-solid fa-volume-high text-xs text-deloitte-green";
-        initAudioEngine();
-      } else {
-        if (icon) icon.className = "fa-solid fa-volume-xmark text-xs text-gray-500";
-      }
-    }
-
-    function setLanguage(lang) {
-      currentLang = lang;
-      playSwitchSound();
-      const zhBtn = document.getElementById("langZhBtn");
-      const enBtn = document.getElementById("langEnBtn");
-      if (lang === 'zh') {
-        zhBtn.className = "px-2.5 py-1 rounded-full font-bold transition-all bg-deloitte-green text-black";
-        enBtn.className = "px-2.5 py-1 rounded-full font-semibold transition-all text-gray-400 hover:text-white";
-      } else {
-        enBtn.className = "px-2.5 py-1 rounded-full font-bold transition-all bg-deloitte-green text-black";
-        zhBtn.className = "px-2.5 py-1 rounded-full font-semibold transition-all text-gray-400 hover:text-white";
-      }
-      updateStaticTranslations();
-      renderDropdownOptions();
-      renderScheduleView();
-    }
-
-    function updateStaticTranslations() {
-      const t = I18N[currentLang];
-      document.getElementById("headerSubtitle").textContent = t.subtitle;
-      document.getElementById("prevBtnText").textContent = t.prev;
-      document.getElementById("nextBtnText").textContent = t.next;
-      document.getElementById("thTime").textContent = t.thTime;
-      document.getElementById("thStation").textContent = t.thStation;
-      document.getElementById("thVenue").textContent = t.thVenue;
-      document.getElementById("thStatus").textContent = t.thStatus;
-      document.getElementById("scheduleBadge").textContent = t.scheduleBadge;
-      document.getElementById("footerDuration").textContent = t.footerDuration;
-    }
-
-    function renderDropdownOptions() {
-      const select = document.getElementById("teamSelect");
-      const t = I18N[currentLang];
-      select.innerHTML = "";
-      for (let i = 1; i <= TOTAL_TEAMS; i++) {
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = t.groupOption(i);
-        if (i === currentTeam) opt.selected = true;
-        select.appendChild(opt);
-      }
-    }
-
-    function renderPills() {
-      const container = document.getElementById("teamPillsTrack");
-      let html = "";
-      for (let i = 1; i <= TOTAL_TEAMS; i++) {
-        const isSelected = (i === currentTeam);
-        const pillClass = isSelected
-          ? "bg-deloitte-green text-black font-extrabold shadow-md border-deloitte-green scale-105"
-          : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-white/10";
-
-        html += `
-          <button id="teamPill-${i}" onclick="selectTeam(${i})" class="flex-shrink-0 w-8 h-8 rounded-lg text-xs font-mono border transition-all flex items-center justify-center ${pillClass}">
-            ${i}
-          </button>
-        `;
-      }
-      container.innerHTML = html;
-
-      const activePill = document.getElementById(`teamPill-${currentTeam}`);
-      if (activePill) {
-        activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      }
-    }
-
-    function selectTeam(num) {
-      playSwitchSound();
-      currentTeam = Math.max(1, Math.min(TOTAL_TEAMS, num));
-      const select = document.getElementById("teamSelect");
-      if (select) select.value = currentTeam;
-      renderPills();
-      renderScheduleView();
-    }
-
-    function changeGroup(delta) {
-      let next = currentTeam + delta;
-      if (next < 1) next = TOTAL_TEAMS;
-      if (next > TOTAL_TEAMS) next = 1;
-      selectTeam(next);
-    }
-
-    function renderScheduleView() {
-      const t = I18N[currentLang];
-      const schedule = getTeamSchedule(currentTeam);
-      const activeSlot = getActiveSlotIndex();
-
-      document.getElementById("scheduleTitle").textContent = t.scheduleTitle(currentTeam);
-
-      const liveBadge = document.getElementById("liveStatusBadge");
-      if (activeSlot === 99) {
-        liveBadge.textContent = t.liveConcluded;
-        liveBadge.className = "text-gray-400 font-bold";
-      } else {
-        liveBadge.textContent = t.liveActive;
-        liveBadge.className = "text-deloitte-green font-bold";
-      }
-
-      const tbody = document.getElementById("scheduleTableBody");
-      let rowsHtml = "";
-
-      for (let i = 0; i < 6; i++) {
-        const slot = TIME_SLOTS[i];
-        const stationIdx = schedule[i];
-        const station = STATIONS[stationIdx];
-        const isCurrent = (i === activeSlot);
-
-        const venueObj = stationVenues[stationIdx] || { zh: `场地 ${stationIdx + 1}`, en: `Venue ${stationIdx + 1}` };
-        const venueName = currentLang === 'zh' ? venueObj.zh : venueObj.en;
-
-        let rowBg = isCurrent ? "bg-deloitte-green/10" : "hover:bg-white/[0.02]";
-        let timeColor = isCurrent ? "text-deloitte-green font-extrabold" : "text-gray-300";
-        let stationName = currentLang === 'zh' ? station.zh : station.en;
-
-        let statusBadge = "";
-        if (isCurrent) {
-          statusBadge = `
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-deloitte-green text-black font-extrabold text-[11px] shadow-sm">
-              <span class="w-1.5 h-1.5 rounded-full bg-black animate-ping"></span>
-              ${t.statusNow}
-            </span>
-          `;
-        } else if (i === activeSlot + 1) {
-          statusBadge = `
-            <span class="px-2.5 py-1 rounded-full bg-deloitte-green/15 text-deloitte-green font-bold text-[11px] border border-deloitte-green/30">
-              ${t.statusNext}
-            </span>
-          `;
-        } else if (activeSlot !== -1 && i < activeSlot) {
-          statusBadge = `
-            <span class="text-gray-500 text-xs flex items-center gap-1 justify-end font-semibold">
-              <i class="fa-solid fa-check text-deloitte-green"></i> ${t.statusDone}
-            </span>
-          `;
-        } else {
-          statusBadge = `
-            <span class="text-gray-600 text-xs font-semibold">${t.statusWaiting}</span>
-          `;
-        }
-
-        rowsHtml += `
-          <tr class="transition-colors ${rowBg}">
-            <td class="py-3.5 px-4 font-mono font-bold text-xs sm:text-sm ${timeColor}">
-              ${slot.start} - ${slot.end}
-            </td>
-            <td class="py-3.5 px-4">
-              <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-deloitte-green flex-shrink-0">
-                  <i class="fa-solid ${station.icon} text-xs"></i>
-                </div>
-                <span class="font-bold text-white text-xs sm:text-sm">${stationName}</span>
-              </div>
-            </td>
-            <td class="py-3.5 px-4">
-              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs sm:text-sm font-medium text-gray-200">
-                <i class="fa-solid fa-location-dot text-deloitte-green text-xs flex-shrink-0"></i>
-                <span class="truncate max-w-[130px] sm:max-w-[200px]" title="${venueName}">${venueName}</span>
-              </div>
-            </td>
-            <td class="py-3.5 px-4 text-right">
-              ${statusBadge}
-            </td>
-          </tr>
-        `;
-      }
-      tbody.innerHTML = rowsHtml;
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") changeGroup(-1);
-      if (e.key === "ArrowRight") changeGroup(1);
-    });
-
-    let touchStartX = 0;
-    document.addEventListener("touchstart", (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    document.addEventListener("touchend", (e) => {
-      const touchEndX = e.changedTouches[0].screenX;
-      const diff = touchEndX - touchStartX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) changeGroup(-1);
-        else changeGroup(1);
-      }
-    }, { passive: true });
-
-    window.onload = function() {
-      updateStaticTranslations();
-      renderDropdownOptions();
-      renderPills();
-      renderScheduleView();
-      loadVenueData();
-      setInterval(renderScheduleView, 30000);
-      setInterval(loadVenueData, 60000);
-    };
-
-    document.addEventListener("click", () => {
-      if (!audioReady && audioEnabled) initAudioEngine();
-    }, { once: true });
-  </script>
-</body>
-</html>
+          const val = line.slice(sepIdx + 1
