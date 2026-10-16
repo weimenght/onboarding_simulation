@@ -69,10 +69,15 @@
       box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.07);
     }
 
-    .button-press { transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
+    .button-press { 
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      touch-action: manipulation;
+    }
     .button-press:active { transform: scale(0.96) translateY(2px); }
 
-    /* Custom scrollbar */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
     ::-webkit-scrollbar-thumb { background: rgba(134,188,37,0.3); border-radius: 4px; }
@@ -80,7 +85,6 @@
     .safe-top { padding-top: env(safe-area-inset-top, 12px); }
     .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 24px); }
 
-    /* Matrix easter egg animation */
     @keyframes matrixPulse {
       0%, 100% { border-color: rgba(134, 188, 37, 0.4); box-shadow: 0 0 20px rgba(134, 188, 37, 0.2); }
       50% { border-color: rgba(134, 188, 37, 0.9); box-shadow: 0 0 35px rgba(134, 188, 37, 0.6); }
@@ -100,13 +104,13 @@
         </div>
         <div class="flex items-baseline">
           <span class="font-black text-lg tracking-tight text-white">Deloitte<span id="easterDot" class="deloitte-dot" onclick="handleDotEggClick()"></span></span>
-          <span class="text-[10px] font-bold text-gray-400 ml-1.5 uppercase tracking-wider" data-i18n="subTitle">Participant Hub</span>
+          <span class="text-[10px] font-bold text-gray-400 ml-1.5 uppercase tracking-wider" data-i18n="subTitle">学员专属空间</span>
         </div>
       </div>
 
       <!-- Right Action Tools -->
       <div class="flex items-center gap-2">
-        <button type="button" onclick="triggerPartyConfetti()" class="button-press w-8 h-8 rounded-full bg-white/5 border border-white/15 text-deloitte-green flex items-center justify-center text-xs" title="Tap for good luck">
+        <button type="button" onclick="triggerPartyConfetti()" class="button-press w-8 h-8 rounded-full bg-white/5 border border-white/15 text-deloitte-green flex items-center justify-center text-xs" title="Good Luck">
           <i class="fa-solid fa-sparkles"></i>
         </button>
         <button type="button" onclick="toggleLanguage()" class="button-press px-2.5 py-1 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center gap-1">
@@ -183,9 +187,9 @@
           <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
             <i class="fa-solid fa-sun"></i>
           </div>
-          <h2 class="text-xs font-extrabold text-white uppercase tracking-wider" data-i18n="sunriseGateTitle">Project Sunrise 日出计划</h2>
+          <h2 class="text-xs font-extrabold text-white uppercase tracking-wider" data-i18n="sunriseGateTitle">日出计划秘钥</h2>
         </div>
-        <span id="sunriseStatusBadge" class="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">LOCKED</span>
+        <span id="sunriseStatusBadge" class="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20" data-i18n="badgeLocked">LOCKED</span>
       </div>
 
       <!-- Locked State Input -->
@@ -222,7 +226,7 @@
       </div>
     </div>
 
-    <!-- 04. 6 Stations Leaderboard (TOP 10 ONLY) -->
+    <!-- 04. 6 Stations Leaderboard (TOP 10 ONLY - NO FAKE DATA) -->
     <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -230,7 +234,7 @@
             <i class="fa-solid fa-ranking-star"></i>
           </div>
           <div>
-            <h2 class="text-xs font-black text-white uppercase tracking-wider" data-i18n="leaderboardTitle">Top 10</h2>
+            <h2 class="text-xs font-black text-white uppercase tracking-wider" data-i18n="leaderboardTitle">关卡风云榜 · Top 10</h2>
             <div class="text-[10px] text-gray-500" data-i18n="leaderboardSub">6 大站点实时综合排行</div>
           </div>
         </div>
@@ -242,29 +246,29 @@
       <!-- Station Filter Chips -->
       <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
         <button type="button" onclick="filterLeaderboardStation('ALL')" id="stFilterBtn-ALL" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-deloitte-green text-black whitespace-nowrap">
-          总分
+          <span data-i18n="filterAll">总分</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('0')" id="stFilterBtn-0" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          一起拼未来
+          <span data-i18n="st0">拼未来</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('1')" id="stFilterBtn-1" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          道德之树
+          <span data-i18n="st1">道德树</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('2')" id="stFilterBtn-2" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          信号解密
+          <span data-i18n="st2">D.Signal</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('3')" id="stFilterBtn-3" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          勤业智库
+          <span data-i18n="st3">智库</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('4')" id="stFilterBtn-4" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          情商罗盘
+          <span data-i18n="st4">情商</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('5')" id="stFilterBtn-5" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          AI纪元
+          <span data-i18n="st5">AI纪元</span>
         </button>
       </div>
 
-      <!-- Leaderboard List Items (Top 10) -->
+      <!-- Leaderboard List Items (Top 10 - Populated strictly by Supabase data) -->
       <div id="leaderboardList" class="space-y-1.5 pt-1">
         <!-- Rendered via JS -->
       </div>
@@ -279,7 +283,7 @@
           </div>
           <div>
             <h2 class="text-xs font-black text-white uppercase tracking-wider" data-i18n="msgBoardTitle">互动留言墙</h2>
-            <div class="text-[10px] text-gray-500" data-i18n="msgBoardSub">说点什么</div>
+            <div class="text-[10px] text-gray-500" data-i18n="msgBoardSub">团队打气与现场心得交流</div>
           </div>
         </div>
         <span id="msgCountBadge" class="text-[10px] font-mono text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded-full border border-teal-500/20">0 msgs</span>
@@ -295,7 +299,7 @@
         </div>
         <div class="flex items-center justify-between pt-1">
           <div class="flex items-center gap-1 text-[11px] text-gray-500">
-            <span>友善互动</span>
+            <span data-i18n="msgFriendlyTip">友善互动</span>
           </div>
           <button type="submit" id="msgSubmitBtn"
             class="button-press px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-extrabold text-xs rounded-lg flex items-center gap-1">
@@ -305,13 +309,13 @@
         </div>
       </form>
 
-      <!-- Message Stream (Max 15 items scrollable) -->
+      <!-- Message Stream -->
       <div id="messageListContainer" class="max-h-60 overflow-y-auto space-y-2 pr-0.5">
         <!-- Rendered via JS -->
       </div>
     </div>
 
-    <!-- Hidden Easter Egg #2 Trigger Area -->
+    <!-- Hidden Easter Egg Trigger Area -->
     <div class="text-center pt-2">
       <button type="button" onclick="handleSecretEggTrigger()" class="text-[10px] font-mono text-gray-700 hover:text-deloitte-green transition-colors">
         • DELOITTELAND 2026 •
@@ -322,7 +326,7 @@
 
   <!-- Interactive Floating Easter Egg Popup Modal -->
   <div id="easterEggModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-    <div class="bg-deloitte-cardbg border-2 border-deloitte-green rounded-3xl p-6 max-w-xs w-full text-center space-y-4 card-shadow">
+    <div class="bg-deloitte-cardbg border-2 border-deloitte-green rounded-3xl p-6 max-w-xs w-full text-center space-y-4 card-shadow animate-fade-in">
       <div class="w-16 h-16 rounded-full bg-deloitte-green/20 border border-deloitte-green/40 mx-auto flex items-center justify-center text-deloitte-green text-2xl animate-bounce">
         <i class="fa-solid fa-gift"></i>
       </div>
@@ -332,7 +336,7 @@
           你找到了隐藏的绿点脉冲！你的探索精神已获得系统 +100 幸运值！
         </p>
       </div>
-      <button type="button" onclick="closeEasterEggModal()" class="button-press w-full py-2.5 rounded-xl bg-deloitte-green text-black font-extrabold text-xs">
+      <button type="button" onclick="closeEasterEggModal()" class="button-press w-full py-2.5 rounded-xl bg-deloitte-green text-black font-extrabold text-xs" data-i18n="btnCloseEgg">
         收下祝福 (Close)
       </button>
     </div>
@@ -351,64 +355,122 @@
     }
 
     /* ==========================================================
-       BILINGUAL (EN/ZH) I18N DICTIONARY
+       COMPLETE BILINGUAL (EN/ZH) I18N DICTIONARY
        ========================================================== */
     const I18N = {
       zh: {
         langToggle: "EN",
         subTitle: "学员专属空间",
         announcementTag: "现场广播",
+        defaultAnnouncement: "欢迎来到德勤乐园。请根据 FastPass 通行路线前往各关卡站点就位！",
         fastpassTitle: "FastPass 通行证",
-        fastpassSub: "查看队伍轮转时刻与场地",
+        fastpassSub: "查看队伍轮转时刻",
         drushSub: "刷最高分",
         sunriseGateTitle: "日出计划秘钥",
-        sunrisePasscodePrompt: "输入主持人现场公布的主题秘钥解锁主站：",
+        badgeLocked: "LOCKED",
+        badgeUnlocked: "UNLOCKED",
+        sunrisePasscodePrompt: "输入主持人公布的秘钥解锁：",
+        sunrisePlaceholder: "Passcode (14位口令)",
         btnUnlock: "解锁",
-        errPasscode: "秘钥不匹配，请倾听主持人现场口令",
+        errPasscode: "秘钥错误，请倾听主持人现场口令",
         unlockedSuccess: "关卡站点已就绪",
         launchMainSunrise: "进入日出计划主站",
-        leaderboardTitle: "Top 10",
+        leaderboardTitle: "关卡风云榜 · Top 10",
         leaderboardSub: "6 大站点实时综合排行",
+        filterAll: "总分",
+        st0: "拼未来",
+        st1: "道德树",
+        st2: "D.Signal",
+        st3: "智库",
+        st4: "情商",
+        st5: "AI纪元",
+        emptyLeaderboard: "暂无赛段积分记录，请等待站点录入...",
         msgBoardTitle: "互动留言墙",
         msgBoardSub: "团队打气与现场心得交流",
+        nicknamePlaceholder: "昵称",
+        msgPlaceholder: "说点什么为队友打气...",
+        msgFriendlyTip: "友善互动",
         btnSendMsg: "发送",
-        eggFoundTitle: "发现隐藏彩蛋！"
+        eggFoundTitle: "发现隐藏彩蛋！",
+        btnCloseEgg: "收下祝福 (Close)",
+        eggDotMsg: "🟢【彩蛋1】连续点击绿点5次！激活极客高能脉冲模式！再次点击5次可切换。",
+        eggSecretMsg: "⚡【彩蛋2】解锁极客代码：DeloitteLand 2026 系统全速运转中。探索永无止境！",
+        eggValueMsg: "💫 你解锁了终极价值观彩蛋：“众行致远，成就不凡 (Together makes progress)”。荣誉徽章已入驻！"
       },
       en: {
         langToggle: "中",
         subTitle: "Participant Portal",
         announcementTag: "Live Broadcast",
+        defaultAnnouncement: "Welcome to DeloitteLand! Please follow your FastPass route to your designated stations.",
         fastpassTitle: "FastPass Navigation",
-        fastpassSub: "Cohort itinerary & venue rotation",
-        drushSub: "Pixel Challenge",
+        fastpassSub: "Cohort itinerary & rotation",
+        drushSub: "Score Sprint",
         sunriseGateTitle: "Project Sunrise Vault",
-        sunrisePasscodePrompt: "Enter host's announced quest passcode to unlock:",
+        badgeLocked: "LOCKED",
+        badgeUnlocked: "UNLOCKED",
+        sunrisePasscodePrompt: "Enter host's announced passcode to unlock:",
+        sunrisePlaceholder: "Passcode (14 chars)",
         btnUnlock: "Unlock",
         errPasscode: "Invalid passcode. Check with your session host.",
-        unlockedSuccess: "Quest Unlocked",
-        launchMainSunrise: "Launch Project Sunrise Main Portal",
-        leaderboardTitle: "Top 10",
+        unlockedSuccess: "Quest Site Ready",
+        launchMainSunrise: "Launch Project Sunrise Main Site",
+        leaderboardTitle: "Leaderboard · Top 10",
         leaderboardSub: "Live rankings across 6 stations",
-        msgBoardTitle: "Team Message Board",
+        filterAll: "Total",
+        st0: "Piece by Piece",
+        st1: "Ethical Tree",
+        st2: "D.Signal",
+        st3: "Knowledge Clash",
+        st4: "EQ Matrix",
+        st5: "The AI Era",
+        emptyLeaderboard: "No scores recorded yet. Standings will appear once judges submit scores.",
+        msgBoardTitle: "Community Board",
         msgBoardSub: "Share cheers and battle notes",
+        nicknamePlaceholder: "Nickname",
+        msgPlaceholder: "Cheer for your team...",
+        msgFriendlyTip: "Friendly Community",
         btnSendMsg: "Post",
-        eggFoundTitle: "Easter Egg Discovered!"
+        eggFoundTitle: "Easter Egg Discovered!",
+        btnCloseEgg: "Awesome (Close)",
+        eggDotMsg: "🟢 [Easter Egg 1] Green Dot tapped 5 times! Matrix Pulse mode activated. Tap 5 times to toggle.",
+        eggSecretMsg: "⚡ [Easter Egg 2] Hidden Code: DeloitteLand 2026 system running at full speed. Keep exploring!",
+        eggValueMsg: "💫 Core Value Unlocked: 'Together makes progress.' Honor badge acquired!"
       }
     };
 
     let currentLang = localStorage.getItem('participant_lang') || 'zh';
+    let currentRawAnnouncementData = null;
 
     function setLanguage(lang) {
       currentLang = lang;
       localStorage.setItem('participant_lang', lang);
       document.getElementById('langToggleLabel').textContent = I18N[lang].langToggle;
 
+      // Update text nodes with data-i18n
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (I18N[lang] && I18N[lang][key]) {
           el.textContent = I18N[lang][key];
         }
       });
+
+      // Update input placeholders
+      const nickInput = document.getElementById('msgNickname');
+      const contentInput = document.getElementById('msgContent');
+      const passcodePin = document.getElementById('sunrisePasscodeInput');
+      if (nickInput) nickInput.placeholder = I18N[lang].nicknamePlaceholder;
+      if (contentInput) contentInput.placeholder = I18N[lang].msgPlaceholder;
+      if (passcodePin) passcodePin.placeholder = I18N[lang].sunrisePlaceholder;
+
+      // Re-render announcement in the target language
+      if (currentRawAnnouncementData) {
+        applyAnnouncementData(currentRawAnnouncementData);
+      } else {
+        document.getElementById('announcementBody').textContent = I18N[lang].defaultAnnouncement;
+      }
+
+      // Re-render leaderboard for bilingual station titles / empty state
+      renderLeaderboard();
     }
 
     function toggleLanguage() {
@@ -423,24 +485,30 @@
         if (supabaseClient) {
           const { data, error } = await supabaseClient.from('portal_announcements').select('*').eq('id', 1).maybeSingle();
           if (!error && data) {
+            currentRawAnnouncementData = data;
             applyAnnouncementData(data);
             return;
           }
         }
       } catch (err) {
-        console.warn("Supabase announcement fetch fallback:", err);
+        console.warn("Announcement fetch fallback:", err);
       }
 
-      // Local storage fallback
       const cached = localStorage.getItem('portal_announcement_cache');
       if (cached) {
-        applyAnnouncementData(JSON.parse(cached));
+        currentRawAnnouncementData = JSON.parse(cached);
+        applyAnnouncementData(currentRawAnnouncementData);
+      } else {
+        document.getElementById('announcementBody').textContent = I18N[currentLang].defaultAnnouncement;
       }
     }
 
     function applyAnnouncementData(data) {
       if (!data) return;
-      const text = currentLang === 'zh' ? (data.text_zh || data.text) : (data.text_en || data.text);
+      const text = currentLang === 'zh' 
+        ? (data.text_zh || data.text || I18N.zh.defaultAnnouncement) 
+        : (data.text_en || data.text || I18N.en.defaultAnnouncement);
+
       if (text) {
         document.getElementById('announcementBody').textContent = text;
       }
@@ -498,48 +566,15 @@
       document.getElementById('sunriseInputSection').classList.add('hidden');
       document.getElementById('sunriseUnlockedLinks').classList.remove('hidden');
       const badge = document.getElementById('sunriseStatusBadge');
-      badge.textContent = "UNLOCKED";
+      badge.textContent = I18N[currentLang].badgeUnlocked;
       badge.className = "text-[10px] font-mono text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/30 font-bold";
     }
 
     /* ==========================================================
-       03. 6 STATIONS LEADERBOARD (TOP 10 DISPLAY)
-       Stations: 
-       0: Piece by Piece (一起拼未来)
-       1: Ethical Tree (培育职业道德之树)
-       2: D.Signal (信号解密)
-       3: Knowledge Clash (勤业智库)
-       4: EQ Matrix (情商罗盘)
-       5: The AI Era (AI纪元)
+       03. 6 STATIONS LEADERBOARD (STRICTLY NO FAKE DATA)
        ========================================================== */
-    const STATION_NAMES = [
-      { zh: "一起拼未来", en: "Piece by piece" },
-      { zh: "培育职业道德之树", en: "Ethical Tree" },
-      { zh: "信号解密", en: "D.Signal" },
-      { zh: "勤业智库", en: "Knowledge Clash" },
-      { zh: "情商罗盘", en: "EQ Matrix" },
-      { zh: "AI纪元", en: "The AI Era" }
-    ];
-
     let currentSelectedStation = 'ALL';
     let fullScoresDataset = null;
-
-    // Seed mock data for immediate out-of-the-box delight
-    function generateInitialLeaderboard() {
-      const teams = [];
-      for (let t = 1; t <= 36; t++) {
-        const teamNum = `Team ${String(t).padStart(2, '0')}`;
-        const stations = [];
-        let total = 0;
-        for (let s = 0; s < 6; s++) {
-          const score = Math.floor(70 + Math.random() * 28);
-          stations.push(score);
-          total += score;
-        }
-        teams.push({ team: teamNum, total, stations });
-      }
-      return teams;
-    }
 
     async function fetchLiveLeaderboard() {
       try {
@@ -557,9 +592,19 @@
 
       const cached = localStorage.getItem('leaderboard_data_cache');
       if (cached) {
-        fullScoresDataset = JSON.parse(cached);
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            fullScoresDataset = parsed;
+          } else {
+            fullScoresDataset = null;
+          }
+        } catch (err) {
+          fullScoresDataset = null;
+        }
       } else {
-        fullScoresDataset = generateInitialLeaderboard();
+        // STRICT: No fake random data generated
+        fullScoresDataset = null;
       }
       renderLeaderboard();
     }
@@ -581,22 +626,48 @@
 
     function renderLeaderboard() {
       const listEl = document.getElementById('leaderboardList');
-      if (!listEl || !fullScoresDataset) return;
+      if (!listEl) return;
 
-      // Calculate rankings based on filter
-      let sorted = [...fullScoresDataset].map(item => {
+      // Handle true empty state when no scores are submitted
+      if (!fullScoresDataset || fullScoresDataset.length === 0) {
+        listEl.innerHTML = `
+          <div class="p-6 rounded-xl bg-black/30 border border-white/5 text-center space-y-2">
+            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center mx-auto text-gray-500 text-xs">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <p class="text-xs text-gray-400 font-medium">${I18N[currentLang].emptyLeaderboard}</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Rank based on active filter
+      let sorted = fullScoresDataset.map(item => {
         let scoreToRank = 0;
         if (currentSelectedStation === 'ALL') {
-          scoreToRank = item.total || item.stations.reduce((a, b) => a + b, 0);
+          scoreToRank = item.total !== undefined ? item.total : (item.stations ? item.stations.reduce((a, b) => a + b, 0) : 0);
         } else {
           const idx = parseInt(currentSelectedStation, 10);
-          scoreToRank = item.stations[idx] || 0;
+          scoreToRank = (item.stations && item.stations[idx] !== undefined) ? item.stations[idx] : 0;
         }
         return { team: item.team, score: scoreToRank };
       });
 
+      // Show teams that have actually scored (or Top 10)
       sorted.sort((a, b) => b.score - a.score);
       const top10 = sorted.slice(0, 10);
+
+      if (top10.length === 0 || top10.every(item => item.score === 0)) {
+        listEl.innerHTML = `
+          <div class="p-6 rounded-xl bg-black/30 border border-white/5 text-center space-y-2">
+            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center mx-auto text-gray-500 text-xs">
+              <i class="fa-solid fa-hourglass-start"></i>
+            </div>
+            <p class="text-xs text-gray-400 font-medium">${I18N[currentLang].emptyLeaderboard}</p>
+          </div>
+        `;
+        return;
+      }
 
       listEl.innerHTML = top10.map((item, index) => {
         const rank = index + 1;
@@ -624,7 +695,7 @@
        04. PARTICIPANT MESSAGE BOARD
        ========================================================== */
     let localMessages = [
-      { id: 1, nickname: "MC", content: "✨ 欢迎新同事！德勤冲冲冲 🚀", time: "08:30" }
+      { id: 1, nickname: "Deloitte MC", content: "✨ 欢迎新同事！众行致远，成就不凡 🚀", time: "Live" }
     ];
 
     async function loadMessages() {
@@ -636,7 +707,7 @@
             .order('created_at', { ascending: false })
             .limit(20);
 
-          if (!error && data) {
+          if (!error && data && data.length > 0) {
             renderMessageStream(data);
             return;
           }
@@ -645,7 +716,6 @@
         console.warn("Message board fetch fallback:", err);
       }
 
-      // Fallback
       renderMessageStream(localMessages);
     }
 
@@ -684,7 +754,7 @@
 
       // Easter Egg #3: Secret Trigger Word
       if (content.toLowerCase().includes("together makes progress") || content.includes("众行致远")) {
-        showEasterEggModal("💫 你解锁了终极价值观彩蛋：'Together makes progress.' 荣誉徽章已入驻！");
+        showEasterEggModal(I18N[currentLang].eggValueMsg);
       }
 
       const newMsg = {
@@ -725,12 +795,12 @@
         dotClickCount = 0;
         document.body.classList.toggle('matrix-active');
         triggerPartyConfetti();
-        showEasterEggModal("🟢【彩蛋1】连续点击绿点5次！恭喜激活黑客帝国极客高能模式（Matrix Neon Pulse）！再次点击恢复。");
+        showEasterEggModal(I18N[currentLang].eggDotMsg);
       }
     }
 
     function handleSecretEggTrigger() {
-      showEasterEggModal("⚡【彩蛋2】隐藏极客代码：DeloitteLand 2026 系统全速运转中。探索永无止境！");
+      showEasterEggModal(I18N[currentLang].eggSecretMsg);
       triggerPartyConfetti();
     }
 
@@ -746,7 +816,7 @@
     function triggerPartyConfetti() {
       if (window.confetti) {
         confetti({
-          particleCount: 50,
+          particleCount: 45,
           spread: 70,
           origin: { y: 0.2 },
           colors: ['#86BC25', '#568819', '#004F59', '#38bdf8', '#ffffff']
@@ -768,6 +838,7 @@
       setInterval(() => {
         loadPortalAnnouncement();
         loadMessages();
+        fetchLiveLeaderboard();
       }, 12000);
     });
   </script>
