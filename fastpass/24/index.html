@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FastPass | 24 Teams Schedule</title>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -134,7 +136,7 @@
 
         <div class="flex items-center gap-2 font-mono text-xs text-gray-400 bg-black/40 border border-white/10 px-3 py-1.5 rounded-xl self-start sm:self-auto">
           <i class="fa-regular fa-clock text-deloitte-green"></i>
-          <span>13:50 - 17:50</span>
+          <span id="overallTimeRange">13:50 - 17:50</span>
           <span>•</span>
           <span id="liveStatusBadge" class="text-deloitte-green font-bold">进行中</span>
         </div>
@@ -163,6 +165,12 @@
   </main>
 
   <script>
+    const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
+    const supabaseClient = (window.supabase && typeof window.supabase.createClient === 'function')
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
     const TOTAL_TEAMS = 24;
     let currentLang = 'zh';
     let currentTeam = 1;
@@ -170,7 +178,7 @@
     let audioReady = false;
     let switchSynth = null;
 
-    const TIME_SLOTS = [
+    let TIME_SLOTS = [
       { start: '13:50', end: '14:20', startMin: 830, endMin: 860 },
       { start: '14:30', end: '15:00', startMin: 870, endMin: 900 },
       { start: '15:10', end: '15:40', startMin: 910, endMin: 940 },
@@ -188,7 +196,7 @@
       5: { zh: 'AI纪元', en: 'The AI Era', icon: 'fa-microchip' }
     };
 
-    // Default venues (will be replaced dynamically by venue.txt)
+    // Default venues (will be replaced dynamically by Supabase / venue.txt)
     let stationVenues = {
       0: { zh: '场地 1', en: 'Venue 1' },
       1: { zh: '场地 2', en: 'Venue 2' },
@@ -266,6 +274,38 @@
       }
     };
 
+    function timeStrToMin(str) {
+      const [h, m] = (str || '00:00').split(':').map(Number);
+      return (h || 0) * 60 + (m || 0);
+    }
+
+    function applyConfigPayload(payload) {
+      if (!payload) return false;
+      let changed = false;
+
+      if (payload.venues && typeof payload.venues === 'object') {
+        stationVenues = { ...stationVenues, ...payload.venues };
+        changed = true;
+      }
+
+      if (Array.isArray(payload.time_slots) && payload.time_slots.length === 6) {
+        TIME_SLOTS = payload.time_slots.map(slot => ({
+          start: slot.start,
+          end: slot.end,
+          startMin: typeof slot.startMin === 'number' ? slot.startMin : timeStrToMin(slot.start),
+          endMin: typeof slot.endMin === 'number' ? slot.endMin : timeStrToMin(slot.end)
+        }));
+        const rangeEl = document.getElementById('overallTimeRange');
+        if (rangeEl) {
+          rangeEl.textContent = `${TIME_SLOTS[0].start} - ${TIME_SLOTS[TIME_SLOTS.length - 1].end}`;
+        }
+        changed = true;
+      }
+
+      if (changed) renderScheduleView();
+      return changed;
+    }
+
     // Parser for ~/fastpass/venue.txt
     function parseVenueText(text) {
       const venues = {};
@@ -338,8 +378,32 @@
       return venues;
     }
 
-    // Load venue info from parent directory ~/fastpass/venue.txt
     async function loadVenueData() {
+      // 1. Primary: Load from Supabase Admin Configuration
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('fastpass_config')
+            .select('venues, time_slots')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (!error && data && applyConfigPayload(data)) {
+            localStorage.setItem('fastpass_config_v1', JSON.stringify(data));
+            return;
+          }
+        } catch (err) {}
+      }
+
+      // 2. Secondary: Same-browser localStorage cache
+      try {
+        const cached = localStorage.getItem('fastpass_config_v1');
+        if (cached && applyConfigPayload(JSON.parse(cached))) {
+          return;
+        }
+      } catch (e) {}
+
+      // 3. Fallback: Legacy ~/fastpass/venue.txt
       const candidates = ['../venue.txt', 'venue.txt'];
       for (const path of candidates) {
         try {
@@ -353,10 +417,23 @@
               return;
             }
           }
-        } catch (err) {
-          // fetch could fail under local file:// protocol or if file is missing
-        }
+        } catch (err) {}
       }
+    }
+
+    function subscribeRealtimeConfig() {
+      if (!supabaseClient) return;
+      try {
+        supabaseClient
+          .channel('fastpass_config_live_24')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'fastpass_config' }, (payload) => {
+            if (payload.new) {
+              applyConfigPayload(payload.new);
+              localStorage.setItem('fastpass_config_v1', JSON.stringify(payload.new));
+            }
+          })
+          .subscribe();
+      } catch (e) {}
     }
 
     function getActiveSlotIndex() {
@@ -599,6 +676,7 @@
       renderPills();
       renderScheduleView();
       loadVenueData();
+      subscribeRealtimeConfig();
       setInterval(renderScheduleView, 30000);
       setInterval(loadVenueData, 60000);
     };
