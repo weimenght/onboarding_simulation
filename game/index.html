@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>D-Rush: Fresh Graduate Edition</title>
+  <title>D-Rush: A1 Onboarding Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -107,7 +107,7 @@
     }
     .glow-anim { animation: pulseGlow 2s infinite; }
 
-    /* Mobile Landscape Optimization: Float controls over corners to keep canvas maximized */
+    /* Mobile Landscape Optimization */
     @media (orientation: landscape) and (max-height: 520px) {
       .header-container { padding-top: 0.2rem !important; padding-bottom: 0.2rem !important; }
       .header-subtitle { display: none !important; }
@@ -146,6 +146,7 @@
             <span class="font-pixel text-[11px] sm:text-sm text-white tracking-wider">D-RUSH</span>
             <span class="deloitte-dot-pixel"></span>
           </div>
+          <span id="headerSubtitle" class="header-subtitle text-[8px] sm:text-[9px] text-deloitte-gray tracking-tight">FRESH GRAD ONBOARDING RUNNER</span>
         </div>
       </div>
 
@@ -187,7 +188,6 @@
           </div>
         </div>
 
-        <!-- Rank badge supports double-tap Easter Egg -->
         <div class="flex items-center space-x-3 sm:space-x-5">
           <div class="flex flex-col text-right cursor-pointer" onclick="handleRankBadgeTap()" title="Double tap for founding Easter Egg!">
             <span id="hudLabelRank" class="text-gray-400 text-[7px] uppercase">CAREER LEVEL</span>
@@ -257,7 +257,7 @@
           </button>
         </div>
 
-        <!-- GAME OVER OVERLAY (Topic-Provoking & Work Tips) -->
+        <!-- GAME OVER OVERLAY -->
         <div id="gameOverOverlay" class="hidden absolute inset-0 z-30 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-2.5 sm:p-4 text-center space-y-1.5 font-sans overflow-y-auto">
           <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-400 text-xs sm:text-sm mx-auto">
             <i class="fa-solid fa-clipboard-check"></i>
@@ -283,7 +283,7 @@
             <p id="freshGradTipText" class="text-[10px] sm:text-[11px] text-gray-200 leading-snug"></p>
           </div>
 
-          <!-- Topic-Provoking Social Icebreaker -->
+          <!-- Social Icebreaker -->
           <div class="bg-[#181a24] border-l-4 border-amber-400 rounded-r-lg p-2 text-left w-full max-w-sm space-y-0.5 shadow">
             <div class="flex items-center space-x-1.5 text-amber-400 text-[9px] font-bold uppercase tracking-wider">
               <i class="fa-solid fa-comments"></i>
@@ -301,7 +301,7 @@
         </div>
       </div>
 
-      <!-- Touch Controls (Responsive Dock for Portrait & Floating in Landscape) -->
+      <!-- Touch Controls -->
       <div class="touch-controls-bar w-full flex-shrink-0 mt-1 sm:mt-1.5 flex items-center justify-between gap-2 select-none font-pixel">
         <button id="btnTouchSlide" class="flex-1 pixel-btn-press pixel-box bg-deloitte-slate/90 border border-white/15 py-2 sm:py-2.5 rounded-xl flex items-center justify-center space-x-1 text-[10px] text-cyan-300">
           <i class="fa-solid fa-arrow-down text-[8px]"></i>
@@ -503,37 +503,52 @@
 
     function applyLanguage() {
       const t = I18N[currentLang];
-      document.getElementById("langBtnText").textContent = currentLang === 'en' ? "EN / 中文" : "中文 / EN";
-      document.getElementById("headerSubtitle").textContent = t.subtitle;
-      document.getElementById("hudLabelScore").textContent = t.hudScore;
-      document.getElementById("hudLabelHigh").textContent = t.hudRecord;
-      document.getElementById("hudLabelRank").textContent = t.hudRank;
-      document.getElementById("hudLabelMeters").textContent = t.hudSprint;
-      document.getElementById("startBadge").textContent = t.startBadge;
-      document.getElementById("startSubtitle").textContent = t.startSubtitle;
-      document.getElementById("startProgressionNote").textContent = t.startProgressionNote;
-      document.getElementById("startBtn").textContent = t.startBtn;
-      document.getElementById("helpBtn").textContent = t.helpBtn;
-      document.getElementById("pauseTitle").textContent = t.pauseTitle;
-      document.getElementById("pauseSubtitle").textContent = t.pauseSubtitle;
-      document.getElementById("resumeBtn").textContent = t.resumeBtn;
-      document.getElementById("slideTouchLabel").textContent = t.slideTouch;
-      document.getElementById("jumpTouchLabel").textContent = t.jumpTouch;
-      document.getElementById("gameOverTitle").textContent = t.goTitle;
-      document.getElementById("retryBtn").textContent = t.retryBtn;
-      document.getElementById("tipCardHeader").textContent = t.tipHeader;
-      document.getElementById("icebreakerCardHeader").textContent = t.icebreakerHeader;
-      document.getElementById("helpModalTitle").innerHTML = `<i class="fa-solid fa-gamepad"></i> ${t.helpTitle}`;
-      document.getElementById("helpAlliesTitle").textContent = t.helpAllies;
-      document.getElementById("helpBuddyTitle").textContent = t.helpBuddy;
-      document.getElementById("helpBuddyDesc").textContent = t.helpBuddyDesc;
-      document.getElementById("helpCoffeeTitle").textContent = t.helpCoffee;
-      document.getElementById("helpCoffeeDesc").textContent = t.helpCoffeeDesc;
-      document.getElementById("helpEasterTitle").textContent = t.helpEaster;
-      document.getElementById("helpHazardsTitle").textContent = t.helpHazards;
-      document.getElementById("helpHazardsDesc").innerHTML = t.helpHazardsText.replace(/\n/g, '<br>');
-      document.getElementById("helpControlsTitle").textContent = t.helpControls;
-      document.getElementById("helpCloseBtn").textContent = t.helpClose;
+      const langText = document.getElementById("langBtnText");
+      if (langText) langText.textContent = currentLang === 'en' ? "EN / 中文" : "中文 / EN";
+
+      const subEl = document.getElementById("headerSubtitle");
+      if (subEl) subEl.textContent = t.subtitle;
+
+      const setText = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+      };
+
+      setText("hudLabelScore", t.hudScore);
+      setText("hudLabelHigh", t.hudRecord);
+      setText("hudLabelRank", t.hudRank);
+      setText("hudLabelMeters", t.hudSprint);
+      setText("startBadge", t.startBadge);
+      setText("startSubtitle", t.startSubtitle);
+      setText("startProgressionNote", t.startProgressionNote);
+      setText("startBtn", t.startBtn);
+      setText("helpBtn", t.helpBtn);
+      setText("pauseTitle", t.pauseTitle);
+      setText("pauseSubtitle", t.pauseSubtitle);
+      setText("resumeBtn", t.resumeBtn);
+      setText("slideTouchLabel", t.slideTouch);
+      setText("jumpTouchLabel", t.jumpTouch);
+      setText("gameOverTitle", t.goTitle);
+      setText("retryBtn", t.retryBtn);
+      setText("tipCardHeader", t.tipHeader);
+      setText("icebreakerCardHeader", t.icebreakerHeader);
+
+      const helpTitleEl = document.getElementById("helpModalTitle");
+      if (helpTitleEl) helpTitleEl.innerHTML = `<i class="fa-solid fa-gamepad"></i> ${t.helpTitle}`;
+
+      setText("helpAlliesTitle", t.helpAllies);
+      setText("helpBuddyTitle", t.helpBuddy);
+      setText("helpBuddyDesc", t.helpBuddyDesc);
+      setText("helpCoffeeTitle", t.helpCoffee);
+      setText("helpCoffeeDesc", t.helpCoffeeDesc);
+      setText("helpEasterTitle", t.helpEaster);
+      setText("helpHazardsTitle", t.helpHazards);
+
+      const hazardsDescEl = document.getElementById("helpHazardsDesc");
+      if (hazardsDescEl) hazardsDescEl.innerHTML = t.helpHazardsText.replace(/\n/g, '<br>');
+
+      setText("helpControlsTitle", t.helpControls);
+      setText("helpCloseBtn", t.helpClose);
 
       updateRankDisplay();
     }
@@ -565,7 +580,10 @@
 
     function toggleAudio() {
       audioEnabled = !audioEnabled;
-      document.getElementById("sfxIcon").className = audioEnabled ? "fa-solid fa-volume-high text-deloitte-green" : "fa-solid fa-volume-xmark text-gray-500";
+      const sfxIcon = document.getElementById("sfxIcon");
+      if (sfxIcon) {
+        sfxIcon.className = audioEnabled ? "fa-solid fa-volume-high text-deloitte-green" : "fa-solid fa-volume-xmark text-gray-500";
+      }
       if (audioEnabled) initAudio();
     }
 
@@ -596,19 +614,23 @@
 
     let gameState = 'START';
     let score = 0;
-    let highScore = parseInt(localStorage.getItem('drush_fg_high') || '0', 10);
+    let highScore = 0;
+    try {
+      highScore = parseInt(localStorage.getItem('drush_fg_high') || '0', 10);
+    } catch (e) {}
+
     let distance = 0;
     let dotsCollected = 0;
     let coffeeTimer = 0;
     let frameCount = 0;
 
-    // ADJUSTED DIFFICULTY: Snappy initial pace (no boredom), smooth scaling
     const BASE_SPEED = 4.4;
     let gameSpeed = BASE_SPEED;
     const SPEED_RAMP_FACTOR = 0.0028;
     const MAX_SPEED = 8.8;
 
-    document.getElementById("hudHighScore").textContent = highScore.toString().padStart(6, '0');
+    const hudHighEl = document.getElementById("hudHighScore");
+    if (hudHighEl) hudHighEl.textContent = highScore.toString().padStart(6, '0');
 
     /* ==========================================================
        EASTER EGGS SYSTEM
@@ -626,8 +648,10 @@
       logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 2000);
 
       const box = document.getElementById("headerLogoBox");
-      box.classList.add("scale-110", "border-amber-400", "text-amber-400");
-      setTimeout(() => box.classList.remove("scale-110", "border-amber-400", "text-amber-400"), 200);
+      if (box) {
+        box.classList.add("scale-110", "border-amber-400", "text-amber-400");
+        setTimeout(() => box.classList.remove("scale-110", "border-amber-400", "text-amber-400"), 200);
+      }
 
       if (logoTapCount >= 3) {
         logoTapCount = 0;
@@ -647,7 +671,6 @@
       }
     }
 
-    // Keyboard Easter Egg code listener ("1845")
     window.addEventListener("keydown", (e) => {
       secretKeyBuffer += e.key.toLowerCase();
       if (secretKeyBuffer.length > 8) secretKeyBuffer = secretKeyBuffer.slice(-8);
@@ -660,7 +683,7 @@
     function activateExecutiveSuiteEasterEgg() {
       playSfx('easteregg');
       score += 1845;
-      coffeeTimer = 420; // 7s invincible sprint
+      coffeeTimer = 420;
       showToast(currentLang === 'en' ? "🎉 EXECUTIVE SUITE! +1845 PTS & TURBO!" : "🎉 合伙人套房彩蛋！+1845分并开启极速冲刺！", "fa-crown");
       showPowerupStatus(currentLang === 'en' ? "EXECUTIVE ESPRESSO BOOST: 7s" : "合伙人特浓咖啡：无敌 7秒");
       createExplosion(player.x + 10, player.y + 10, "#F59E0B", 24);
@@ -681,7 +704,7 @@
     }
 
     /* ==========================================================
-       PLAYER CHARACTER (Snappy Physics)
+       PLAYER CHARACTER
        ========================================================== */
     const player = {
       x: 52,
@@ -691,12 +714,12 @@
       normalHeight: 34,
       slideHeight: 18,
       velocityY: 0,
-      gravity: 0.62,       // Crisp, responsive fall
-      jumpForce: -10.5,    // Snappy arcade jump
+      gravity: 0.62,
+      jumpForce: -10.5,
       isGrounded: true,
       isSliding: false,
       slideTimer: 0,
-      slideDuration: 28,   // Crisp slide
+      slideDuration: 28,
       runFrame: 0,
 
       reset() {
@@ -761,34 +784,30 @@
         }
 
         if (this.isSliding) {
-          // Sliding Consultant
           ctx.fillStyle = "#1E232A";
           ctx.fillRect(px, py + 6, 26, 8);
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(px + 4, py + 5, 5, 4);
-          ctx.fillStyle = "#86BC25"; // Green lanyard
+          ctx.fillStyle = "#86BC25";
           ctx.fillRect(px + 7, py + 7, 6, 3);
-          ctx.fillStyle = "#f3c299"; // Face
+          ctx.fillStyle = "#f3c299";
           ctx.fillRect(px + 18, py + 2, 8, 7);
-          ctx.fillStyle = "#2d1d14"; // Hair
+          ctx.fillStyle = "#2d1d14";
           ctx.fillRect(px + 20, py, 7, 4);
-          ctx.fillStyle = "#8b4513"; // Briefcase
+          ctx.fillStyle = "#8b4513";
           ctx.fillRect(px + 10, py + 11, 8, 6);
         } else {
-          // Running Consultant
           const legPhase = Math.floor(this.runFrame) % 4;
 
-          // Hair & Face
           ctx.fillStyle = "#2d1d14";
           ctx.fillRect(px + 4, py, 11, 5);
           ctx.fillStyle = "#f3c299";
           ctx.fillRect(px + 5, py + 4, 10, 8);
           ctx.fillStyle = "#0a0e14";
           ctx.fillRect(px + 12, py + 6, 2, 2);
-          ctx.fillStyle = "#86BC25"; // Green glasses/lanyard
+          ctx.fillStyle = "#86BC25";
           ctx.fillRect(px + 10, py + 5, 5, 2);
 
-          // Navy Blazer & Green Tie
           ctx.fillStyle = "#002776";
           ctx.fillRect(px + 3, py + 12, 13, 11);
           ctx.fillStyle = "#FFFFFF";
@@ -796,14 +815,12 @@
           ctx.fillStyle = "#86BC25";
           ctx.fillRect(px + 8, py + 13, 3, 7);
 
-          // Briefcase
           ctx.fillStyle = "#374151";
           const bagY = this.isGrounded ? (py + 14 + (legPhase % 2)) : (py + 10);
           ctx.fillRect(px - 3, bagY, 7, 8);
           ctx.fillStyle = "#86BC25";
           ctx.fillRect(px, bagY + 2, 2, 2);
 
-          // Legs & Shoes
           ctx.fillStyle = "#0c1015";
           if (!this.isGrounded) {
             ctx.fillRect(px + 2, py + 23, 5, 7);
@@ -841,7 +858,7 @@
 
     class Obstacle {
       constructor(type, x) {
-        this.type = type; // 'REF_ERROR', 'SCOPE_CREEP', 'EMAIL_STORM'
+        this.type = type;
         this.x = x;
         this.markedForDeletion = false;
 
@@ -856,7 +873,8 @@
         } else if (this.type === 'EMAIL_STORM') {
           this.width = 26;
           this.height = 16;
-          this.y = FLOOR_Y - 44; // High hazard -> Slide!
+          // Calibrated so running hits it, jumping hits it, sliding passes safely
+          this.y = FLOOR_Y - 36;
         }
       }
 
@@ -895,7 +913,7 @@
 
     class Collectible {
       constructor(type, x, y) {
-        this.type = type; // 'DOT', 'COFFEE'
+        this.type = type;
         this.x = x;
         this.y = y;
         this.width = 12;
@@ -935,7 +953,6 @@
         this.height = 34;
         this.interacted = false;
         this.markedForDeletion = false;
-        // Rare chance (20%) to spawn a Partner instead of Coach
         this.isPartner = Math.random() < 0.2;
       }
       update() {
@@ -965,7 +982,6 @@
           : (currentLang === 'en' ? "[BUDDY]" : "[导师]");
         ctx.fillText(tag, nx + 10, ny - 8);
 
-        // Character Art
         ctx.fillStyle = this.isPartner ? "#E2E8F0" : "#64748B";
         ctx.fillRect(nx + 3, ny, 12, 5);
         ctx.fillStyle = "#FBCFE8";
@@ -1018,14 +1034,12 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, V_WIDTH, FLOOR_Y);
 
-      // Star twinkles
       ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
       for (let s = 0; s < 14; s++) {
         const sx = ((s * 41) - (frameCount * 0.15)) % V_WIDTH;
         ctx.fillRect(sx < 0 ? sx + V_WIDTH : sx, (s * 13) % 110, 1, 1);
       }
 
-      // Skyline Highrises
       const fgOffset = (distance * 0.6) % 64;
       for (let i = -1; i < 9; i++) {
         const fx = i * 64 - fgOffset;
@@ -1033,7 +1047,6 @@
         ctx.fillStyle = "#0c1824";
         ctx.fillRect(fx, FLOOR_Y - bHeight, 56, bHeight);
 
-        // Windows
         ctx.fillStyle = "#86BC25";
         for (let w = 0; w < 3; w++) {
           for (let row = 0; row < 3; row++) {
@@ -1044,7 +1057,6 @@
         }
       }
 
-      // Runway Floor
       ctx.fillStyle = "#111720";
       ctx.fillRect(0, FLOOR_Y, V_WIDTH, V_HEIGHT - FLOOR_Y);
       ctx.fillStyle = "#86BC25";
@@ -1071,7 +1083,6 @@
       nextCollectibleDistance -= gameSpeed * 0.16;
       nextNpcDistance -= gameSpeed * 0.16;
 
-      // Obstacle Spawn: tightly timed for instant engagement
       if (nextObstacleDistance <= 0) {
         const types = ['REF_ERROR', 'SCOPE_CREEP', 'EMAIL_STORM'];
         obstacles.push(new Obstacle(types[Math.floor(Math.random() * types.length)], V_WIDTH + 20));
@@ -1095,19 +1106,22 @@
 
       frameCount++;
       distance += 0.22;
-
-      // Snappy progressive ramp up
       gameSpeed = Math.min(MAX_SPEED, BASE_SPEED + (distance * SPEED_RAMP_FACTOR));
 
       if (coffeeTimer > 0) {
         coffeeTimer--;
-        if (coffeeTimer === 0) document.getElementById("powerupStatusBar").classList.add("hidden");
+        if (coffeeTimer === 0) {
+          const bar = document.getElementById("powerupStatusBar");
+          if (bar) {
+            bar.classList.remove("flex");
+            bar.classList.add("hidden");
+          }
+        }
       }
 
       player.update();
       spawnElements();
 
-      // NPCs
       for (let i = npcs.length - 1; i >= 0; i--) {
         const n = npcs[i];
         n.update();
@@ -1115,7 +1129,6 @@
         if (n.markedForDeletion) npcs.splice(i, 1);
       }
 
-      // Obstacles
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const o = obstacles[i];
         o.update();
@@ -1139,7 +1152,6 @@
         }
       }
 
-      // Collectibles
       for (let i = collectibles.length - 1; i >= 0; i--) {
         const c = collectibles[i];
         c.update();
@@ -1151,7 +1163,7 @@
             score += 100;
             playSfx('dot');
           } else {
-            coffeeTimer = 240; // 4s invincibility
+            coffeeTimer = 240;
             score += 250;
             playSfx('powerup');
             showPowerupStatus(currentLang === 'en' ? "COFFEE CHAT: INVINCIBLE!" : "咖啡社交：无敌护盾！");
@@ -1163,7 +1175,6 @@
         if (c.markedForDeletion) collectibles.splice(i, 1);
       }
 
-      // Particles
       for (let i = particles.length - 1; i >= 0; i--) {
         particles[i].update();
         if (particles[i].life <= 0) particles.splice(i, 1);
@@ -1192,8 +1203,10 @@
        HUD & STATUS UPDATES
        ========================================================== */
     function updateHUD() {
-      document.getElementById("hudScore").textContent = Math.floor(score).toString().padStart(6, '0');
-      document.getElementById("hudMeters").textContent = `${Math.floor(distance)}m`;
+      const scoreEl = document.getElementById("hudScore");
+      const metersEl = document.getElementById("hudMeters");
+      if (scoreEl) scoreEl.textContent = Math.floor(score).toString().padStart(6, '0');
+      if (metersEl) metersEl.textContent = `${Math.floor(distance)}m`;
       updateRankDisplay();
     }
 
@@ -1205,22 +1218,30 @@
       else if (distance > 450) rank = ranks[3];
       else if (distance > 240) rank = ranks[2];
       else if (distance > 90) rank = ranks[1];
-      document.getElementById("hudRank").textContent = rank;
+      const rankEl = document.getElementById("hudRank");
+      if (rankEl) rankEl.textContent = rank;
     }
 
     function showToast(text, icon = "fa-sparkles") {
       const toast = document.getElementById("inGameToast");
-      document.getElementById("inGameToastIcon").className = `fa-solid ${icon} text-amber-300`;
-      document.getElementById("inGameToastText").textContent = text;
-      toast.classList.remove("hidden");
-      setTimeout(() => toast.classList.add("hidden"), 2200);
+      const iconEl = document.getElementById("inGameToastIcon");
+      const textEl = document.getElementById("inGameToastText");
+      if (iconEl) iconEl.className = `fa-solid ${icon} text-amber-300`;
+      if (textEl) textEl.textContent = text;
+      if (toast) {
+        toast.classList.remove("hidden");
+        setTimeout(() => toast.classList.add("hidden"), 2200);
+      }
     }
 
     function showPowerupStatus(text) {
       const bar = document.getElementById("powerupStatusBar");
-      document.getElementById("powerupText").textContent = text;
-      bar.classList.remove("hidden");
-      bar.classList.add("flex");
+      const textEl = document.getElementById("powerupText");
+      if (textEl) textEl.textContent = text;
+      if (bar) {
+        bar.classList.remove("hidden");
+        bar.classList.add("flex");
+      }
     }
 
     /* ==========================================================
@@ -1231,6 +1252,12 @@
       document.getElementById("startOverlay").classList.add("hidden");
       document.getElementById("gameOverOverlay").classList.add("hidden");
       document.getElementById("pauseOverlay").classList.add("hidden");
+
+      const bar = document.getElementById("powerupStatusBar");
+      if (bar) {
+        bar.classList.remove("flex");
+        bar.classList.add("hidden");
+      }
 
       score = 0;
       distance = 0;
@@ -1268,8 +1295,11 @@
 
       if (score > highScore) {
         highScore = Math.floor(score);
-        localStorage.setItem('drush_fg_high', highScore.toString());
-        document.getElementById("hudHighScore").textContent = highScore.toString().padStart(6, '0');
+        try {
+          localStorage.setItem('drush_fg_high', highScore.toString());
+        } catch (e) {}
+        const highEl = document.getElementById("hudHighScore");
+        if (highEl) highEl.textContent = highScore.toString().padStart(6, '0');
       }
 
       const reasons = {
@@ -1277,15 +1307,24 @@
         'SCOPE_CREEP': currentLang === 'en' ? "Stumbled into unaligned client scope creep late in the sprint." : "在冲刺阶段遭遇未经提前对齐的需求蔓延（Scope Creep）。",
         'EMAIL_STORM': currentLang === 'en' ? "Overwhelmed by an urgent Friday 6 PM reply-all email storm." : "在周五傍晚被全员抄送的紧急突发邮件风暴打乱了节奏。"
       };
-      document.getElementById("gameOverReason").textContent = reasons[hazardType] || (currentLang === 'en' ? "Sprint paused for team alignment." : "冲刺结束，进入复盘对齐时刻。");
+      
+      const reasonEl = document.getElementById("gameOverReason");
+      if (reasonEl) {
+        reasonEl.textContent = reasons[hazardType] || (currentLang === 'en' ? "Sprint paused for team alignment." : "冲刺结束，进入复盘对齐时刻。");
+      }
 
-      document.getElementById("finalScore").textContent = Math.floor(score).toString().padStart(6, '0');
-      document.getElementById("finalDistance").textContent = `${Math.floor(distance)}m`;
+      const finalScoreEl = document.getElementById("finalScore");
+      const finalDistEl = document.getElementById("finalDistance");
+      if (finalScoreEl) finalScoreEl.textContent = Math.floor(score).toString().padStart(6, '0');
+      if (finalDistEl) finalDistEl.textContent = `${Math.floor(distance)}m`;
 
       const tip = WORK_TIPS[Math.floor(Math.random() * WORK_TIPS.length)];
       const icebreaker = ICEBREAKERS[Math.floor(Math.random() * ICEBREAKERS.length)];
-      document.getElementById("freshGradTipText").textContent = tip[currentLang];
-      document.getElementById("icebreakerPromptText").textContent = icebreaker[currentLang];
+      
+      const tipEl = document.getElementById("freshGradTipText");
+      const iceEl = document.getElementById("icebreakerPromptText");
+      if (tipEl) tipEl.textContent = tip[currentLang];
+      if (iceEl) iceEl.textContent = icebreaker[currentLang];
 
       document.getElementById("gameOverOverlay").classList.remove("hidden");
     }
@@ -1332,27 +1371,30 @@
     const btnJump = document.getElementById("btnTouchJump");
     const btnSlide = document.getElementById("btnTouchSlide");
 
-    btnJump.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      if (gameState === 'PLAYING') player.jump();
-      else if (gameState === 'START' || gameState === 'GAMEOVER') startGame();
-    });
-    btnJump.addEventListener("mousedown", (e) => {
-      e.preventDefault();
-      if (gameState === 'PLAYING') player.jump();
-      else if (gameState === 'START' || gameState === 'GAMEOVER') startGame();
-    });
+    if (btnJump) {
+      btnJump.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        if (gameState === 'PLAYING') player.jump();
+        else if (gameState === 'START' || gameState === 'GAMEOVER') startGame();
+      });
+      btnJump.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        if (gameState === 'PLAYING') player.jump();
+        else if (gameState === 'START' || gameState === 'GAMEOVER') startGame();
+      });
+    }
 
-    btnSlide.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      if (gameState === 'PLAYING') player.slide();
-    });
-    btnSlide.addEventListener("mousedown", (e) => {
-      e.preventDefault();
-      if (gameState === 'PLAYING') player.slide();
-    });
+    if (btnSlide) {
+      btnSlide.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        if (gameState === 'PLAYING') player.slide();
+      });
+      btnSlide.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        if (gameState === 'PLAYING') player.slide();
+      });
+    }
 
-    // Touch tap zones on canvas: Top 60% = Jump, Bottom 40% = Slide
     canvas.addEventListener("touchstart", (e) => {
       e.preventDefault();
       if (gameState !== 'PLAYING') return;
