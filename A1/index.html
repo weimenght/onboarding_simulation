@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DeloitteLand">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#080b11">
   <title>DeloitteLand | Participant Hub</title>
+
+  <!-- Web App Manifest & Home Screen Icons -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23080b11'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2386BC25' stroke-width='16' stroke-opacity='0.35'/%3E%3Ctext x='215' y='330' font-family='sans-serif' font-weight='900' font-size='240' fill='%23ffffff' text-anchor='middle'%3ED%3C/text%3E%3Ccircle cx='355' cy='305' r='36' fill='%2386BC25'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23080b11'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2386BC25' stroke-width='16' stroke-opacity='0.35'/%3E%3Ctext x='215' y='330' font-family='sans-serif' font-weight='900' font-size='240' fill='%23ffffff' text-anchor='middle'%3ED%3C/text%3E%3Ccircle cx='355' cy='305' r='36' fill='%2386BC25'/%3E%3C/svg%3E">
   
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -29,6 +39,7 @@
               black: '#080b11',
               cardbg: '#121620',
               cardborder: '#1f2637',
+              slate: '#1b2230',
               gray: '#868D96',
               lightgray: '#DCE0E5'
             }
@@ -50,6 +61,7 @@
         radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.08) 0%, transparent 60%);
       min-height: 100vh;
       -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: none;
     }
 
     .deloitte-dot {
@@ -85,6 +97,12 @@
     .safe-top { padding-top: env(safe-area-inset-top, 12px); }
     .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 24px); }
 
+    /* Native App Slide-Over Transition */
+    .app-drawer {
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+
     @keyframes matrixPulse {
       0%, 100% { border-color: rgba(134, 188, 37, 0.4); box-shadow: 0 0 20px rgba(134, 188, 37, 0.2); }
       50% { border-color: rgba(134, 188, 37, 0.9); box-shadow: 0 0 35px rgba(134, 188, 37, 0.6); }
@@ -108,8 +126,10 @@
 
 <body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
 
-  <!-- Team Number Onboarding Gate Modal -->
-  <div id="teamGateModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
+  <!-- ==========================================================
+       MODAL 1: TEAM NUMBER ONBOARDING GATE
+       ========================================================== -->
+  <div id="teamGateModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
     <div id="teamGateCard" class="bg-deloitte-cardbg border-2 border-deloitte-green/40 rounded-3xl p-6 max-w-xs w-full text-center space-y-5 card-shadow">
       <div class="relative w-16 h-16 mx-auto">
         <div class="absolute inset-0 rounded-2xl bg-deloitte-green/20 blur-md animate-pulse"></div>
@@ -120,7 +140,7 @@
 
       <div class="space-y-1">
         <h2 class="text-lg font-black text-white tracking-tight" data-i18n="teamModalTitle">绑定您的所属小组</h2>
-        <p id="teamModalSubtitle" class="text-xs text-gray-400">输入组号，实时追踪当前与下一站行程</p>
+        <p id="teamModalSubtitle" class="text-xs text-gray-400">输入组号 (1 - 36)，实时追踪当前与下一站行程</p>
       </div>
 
       <form onsubmit="handleSaveTeamNumber(event)" class="space-y-4">
@@ -139,11 +159,13 @@
     </div>
   </div>
 
-  <!-- Mobile Top Floating Header -->
-  <header class="sticky top-0 z-40 bg-[#080b11]/90 backdrop-blur-md border-b border-white/10 safe-top">
+  <!-- ==========================================================
+       BASE LAYER: MAIN PARTICIPANT HUB
+       ========================================================== -->
+  <header class="sticky top-0 z-30 bg-[#080b11]/90 backdrop-blur-md border-b border-white/10 safe-top">
     <div class="max-w-md mx-auto px-4 h-15 py-2.5 flex items-center justify-between">
       
-      <!-- 06. Fun & Playful Animated DeloitteLand Logo -->
+      <!-- Fun Animated DeloitteLand Logo -->
       <div class="flex items-center gap-2.5 select-none">
         <div onclick="handleDotEggClick()" class="relative w-9 h-9 rounded-xl bg-gradient-to-br from-deloitte-green/25 via-deloitte-teal/30 to-deloitte-navy/40 border border-deloitte-green/50 flex items-center justify-center shadow-md shadow-deloitte-green/15 cursor-pointer group">
           <i class="fa-solid fa-rocket text-deloitte-green text-sm logo-float group-active:scale-125 transition-transform"></i>
@@ -166,7 +188,7 @@
         </div>
       </div>
 
-      <!-- Right Action Tools (05. Fixed Round Sparkle Button) -->
+      <!-- Right Action Tools -->
       <div class="flex items-center gap-2">
         <button type="button" onclick="triggerEnergyBooster()" class="button-press w-8 h-8 rounded-full bg-deloitte-green/15 hover:bg-deloitte-green/25 border border-deloitte-green/40 text-deloitte-green flex items-center justify-center text-xs shadow-sm shadow-deloitte-green/20" title="Daily Energy Boost">
           <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -178,7 +200,7 @@
       </div>
     </div>
 
-    <!-- Floating Energy Booster Toast (Revealed when clicking the round button) -->
+    <!-- Floating Energy Booster Toast -->
     <div id="energyBoosterToast" class="hidden max-w-md mx-auto px-4 pb-2">
       <div class="p-2.5 rounded-xl bg-deloitte-green/15 border border-deloitte-green/40 text-xs text-gray-100 flex items-center justify-between gap-2 animate-bounce">
         <div class="flex items-center gap-2">
@@ -192,10 +214,10 @@
     </div>
   </header>
 
-  <!-- Main Content Container (Mobile-First 440px max) -->
-  <main class="flex-grow max-w-md mx-auto w-full px-4 py-4 space-y-4">
+  <!-- Main Hub Content Container -->
+  <main class="flex-grow max-w-md mx-auto w-full px-4 py-4 space-y-4 safe-bottom">
 
-    <!-- 01. Dynamic Host Announcement Board (07. Strictly from Supabase, no hardcode) -->
+    <!-- 01. Dynamic Host Announcement Board (Strictly from Supabase) -->
     <div id="announcementCard" class="p-3.5 rounded-2xl bg-gradient-to-r from-deloitte-teal/30 via-deloitte-cardbg to-deloitte-cardbg border border-deloitte-green/30 card-shadow relative overflow-hidden">
       <div class="flex items-start gap-3">
         <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-sm shrink-0 mt-0.5 animate-pulse">
@@ -219,7 +241,7 @@
         <div class="absolute -right-6 -top-6 w-20 h-20 bg-lime-500/10 rounded-full blur-xl pointer-events-none"></div>
 
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 cursor-pointer" onclick="openAppView('fastpass')">
             <div class="w-7 h-7 rounded-lg bg-lime-500/20 text-lime-400 flex items-center justify-center text-xs font-bold">
               <i class="fa-solid fa-route"></i>
             </div>
@@ -237,23 +259,23 @@
               <i class="fa-solid fa-users text-[9px]"></i>
               <span id="fpCardTeamLabel">组号</span>
             </button>
-            <a id="fastpassDynamicLink" href="https://projectsunrise.win/fastpass/36" target="_blank" rel="noopener noreferrer"
-              class="button-press px-2.5 py-1 rounded-lg bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-[10px] flex items-center gap-1">
+            <button type="button" onclick="openAppView('fastpass')"
+              class="button-press px-2.5 py-1 rounded-lg bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-[10px] flex items-center gap-1 shadow-sm">
               <span data-i18n="fpFullTableBtn">全表</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
-            </a>
+              <i class="fa-solid fa-chevron-right text-[8px]"></i>
+            </button>
           </div>
         </div>
 
-        <!-- Dynamic Current & Next Station Container (1:30 PM - 6:00 PM) -->
-        <div id="fpLiveStationsBox" class="grid grid-cols-2 gap-2.5 pt-0.5">
+        <!-- Dynamic Current & Next Station Container (Tap to open full FastPass drawer) -->
+        <div id="fpLiveStationsBox" onclick="openAppView('fastpass')" class="grid grid-cols-2 gap-2.5 pt-0.5 cursor-pointer">
           <!-- Populated dynamically via JS -->
         </div>
       </div>
 
-      <!-- D-Rush Mini Game & Top Record Holder (01. Score + Name from Supabase 'leaderboard') -->
-      <a href="https://www.projectsunrise.win/game" target="_blank" rel="noopener noreferrer"
-        class="button-press p-3.5 rounded-2xl bg-deloitte-cardbg border border-deloitte-green/30 hover:border-deloitte-green card-shadow flex items-center justify-between group relative overflow-hidden">
+      <!-- D-Rush Mini Game Card (Opens In-App Slide-Over View) -->
+      <div onclick="openAppView('drush')"
+        class="button-press p-3.5 rounded-2xl bg-deloitte-cardbg border border-deloitte-green/30 hover:border-deloitte-green card-shadow flex items-center justify-between group relative overflow-hidden cursor-pointer">
         <div class="absolute -right-4 -top-4 w-16 h-16 bg-deloitte-green/10 rounded-full blur-xl pointer-events-none"></div>
         
         <div class="flex items-center gap-3">
@@ -263,9 +285,9 @@
           <div>
             <div class="text-xs font-black text-white group-hover:text-deloitte-green transition-colors flex items-center gap-1.5">
               <span>D-Rush: A1 Onboarding</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-gray-400"></i>
+              <i class="fa-solid fa-chevron-right text-[9px] text-deloitte-green"></i>
             </div>
-            <div class="text-[10px] text-gray-400 mt-0.5" data-i18n="drushSub">挑战最高分纪录</div>
+            <div class="text-[10px] text-gray-400 mt-0.5" data-i18n="drushSub">点击直接进入游戏 · 刷最高分</div>
           </div>
         </div>
 
@@ -279,7 +301,7 @@
             --
           </div>
         </div>
-      </a>
+      </div>
 
     </div>
 
@@ -313,23 +335,21 @@
         </p>
       </div>
 
-      <!-- Unlocked State Links (Initially Hidden) -->
+      <!-- Unlocked State Action (Opens In-App Slide-Over View) -->
       <div id="sunriseUnlockedLinks" class="hidden pt-1 space-y-2.5">
         <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
           <span class="text-xs font-bold text-amber-300" data-i18n="unlockedSuccess">关卡站点已就绪</span>
           <span class="text-[10px] text-gray-400 font-mono">esirnustcejorp</span>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-          <a href="https://www.projectsunrise.win/sunrise" target="_blank" rel="noopener noreferrer"
-            class="button-press p-2.5 rounded-xl bg-amber-400 text-black font-extrabold text-xs text-center col-span-2 flex items-center justify-center gap-1.5 shadow-md shadow-amber-400/20">
-            <span data-i18n="launchMainSunrise">进入日出计划主站</span>
-            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-          </a>
-        </div>
+        <button type="button" onclick="openAppView('sunrise')"
+          class="button-press w-full p-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs text-center flex items-center justify-center gap-1.5 shadow-md shadow-amber-400/20">
+          <span data-i18n="launchMainSunrise">进入日出计划 (In-App)</span>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
       </div>
     </div>
 
-    <!-- 04. 6 Stations Leaderboard (02. Folded by default, click to unfold) -->
+    <!-- 04. 6 Stations Leaderboard (Folded by default) -->
     <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow">
       <div onclick="toggleLeaderboardFold()" class="flex items-center justify-between cursor-pointer select-none">
         <div class="flex items-center gap-2">
@@ -355,9 +375,8 @@
         </div>
       </div>
 
-      <!-- Collapsible Body (Hidden by default) -->
+      <!-- Collapsible Body -->
       <div id="leaderboardCollapsibleBody" class="hidden pt-3 mt-3 border-t border-white/10 space-y-3">
-        <!-- Station Filter Chips -->
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           <button type="button" onclick="filterLeaderboardStation('ALL')" id="stFilterBtn-ALL" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-deloitte-green text-black whitespace-nowrap">
             <span data-i18n="filterAll">总分</span>
@@ -382,12 +401,11 @@
           </button>
         </div>
 
-        <!-- Leaderboard List Items -->
         <div id="leaderboardList" class="space-y-1.5"></div>
       </div>
     </div>
 
-    <!-- 05. Participant Live Message Board (03. Rate-limited 1 msg / 60s) -->
+    <!-- 05. Participant Live Message Board (Rate-limited 1 msg / 60s) -->
     <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -402,7 +420,6 @@
         <span id="msgCountBadge" class="text-[10px] font-mono text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded-full border border-teal-500/20">0 msgs</span>
       </div>
 
-      <!-- Message Input Form -->
       <form onsubmit="handlePostMessage(event)" class="space-y-2 bg-black/40 p-2.5 rounded-xl border border-white/10">
         <div class="grid grid-cols-3 gap-2">
           <input id="msgNickname" type="text" placeholder="昵称" maxlength="15" required
@@ -423,7 +440,6 @@
         </div>
       </form>
 
-      <!-- Message Stream -->
       <div id="messageListContainer" class="max-h-60 overflow-y-auto space-y-2 pr-0.5"></div>
     </div>
 
@@ -436,8 +452,149 @@
 
   </main>
 
-  <!-- Interactive Floating Easter Egg Popup Modal -->
-  <div id="easterEggModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+  <!-- ==========================================================
+       IN-APP SLIDE-OVER VIEW 1: BUNDLED NATIVE FASTPASS SCHEDULE
+       ========================================================== -->
+  <div id="appView-fastpass" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
+    <!-- App View Top Bar -->
+    <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
+      <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeAppView()" class="button-press px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-chevron-left text-deloitte-green text-xs"></i>
+          <span data-i18n="btnBackToHub">返回</span>
+        </button>
+
+        <div class="flex items-center gap-1.5">
+          <span class="font-extrabold text-sm text-white">FastPass<span class="deloitte-dot"></span></span>
+          <span id="drawerFpCohortBadge" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-400/20 text-lime-300 border border-lime-400/30">36 Teams</span>
+        </div>
+
+        <button type="button" onclick="openTeamGateModal()" class="button-press px-3 py-1.5 rounded-xl bg-lime-400/15 hover:bg-lime-400/25 border border-lime-400/30 text-xs font-bold text-lime-300 flex items-center gap-1">
+          <i class="fa-solid fa-users text-[10px]"></i>
+          <span data-i18n="fpChangeTeamBtn">换组</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bundled FastPass Timetable Body -->
+    <div class="flex-1 overflow-y-auto p-4 safe-bottom">
+      <div class="max-w-2xl mx-auto space-y-4">
+        
+        <!-- Team Banner Card -->
+        <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-deloitte-green animate-pulse"></span>
+              <span class="text-[10px] uppercase font-extrabold tracking-wider text-deloitte-green" data-i18n="fpDrawerBadge">专属轮转时刻表</span>
+            </div>
+            <h3 id="fpDrawerTeamTitle" class="text-lg font-black text-white mt-0.5">第 -- 组 · 活动日程</h3>
+          </div>
+          <div class="text-right font-mono">
+            <span id="fpDrawerTimeRange" class="text-xs text-gray-400 block">13:50 - 17:50</span>
+            <span id="fpDrawerLiveStatus" class="text-[11px] text-deloitte-green font-bold">进行中</span>
+          </div>
+        </div>
+
+        <!-- 6-Round Schedule Table -->
+        <div class="bg-deloitte-cardbg border border-white/10 rounded-2xl overflow-hidden card-shadow">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-white/10 text-[11px] font-bold text-gray-400 bg-white/[0.02]">
+                  <th class="py-3 px-3.5 font-mono" data-i18n="thTime">时间段</th>
+                  <th class="py-3 px-3.5" data-i18n="thStation">环节项目</th>
+                  <th class="py-3 px-3.5" data-i18n="thVenue">地点</th>
+                  <th class="py-3 px-3.5 text-right" data-i18n="thStatus">状态</th>
+                </tr>
+              </thead>
+              <tbody id="fpDrawerTableBody" class="divide-y divide-white/5 text-xs">
+                <!-- Populated dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+          <div class="px-4 py-3 border-t border-white/10 bg-black/30 flex items-center justify-between text-[11px] text-gray-400">
+            <span data-i18n="fpFooterDuration">每环节 30 分钟 · 轮转 10 分钟</span>
+            <span id="fpDrawerFooterScale" class="font-mono text-gray-500">FastPass</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       IN-APP SLIDE-OVER VIEW 2: D-RUSH SANDBOXED GAME CONTAINER
+       ========================================================== -->
+  <div id="appView-drush" class="app-drawer fixed inset-0 z-50 bg-[#070a0f] flex flex-col translate-x-full overflow-hidden">
+    <div class="w-full border-b border-white/10 bg-[#070a0f]/95 backdrop-blur-md safe-top shrink-0">
+      <div class="max-w-lg mx-auto px-3 h-12 flex items-center justify-between">
+        <button type="button" onclick="closeAppView()" class="button-press px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-bold text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-chevron-left text-deloitte-green text-xs"></i>
+          <span data-i18n="btnBackToHub">返回</span>
+        </button>
+
+        <div class="flex items-center gap-1.5">
+          <i class="fa-solid fa-gamepad text-deloitte-green text-xs"></i>
+          <span class="font-extrabold text-xs text-white tracking-wider">D-RUSH ARCADE</span>
+        </div>
+
+        <button type="button" onclick="reloadDrushIframe()" class="button-press w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 flex items-center justify-center text-xs" title="Reload Game">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 w-full bg-black relative overflow-hidden">
+      <iframe id="drushAppIframe" src="about:blank" class="w-full h-full border-0 block" allow="autoplay; fullscreen"></iframe>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       IN-APP SLIDE-OVER VIEW 3: PROJECT SUNRISE SUITE CONTAINER
+       ========================================================== -->
+  <div id="appView-sunrise" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
+    <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
+      <div class="max-w-3xl mx-auto px-3 h-13 py-2 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeAppView()" class="button-press px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-bold text-white flex items-center gap-1.5 shrink-0">
+          <i class="fa-solid fa-chevron-left text-amber-400 text-xs"></i>
+          <span data-i18n="btnBackToHub">返回</span>
+        </button>
+
+        <!-- In-App Node Switcher Pills -->
+        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar bg-black/50 p-1 rounded-xl border border-white/10">
+          <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/sunrise', 0)" id="srNodeBtn-0"
+            class="button-press px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-amber-400 text-black whitespace-nowrap">
+            <span data-i18n="portalHome">主站</span>
+          </button>
+          <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/diyiguan', 1)" id="srNodeBtn-1"
+            class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold text-gray-300 hover:text-white whitespace-nowrap">
+            Node 1
+          </button>
+          <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/niveldos', 2)" id="srNodeBtn-2"
+            class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold text-gray-300 hover:text-white whitespace-nowrap">
+            Node 2
+          </button>
+          <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/sankyu', 3)" id="srNodeBtn-3"
+            class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold text-gray-300 hover:text-white whitespace-nowrap">
+            Node 3
+          </button>
+        </div>
+
+        <button type="button" onclick="reloadSunriseIframe()" class="button-press w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 flex items-center justify-center text-xs shrink-0" title="Reload">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 w-full bg-black relative overflow-hidden">
+      <iframe id="sunriseAppIframe" src="about:blank" class="w-full h-full border-0 block" allow="autoplay; fullscreen"></iframe>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       MODAL 2: EASTER EGG POPUP
+       ========================================================== -->
+  <div id="easterEggModal" class="fixed inset-0 z-[70] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
     <div class="bg-deloitte-cardbg border-2 border-deloitte-green rounded-3xl p-6 max-w-xs w-full text-center space-y-4 card-shadow">
       <div class="w-16 h-16 rounded-full bg-deloitte-green/20 border border-deloitte-green/40 mx-auto flex items-center justify-center text-deloitte-green text-2xl animate-bounce">
         <i class="fa-solid fa-gift"></i>
@@ -471,6 +628,7 @@
       zh: {
         langToggle: "EN",
         subTitle: "学员端",
+        btnBackToHub: "返回",
         teamModalTitle: "绑定您的所属小组",
         teamModalSub: (max) => `请输入组号 (1 - ${max})，自动同步当前与下一站行程`,
         teamModalSaveBtn: "确认进入乐园",
@@ -480,14 +638,26 @@
         fastpassTitle: "FastPass 实时行程",
         fpWindowNote: "活动时段自动追踪",
         fpFullTableBtn: "全表",
+        fpChangeTeamBtn: "换组",
+        fpDrawerBadge: "专属轮转时刻表",
+        fpDrawerTitle: (t) => `第 ${t} 组 · 活动日程`,
+        thTime: "时间段",
+        thStation: "环节项目",
+        thVenue: "地点",
+        thStatus: "状态",
+        statusNow: "进行中",
+        statusNext: "下一站",
+        statusDone: "已完成",
+        statusWaiting: "待开始",
+        fpFooterDuration: "每环节 30 分钟 · 轮转 10 分钟 (含茶歇)",
         fpCurrentLabel: "当前环节",
         fpNextLabel: "下一环节",
         fpBefore1330: "下午场活动将于 13:30 准时开启",
         fpAfter1800: "今日 13:30 - 18:00 站点轮转已圆满结束",
         fpBreakRotation: "换场与茶歇时间",
         fpAllDone: "全部轮次已完成",
-        fpSelectTeamPrompt: "点击上方选择您的组号以显示实时站点",
-        drushSub: "挑战最高分纪录",
+        fpSelectTeamPrompt: "点击此处选择您的组号以显示实时站点",
+        drushSub: "点击直接进入游戏 · 刷最高分",
         drushNoRecord: "虚位以待",
         sunriseGateTitle: "日出计划秘钥",
         badgeLocked: "LOCKED",
@@ -497,7 +667,8 @@
         btnUnlock: "解锁",
         errPasscode: "秘钥错误，请倾听主持人现场口令",
         unlockedSuccess: "关卡站点已就绪",
-        launchMainSunrise: "进入日出计划主站",
+        launchMainSunrise: "进入日出计划 (In-App)",
+        portalHome: "Sunrise 主站",
         leaderboardTitle: "Top 10 排行榜",
         clickToExpand: "点击展开",
         clickToCollapse: "点击收起",
@@ -511,10 +682,10 @@
         st5: "AI纪元",
         emptyLeaderboard: "暂无赛段积分记录，请等待站点录入...",
         msgBoardTitle: "互动留言墙",
-        msgBoardSub: "团队打气与现场心得交流",
+        msgBoardSub: "团队打气与现场心得交流（每分钟限发 1 条）",
         nicknamePlaceholder: "昵称",
         msgPlaceholder: "说点什么为队友打气...",
-        msgFriendlyTip: "友善互动",
+        msgFriendlyTip: "友善互动 · 60秒冷却防刷屏",
         msgCooldownWait: (s) => `请等待 ${s} 秒后再发送`,
         emptyMessages: "暂无互动留言，快来发送第一条打气弹幕吧！",
         btnSendMsg: "发送",
@@ -527,6 +698,7 @@
       en: {
         langToggle: "中",
         subTitle: "Participant",
+        btnBackToHub: "Back",
         teamModalTitle: "Select Your Team Number",
         teamModalSub: (max) => `Enter Team # (1 - ${max}) to track your live station route`,
         teamModalSaveBtn: "Confirm & Enter",
@@ -535,15 +707,27 @@
         noAnnouncement: "No active broadcast from host yet.",
         fastpassTitle: "FastPass Live Route",
         fpWindowNote: "Auto-tracked (1:30 - 6:00 PM)",
-        fpFullTableBtn: "Full Schedule",
+        fpFullTableBtn: "Schedule",
+        fpChangeTeamBtn: "Team",
+        fpDrawerBadge: "Team Schedule Route",
+        fpDrawerTitle: (t) => `Team ${t} · Schedule`,
+        thTime: "Time",
+        thStation: "Station",
+        thVenue: "Venue",
+        thStatus: "Status",
+        statusNow: "IN PROGRESS",
+        statusNext: "UP NEXT",
+        statusDone: "Done",
+        statusWaiting: "Upcoming",
+        fpFooterDuration: "30m Session · 10m Rotation (incl. break)",
         fpCurrentLabel: "CURRENT STATION",
         fpNextLabel: "UP NEXT",
         fpBefore1330: "Afternoon rotations begin at 1:30 PM",
         fpAfter1800: "1:30 PM - 6:00 PM rotations have concluded",
         fpBreakRotation: "Rotation / Break Time",
         fpAllDone: "All stations completed",
-        fpSelectTeamPrompt: "Tap above to set your team number",
-        drushSub: "Beat the Top Record",
+        fpSelectTeamPrompt: "Tap here to set your team number",
+        drushSub: "Tap to launch game & beat the record",
         drushNoRecord: "No record yet",
         sunriseGateTitle: "Project Sunrise Vault",
         badgeLocked: "LOCKED",
@@ -553,7 +737,8 @@
         btnUnlock: "Unlock",
         errPasscode: "Invalid passcode. Check with the MC.",
         unlockedSuccess: "Site Ready",
-        launchMainSunrise: "Launch Project Sunrise Main Site",
+        launchMainSunrise: "Open Project Sunrise (In-App)",
+        portalHome: "Main Site",
         leaderboardTitle: "Top 10 Standings",
         clickToExpand: "Tap to expand",
         clickToCollapse: "Tap to collapse",
@@ -567,10 +752,10 @@
         st5: "The AI Era",
         emptyLeaderboard: "No scores recorded yet. Standings will appear once judges submit scores.",
         msgBoardTitle: "Community Board",
-        msgBoardSub: "Share cheers & notes",
+        msgBoardSub: "Share cheers & notes (1 msg / min limit)",
         nicknamePlaceholder: "Nickname",
         msgPlaceholder: "Cheer for your team...",
-        msgFriendlyTip: "Friendly Community",
+        msgFriendlyTip: "Friendly Community · 60s cooldown",
         msgCooldownWait: (s) => `Wait ${s}s before next post`,
         emptyMessages: "No messages yet. Be the first to cheer for your team!",
         btnSendMsg: "Post",
@@ -588,7 +773,109 @@
     let currentRawAnnouncementData = null;
 
     /* ==========================================================
-       FASTPASS MATRICES & STATIONS (FROM FASTPASS 24/36/48 CODE)
+       IN-APP SLIDE-OVER VIEW STACK & HISTORY API CONTROLLER
+       ========================================================== */
+    let activeAppView = null;
+
+    function openAppView(viewName, pushToHistory = true) {
+      if (viewName === 'fastpass' && (!participantTeamNumber || participantTeamNumber > currentCohortScale)) {
+        openTeamGateModal();
+        return;
+      }
+
+      const drawer = document.getElementById(`appView-${viewName}`);
+      if (!drawer) return;
+
+      activeAppView = viewName;
+      document.body.style.overflow = 'hidden';
+
+      if (viewName === 'fastpass') {
+        renderBundledFastPassDrawer();
+      } else if (viewName === 'drush') {
+        const nick = document.getElementById('msgNickname')?.value.trim() || (participantTeamNumber ? `Team ${String(participantTeamNumber).padStart(2, '0')}` : 'A1 Analyst');
+        try { localStorage.setItem('drush_player_name', nick); } catch (e) {}
+        const iframe = document.getElementById('drushAppIframe');
+        if (iframe && iframe.src === 'about:blank') {
+          iframe.src = 'https://www.projectsunrise.win/game';
+        }
+      } else if (viewName === 'sunrise') {
+        const iframe = document.getElementById('sunriseAppIframe');
+        if (iframe && iframe.src === 'about:blank') {
+          switchSunriseNode('https://www.projectsunrise.win/sunrise', 0);
+        }
+      }
+
+      drawer.classList.remove('translate-x-full');
+      drawer.classList.add('translate-x-0');
+
+      if (pushToHistory) {
+        try {
+          window.history.pushState({ appView: viewName }, '', `#${viewName}`);
+        } catch (e) {}
+      }
+    }
+
+    function closeAppView(fromPopState = false) {
+      if (!activeAppView) return;
+      const closingView = activeAppView;
+      const drawer = document.getElementById(`appView-${closingView}`);
+      if (drawer) {
+        drawer.classList.remove('translate-x-0');
+        drawer.classList.add('translate-x-full');
+      }
+
+      activeAppView = null;
+      document.body.style.overflow = '';
+
+      if (closingView === 'drush') {
+        setTimeout(() => {
+          if (activeAppView !== 'drush') {
+            const iframe = document.getElementById('drushAppIframe');
+            if (iframe) iframe.src = 'about:blank';
+          }
+        }, 320);
+        loadDrushHighScore();
+      }
+
+      if (!fromPopState && window.location.hash) {
+        try { window.history.back(); } catch (e) {}
+      }
+    }
+
+    window.addEventListener('popstate', () => {
+      if (activeAppView) {
+        closeAppView(true);
+      }
+    });
+
+    function reloadDrushIframe() {
+      const iframe = document.getElementById('drushAppIframe');
+      if (iframe) iframe.src = 'https://www.projectsunrise.win/game';
+    }
+
+    function switchSunriseNode(url, activeIdx) {
+      const iframe = document.getElementById('sunriseAppIframe');
+      if (iframe) iframe.src = url;
+      [0, 1, 2, 3].forEach(idx => {
+        const btn = document.getElementById(`srNodeBtn-${idx}`);
+        if (btn) {
+          btn.className = (idx === activeIdx)
+            ? "button-press px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-amber-400 text-black whitespace-nowrap"
+            : "button-press px-2.5 py-1 rounded-lg text-[11px] font-bold text-gray-300 hover:text-white whitespace-nowrap";
+        }
+      });
+    }
+
+    function reloadSunriseIframe() {
+      const iframe = document.getElementById('sunriseAppIframe');
+      if (iframe && iframe.src !== 'about:blank') {
+        const currentUrl = iframe.src;
+        iframe.src = currentUrl;
+      }
+    }
+
+    /* ==========================================================
+       FASTPASS MATRICES & STATIONS (EXPLICIT 24, 36, AND 48 MATRICES)
        ========================================================== */
     const FP_STATIONS = {
       0: { zh: '一起拼未来', en: 'Piece by piece, we change', icon: 'fa-puzzle-piece' },
@@ -617,6 +904,7 @@
       { start: '17:20', end: '17:50', startMin: 1040, endMin: 1070 }
     ];
 
+    // 24-Team Matrix (Teams 1 - 24)
     const SCHEDULE_MATRIX_24 = [
       [0, 1, 2, 3, 4, 5], [3, 0, 1, 5, 4, 2], [5, 3, 4, 2, 0, 1], [2, 0, 3, 5, 1, 4],
       [4, 2, 0, 5, 1, 3], [0, 5, 1, 4, 2, 3], [4, 0, 2, 1, 3, 5], [3, 4, 5, 0, 2, 1],
@@ -626,6 +914,7 @@
       [1, 5, 0, 4, 3, 2], [1, 4, 5, 3, 0, 2], [4, 5, 2, 0, 3, 1], [3, 2, 1, 4, 5, 0]
     ];
 
+    // 36-Team Matrix (Teams 1 - 36)
     const SCHEDULE_MATRIX_36 = [
       [0, 1, 2, 3, 4, 5], [1, 2, 3, 4, 5, 0], [2, 3, 4, 5, 0, 1], [3, 4, 5, 0, 1, 2],
       [4, 5, 0, 1, 2, 3], [5, 0, 1, 2, 3, 4], [0, 2, 4, 1, 3, 5], [1, 3, 5, 2, 4, 0],
@@ -638,15 +927,47 @@
       [2, 4, 1, 3, 0, 5], [3, 5, 2, 4, 1, 0], [4, 0, 3, 5, 2, 1], [5, 1, 4, 0, 3, 2]
     ];
 
+    // Explicit 48-Team Matrix (Teams 1 - 48)
+    const SCHEDULE_MATRIX_48 = [
+      // Teams 1 - 24
+      [0, 1, 2, 3, 4, 5], [3, 0, 1, 5, 4, 2], [5, 3, 4, 2, 0, 1], [2, 0, 3, 5, 1, 4],
+      [4, 2, 0, 5, 1, 3], [0, 5, 1, 4, 2, 3], [4, 0, 2, 1, 3, 5], [3, 4, 5, 0, 2, 1],
+      [2, 1, 3, 4, 0, 5], [1, 2, 0, 3, 5, 4], [5, 3, 0, 2, 4, 1], [1, 0, 3, 5, 2, 4],
+      [5, 4, 2, 1, 3, 0], [3, 1, 5, 2, 4, 0], [0, 4, 1, 3, 5, 2], [2, 5, 4, 0, 1, 3],
+      [5, 3, 4, 1, 2, 0], [0, 3, 5, 2, 1, 4], [2, 1, 4, 0, 5, 3], [4, 2, 3, 1, 0, 5],
+      [1, 5, 0, 4, 3, 2], [1, 4, 5, 3, 0, 2], [4, 5, 2, 0, 3, 1], [3, 2, 1, 4, 5, 0],
+      // Teams 25 - 48
+      [0, 1, 2, 3, 4, 5], [3, 0, 1, 5, 4, 2], [5, 3, 4, 2, 0, 1], [2, 0, 3, 5, 1, 4],
+      [4, 2, 0, 5, 1, 3], [0, 5, 1, 4, 2, 3], [4, 0, 2, 1, 3, 5], [3, 4, 5, 0, 2, 1],
+      [2, 1, 3, 4, 0, 5], [1, 2, 0, 3, 5, 4], [5, 3, 0, 2, 4, 1], [1, 0, 3, 5, 2, 4],
+      [5, 4, 2, 1, 3, 0], [3, 1, 5, 2, 4, 0], [0, 4, 1, 3, 5, 2], [2, 5, 4, 0, 1, 3],
+      [5, 3, 4, 1, 2, 0], [0, 3, 5, 2, 1, 4], [2, 1, 4, 0, 5, 3], [4, 2, 3, 1, 0, 5],
+      [1, 5, 0, 4, 3, 2], [1, 4, 5, 3, 0, 2], [4, 5, 2, 0, 3, 1], [3, 2, 1, 4, 5, 0]
+    ];
+
     function getScheduleForTeam(teamNum, scale) {
       if (!teamNum || teamNum < 1) return null;
       if (scale === 24) {
-        return SCHEDULE_MATRIX_24[(teamNum - 1) % 24];
+        return SCHEDULE_MATRIX_24[(teamNum - 1) % SCHEDULE_MATRIX_24.length];
       } else if (scale === 48) {
-        return SCHEDULE_MATRIX_24[(teamNum - 1) % 24];
+        return SCHEDULE_MATRIX_48[(teamNum - 1) % SCHEDULE_MATRIX_48.length];
       } else {
-        return SCHEDULE_MATRIX_36[(teamNum - 1) % 36];
+        return SCHEDULE_MATRIX_36[(teamNum - 1) % SCHEDULE_MATRIX_36.length];
       }
+    }
+
+    function getActiveSlotIndex() {
+      const now = new Date();
+      const currentMin = now.getHours() * 60 + now.getMinutes();
+      for (let i = 0; i < fpTimeSlots.length; i++) {
+        if (currentMin >= fpTimeSlots[i].startMin && currentMin <= fpTimeSlots[i].endMin) return i;
+      }
+      if (currentMin < fpTimeSlots[0].startMin) return -1;
+      if (currentMin > fpTimeSlots[fpTimeSlots.length - 1].endMin) return 99;
+      for (let i = 0; i < fpTimeSlots.length - 1; i++) {
+        if (currentMin > fpTimeSlots[i].endMin && currentMin < fpTimeSlots[i + 1].startMin) return i + 1;
+      }
+      return -1;
     }
 
     function timeStrToMin(str) {
@@ -681,6 +1002,75 @@
         console.warn("FastPass config fetch error:", e);
       }
       renderLiveFastPassPanel();
+      if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
+    }
+
+    function renderBundledFastPassDrawer() {
+      if (!participantTeamNumber) return;
+      const t = I18N[currentLang];
+      const schedule = getScheduleForTeam(participantTeamNumber, currentCohortScale);
+      const activeSlot = getActiveSlotIndex();
+
+      document.getElementById('drawerFpCohortBadge').textContent = `${currentCohortScale} Teams`;
+      document.getElementById('fpDrawerTeamTitle').textContent = t.fpDrawerTitle(participantTeamNumber);
+      document.getElementById('fpDrawerTimeRange').textContent = `${fpTimeSlots[0].start} - ${fpTimeSlots[fpTimeSlots.length - 1].end}`;
+      document.getElementById('fpDrawerFooterScale').textContent = `${currentCohortScale}-Team FastPass`;
+
+      const tbody = document.getElementById('fpDrawerTableBody');
+      let rowsHtml = '';
+
+      for (let i = 0; i < 6; i++) {
+        const slot = fpTimeSlots[i];
+        const stIdx = schedule[i];
+        const station = FP_STATIONS[stIdx];
+        const venueObj = fpStationVenues[stIdx] || { zh: `场地 ${stIdx + 1}`, en: `Venue ${stIdx + 1}` };
+        const venueName = currentLang === 'zh' ? venueObj.zh : venueObj.en;
+        const stationName = currentLang === 'zh' ? station.zh : station.en;
+        const isCurrent = (i === activeSlot);
+
+        let rowBg = isCurrent ? "bg-deloitte-green/10" : "hover:bg-white/[0.02]";
+        let timeColor = isCurrent ? "text-deloitte-green font-extrabold" : "text-gray-300";
+
+        let statusBadge = '';
+        if (isCurrent) {
+          statusBadge = `
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-deloitte-green text-black font-extrabold text-[10px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-black animate-ping"></span>
+              ${t.statusNow}
+            </span>`;
+        } else if (i === activeSlot + 1) {
+          statusBadge = `
+            <span class="px-2 py-0.5 rounded-full bg-deloitte-green/15 text-deloitte-green font-bold text-[10px] border border-deloitte-green/30">
+              ${t.statusNext}
+            </span>`;
+        } else if (activeSlot !== -1 && i < activeSlot) {
+          statusBadge = `<span class="text-gray-500 text-[11px] font-semibold"><i class="fa-solid fa-check text-deloitte-green mr-1"></i>${t.statusDone}</span>`;
+        } else {
+          statusBadge = `<span class="text-gray-600 text-[11px] font-semibold">${t.statusWaiting}</span>`;
+        }
+
+        rowsHtml += `
+          <tr class="transition-colors ${rowBg}">
+            <td class="py-3 px-3.5 font-mono font-bold whitespace-nowrap ${timeColor}">${slot.start} - ${slot.end}</td>
+            <td class="py-3 px-3.5">
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-deloitte-green shrink-0">
+                  <i class="fa-solid ${station.icon} text-[10px]"></i>
+                </div>
+                <span class="font-bold text-white">${stationName}</span>
+              </div>
+            </td>
+            <td class="py-3 px-3.5">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[11px] text-gray-200 whitespace-nowrap">
+                <i class="fa-solid fa-location-dot text-deloitte-green text-[10px]"></i>
+                ${venueName}
+              </span>
+            </td>
+            <td class="py-3 px-3.5 text-right whitespace-nowrap">${statusBadge}</td>
+          </tr>
+        `;
+      }
+      tbody.innerHTML = rowsHtml;
     }
 
     function renderLiveFastPassPanel() {
@@ -700,7 +1090,7 @@
 
       if (!participantTeamNumber || participantTeamNumber > currentCohortScale) {
         box.innerHTML = `
-          <div onclick="openTeamGateModal()" class="col-span-2 p-3 rounded-xl bg-black/40 border border-dashed border-lime-400/40 text-center cursor-pointer hover:bg-lime-400/5 transition-colors">
+          <div onclick="event.stopPropagation(); openTeamGateModal();" class="col-span-2 p-3 rounded-xl bg-black/40 border border-dashed border-lime-400/40 text-center cursor-pointer hover:bg-lime-400/5 transition-colors">
             <span class="text-xs font-bold text-lime-300"><i class="fa-solid fa-hand-pointer mr-1"></i>${t.fpSelectTeamPrompt}</span>
           </div>
         `;
@@ -747,7 +1137,6 @@
         return;
       }
 
-      // Inside 1:30 PM - 6:00 PM Window
       const schedule = getScheduleForTeam(participantTeamNumber, currentCohortScale);
       let currentRoundIdx = -1;
       let nextRoundIdx = -1;
@@ -760,13 +1149,12 @@
           break;
         }
         if (currentMin < slot.startMin) {
-          currentRoundIdx = -2; // In rotation / break before slot i
+          currentRoundIdx = -2;
           nextRoundIdx = i;
           break;
         }
       }
 
-      // Render Current Box
       let currentHtml = '';
       if (currentRoundIdx >= 0) {
         const stIdx = schedule[currentRoundIdx];
@@ -803,7 +1191,6 @@
         `;
       }
 
-      // Render Next Box
       let nextHtml = '';
       if (nextRoundIdx >= 0 && nextRoundIdx < fpTimeSlots.length) {
         const nStIdx = schedule[nextRoundIdx];
@@ -875,20 +1262,22 @@
       participantTeamNumber = val;
       localStorage.setItem('participant_team_num', String(val));
 
-      // Pre-fill message board nickname if empty
+      const defaultTeamName = `Team ${String(val).padStart(2, '0')}`;
       const nickInput = document.getElementById('msgNickname');
       if (nickInput && !nickInput.value.trim()) {
-        nickInput.value = `Team ${String(val).padStart(2, '0')}`;
+        nickInput.value = defaultTeamName;
       }
+      try { localStorage.setItem('drush_player_name', nickInput?.value.trim() || defaultTeamName); } catch (err) {}
 
       const modal = document.getElementById('teamGateModal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
       renderLiveFastPassPanel();
+      if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
     }
 
     /* ==========================================================
-       05. FIXED NAVIGATION ROUND BUTTON (ENERGY BOOSTER + CONFETTI)
+       NAVIGATION ROUND BUTTON (ENERGY BOOSTER + CONFETTI)
        ========================================================== */
     const ENERGY_TIPS = {
       zh: [
@@ -920,8 +1309,7 @@
     }
 
     /* ==========================================================
-       01. D-RUSH HIGHEST SCORE & PLAYER NAME FROM SUPABASE
-       (Matches d-rush.html table `leaderboard` with `player_name` & `score`)
+       D-RUSH HIGHEST SCORE & PLAYER NAME FROM SUPABASE
        ========================================================== */
     async function loadDrushHighScore() {
       const scoreBadge = document.getElementById('drushHighScoreBadge');
@@ -930,7 +1318,6 @@
 
       try {
         if (supabaseClient) {
-          // Query the exact `leaderboard` table used by D-Rush
           const { data, error } = await supabaseClient
             .from('leaderboard')
             .select('player_name, score')
@@ -953,7 +1340,7 @@
     }
 
     /* ==========================================================
-       07. STRICTLY SUPABASE ANNOUNCEMENT & COHORT DISPATCH SYNC
+       STRICTLY SUPABASE ANNOUNCEMENT & COHORT DISPATCH SYNC
        ========================================================== */
     async function loadPortalAnnouncement() {
       const bodyEl = document.getElementById('announcementBody');
@@ -1002,29 +1389,26 @@
         timeEl.textContent = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       }
 
-      // Sync Cohort Scale (24, 36, or 48) from Admin
       if (data.fastpass_target) {
         const newScale = parseInt(data.fastpass_target, 10) || 36;
         const scaleChanged = newScale !== currentCohortScale;
         currentCohortScale = newScale;
         localStorage.setItem('participant_cohort_scale', String(currentCohortScale));
 
-        const fpLink = document.getElementById('fastpassDynamicLink');
         const fpBadge = document.getElementById('fpCohortBadge');
-        if (fpLink) fpLink.href = `https://projectsunrise.win/fastpass/${currentCohortScale}`;
         if (fpBadge) fpBadge.textContent = `FP-${currentCohortScale}`;
 
-        // If previously chosen team number exceeds new cohort scale, prompt re-selection
         if (participantTeamNumber && participantTeamNumber > currentCohortScale) {
           openTeamGateModal();
         } else if (scaleChanged) {
           renderLiveFastPassPanel();
+          if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
         }
       }
     }
 
     /* ==========================================================
-       02. FOLDABLE TOP-10 LEADERBOARD
+       FOLDABLE TOP-10 LEADERBOARD
        ========================================================== */
     let isLeaderboardOpen = false;
     let currentSelectedStation = 'ALL';
@@ -1148,7 +1532,7 @@
     }
 
     /* ==========================================================
-       03. ANTI-SPAM MESSAGE BOARD (1 MESSAGE PER 60 SECONDS)
+       ANTI-SPAM MESSAGE BOARD (1 MESSAGE PER 60 SECONDS)
        ========================================================== */
     const MSG_COOLDOWN_MS = 60000;
     let cooldownInterval = null;
@@ -1260,8 +1644,8 @@
       if (!nickname || !content) return;
 
       btn.disabled = true;
+      try { localStorage.setItem('drush_player_name', nickname); } catch (err) {}
 
-      // Check Easter Egg Trigger Word
       if (content.toLowerCase().includes("together makes progress") || content.includes("众行致远")) {
         showEasterEggModal(I18N[currentLang].eggValueMsg);
       }
@@ -1278,7 +1662,6 @@
           const { error } = await supabaseClient.from('participant_messages').insert([newMsg]);
           if (error) throw error;
         }
-        // Record cooldown timestamp upon post
         localStorage.setItem('last_msg_post_ts', String(Date.now()));
         contentInput.value = '';
         startCooldownTimer();
@@ -1316,6 +1699,7 @@
         errorHint.classList.add('hidden');
         revealSunriseContent();
         triggerPartyConfetti();
+        openAppView('sunrise');
       } else {
         errorHint.classList.remove('hidden');
         input.classList.add('border-rose-500');
@@ -1366,6 +1750,7 @@
 
       updateMessageCooldownUI();
       renderLiveFastPassPanel();
+      if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
       renderLeaderboard();
     }
 
@@ -1410,7 +1795,7 @@
     }
 
     /* ==========================================================
-       INITIALIZATION & REALTIME SUBSCRIPTIONS
+       INITIALIZATION & POLLING
        ========================================================== */
     window.addEventListener('load', async () => {
       setLanguage(currentLang);
@@ -1423,7 +1808,6 @@
       fetchLiveLeaderboard();
       loadMessages();
 
-      // Prompt team number modal on entry if not yet set
       if (!participantTeamNumber || participantTeamNumber > currentCohortScale) {
         openTeamGateModal();
       } else {
@@ -1433,7 +1817,6 @@
         }
       }
 
-      // Refresh live data and FastPass clock periodically
       setInterval(() => {
         loadPortalAnnouncement();
         loadFastpassVenueAndTimeConfig();
@@ -1442,7 +1825,10 @@
         fetchLiveLeaderboard();
       }, 12000);
 
-      setInterval(renderLiveFastPassPanel, 30000);
+      setInterval(() => {
+        renderLiveFastPassPanel();
+        if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
+      }, 30000);
     });
   </script>
 </body>
