@@ -1,0 +1,24 @@
+{
+  "name": "DeloitteLand Participant Hub",
+  "short_name": "DeloitteLand",
+  "description": "Deloitte Onboarding Participant Portal — FastPass, D-Rush & Project Sunrise",
+  "start_url": "./participant.html",
+  "display": "standalone",
+  "background_color": "#080b11",
+  "theme_color": "#080b11",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23080b11'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2386BC25' stroke-width='16' stroke-opacity='0.35'/%3E%3Ctext x='215' y='330' font-family='sans-serif' font-weight='900' font-size='240' fill='%23ffffff' text-anchor='middle'%3ED%3C/text%3E%3Ccircle cx='355' cy='305' r='36' fill='%2386BC25'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23080b11'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2386BC25' stroke-width='16' stroke-opacity='0.35'/%3E%3Ctext x='215' y='330' font-family='sans-serif' font-weight='900' font-size='240' fill='%23ffffff' text-anchor='middle'%3ED%3C/text%3E%3Ccircle cx='355' cy='305' r='36' fill='%2386BC25'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
