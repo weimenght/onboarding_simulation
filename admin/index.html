@@ -2024,39 +2024,52 @@
       icon.className = visible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
     }
 
+    let lastQuoteIdx = -1;
+
     function nextOracleQuote(e) {
       if (e && window.confetti) {
         confetti({ particleCount: 25, spread: 40, origin: { x: 0.5, y: 0.2 }, colors: ['#86BC25', '#a3e635'] });
       }
-    const MOOD_QUOTES = [
-          { text: "Make an impact that matters — starting with not breaking production. | 成就不凡，先从别点崩系统开始 🛡️", icon: "fa-shield-halved" },
-          { text: "Coffee in, deliverables out. | 咖啡入腹，交付物神速，优雅闭环 ☕", icon: "fa-mug-hot" },
-          { text: "Green dot glowing, sanity loading... 99%. | 绿点长明，理智值正在飞速回血中 🔋", icon: "fa-battery-three-quarters" },
-          { text: "Aligned, granular, and heavily caffeinated. | 颗粒度已对齐，底层逻辑已打通，咖啡因全面就绪 🎯", icon: "fa-bullseye" },
-          { text: "May your bandwidth be wide and your meetings be emails. | 愿你网速拉满，愿所有冗长会议都化为一句邮件 ✉️", icon: "fa-envelope-open-text" },
-          { text: "Behind every flawless deck is a file named 'FINAL_v8_REAL_FINAL.pptx'. | 每个惊艳成果背后，都有个叫“最终版_打死不改版”的文件 📑", icon: "fa-file-powerpoint" },
-          { text: "Let's circle back after we boil the ocean. | 等我们把这片海煮沸了，再回来对齐一下抓手 🌊", icon: "fa-water" },
-          { text: "My spiritual animal is a pivot table that doesn't throw #REF! | 我的守护神兽是一张永不报错的数据透视表 📊", icon: "fa-table" },
-          { text: "Clear, Confident, Human — and deeply in need of a snack break. | 专业敏锐有人文关怀，但现在急需来包小零食 🥐", icon: "fa-cookie-bite" },
-          { text: "Turning pure chaos into structured MECE bullet points since 9 AM. | 擅长把一团乱麻，梳理成无懈可击的 MECE 列表 🧩", icon: "fa-puzzle-piece" },
-          { text: "Keep calm and blame the staging cache. | 遇事不决先清缓存，实在不行再怪网络波动 🔄", icon: "fa-rotate" },
-          { text: "Synergizing our core competencies at the snack bar. | 正在茶水间零食架旁，深度整合我们的核心竞争力 🍫", icon: "fa-candy-cane" },
-          { text: "Please do not disturb: currently in a committed relationship with Excel. | 请勿打扰：正与 Excel 表格进行一场刻骨铭心的恋爱 💚", icon: "fa-heart" },
-          { text: " Let's take this offline — and by offline, I mean to the coffee shop. | 这个问题我们线下聊——特指去楼下买杯冰美式边走边聊 🧋", icon: "fa-glass-water" },
-          { text: " Ctrl+Z is the closest thing we have to a time machine. | Ctrl+Z 是人类目前距离时光机最近的一项伟大发明 ⏳", icon: "fa-clock-rotate-left" },
-          { text: "I speak fluent English, Mandarin, and Corporate Acronyms. | 本人精通中文、英文，以及各种高大上的职场缩写黑话 🗣️", icon: "fa-comments" },
-          { text: "Low-hanging fruit tastes best when it's actual fruit at the buffet. | 所谓“低垂的果实”，最好吃的是歇息区摆着的真水果 🍎", icon: "fa-apple-whole" },
-          { text: "90% of consulting is finding who has the screen-sharing adapter. | 职场破局的第一步：先找到谁手里有投屏转接头 🔌", icon: "fa-plug" },
-          { text: "Empowering the ecosystem, one sticky note at a time. | 赋能生态体系，从贴好手头这一张便利贴开始 📝", icon: "fa-note-sticky" },
-          { text: "We're not lost, we're just conducting an agile exploratory pivot. | 我们绝对没有迷路，我们只是在做敏捷探索式转向 🧭", icon: "fa-compass" },
-          { text: "Brainstorming rule #1: there are no bad ideas, only bold slides. | 头脑风暴第一定律：没有离谱的点子，只有大胆的排版 💡", icon: "fa-lightbulb" },
-          { text: "Currently operating at 120% capacity and 200% charm. | 当前状态：业务负载 120%，人格魅力释放 200% ✨", icon: "fa-wand-magic-sparkles" },
-          { text: "If at first you don't succeed, call it 'Phase 1 Pilot' and ship it. | 如果第一次没完美收官，就管它叫“一期试点”先发出来 🚀", icon: "fa-rocket" },
-          { text: "Adding a green dot to the end of every sentence makes it 50% smarter. | 在每句话末尾加个小绿点，看起来会聪明 50% 🟢", icon: "fa-circle-dot" },
-          { text: "Together makes progress — especially when ordering team boba. | 众行致远——尤其是在全组一起拼单点奶茶的时候 🧋", icon: "fa-Users" }
-        ];
-      const q = MOOD_QUOTES[Math.floor(Math.random() * MOOD_QUOTES.length)];
-      document.getElementById('oracleQuote').textContent = q;
+      const MOOD_QUOTES = [
+        { text: "Make an impact that matters — starting with not breaking production. | 成就不凡，先从别点崩系统开始 🛡️", icon: "fa-shield-halved" },
+        { text: "Coffee in, deliverables out. | 咖啡入腹，交付物神速，优雅闭环 ☕", icon: "fa-mug-hot" },
+        { text: "Green dot glowing, sanity loading... 99%. | 绿点长明，理智值正在飞速回血中 🔋", icon: "fa-battery-three-quarters" },
+        { text: "Aligned, granular, and heavily caffeinated. | 颗粒度已对齐，底层逻辑已打通，咖啡因全面就绪 🎯", icon: "fa-bullseye" },
+        { text: "May your bandwidth be wide and your meetings be emails. | 愿你网速拉满，愿所有冗长会议都化为一句邮件 ✉️", icon: "fa-envelope-open-text" },
+        { text: "Behind every flawless deck is a file named 'FINAL_v8_REAL_FINAL.pptx'. | 每个惊艳成果背后，都有个叫“最终版_打死不改版”的文件 📑", icon: "fa-file-powerpoint" },
+        { text: "Let's circle back after we boil the ocean. | 等我们把这片海煮沸了，再回来对齐一下抓手 🌊", icon: "fa-water" },
+        { text: "My spiritual animal is a pivot table that doesn't throw #REF! | 我的守护神兽是一张永不报错的数据透视表 📊", icon: "fa-table" },
+        { text: "Clear, Confident, Human — and deeply in need of a snack break. | 专业敏锐有人文关怀，但现在急需来包小零食 🥐", icon: "fa-cookie-bite" },
+        { text: "Turning pure chaos into structured MECE bullet points since 9 AM. | 擅长把一团乱麻，梳理成无懈可击的 MECE 列表 🧩", icon: "fa-puzzle-piece" },
+        { text: "Keep calm and blame the staging cache. | 遇事不决先清缓存，实在不行再怪网络波动 🔄", icon: "fa-rotate" },
+        { text: "Synergizing our core competencies at the snack bar. | 正在茶水间零食架旁，深度整合我们的核心竞争力 🍫", icon: "fa-candy-cane" },
+        { text: "Please do not disturb: currently in a committed relationship with Excel. | 请勿打扰：正与 Excel 表格进行一场刻骨铭心的恋爱 💚", icon: "fa-heart" },
+        { text: "Let's take this offline — and by offline, I mean to the coffee shop. | 这个问题我们线下聊——特指去楼下买杯冰美式边走边聊 🧋", icon: "fa-glass-water" },
+        { text: "Ctrl+Z is the closest thing we have to a time machine. | Ctrl+Z 是人类目前距离时光机最近的一项伟大发明 ⏳", icon: "fa-clock-rotate-left" },
+        { text: "I speak fluent English, Mandarin, and Corporate Acronyms. | 本人精通中文、英文，以及各种高大上的职场缩写黑话 🗣️", icon: "fa-comments" },
+        { text: "Low-hanging fruit tastes best when it's actual fruit at the buffet. | 所谓“低垂的果实”，最好吃的是歇息区摆着的真水果 🍎", icon: "fa-apple-whole" },
+        { text: "90% of consulting is finding who has the screen-sharing adapter. | 职场破局的第一步：先找到谁手里有投屏转接头 🔌", icon: "fa-plug" },
+        { text: "Empowering the ecosystem, one sticky note at a time. | 赋能生态体系，从贴好手头这一张便利贴开始 📝", icon: "fa-note-sticky" },
+        { text: "We're not lost, we're just conducting an agile exploratory pivot. | 我们绝对没有迷路，我们只是在做敏捷探索式转向 🧭", icon: "fa-compass" },
+        { text: "Brainstorming rule #1: there are no bad ideas, only bold slides. | 头脑风暴第一定律：没有离谱的点子，只有大胆的排版 💡", icon: "fa-lightbulb" },
+        { text: "Currently operating at 120% capacity and 200% charm. | 当前状态：业务负载 120%，人格魅力释放 200% ✨", icon: "fa-wand-magic-sparkles" },
+        { text: "If at first you don't succeed, call it 'Phase 1 Pilot' and ship it. | 如果第一次没完美收官，就管它叫“一期试点”先发出来 🚀", icon: "fa-rocket" },
+        { text: "Adding a green dot to the end of every sentence makes it 50% smarter. | 在每句话末尾加个小绿点，看起来会聪明 50% 🟢", icon: "fa-circle-dot" },
+        { text: "Together makes progress — especially when ordering team boba. | 众行致远——尤其是在全组一起拼单点奶茶的时候 🧋", icon: "fa-users" }
+      ];
+
+      let nextIdx;
+      do {
+        nextIdx = Math.floor(Math.random() * MOOD_QUOTES.length);
+      } while (nextIdx === lastQuoteIdx && MOOD_QUOTES.length > 1);
+      lastQuoteIdx = nextIdx;
+
+      const q = MOOD_QUOTES[nextIdx];
+      const quoteEl = document.getElementById('oracleQuote');
+      const iconEl = document.getElementById('oracleIcon');
+
+      if (quoteEl) quoteEl.textContent = q.text;
+      if (iconEl && q.icon) iconEl.className = `fa-solid ${q.icon}`;
     }
   </script>
 </body>
