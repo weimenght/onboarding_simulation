@@ -104,7 +104,7 @@
         </div>
         <div class="flex items-baseline">
           <span class="font-black text-lg tracking-tight text-white">Deloitte<span id="easterDot" class="deloitte-dot" onclick="handleDotEggClick()"></span></span>
-          <span class="text-[10px] font-bold text-gray-400 ml-1.5 uppercase tracking-wider" data-i18n="subTitle">学员专属空间</span>
+          <span class="text-[10px] font-bold text-gray-400 ml-1.5 uppercase tracking-wider" data-i18n="subTitle">学员端</span>
         </div>
       </div>
 
@@ -136,7 +136,7 @@
             <span id="announcementTime" class="text-[10px] font-mono text-gray-500">Live</span>
           </div>
           <p id="announcementBody" class="text-xs sm:text-sm font-semibold text-gray-100 mt-1 leading-relaxed">
-            欢迎来到德勤乐园。
+            欢迎来到德勤乐园！
           </p>
         </div>
       </div>
@@ -234,7 +234,7 @@
             <i class="fa-solid fa-ranking-star"></i>
           </div>
           <div>
-            <h2 class="text-xs font-black text-white uppercase tracking-wider" data-i18n="leaderboardTitle">关卡风云榜 · Top 10</h2>
+            <h2 class="text-xs font-black text-white uppercase tracking-wider" data-i18n="leaderboardTitle">Top 10</h2>
             <div class="text-[10px] text-gray-500" data-i18n="leaderboardSub">6 大站点实时综合排行</div>
           </div>
         </div>
@@ -249,19 +249,19 @@
           <span data-i18n="filterAll">总分</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('0')" id="stFilterBtn-0" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          <span data-i18n="st0">拼未来</span>
+          <span data-i18n="st0">一起拼未来</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('1')" id="stFilterBtn-1" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          <span data-i18n="st1">道德树</span>
+          <span data-i18n="st1">职业道德之树</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('2')" id="stFilterBtn-2" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          <span data-i18n="st2">D.Signal</span>
+          <span data-i18n="st2">信号解密</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('3')" id="stFilterBtn-3" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          <span data-i18n="st3">智库</span>
+          <span data-i18n="st3">勤业智库</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('4')" id="stFilterBtn-4" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-          <span data-i18n="st4">情商</span>
+          <span data-i18n="st4">情商罗盘</span>
         </button>
         <button type="button" onclick="filterLeaderboardStation('5')" id="stFilterBtn-5" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
           <span data-i18n="st5">AI纪元</span>
@@ -360,9 +360,9 @@
     const I18N = {
       zh: {
         langToggle: "EN",
-        subTitle: "学员专属空间",
+        subTitle: "学员端",
         announcementTag: "现场广播",
-        defaultAnnouncement: "欢迎来到德勤乐园。请根据 FastPass 通行路线前往各关卡站点就位！",
+        defaultAnnouncement: "欢迎来到德勤乐园！",
         fastpassTitle: "FastPass 通行证",
         fastpassSub: "查看队伍轮转时刻",
         drushSub: "刷最高分",
@@ -375,14 +375,14 @@
         errPasscode: "秘钥错误，请倾听主持人现场口令",
         unlockedSuccess: "关卡站点已就绪",
         launchMainSunrise: "进入日出计划主站",
-        leaderboardTitle: "关卡风云榜 · Top 10",
+        leaderboardTitle: "Top 10",
         leaderboardSub: "6 大站点实时综合排行",
         filterAll: "总分",
-        st0: "拼未来",
-        st1: "道德树",
-        st2: "D.Signal",
-        st3: "智库",
-        st4: "情商",
+        st0: "一起拼未来",
+        st1: "职业道德之树",
+        st2: "信号解密",
+        st3: "勤业智库",
+        st4: "情商罗盘",
         st5: "AI纪元",
         emptyLeaderboard: "暂无赛段积分记录，请等待站点录入...",
         msgBoardTitle: "互动留言墙",
@@ -393,28 +393,28 @@
         btnSendMsg: "发送",
         eggFoundTitle: "发现隐藏彩蛋！",
         btnCloseEgg: "收下祝福 (Close)",
-        eggDotMsg: "🟢【彩蛋1】连续点击绿点5次！激活极客高能脉冲模式！再次点击5次可切换。",
-        eggSecretMsg: "⚡【彩蛋2】解锁极客代码：DeloitteLand 2026 系统全速运转中。探索永无止境！",
-        eggValueMsg: "💫 你解锁了终极价值观彩蛋：“众行致远，成就不凡 (Together makes progress)”。荣誉徽章已入驻！"
+        eggDotMsg: "【彩蛋1】连续点击绿点5次！激活极客高能脉冲模式！再次点击5次可切换。",
+        eggSecretMsg: "【彩蛋2】解锁极客代码：DeloitteLand 2026 系统全速运转中。探索永无止境！",
+        eggValueMsg: "你解锁了终极价值观彩蛋：“众行致远 (Together makes progress)”。荣誉徽章已入驻！"
       },
       en: {
         langToggle: "中",
         subTitle: "Participant Portal",
         announcementTag: "Live Broadcast",
-        defaultAnnouncement: "Welcome to DeloitteLand! Please follow your FastPass route to your designated stations.",
+        defaultAnnouncement: "Welcome to DeloitteLand!",
         fastpassTitle: "FastPass Navigation",
         fastpassSub: "Cohort itinerary & rotation",
         drushSub: "Score Sprint",
         sunriseGateTitle: "Project Sunrise Vault",
         badgeLocked: "LOCKED",
         badgeUnlocked: "UNLOCKED",
-        sunrisePasscodePrompt: "Enter host's announced passcode to unlock:",
+        sunrisePasscodePrompt: "Enter MC's announced passcode to unlock:",
         sunrisePlaceholder: "Passcode (14 chars)",
         btnUnlock: "Unlock",
-        errPasscode: "Invalid passcode. Check with your session host.",
-        unlockedSuccess: "Quest Site Ready",
+        errPasscode: "Invalid passcode. Check with the MC.",
+        unlockedSuccess: "Site Ready",
         launchMainSunrise: "Launch Project Sunrise Main Site",
-        leaderboardTitle: "Leaderboard · Top 10",
+        leaderboardTitle: "Top 10",
         leaderboardSub: "Live rankings across 6 stations",
         filterAll: "Total",
         st0: "Piece by Piece",
@@ -432,9 +432,9 @@
         btnSendMsg: "Post",
         eggFoundTitle: "Easter Egg Discovered!",
         btnCloseEgg: "Awesome (Close)",
-        eggDotMsg: "🟢 [Easter Egg 1] Green Dot tapped 5 times! Matrix Pulse mode activated. Tap 5 times to toggle.",
-        eggSecretMsg: "⚡ [Easter Egg 2] Hidden Code: DeloitteLand 2026 system running at full speed. Keep exploring!",
-        eggValueMsg: "💫 Core Value Unlocked: 'Together makes progress.' Honor badge acquired!"
+        eggDotMsg: "[Easter Egg 1] Green Dot tapped 5 times! Matrix Pulse mode activated. Tap 5 times to toggle.",
+        eggSecretMsg: "[Easter Egg 2] Hidden Code: DeloitteLand 2026 system running at full speed. Keep exploring!",
+        eggValueMsg: "Core Value Unlocked: 'Together makes progress.' Honor badge acquired!"
       }
     };
 
@@ -731,7 +731,7 @@
        05. PARTICIPANT MESSAGE BOARD
        ========================================================== */
     let localMessages = [
-      { id: 1, nickname: "Deloitte MC", content: "✨ 欢迎新同事！众行致远，成就不凡 🚀", time: "Live" }
+      { id: 1, nickname: "DeloitteLand MC", content: "欢迎新同事！大家冲鸭！🚀", time: "Live" }
     ];
 
     async function loadMessages() {
