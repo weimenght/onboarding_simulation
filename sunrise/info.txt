@@ -12,7 +12,7 @@
 
 [SUPABASE]
 # Paste your Supabase Project URL and Anon Key below.
-# The 3 Node Passwords are checked against the 'sunrise_nodes' table in Supabase.
+# Both the 3 Node Passwords ('sunrise_nodes') and Halt TXN Codes ('sunrise_override_codes') are verified on Supabase.
 SUPABASE_URL = https://pwnvkrrnxbpxignynvuh.supabase.co
 SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ
 
