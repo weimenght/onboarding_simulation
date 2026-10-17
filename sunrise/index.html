@@ -139,6 +139,7 @@
             en: {
                 projectSunrise: "Project Sunrise",
                 investigationHub: "Investigation Hub",
+                hubShort: "Intel Hub",
                 directory: "Directory",
                 security: "Security",
                 vendors: "Vendors",
@@ -147,6 +148,7 @@
                 n2Ledger: "N2: Ledger",
                 n3Protocol: "N3: Protocol",
                 haltTxn: "Halt Transaction",
+                haltShort: "Halt TXN",
                 decryptionStatus: "Decryption Status",
                 searchPlaceholderOrg: "Search directory... (try '404')",
                 searchLogsPlaceholder: "Filter logs (try 'coffee')...",
@@ -290,6 +292,7 @@
             zh: {
                 projectSunrise: "日出计划",
                 investigationHub: "调查中心",
+                hubShort: "调查中心",
                 directory: "员工目录",
                 security: "安全合规",
                 vendors: "供应商控制",
@@ -298,6 +301,7 @@
                 n2Ledger: "N2：账本",
                 n3Protocol: "N3：协议",
                 haltTxn: "终止交易",
+                haltShort: "终止交易",
                 decryptionStatus: "解密状态",
                 searchPlaceholderOrg: "搜索目录... (试试输入 404)...",
                 searchLogsPlaceholder: "筛选日志 (试试输入 coffee)...",
@@ -460,10 +464,8 @@
 
             for (let rawLine of lines) {
                 const line = rawLine.trim();
-                // Ignore empty lines and comments starting with #
                 if (!line || line.startsWith('#')) continue;
 
-                // Detect [SECTION] header
                 if (line.startsWith('[') && line.endsWith(']')) {
                     currentSection = line.slice(1, -1).trim().toUpperCase();
                     continue;
@@ -817,33 +819,42 @@
             );
         }
 
-        // Sleek App Navigation Item (Mobile Bottom Dock + Desktop Sidebar)
-        function QuestNavBtn({ icon, label, isActive, onClick, locked = false, disabled = false, isCritical = false }) {
-            const base = "group relative flex flex-col md:flex-row items-center justify-center md:justify-between shrink-0 flex-1 md:flex-initial md:w-full px-1.5 py-2 md:px-3.5 md:py-2.5 rounded-xl text-[10px] md:text-xs font-medium transition-all duration-150 cursor-pointer select-none";
+        // Sleek 5-Item Mobile Bottom Dock + Desktop Sidebar Item
+        function QuestNavBtn({ icon, label, mobileLabel, isActive, onClick, locked = false, isLockedCritical = false, isCritical = false }) {
+            const base = "group relative flex flex-col md:flex-row items-center justify-center md:justify-between flex-1 md:flex-initial md:w-full px-1 py-2 md:px-3.5 md:py-3 rounded-xl text-[10px] md:text-xs font-medium transition-all duration-150 cursor-pointer select-none min-w-0";
             
             let stateStyle = isActive
                 ? "bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/40 shadow-[0_0_15px_rgba(134,188,37,0.12)]"
                 : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200 border border-transparent";
 
             if (isCritical) {
-                stateStyle = disabled
-                    ? "opacity-40 border border-slate-800 bg-slate-900/40 text-slate-600 cursor-not-allowed"
-                    : isActive
+                stateStyle = isLockedCritical
+                    ? (isActive 
+                        ? "bg-red-950/80 text-red-300 border border-red-500/60 shadow-[0_0_12px_rgba(239,68,68,0.25)]" 
+                        : "bg-slate-900/80 text-red-400/70 border border-red-900/50 hover:border-red-500/50")
+                    : (isActive
                         ? "bg-red-600 text-white border border-red-400 shadow-[0_0_20px_rgba(220,38,38,0.5)]"
-                        : "bg-red-950/60 text-red-400 border border-red-500/60 hover:bg-red-600 hover:text-white animate-pulse";
+                        : "bg-red-950/70 text-red-400 border border-red-500 hover:bg-red-600 hover:text-white animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.3)]");
             }
 
             return (
-                <button onClick={onClick} className={`${base} ${stateStyle}`}>
-                    <div className="flex flex-col md:flex-row items-center gap-1 md:gap-3">
-                        <div className="relative flex items-center justify-center w-5 h-5">
+                <button type="button" onClick={onClick} className={`${base} ${stateStyle}`}>
+                    <div className="flex flex-col md:flex-row items-center gap-1 md:gap-3 min-w-0 w-full md:w-auto">
+                        <div className="relative flex items-center justify-center w-5 h-5 shrink-0">
                             <i className={`fa-solid ${icon} text-xs md:text-sm`}></i>
-                            {locked && <span className="md:hidden w-1.5 h-1.5 rounded-full bg-amber-400 absolute -top-0.5 -right-0.5"></span>}
+                            {(locked || isLockedCritical) && (
+                                <span className={`md:hidden w-1.5 h-1.5 rounded-full ${isCritical ? 'bg-red-500' : 'bg-amber-400'} absolute -top-0.5 -right-0.5`}></span>
+                            )}
                         </div>
-                        <span className={`${isCritical ? 'font-mono font-bold tracking-wider uppercase' : 'tracking-tight'} leading-none truncate max-w-[54px] md:max-w-none`}>{label}</span>
+                        <span className={`md:hidden ${isCritical ? 'font-mono font-bold uppercase' : 'font-medium'} leading-none truncate w-full text-center text-[10px]`}>
+                            {mobileLabel || label}
+                        </span>
+                        <span className={`hidden md:inline-block ${isCritical ? 'font-mono font-bold tracking-wider uppercase' : 'tracking-tight'} leading-none truncate`}>
+                            {label}
+                        </span>
                     </div>
-                    {locked && <i className="hidden md:inline-block fa-solid fa-lock text-slate-600 text-[10px]"></i>}
-                    {!locked && !isCritical && isActive && <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-deloitte-green shadow-[0_0_6px_#86BC25]"></span>}
+                    {(locked || isLockedCritical) && <i className="hidden md:inline-block fa-solid fa-lock text-slate-500 text-[10px] shrink-0"></i>}
+                    {!locked && !isCritical && isActive && <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-deloitte-green shadow-[0_0_6px_#86BC25] shrink-0"></span>}
                 </button>
             );
         }
@@ -871,7 +882,17 @@
                 banking: ["TOGETHER MAKES PROGRESS", "TOGETHERMAKESPROGRESS"]
             });
 
-            const [activeTab, setActiveTab] = useState(() => (saved && saved.activeTab) || 'org');
+            // Normalize legacy saved tabs ('org', 'security', 'vendor') into 'hub' + hubSubTab
+            const initialRawTab = (saved && saved.activeTab) || 'hub';
+            const isLegacyHubTab = ['org', 'security', 'vendor'].includes(initialRawTab);
+
+            const [activeTab, setActiveTab] = useState(() => isLegacyHubTab ? 'hub' : initialRawTab);
+            const [hubSubTab, setHubSubTab] = useState(() => {
+                if (saved && saved.hubSubTab) return saved.hubSubTab;
+                if (isLegacyHubTab) return initialRawTab;
+                return 'org';
+            });
+
             const [unlockedNodes, setUnlockedNodes] = useState(() => (saved && saved.unlockedNodes) || { logs: false, ledger: false, banking: false });
             const [solvedPuzzles, setSolvedPuzzles] = useState(() => (saved && saved.solvedPuzzles) || { puzzle1: false, puzzle2: false, puzzle3: false, puzzle4: false });
             const [puzzleInputs, setPuzzleInputs] = useState(() => (saved && saved.puzzleInputs) || { puzzle1: '', puzzle2: '', puzzle3: '', puzzle4: '' });
@@ -937,7 +958,6 @@
                         const parsed = parseInfoTxt(text);
                         setAppData(parsed);
 
-                        // Configure fallback keys from info.txt if present
                         const fb1 = parsed.supabase.FALLBACK_NODE1_KEY || '1917';
                         const fb2 = parsed.supabase.FALLBACK_NODE2_KEY || 'GUARDIAN';
                         const fb3 = parsed.supabase.FALLBACK_NODE3_KEY || 'TOGETHER MAKES PROGRESS';
@@ -947,7 +967,6 @@
                             banking: [fb3, fb3.replace(/\s+/g, '')]
                         });
 
-                        // Initialize Supabase if valid credentials exist in info.txt
                         const sbUrl = parsed.supabase.SUPABASE_URL;
                         const sbKey = parsed.supabase.SUPABASE_ANON_KEY;
                         if (sbUrl && sbKey && !sbUrl.includes('your-project-id') && window.supabase) {
@@ -978,12 +997,12 @@
             useEffect(() => {
                 try {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        activeTab, unlockedNodes, solvedPuzzles, puzzleInputs, lang,
+                        activeTab, hubSubTab, unlockedNodes, solvedPuzzles, puzzleInputs, lang,
                         nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil,
                         completionTime, groupNumber
                     }));
                 } catch (e) {}
-            }, [activeTab, unlockedNodes, solvedPuzzles, puzzleInputs, lang, nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil, completionTime, groupNumber]);
+            }, [activeTab, hubSubTab, unlockedNodes, solvedPuzzles, puzzleInputs, lang, nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil, completionTime, groupNumber]);
 
             // Countdown Timers
             useEffect(() => {
@@ -1040,7 +1059,6 @@
                 setVerifyingNode(true);
                 let expectedList = nodePasswords[nodeKey] || [];
 
-                // Live check against Supabase table if connected
                 if (sbClient) {
                     try {
                         const { data, error } = await sbClient
@@ -1392,8 +1410,8 @@
                     {showRootModal && <RootInterceptModal onClose={() => setShowRootModal(false)} t={t} />}
                     {showDefconModal && <DefconModal onClose={() => setShowDefconModal(false)} t={t} />}
                     
-                    {/* App Sidebar (Desktop) & Clean Bottom Navigation Bar (Mobile) */}
-                    <nav className="order-last md:order-first w-full md:w-64 app-surface p-1.5 md:p-4 rounded-2xl flex flex-row md:flex-col gap-1 md:gap-1.5 shrink-0 z-20 items-center md:items-stretch shadow-2xl">
+                    {/* 5-Item App Navigation Bar (Fits 100% on Mobile with Zero Overflow + Sleek Desktop Sidebar) */}
+                    <nav className="order-last md:order-first w-full md:w-64 app-surface p-1.5 md:p-4 rounded-2xl grid grid-cols-5 md:flex md:flex-col gap-1 md:gap-2 shrink-0 z-20 items-center md:items-stretch shadow-2xl">
                         <div className="hidden md:flex mb-4 pb-4 border-b border-slate-800/80 justify-between items-center">
                             <div className="flex items-center gap-2.5 cursor-pointer select-none" onClick={handleSecretClick} title="Click 5x for Easter Egg">
                                 <div className="w-8 h-8 rounded-lg bg-deloitte-green/15 border border-deloitte-green/50 flex items-center justify-center text-deloitte-green">
@@ -1409,22 +1427,55 @@
                             </button>
                         </div>
                         
-                        <div className="hidden md:block text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-1 px-2">{t.investigationHub}</div>
-                        <QuestNavBtn icon="fa-id-badge" label={t.directory} isActive={activeTab === 'org'} onClick={() => {setActiveTab('org'); setUnlockInput('');}} />
-                        <QuestNavBtn icon="fa-shield-halved" label={t.security} isActive={activeTab === 'security'} onClick={() => {setActiveTab('security'); setUnlockInput('');}} />
-                        <QuestNavBtn icon="fa-building-columns" label={t.vendors} isActive={activeTab === 'vendor'} onClick={() => {setActiveTab('vendor'); setUnlockInput('');}} />
+                        {/* Consolidated Investigation Hub Button (1 Button for Directory, Security & Vendors) */}
+                        <QuestNavBtn 
+                            icon="fa-compass" 
+                            label={t.investigationHub} 
+                            mobileLabel={t.hubShort}
+                            isActive={activeTab === 'hub'} 
+                            onClick={() => {setActiveTab('hub'); setUnlockInput('');}} 
+                        />
+
+                        {/* Desktop Quick Sub-Links under Investigation Hub */}
+                        <div className="hidden md:flex flex-col gap-1 pl-3 border-l border-slate-800/80 ml-3 my-0.5">
+                            {[
+                                { k: 'org', icon: 'fa-id-badge', l: t.directory },
+                                { k: 'security', icon: 'fa-shield-halved', l: t.security },
+                                { k: 'vendor', icon: 'fa-building-columns', l: t.vendors }
+                            ].map(sub => {
+                                const isSubActive = activeTab === 'hub' && hubSubTab === sub.k;
+                                return (
+                                    <button
+                                        key={sub.k}
+                                        type="button"
+                                        onClick={() => { setActiveTab('hub'); setHubSubTab(sub.k); setUnlockInput(''); }}
+                                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer text-left ${isSubActive ? 'text-deloitte-green bg-deloitte-green/10 font-semibold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'}`}
+                                    >
+                                        <i className={`fa-solid ${sub.icon} w-4 text-center text-[11px]`}></i>
+                                        <span>{sub.l}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
                         
-                        <div className="hidden md:block text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-1 mt-4 px-2">{t.encryptedNodes}</div>
-                        <div className="md:hidden w-px h-6 bg-slate-800 mx-0.5 shrink-0"></div>
+                        <div className="hidden md:block text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-0.5 mt-3 px-2">{t.encryptedNodes}</div>
                         
-                        <QuestNavBtn icon="fa-terminal" label={t.n1Logs} isActive={activeTab === 'logs'} onClick={() => {setActiveTab('logs'); setUnlockInput('');}} locked={!unlockedNodes.logs} />
-                        <QuestNavBtn icon="fa-database" label={t.n2Ledger} isActive={activeTab === 'ledger'} onClick={() => {setActiveTab('ledger'); setUnlockInput('');}} locked={!unlockedNodes.ledger} />
-                        <QuestNavBtn icon="fa-network-wired" label={t.n3Protocol} isActive={activeTab === 'banking'} onClick={() => {setActiveTab('banking'); setUnlockInput('');}} locked={!unlockedNodes.banking} />
+                        <QuestNavBtn icon="fa-terminal" label={t.n1Logs} mobileLabel="N1: Logs" isActive={activeTab === 'logs'} onClick={() => {setActiveTab('logs'); setUnlockInput('');}} locked={!unlockedNodes.logs} />
+                        <QuestNavBtn icon="fa-database" label={t.n2Ledger} mobileLabel="N2: Ledger" isActive={activeTab === 'ledger'} onClick={() => {setActiveTab('ledger'); setUnlockInput('');}} locked={!unlockedNodes.ledger} />
+                        <QuestNavBtn icon="fa-network-wired" label={t.n3Protocol} mobileLabel="N3: Proto" isActive={activeTab === 'banking'} onClick={() => {setActiveTab('banking'); setUnlockInput('');}} locked={!unlockedNodes.banking} />
                         
                         <div className="flex-grow hidden md:block"></div>
-                        <div className="md:hidden w-px h-6 bg-slate-800 mx-0.5 shrink-0"></div>
                         
-                        <QuestNavBtn icon="fa-bolt" label={t.haltTxn} isActive={activeTab === 'mystery'} onClick={() => {setActiveTab('mystery'); setUnlockInput('');}} disabled={!allNodesUnlocked} isCritical={true} />
+                        {/* Halt Transaction Button — Always Clickable & Visible on Mobile & Desktop */}
+                        <QuestNavBtn 
+                            icon="fa-bolt" 
+                            label={t.haltTxn} 
+                            mobileLabel={t.haltShort}
+                            isActive={activeTab === 'mystery'} 
+                            onClick={() => {setActiveTab('mystery'); setUnlockInput('');}} 
+                            isLockedCritical={!allNodesUnlocked} 
+                            isCritical={true} 
+                        />
                     </nav>
 
                     <main className="flex-grow h-full overflow-hidden relative z-10 flex flex-col min-w-0">
@@ -1473,10 +1524,34 @@
                             </div>
                         </div>
 
+                        {/* Segmented Sub-Navigation Pill Bar inside Investigation Hub */}
+                        {activeTab === 'hub' && (
+                            <div className="grid grid-cols-3 gap-1.5 p-1.5 mb-3 bg-slate-950/90 border border-slate-800/90 rounded-2xl shrink-0">
+                                {[
+                                    { k: 'org', icon: 'fa-id-badge', l: t.directory },
+                                    { k: 'security', icon: 'fa-shield-halved', l: t.security },
+                                    { k: 'vendor', icon: 'fa-building-columns', l: t.vendors }
+                                ].map(sub => {
+                                    const active = hubSubTab === sub.k;
+                                    return (
+                                        <button
+                                            key={sub.k}
+                                            type="button"
+                                            onClick={() => setHubSubTab(sub.k)}
+                                            className={`py-2 px-2 rounded-xl font-mono text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${active ? 'bg-deloitte-green text-slate-950 shadow-[0_0_15px_rgba(134,188,37,0.3)]' : 'text-slate-400 hover:text-white hover:bg-slate-900/60'}`}
+                                        >
+                                            <i className={`fa-solid ${sub.icon} text-[11px]`}></i>
+                                            <span className="truncate">{sub.l}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+
                         {/* Main Scrollable Viewport */}
                         <div className="flex-grow overflow-y-auto custom-scrollbar relative pr-0.5 md:pr-1">
-                            {/* DIRECTORY */}
-                            {activeTab === 'org' && (
+                            {/* INVESTIGATION HUB -> DIRECTORY */}
+                            {activeTab === 'hub' && hubSubTab === 'org' && (
                                 <div className="fade-in pb-6">
                                     <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center mb-4 gap-2.5">
                                         <h2 className="text-lg md:text-xl font-bold text-white tracking-tight flex items-center gap-2">
@@ -1532,8 +1607,8 @@
                                 </div>
                             )}
 
-                            {/* SECURITY */}
-                            {activeTab === 'security' && (
+                            {/* INVESTIGATION HUB -> SECURITY */}
+                            {activeTab === 'hub' && hubSubTab === 'security' && (
                                 <div className="fade-in pb-6 flex flex-col gap-4">
                                     <h2 className="text-lg md:text-xl font-bold text-white tracking-tight flex items-center gap-2">
                                         <i className="fa-solid fa-shield-halved text-deloitte-green"></i> {t.security}
@@ -1574,8 +1649,8 @@
                                 </div>
                             )}
 
-                            {/* VENDORS */}
-                            {activeTab === 'vendor' && (
+                            {/* INVESTIGATION HUB -> VENDORS */}
+                            {activeTab === 'hub' && hubSubTab === 'vendor' && (
                                 <div className="fade-in pb-6 flex flex-col gap-4">
                                     <h2 className="text-lg md:text-xl font-bold text-white tracking-tight flex items-center gap-2">
                                         <i className="fa-solid fa-building-columns text-deloitte-green"></i> {t.vendors}
