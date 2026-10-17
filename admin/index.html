@@ -204,19 +204,19 @@
         <button type="button" onclick="switchAdminMainTab('hub')" id="tabBtn-hub"
           class="button-press flex-1 min-w-[75px] sm:min-w-[85px] py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 whitespace-nowrap bg-deloitte-green text-black shadow-lg shadow-deloitte-green/20">
           <i class="fa-solid fa-cubes text-[11px]"></i>
-          <span data-i18n="tabHub">系统直达</span>
+          <span data-i18n="tabHub">系统链接</span>
         </button>
 
         <button type="button" onclick="switchAdminMainTab('scores')" id="tabBtn-scores"
           class="button-press flex-1 min-w-[75px] sm:min-w-[85px] py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
           <i class="fa-solid fa-pen-to-square text-[11px]"></i>
-          <span data-i18n="tabScores">计分录入</span>
+          <span data-i18n="tabScores">录入分数</span>
         </button>
 
         <button type="button" onclick="switchAdminMainTab('leaderboard')" id="tabBtn-leaderboard"
           class="button-press flex-1 min-w-[75px] sm:min-w-[85px] py-2 px-1.5 sm:px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
           <i class="fa-solid fa-ranking-star text-[11px]"></i>
-          <span data-i18n="tabLeaderboard">风云总榜</span>
+          <span data-i18n="tabLeaderboard">排行榜</span>
         </button>
 
         <button type="button" onclick="switchAdminMainTab('broadcast')" id="tabBtn-broadcast"
@@ -266,7 +266,7 @@
                 <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">01</span>
                 <h2 class="text-base sm:text-xl font-black text-white" data-i18n="signalTitle">D.Signal 信号解密</h2>
               </div>
-              <p class="text-xs text-gray-400" data-i18n="signalDesc">三轮双语词库破译体验与展示互动</p>
+              <p class="text-xs text-gray-400" data-i18n="signalDesc">三轮双语词库</p>
               <div class="flex flex-wrap items-center gap-2 pt-0.5">
                 <button type="button" onclick="togglePanel('signalConfigPanel', 'signalConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-deloitte-green bg-deloitte-green/10 hover:bg-deloitte-green/20 border border-deloitte-green/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
                   <i class="fa-solid fa-sliders text-xs"></i>
@@ -289,7 +289,7 @@
                 <span class="font-bold text-deloitte-green">说明 · Guide</span>
                 <button type="button" onclick="insertSignalTemplate()" class="text-[11px] text-deloitte-green hover:underline font-bold">插入示例</button>
               </div>
-              <p class="text-[11px] text-gray-400 font-mono">每行或空格输入：“中文 英文”，如 “大熊猫 Giant Panda”</p>
+              <p class="text-[11px] text-gray-400 font-mono">每行或空格输入：“中文 英文”，如 “熊猫 Panda”</p>
             </div>
 
             <div class="flex items-center gap-1 p-1 bg-black/40 rounded-xl border border-white/10 overflow-x-auto no-scrollbar">
@@ -326,7 +326,7 @@
                 <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">02</span>
                 <h2 class="text-base sm:text-xl font-black text-white" data-i18n="kcTitle">Knowledge Clash 勤业智库</h2>
               </div>
-              <p class="text-xs text-gray-400" data-i18n="kcDesc">双语多选极速问答对决题库</p>
+              <p class="text-xs text-gray-400" data-i18n="kcDesc">双语多选题库</p>
               <div class="flex flex-wrap items-center gap-2 pt-0.5">
                 <button type="button" onclick="togglePanel('kcConfigPanel', 'kcConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
                   <i class="fa-solid fa-sliders text-xs text-emerald-400"></i>
@@ -370,7 +370,7 @@
                 <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">03</span>
                 <h2 class="text-base sm:text-xl font-black text-white" data-i18n="fpTitle">FastPass 快速通行证</h2>
               </div>
-              <p class="text-xs text-gray-400" data-i18n="fpDesc">多团队轮转路线指引与时间日程调度（队伍规模由「重置管理」页统一设定）</p>
+              <p class="text-xs text-gray-400" data-i18n="fpDesc">队伍规模由「重置管理」页统一设定</p>
               <div class="flex flex-wrap items-center gap-2 pt-0.5">
                 <button type="button" onclick="togglePanel('fastpassConfigPanel', 'fpConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-lime-300 bg-lime-500/10 hover:bg-lime-500/20 border border-lime-500/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
                   <i class="fa-solid fa-sliders text-xs text-lime-400"></i>
@@ -436,9 +436,9 @@
           <div class="space-y-1">
             <div class="flex items-center gap-2">
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-500/15 text-teal-400 border border-teal-500/30">04</span>
-              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="qrTitle">QR Code 打卡码站点</h2>
+              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="qrTitle">QR Code 打卡二维码</h2>
             </div>
-            <p class="text-xs text-gray-400" data-i18n="qrDesc">各环节专属打卡核销二维码展示页面</p>
+            <p class="text-xs text-gray-400" data-i18n="qrDesc">各环节打卡二维码</p>
           </div>
           <a href="https://projectsunrise.win/qr" target="_blank" rel="noopener noreferrer" class="button-press w-full sm:w-auto px-5 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-teal-400/20">
             <span data-i18n="launchQR">打开 QR 站点</span>
@@ -468,7 +468,7 @@
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">06</span>
               <h2 class="text-base sm:text-xl font-black text-white" data-i18n="sunriseTitle">Project Sunrise 日出计划关卡</h2>
             </div>
-            <p class="text-xs text-gray-400" data-i18n="sunriseDesc">主门户与分段关卡站点直接访问通道</p>
+            <p class="text-xs text-gray-400" data-i18n="sunriseDesc">主站与关卡站点</p>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full lg:w-auto">
             <a href="https://www.projectsunrise.win/sunrise" target="_blank" rel="noopener noreferrer" class="button-press py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-1 shadow-md shadow-amber-400/20">
@@ -497,7 +497,7 @@
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">bonus</span>
               <h2 class="text-base sm:text-xl font-black text-white" data-i18n="drushTitle">D-Rush: Green Dot Odyssey</h2>
             </div>
-            <p class="text-xs text-gray-400" data-i18n="drushDesc">像素小游戏与破冰挑战</p>
+            <p class="text-xs text-gray-400" data-i18n="drushDesc">小游戏</p>
           </div>
           <a href="https://www.projectsunrise.win/game" target="_blank" rel="noopener noreferrer" class="button-press w-full sm:w-auto px-5 py-2.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20">
             <span data-i18n="launchGame">进入 D-Rush</span>
@@ -515,8 +515,8 @@
           
           <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
             <div>
-              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="scoreEntryTitle">关卡计分录入矩阵</h2>
-              <p class="text-xs text-gray-400" id="matrixSubtitleHint">三层架构：站点 ➔ 轮次 ➔ 战队队号与得分录入</p>
+              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="scoreEntryTitle">关卡计分录入</h2>
+              <p class="text-xs text-gray-400" id="matrixSubtitleHint">三层架构：站点 ➔ 轮次 ➔ 小组号码与得分录入</p>
             </div>
             
             <!-- Read-only Cohort Scale Badge -->
@@ -552,7 +552,7 @@
             <div class="flex items-center justify-between">
               <label class="text-xs font-black text-white flex items-center gap-1.5">
                 <span class="w-4 h-4 rounded-full bg-deloitte-green text-black flex items-center justify-center text-[10px]">3</span>
-                <span id="layer3TitleText">第三层：录入战队数据框</span>
+                <span id="layer3TitleText">第三层：录入小组分数</span>
               </label>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="autoFillMockRoundScores()" class="text-[11px] text-amber-400 hover:underline font-bold">
@@ -570,12 +570,12 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
               <div id="scoresSaveStatusBadge" class="text-xs text-gray-400 flex items-center gap-1.5">
                 <i class="fa-solid fa-circle-info text-amber-400"></i>
-                <span>录入后即刻更新总榜，点击右侧同步学员端 TOP 10。</span>
+                <span>录入后即刻更新总榜，点击右侧同步学员端。</span>
               </div>
               <button type="button" onclick="saveScoresToSupabase()" id="btnSaveScoresMain"
                 class="button-press w-full sm:w-auto px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                <span data-i18n="btnSyncLeaderboard">保存并推送风云榜</span>
+                <span data-i18n="btnSyncLeaderboard">保存并推送排行榜</span>
               </button>
             </div>
           </div>
@@ -589,7 +589,7 @@
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
             <div>
-              <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider" data-i18n="fullLeaderboardTitle">总榜全貌 · Full Standings</h2>
+              <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider" data-i18n="fullLeaderboardTitle">总榜</h2>
               <p class="text-xs text-gray-400" data-i18n="fullLeaderboardSub">所有战队六关明细与总成绩（学员端仅展示前 10 名）</p>
             </div>
             <div class="flex items-center gap-2">
@@ -612,11 +612,11 @@
                 <tr class="bg-white/5 border-b border-white/10 text-gray-400 text-[11px] font-mono">
                   <th class="py-2.5 px-3">RANK</th>
                   <th class="py-2.5 px-3">TEAM</th>
-                  <th class="py-2.5 px-2 text-center">拼未来</th>
-                  <th class="py-2.5 px-2 text-center">道德树</th>
-                  <th class="py-2.5 px-2 text-center">D.Signal</th>
-                  <th class="py-2.5 px-2 text-center">智库</th>
-                  <th class="py-2.5 px-2 text-center">情商</th>
+                  <th class="py-2.5 px-2 text-center">一起拼未来</th>
+                  <th class="py-2.5 px-2 text-center">职业道德之树</th>
+                  <th class="py-2.5 px-2 text-center">信号解密</th>
+                  <th class="py-2.5 px-2 text-center">勤业智库</th>
+                  <th class="py-2.5 px-2 text-center">情商罗盘</th>
                   <th class="py-2.5 px-2 text-center">AI纪元</th>
                   <th class="py-2.5 px-3 text-right text-deloitte-green font-bold">TOTAL</th>
                 </tr>
@@ -645,14 +645,14 @@
 
           <div class="space-y-3.5">
             <div>
-              <label class="block text-xs font-bold text-gray-300 mb-1" data-i18n="lblAnnouncementZH">广播公告内容 (中文) · 学员端顶部通知栏</label>
-              <textarea id="adminAnnounceZH" rows="3" placeholder="例如：欢迎加入德勤新星破冰之旅！全员请根据 FastPass 路线前往各关卡站点就位。"
+              <label class="block text-xs font-bold text-gray-300 mb-1" data-i18n="lblAnnouncementZH">广播公告</label>
+              <textarea id="adminAnnounceZH" rows="3" placeholder="例如：欢迎加入德勤乐园！"
                 class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs text-white leading-relaxed resize-none"></textarea>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-gray-400 mb-1" data-i18n="lblAnnouncementEN">Announcement Message (English)</label>
-              <textarea id="adminAnnounceEN" rows="2" placeholder="e.g. Welcome to DeloitteLand! Please follow your FastPass route to your designated stations."
+              <label class="block text-xs font-bold text-gray-400 mb-1" data-i18n="lblAnnouncementEN">Announcement</label>
+              <textarea id="adminAnnounceEN" rows="2" placeholder="e.g. Welcome to DeloitteLand!"
                 class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs text-white leading-relaxed resize-none"></textarea>
             </div>
 
@@ -666,7 +666,7 @@
           </div>
 
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-            <span id="announceSaveStatus" class="text-xs text-gray-400">发布后将存储于 Supabase 并即时广播至学员端</span>
+            <span id="announceSaveStatus" class="text-xs text-gray-400">发布后将存储云端并即时广播至学员端</span>
             <button type="button" onclick="savePortalAnnouncementConfig()"
               class="button-press w-full sm:w-auto px-6 py-2.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20">
               <i class="fa-solid fa-paper-plane"></i>
@@ -687,7 +687,7 @@
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">MANAGEMENT</span>
               <h2 class="text-base sm:text-xl font-black text-white" data-i18n="resetTitle">重置中心与全局规模配置</h2>
             </div>
-            <p class="text-xs text-gray-400 mt-1" data-i18n="resetSubtitle">在此统一切换全局战队规模，或按需清理各项活动数据（支持两段防误触确认）。</p>
+            <p class="text-xs text-gray-400 mt-1" data-i18n="resetSubtitle">在此统一切换小组规模，或按需清理各项活动数据。</p>
           </div>
 
           <!-- Cohort Scale Setting -->
@@ -766,7 +766,7 @@
                     <i class="fa-solid fa-trophy text-amber-400"></i>
                     <span data-i18n="resetScoresTitle">清空所有得分</span>
                   </div>
-                  <p class="text-[11px] text-gray-400 leading-normal" data-i18n="resetScoresDesc">清空全部 6 个站点的打分记录，重置全员风云榜。</p>
+                  <p class="text-[11px] text-gray-400 leading-normal" data-i18n="resetScoresDesc">清空全部 6 个站点的打分记录，重置全员排行榜。</p>
                 </div>
                 <button type="button" onclick="confirmResetAction('scores')"
                   class="button-press w-full py-2 rounded-lg bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
@@ -831,57 +831,57 @@
         btnSignIn: "验证并登录",
         headerBadge: "Admin",
         btnOpenParticipant: "学员端",
-        tabHub: "系统直达",
-        tabScores: "计分录入",
-        tabLeaderboard: "风云总榜",
+        tabHub: "系统链接",
+        tabScores: "录入分数",
+        tabLeaderboard: "排行榜",
         tabBroadcast: "现场广播",
         tabReset: "重置管理",
         oracleHeader: "Daily Green Pulse",
         nextQuote: "抽一句",
         signalTitle: "D.Signal 信号解密",
-        signalDesc: "三轮双语词库破译体验与展示互动",
+        signalDesc: "三轮双语词库",
         signalConfigBtn: "配置 3 轮词库",
         launchSignal: "打开 D.Signal",
         saveWordsBtn: "保存词库",
         kcTitle: "Knowledge Clash 勤业智库",
-        kcDesc: "双语多选极速问答对决题库",
+        kcDesc: "双语多选题库",
         kcConfigBtn: "配置智库题库",
         launchKC: "打开 Knowledge Clash",
         saveQuestionsBtn: "保存题库",
         fpTitle: "FastPass 快速通行证",
-        fpDesc: "多团队轮转路线指引与时间日程调度（队伍规模由「重置管理」页统一设定）",
+        fpDesc: "小组数量由「重置管理」页统一设定",
         fpConfigBtn: "配置场地与日程",
         saveFastpassBtn: "保存配置",
         qrTitle: "QR Code 打卡码站点",
-        qrDesc: "各环节专属打卡核销二维码展示页面",
+        qrDesc: "各环节二维码展示页面",
         launchQR: "打开 QR 站点",
-        bcTitle: "Business Chemistry 商业化学指南",
-        bcDesc: "四种职场化学风格画像与团队协作指引",
+        bcTitle: "Business Chemistry 商业化学反应",
+        bcDesc: "四种商业化学反应画像",
         launchBC: "打开 Chemistry",
         sunriseTitle: "Project Sunrise 日出计划关卡",
-        sunriseDesc: "主门户与分段关卡站点直接访问通道",
+        sunriseDesc: "主站与关卡站点",
         portalHome: "Sunrise 主站",
-        drushTitle: "D-Rush: Green Dot Odyssey",
-        drushDesc: "像素小游戏与破冰挑战",
+        drushTitle: "D-Rush",
+        drushDesc: "小游戏",
         launchGame: "进入 D-Rush",
         scoreEntryTitle: "关卡计分录入矩阵",
         lblActiveScale: "当前规模:",
         layer1Title: "第一层：选择关卡站点 (Station)",
         layer2Title: "第二层：选择比赛轮次 (Round 1 ~ 6)",
-        btnSyncLeaderboard: "保存并推送风云榜",
-        fullLeaderboardTitle: "总榜全貌 · Full Standings",
+        btnSyncLeaderboard: "保存并推送排行榜",
+        fullLeaderboardTitle: "总榜",
         fullLeaderboardSub: "所有战队六关明细与总成绩（学员端仅展示前 10 名）",
         secAnnouncement: "现场广播与通知推送",
-        broadcastDesc: "实时发布双语公告至学员端顶部通知横幅。",
-        lblAnnouncementZH: "广播公告内容 (中文) · 学员端顶部通知栏",
+        broadcastDesc: "实时发布公告",
+        lblAnnouncementZH: "广播公告内容 (中文)",
         lblAnnouncementEN: "Announcement Message (English)",
         lblDispatchRoute: "学员端已绑定 FastPass 路线:",
         btnPublishAnnouncement: "发布并推送至学员端",
         resetTitle: "重置中心与全局规模配置",
-        resetSubtitle: "在此统一切换全局战队规模，或按需清理各项活动数据（支持两段防误触确认）。",
-        resetCohortHeader: "全场队伍规模设定 (Cohort Scale)",
+        resetSubtitle: "在此统一切换全局小组规模，或按需清理各项活动数据。",
+        resetCohortHeader: "全场队伍规模设定",
         resetCohortSub: "选定后将联动计分矩阵输入框数（4/6/8组）及学员端 FastPass 路线。",
-        granularResetTitle: "专项数据清理 (Granular Clear Actions)",
+        granularResetTitle: "专项数据清理",
         resetVenuesTitle: "清空 6 站地点",
         resetVenuesDesc: "将 6 个站点的中英文地点清空，便于输入新场地。",
         btnResetVenues: "清空地点",
@@ -889,9 +889,9 @@
         resetTimesDesc: "将 6 轮日程的时间槽重置为空白状态。",
         btnResetTimes: "清空时间",
         resetScoresTitle: "清空所有得分",
-        resetScoresDesc: "清空全部 6 个站点的打分记录，重置全员风云榜。",
+        resetScoresDesc: "清空全部 6 个站点的打分记录，重置全员排行榜。",
         btnResetScores: "清空全部得分",
-        extraResetsTitle: "其他常用重置功能 (Recommended Auxiliaries)",
+        extraResetsTitle: "其他常用重置功能",
         btnResetMessages: "清空学员留言墙",
         btnResetAnnouncement: "清空广播横幅",
         btnMasterReset: "一键初始化全场数据"
@@ -912,32 +912,32 @@
         oracleHeader: "Daily Green Pulse",
         nextQuote: "Inspire",
         signalTitle: "D.Signal Decoder",
-        signalDesc: "3-round bilingual word decoding interactive experience",
+        signalDesc: "3-round bilingual words",
         signalConfigBtn: "Configure 3 Rounds",
         launchSignal: "Launch D.Signal",
         saveWordsBtn: "Save Words",
         kcTitle: "Knowledge Clash Trivia",
-        kcDesc: "Bilingual multiple-choice trivia challenge question deck",
+        kcDesc: "Bilingual multiple-choice questions",
         kcConfigBtn: "Configure Questions",
         launchKC: "Launch Knowledge Clash",
         saveQuestionsBtn: "Save Questions",
         fpTitle: "FastPass Navigation",
-        fpDesc: "Multi-cohort session routing & schedule dispatcher (Scale managed in Reset tab)",
+        fpDesc: "Scale managed in Reset tab",
         fpConfigBtn: "Configure Venues",
         saveFastpassBtn: "Save Config",
         qrTitle: "QR Code Check-in Hub",
-        qrDesc: "Station-specific check-in QR display and verification screens",
+        qrDesc: "Station-specific check-in QR display",
         launchQR: "Launch QR Hub",
-        bcTitle: "Business Chemistry Guide",
-        bcDesc: "Four workplace chemistry archetype dossiers & team guides",
+        bcTitle: "Business Chemistry",
+        bcDesc: "Four workplace chemistry archetypes",
         launchBC: "Launch Chemistry",
         sunriseTitle: "Project Sunrise Quests",
         sunriseDesc: "Main event portal & quest checkpoint nodes",
         portalHome: "Sunrise Portal",
-        drushTitle: "D-Rush: Green Dot Odyssey",
-        drushDesc: "Interactive pixel mini-game & icebreaker adventure",
+        drushTitle: "D-Rush",
+        drushDesc: "Mini-game",
         launchGame: "Launch D-Rush",
-        scoreEntryTitle: "Scoring Matrix (Score Input)",
+        scoreEntryTitle: "Score Input",
         lblActiveScale: "Active Scale:",
         layer1Title: "Layer 1: Select Station",
         layer2Title: "Layer 2: Select Round (1 to 6)",
@@ -946,7 +946,7 @@
         fullLeaderboardSub: "All teams with 6-station breakdown (Participant hub shows Top 10 only)",
         secAnnouncement: "Live Broadcast & Dispatcher",
         broadcastDesc: "Push bilingual announcement banners live to participant devices.",
-        lblAnnouncementZH: "Broadcast Notice (Chinese) · Header Banner",
+        lblAnnouncementZH: "Broadcast Notice (Chinese)",
         lblAnnouncementEN: "Announcement Message (English)",
         lblDispatchRoute: "Participant Active FastPass Route:",
         btnPublishAnnouncement: "Publish & Push to Hub",
@@ -1621,7 +1621,7 @@
        D.SIGNAL & KNOWLEDGE CLASH & FASTPASS CONFIGURATIONS
        ========================================================== */
     const DEFAULT_SIGNAL_ROUND_DATA = {
-      1: { title: "Round 1", words: [{ cn: "大熊猫", en: "Giant Panda" }, { cn: "金丝猴", en: "Golden Monkey" }] },
+      1: { title: "Round 1", words: [{ cn: "熊猫", en: "Panda" }, { cn: "金丝猴", en: "Golden Monkey" }] },
       2: { title: "Round 2", words: [{ cn: "合伙人", en: "Partner" }, { cn: "客户", en: "Client" }] },
       3: { title: "Round 3", words: [{ cn: "审计及鉴证", en: "Audit & Assurance" }, { cn: "咨询", en: "Consulting" }] }
     };
@@ -2028,12 +2028,33 @@
       if (e && window.confetti) {
         confetti({ particleCount: 25, spread: 40, origin: { x: 0.5, y: 0.2 }, colors: ['#86BC25', '#a3e635'] });
       }
-      const MOOD_QUOTES = [
-        "Make an impact that matters — starting with not breaking production. | 成就不凡，先从别点崩系统开始 🛡️",
-        "Coffee in, deliverables out. | 咖啡入腹，交付物神速，优雅闭环 ☕",
-        "Green dot glowing, sanity loading... 99%. | 绿点长明，理智值正在飞速回血中 🔋",
-        "Aligned, granular, and heavily caffeinated. | 颗粒度已对齐，底层逻辑已打通，咖啡因全面就绪 🎯"
-      ];
+    const MOOD_QUOTES = [
+          { text: "Make an impact that matters — starting with not breaking production. | 成就不凡，先从别点崩系统开始 🛡️", icon: "fa-shield-halved" },
+          { text: "Coffee in, deliverables out. | 咖啡入腹，交付物神速，优雅闭环 ☕", icon: "fa-mug-hot" },
+          { text: "Green dot glowing, sanity loading... 99%. | 绿点长明，理智值正在飞速回血中 🔋", icon: "fa-battery-three-quarters" },
+          { text: "Aligned, granular, and heavily caffeinated. | 颗粒度已对齐，底层逻辑已打通，咖啡因全面就绪 🎯", icon: "fa-bullseye" },
+          { text: "May your bandwidth be wide and your meetings be emails. | 愿你网速拉满，愿所有冗长会议都化为一句邮件 ✉️", icon: "fa-envelope-open-text" },
+          { text: "Behind every flawless deck is a file named 'FINAL_v8_REAL_FINAL.pptx'. | 每个惊艳成果背后，都有个叫“最终版_打死不改版”的文件 📑", icon: "fa-file-powerpoint" },
+          { text: "Let's circle back after we boil the ocean. | 等我们把这片海煮沸了，再回来对齐一下抓手 🌊", icon: "fa-water" },
+          { text: "My spiritual animal is a pivot table that doesn't throw #REF! | 我的守护神兽是一张永不报错的数据透视表 📊", icon: "fa-table" },
+          { text: "Clear, Confident, Human — and deeply in need of a snack break. | 专业敏锐有人文关怀，但现在急需来包小零食 🥐", icon: "fa-cookie-bite" },
+          { text: "Turning pure chaos into structured MECE bullet points since 9 AM. | 擅长把一团乱麻，梳理成无懈可击的 MECE 列表 🧩", icon: "fa-puzzle-piece" },
+          { text: "Keep calm and blame the staging cache. | 遇事不决先清缓存，实在不行再怪网络波动 🔄", icon: "fa-rotate" },
+          { text: "Synergizing our core competencies at the snack bar. | 正在茶水间零食架旁，深度整合我们的核心竞争力 🍫", icon: "fa-candy-cane" },
+          { text: "Please do not disturb: currently in a committed relationship with Excel. | 请勿打扰：正与 Excel 表格进行一场刻骨铭心的恋爱 💚", icon: "fa-heart" },
+          { text: " Let's take this offline — and by offline, I mean to the coffee shop. | 这个问题我们线下聊——特指去楼下买杯冰美式边走边聊 🧋", icon: "fa-glass-water" },
+          { text: " Ctrl+Z is the closest thing we have to a time machine. | Ctrl+Z 是人类目前距离时光机最近的一项伟大发明 ⏳", icon: "fa-clock-rotate-left" },
+          { text: "I speak fluent English, Mandarin, and Corporate Acronyms. | 本人精通中文、英文，以及各种高大上的职场缩写黑话 🗣️", icon: "fa-comments" },
+          { text: "Low-hanging fruit tastes best when it's actual fruit at the buffet. | 所谓“低垂的果实”，最好吃的是歇息区摆着的真水果 🍎", icon: "fa-apple-whole" },
+          { text: "90% of consulting is finding who has the screen-sharing adapter. | 职场破局的第一步：先找到谁手里有投屏转接头 🔌", icon: "fa-plug" },
+          { text: "Empowering the ecosystem, one sticky note at a time. | 赋能生态体系，从贴好手头这一张便利贴开始 📝", icon: "fa-note-sticky" },
+          { text: "We're not lost, we're just conducting an agile exploratory pivot. | 我们绝对没有迷路，我们只是在做敏捷探索式转向 🧭", icon: "fa-compass" },
+          { text: "Brainstorming rule #1: there are no bad ideas, only bold slides. | 头脑风暴第一定律：没有离谱的点子，只有大胆的排版 💡", icon: "fa-lightbulb" },
+          { text: "Currently operating at 120% capacity and 200% charm. | 当前状态：业务负载 120%，人格魅力释放 200% ✨", icon: "fa-wand-magic-sparkles" },
+          { text: "If at first you don't succeed, call it 'Phase 1 Pilot' and ship it. | 如果第一次没完美收官，就管它叫“一期试点”先发出来 🚀", icon: "fa-rocket" },
+          { text: "Adding a green dot to the end of every sentence makes it 50% smarter. | 在每句话末尾加个小绿点，看起来会聪明 50% 🟢", icon: "fa-circle-dot" },
+          { text: "Together makes progress — especially when ordering team boba. | 众行致远——尤其是在全组一起拼单点奶茶的时候 🧋", icon: "fa-Users" }
+        ];
       const q = MOOD_QUOTES[Math.floor(Math.random() * MOOD_QUOTES.length)];
       document.getElementById('oracleQuote').textContent = q;
     }
