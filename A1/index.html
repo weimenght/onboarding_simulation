@@ -17,9 +17,13 @@
   
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Tailwind CSS & FontAwesome -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for subtle audio feedback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- FontAwesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -42,10 +46,17 @@
               slate: '#1b2230',
               gray: '#868D96',
               lightgray: '#DCE0E5'
+            },
+            type: {
+              pioneer: '#00A3E0',
+              driver: '#86BC25',
+              integrator: '#14B8A6',
+              guardian: '#A855F7'
             }
           },
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif']
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans SC"', 'sans-serif'],
+            cn: ['"Noto Sans SC"', 'sans-serif']
           }
         }
       }
@@ -79,6 +90,10 @@
 
     .card-shadow {
       box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.07);
+    }
+
+    .card-active-glow {
+      box-shadow: 0 14px 35px -8px rgba(134, 188, 37, 0.28), 0 0 0 2px rgba(134, 188, 37, 0.65);
     }
 
     .button-press { 
@@ -115,6 +130,14 @@
     }
     .logo-float { animation: floatLogo 3s ease-in-out infinite; }
 
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.97) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop-in {
+      animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-6px); }
@@ -136,7 +159,7 @@
       <div class="flex items-center justify-between border-b border-white/10 pb-3">
         <div class="flex items-center gap-2 min-w-0">
           <div class="w-6 h-6 rounded-lg bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-xs shrink-0">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <i class="fa-solid fa-id-badge"></i>
           </div>
           <span class="font-black text-sm tracking-tight text-white truncate" data-i18n="modalHeaderTitle">欢迎来到德勤乐园</span>
         </div>
@@ -249,12 +272,15 @@
             <span class="font-black text-base tracking-tight text-deloitte-green">Land</span>
             <span id="easterDot" class="deloitte-dot" onclick="handleDotEggClick()"></span>
           </div>
-          <!-- User Avatar + Nickname + Team Pill (Click to edit profile) -->
-          <button type="button" onclick="openTeamGateModal()" class="mt-1 inline-flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full pr-2 pl-0.5 py-0.5 transition-colors max-w-full">
-            <div id="headerAvatarIcon" class="w-4 h-4 rounded-full overflow-hidden shrink-0"></div>
-            <span id="headerNicknameText" class="text-[10px] font-bold text-gray-200 truncate max-w-[105px]">Rookie</span>
-            <span id="headerTeamBadge" class="text-[9px] font-mono font-extrabold text-lime-300 bg-lime-400/15 px-1.5 rounded-full shrink-0">#--</span>
-          </button>
+          <!-- User Avatar + Nickname + Team Pill + BC Style Tag -->
+          <div class="mt-1 flex items-center gap-1.5 max-w-full">
+            <button type="button" onclick="openTeamGateModal()" class="inline-flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full pr-2 pl-0.5 py-0.5 transition-colors min-w-0">
+              <div id="headerAvatarIcon" class="w-4 h-4 rounded-full overflow-hidden shrink-0"></div>
+              <span id="headerNicknameText" class="text-[10px] font-bold text-gray-200 truncate max-w-[90px]">Rookie</span>
+              <span id="headerTeamBadge" class="text-[9px] font-mono font-extrabold text-lime-300 bg-lime-400/15 px-1.5 rounded-full shrink-0">#--</span>
+            </button>
+            <button type="button" id="headerBcStylePill" onclick="openAppView('bc')" class="hidden text-[9px] font-extrabold px-1.5 py-0.5 rounded-full border shrink-0 transition-colors"></button>
+          </div>
         </div>
       </div>
 
@@ -303,7 +329,7 @@
       </div>
     </div>
 
-    <!-- 02. Essential Mission Cards: Live FastPass Tracker & D-Rush -->
+    <!-- 02. Essential Mission Cards: Live FastPass, Business Chemistry & D-Rush -->
     <div class="space-y-3">
       
       <!-- FastPass Live Current & Next Station Card -->
@@ -344,6 +370,30 @@
         </div>
       </div>
 
+      <!-- Business Chemistry Native In-App Card -->
+      <div onclick="openAppView('bc')"
+        class="button-press p-4 rounded-2xl bg-deloitte-cardbg border border-cyan-500/30 hover:border-cyan-400 card-shadow flex items-center justify-between gap-3 group relative overflow-hidden cursor-pointer">
+        <div class="absolute -right-4 -top-4 w-16 h-16 bg-cyan-500/10 rounded-full blur-xl pointer-events-none"></div>
+
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <div class="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-sm font-bold shrink-0">
+            <i class="fa-solid fa-flask"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-xs font-black text-white group-hover:text-cyan-300 transition-colors flex items-center gap-1.5">
+              <span class="truncate" data-i18n="bcCardTitle">Business Chemistry 商业化学反应</span>
+              <i class="fa-solid fa-chevron-right text-[9px] text-cyan-400 shrink-0"></i>
+            </div>
+            <div class="text-[10px] text-gray-400 mt-0.5 truncate" data-i18n="bcCardSub">探索四大职场风格与团队协同秘籍</div>
+          </div>
+        </div>
+
+        <!-- Participant Active BC Style Badge -->
+        <div id="bcHubCardBadge" class="shrink-0 bg-cyan-500/10 border border-cyan-500/30 rounded-xl px-2.5 py-1.5 text-center min-w-[76px]">
+          <span class="text-[10px] font-extrabold text-cyan-300 block" data-i18n="bcUnsetBadge">测测风格</span>
+        </div>
+      </div>
+
       <!-- D-Rush Mini Game Card -->
       <div onclick="openAppView('drush')"
         class="button-press p-4 rounded-2xl bg-deloitte-cardbg border border-deloitte-green/30 hover:border-deloitte-green card-shadow flex items-center justify-between gap-3 group relative overflow-hidden cursor-pointer">
@@ -355,10 +405,10 @@
           </div>
           <div class="min-w-0 flex-1">
             <div class="text-xs font-black text-white group-hover:text-deloitte-green transition-colors flex items-center gap-1.5">
-              <span class="truncate" data-i18n="drushCardTitle">D-Rush</span>
+              <span class="truncate" data-i18n="drushCardTitle">D-Rush 像素跑酷</span>
               <i class="fa-solid fa-chevron-right text-[9px] text-deloitte-green shrink-0"></i>
             </div>
-            <div class="text-[10px] text-gray-400 mt-0.5 truncate" data-i18n="drushSub">玩跑酷小游戏，冲榜拿第一！</div>
+            <div class="text-[10px] text-gray-400 mt-0.5 truncate" data-i18n="drushSub">玩跑酷小游戏，冲榜拿第一</div>
           </div>
         </div>
 
@@ -383,7 +433,7 @@
           <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xs shrink-0">
             <i class="fa-solid fa-sun"></i>
           </div>
-          <h2 class="text-xs font-black text-white uppercase tracking-wider truncate" data-i18n="sunriseGateTitle">隐藏关卡</h2>
+          <h2 class="text-xs font-black text-white uppercase tracking-wider truncate" data-i18n="sunriseGateTitle">Project Sunrise 隐藏关卡</h2>
         </div>
         <span id="sunriseStatusBadge" class="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 shrink-0" data-i18n="badgeLocked">待开启</span>
       </div>
@@ -402,7 +452,7 @@
         </div>
         <p id="sunriseErrorHint" class="hidden text-[10px] text-rose-400 flex items-center gap-1 pt-0.5">
           <i class="fa-solid fa-triangle-exclamation"></i>
-          <span data-i18n="errPasscode">口令不对哦，留意主持人的提示！</span>
+          <span data-i18n="errPasscode">口令不对，请留意主持人的提示</span>
         </p>
       </div>
 
@@ -476,7 +526,7 @@
       </div>
     </div>
 
-    <!-- 05. Participant Live Message Board (With User SVG Avatar + 60s Rate Limit) -->
+    <!-- 05. Participant Live Message Board (With Auto-Moderation + Quick-Cheer Chips + 60s Cooldown) -->
     <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
       <div class="flex items-center justify-between gap-2">
         <div class="flex items-center gap-2.5 min-w-0">
@@ -494,10 +544,11 @@
       <form onsubmit="handlePostMessage(event)" class="space-y-2.5 bg-black/40 p-3 rounded-xl border border-white/10">
         <!-- Active Sender Identity Bar -->
         <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-white/10">
-          <div class="flex items-center gap-2 min-w-0">
+          <div class="flex items-center gap-1.5 min-w-0">
             <div id="msgSenderAvatar" class="w-6 h-6 rounded-lg overflow-hidden border border-teal-400/50 shrink-0"></div>
             <span id="msgSenderNameDisplay" class="text-xs font-bold text-teal-300 truncate">New Explorer</span>
             <span id="msgSenderTeamDisplay" class="text-[10px] font-mono text-gray-400 shrink-0">#--</span>
+            <span id="msgSenderBcBadge" class="hidden text-[9px] font-bold px-1.5 py-0.2 rounded border shrink-0"></span>
           </div>
           <button type="button" onclick="openTeamGateModal()" class="text-[10px] text-gray-400 hover:text-white flex items-center gap-1 shrink-0 whitespace-nowrap">
             <i class="fa-solid fa-sliders text-[9px] text-teal-400"></i>
@@ -505,13 +556,25 @@
           </button>
         </div>
 
-        <input id="msgContent" type="text" placeholder="写句加油或分享心情吧..." maxlength="100" required
-          class="w-full h-10 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-lg px-3 text-xs text-white placeholder-gray-600">
+        <!-- One-Tap Positive Quick Cheer Chips -->
+        <div id="quickCheerChipsContainer" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          <!-- Rendered dynamically via JS -->
+        </div>
+
+        <input id="msgContent" type="text" placeholder="写句加油或点击上方快捷短语..." maxlength="100" required
+          oninput="hideModerationAlert()"
+          class="w-full h-10 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-lg px-3 text-xs text-white placeholder-gray-600 transition-colors">
+
+        <!-- Auto-Moderation Polite Alert -->
+        <p id="msgModerationAlert" class="hidden text-[11px] text-amber-300 font-semibold flex items-center gap-1.5 pt-0.5">
+          <i class="fa-solid fa-shield-heart text-amber-400 shrink-0"></i>
+          <span id="msgModerationAlertText"></span>
+        </p>
 
         <div class="flex items-center justify-between gap-2 pt-0.5">
           <div id="msgCooldownStatus" class="text-[10px] text-gray-400 flex items-center gap-1 min-w-0 truncate">
             <i class="fa-regular fa-face-smile text-[9px] text-teal-400 shrink-0"></i>
-            <span class="truncate" data-i18n="msgFriendlyTip">每分钟可发 1 条留言哦</span>
+            <span class="truncate" data-i18n="msgFriendlyTip">每分钟可发 1 条友善留言</span>
           </div>
           <button type="submit" id="msgSubmitBtn"
             class="button-press h-8 px-3.5 bg-teal-500 hover:bg-teal-400 disabled:bg-gray-700 disabled:text-gray-400 text-black font-extrabold text-xs rounded-lg flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap transition-colors">
@@ -535,7 +598,6 @@
 
   <!-- ==========================================================
        IN-APP SLIDE-OVER VIEW 1: BUNDLED NATIVE FASTPASS SCHEDULE
-       (Clean Mobile Card List — Never Squishes Chinese Text)
        ========================================================== -->
   <div id="appView-fastpass" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
     <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
@@ -559,8 +621,6 @@
 
     <div class="flex-1 overflow-y-auto p-4 safe-bottom">
       <div class="max-w-md mx-auto space-y-3.5">
-        
-        <!-- Team Header Banner -->
         <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex items-center justify-between gap-2">
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
@@ -575,15 +635,194 @@
           </div>
         </div>
 
-        <!-- 6 Rounds Mobile Schedule List (Clean, Un-squished Cards) -->
-        <div id="fpDrawerRoundsList" class="space-y-2.5">
-          <!-- Populated dynamically via JS -->
-        </div>
+        <div id="fpDrawerRoundsList" class="space-y-2.5"></div>
 
-        <!-- Footer Duration Note -->
         <div class="px-4 py-3 rounded-xl border border-white/10 bg-black/40 flex items-center justify-between text-[11px] text-gray-400">
           <span data-i18n="fpFooterDuration">每轮体验 30 分钟 · 换场休息 10 分钟</span>
           <span id="fpDrawerFooterScale" class="font-mono text-gray-500">FastPass</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       IN-APP SLIDE-OVER VIEW 2: BUNDLED NATIVE BUSINESS CHEMISTRY
+       ========================================================== -->
+  <div id="appView-bc" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
+    <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
+      <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeAppView()" class="button-press h-8 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-chevron-left text-cyan-400 text-xs"></i>
+          <span data-i18n="btnBackToHub">返回</span>
+        </button>
+
+        <div class="flex items-center gap-1.5 truncate">
+          <span class="font-black text-sm text-white truncate">Business Chemistry<span class="deloitte-dot"></span></span>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="toggleLanguage()" class="button-press h-8 px-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white flex items-center gap-1">
+            <i class="fa-solid fa-globe text-deloitte-green text-xs"></i>
+            <span id="bcDrawerLangLabel" class="font-mono text-[11px]">EN</span>
+          </button>
+          <button type="button" onclick="toggleBcAudio()" class="button-press w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-xs" aria-label="Toggle Sound">
+            <i id="bcAudioIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 safe-bottom">
+      <div class="max-w-2xl mx-auto space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+          <p class="text-xs text-gray-400" data-i18n="bcDrawerSubtitle">点击卡片切换类型，下方查看详细解析</p>
+        </div>
+
+        <!-- 2x2 Grid of 4 Working Styles -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <!-- Pioneer -->
+          <div id="bcCard-pioneer" onclick="selectBcType('pioneer')" class="button-press cursor-pointer p-3.5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-pioneer/60 card-shadow transition-all relative overflow-hidden group">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-8 h-8 rounded-xl bg-type-pioneer/15 border border-type-pioneer/30 flex items-center justify-center text-type-pioneer text-xs">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-type-pioneer/10 border border-type-pioneer/30 text-type-pioneer">Pioneer</span>
+            </div>
+            <h3 class="text-sm font-black text-white" id="bcGridTitle-pioneer">开拓者</h3>
+            <p class="text-[11px] text-gray-400 mt-0.5 truncate" id="bcGridSub-pioneer">激发能量 · 探索未知</p>
+          </div>
+
+          <!-- Driver -->
+          <div id="bcCard-driver" onclick="selectBcType('driver')" class="button-press cursor-pointer p-3.5 rounded-2xl bg-deloitte-cardbg border-2 border-deloitte-green card-active-glow transition-all relative overflow-hidden group">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-8 h-8 rounded-xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-xs">
+                <i class="fa-solid fa-bullseye"></i>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green">Driver</span>
+            </div>
+            <h3 class="text-sm font-black text-white" id="bcGridTitle-driver">推动者</h3>
+            <p class="text-[11px] text-gray-400 mt-0.5 truncate" id="bcGridSub-driver">聚焦成果 · 疾速推进</p>
+          </div>
+
+          <!-- Integrator -->
+          <div id="bcCard-integrator" onclick="selectBcType('integrator')" class="button-press cursor-pointer p-3.5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-integrator/60 card-shadow transition-all relative overflow-hidden group">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-8 h-8 rounded-xl bg-type-integrator/15 border border-type-integrator/30 flex items-center justify-center text-type-integrator text-xs">
+                <i class="fa-solid fa-handshake"></i>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-type-integrator/10 border border-type-integrator/30 text-type-integrator">Integrator</span>
+            </div>
+            <h3 class="text-sm font-black text-white" id="bcGridTitle-integrator">整合者</h3>
+            <p class="text-[11px] text-gray-400 mt-0.5 truncate" id="bcGridSub-integrator">凝聚团队 · 构筑信任</p>
+          </div>
+
+          <!-- Guardian -->
+          <div id="bcCard-guardian" onclick="selectBcType('guardian')" class="button-press cursor-pointer p-3.5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-guardian/60 card-shadow transition-all relative overflow-hidden group">
+            <div class="flex items-center justify-between mb-2">
+              <div class="w-8 h-8 rounded-xl bg-type-guardian/15 border border-type-guardian/30 flex items-center justify-center text-type-guardian text-xs">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-type-guardian/10 border border-type-guardian/30 text-type-guardian">Guardian</span>
+            </div>
+            <h3 class="text-sm font-black text-white" id="bcGridTitle-guardian">守护者</h3>
+            <p class="text-[11px] text-gray-400 mt-0.5 truncate" id="bcGridSub-guardian">恪守秩序 · 稳健护航</p>
+          </div>
+        </div>
+
+        <!-- Detailed Inspector Container -->
+        <div id="bcDetailContainer" class="p-4 sm:p-6 rounded-3xl bg-deloitte-cardbg border-2 border-white/15 card-shadow space-y-4 animate-pop-in">
+          <div class="space-y-3.5 pb-3.5 border-b border-white/10">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-start gap-3 min-w-0">
+                <div id="bcDetailIconBox" class="w-11 h-11 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-lg text-deloitte-green shrink-0">
+                  <i id="bcDetailIcon" class="fa-solid fa-bullseye"></i>
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h3 id="bcDetailName" class="text-lg sm:text-xl font-black text-white">推动者</h3>
+                    <span id="bcDetailTag" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-deloitte-green font-bold">Momentum & Results</span>
+                  </div>
+                  <p id="bcDetailMotto" class="text-xs text-gray-200 mt-1 font-semibold leading-snug"></p>
+                </div>
+              </div>
+
+              <!-- Set as My Style Action Button -->
+              <button type="button" id="btnSetMyBcStyle" onclick="saveUserBcStyle()"
+                class="button-press px-3 py-1.5 rounded-xl bg-deloitte-green text-black font-extrabold text-[11px] flex items-center gap-1.5 shrink-0 whitespace-nowrap shadow-sm">
+                <i id="btnSetMyBcIcon" class="fa-solid fa-tag text-[10px]"></i>
+                <span id="btnSetMyBcText" data-i18n="bcSetStyleBtn">设为我的风格</span>
+              </button>
+            </div>
+
+            <!-- 3-Tab Segmented Control -->
+            <div class="grid grid-cols-3 gap-1 bg-black/50 p-1 rounded-xl border border-white/10">
+              <button type="button" id="bcTabBtn-traits" onclick="switchBcDetailTab('traits')" class="py-2 px-2 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black text-center">
+                <span data-i18n="bcTabTraits">核心特质</span>
+              </button>
+              <button type="button" id="bcTabBtn-stress" onclick="switchBcDetailTab('stress')" class="py-2 px-2 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white text-center">
+                <span data-i18n="bcTabStress">动力与压力</span>
+              </button>
+              <button type="button" id="bcTabBtn-flex" onclick="switchBcDetailTab('flex')" class="py-2 px-2 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white text-center">
+                <span data-i18n="bcTabFlex">协同秘籍</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab 1: Traits -->
+          <div id="bcTabContent-traits" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
+              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-brain"></i>
+                <span data-i18n="bcLabelMindset">思维方式</span>
+              </span>
+              <p id="bcDetailMindset" class="text-xs text-gray-200 leading-relaxed"></p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
+              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-crosshairs"></i>
+                <span data-i18n="bcLabelFocus">关注重心</span>
+              </span>
+              <p id="bcDetailFocus" class="text-xs text-gray-200 leading-relaxed"></p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1">
+              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-gavel"></i>
+                <span data-i18n="bcLabelDecision">决策风格</span>
+              </span>
+              <p id="bcDetailDecision" class="text-xs text-gray-200 leading-relaxed"></p>
+            </div>
+          </div>
+
+          <!-- Tab 2: Energizers vs Drainers -->
+          <div id="bcTabContent-stress" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 space-y-2.5">
+              <div class="flex items-center gap-2 text-deloitte-green font-bold text-xs">
+                <i class="fa-solid fa-battery-full"></i>
+                <span data-i18n="bcLabelEnergize">赋能动力点</span>
+              </div>
+              <ul id="bcDetailEnergizeList" class="space-y-2 text-xs text-gray-200"></ul>
+            </div>
+            <div class="p-4 rounded-2xl bg-rose-950/20 border border-rose-900/40 space-y-2.5">
+              <div class="flex items-center gap-2 text-rose-400 font-bold text-xs">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span data-i18n="bcLabelDrain">消耗雷区</span>
+              </div>
+              <ul id="bcDetailDrainList" class="space-y-2 text-xs text-gray-200"></ul>
+            </div>
+          </div>
+
+          <!-- Tab 3: Flex Tips -->
+          <div id="bcTabContent-flex" class="hidden">
+            <div class="p-4 rounded-2xl bg-cyan-950/20 border border-cyan-900/40 space-y-2.5">
+              <div class="flex items-center gap-2 text-cyan-400 font-bold text-xs">
+                <i class="fa-solid fa-comments"></i>
+                <span data-i18n="bcLabelFlexHeader">如何与此风格高效沟通与协同</span>
+              </div>
+              <ul id="bcDetailFlexList" class="space-y-2.5 text-xs text-gray-200"></ul>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -591,7 +830,7 @@
   </div>
 
   <!-- ==========================================================
-       IN-APP SLIDE-OVER VIEW 2: D-RUSH SANDBOXED GAME CONTAINER
+       IN-APP SLIDE-OVER VIEW 3: D-RUSH SANDBOXED GAME CONTAINER
        ========================================================== -->
   <div id="appView-drush" class="app-drawer fixed inset-0 z-50 bg-[#070a0f] flex flex-col translate-x-full overflow-hidden">
     <div class="w-full border-b border-white/10 bg-[#070a0f]/95 backdrop-blur-md safe-top shrink-0">
@@ -603,7 +842,7 @@
 
         <div class="flex items-center gap-1.5">
           <i class="fa-solid fa-gamepad text-deloitte-green text-xs"></i>
-          <span class="font-extrabold text-xs text-white tracking-wider">D-RUSH</span>
+          <span class="font-extrabold text-xs text-white tracking-wider">D-RUSH ARCADE</span>
         </div>
 
         <button type="button" onclick="reloadDrushIframe()" class="button-press w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 flex items-center justify-center text-xs" title="Reload Game">
@@ -618,7 +857,7 @@
   </div>
 
   <!-- ==========================================================
-       IN-APP SLIDE-OVER VIEW 3: PROJECT SUNRISE SUITE CONTAINER
+       IN-APP SLIDE-OVER VIEW 4: PROJECT SUNRISE SUITE CONTAINER
        ========================================================== -->
   <div id="appView-sunrise" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
     <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
@@ -669,11 +908,11 @@
         <i class="fa-solid fa-gift"></i>
       </div>
       <div>
-        <h3 class="text-base font-black text-white" data-i18n="eggFoundTitle">惊喜彩蛋</h3>
+        <h3 class="text-base font-black text-white" data-i18n="eggFoundTitle">发现隐藏彩蛋</h3>
         <p id="easterEggText" class="text-xs text-gray-300 mt-1 leading-relaxed"></p>
       </div>
       <button type="button" onclick="closeEasterEggModal()" class="button-press w-full py-2.5 rounded-xl bg-deloitte-green text-black font-extrabold text-xs" data-i18n="btnCloseEgg">
-        太酷啦 (Close)
+        收下祝福
       </button>
     </div>
   </div>
@@ -769,7 +1008,7 @@
     ];
 
     /* ==========================================================
-       FUNNY RANDOM NICKNAME POOL (BILINGUAL 1-TO-1 MAPPED)
+       FUNNY RANDOM NICKNAME POOL & CHEERS & TIPS (OVERRIDABLE BY info.txt)
        ========================================================== */
     const FUNNY_NICKNAMES = {
       zh: [
@@ -788,8 +1027,47 @@
       ]
     };
 
+    const QUICK_CHEERS = {
+      zh: [
+        "团队默契满分，冲冲冲",
+        "这一站挑战太好玩了",
+        "众行致远，为我们组点赞",
+        "绿点能量拉满，全员加速中"
+      ],
+      en: [
+        "Awesome team synergy, let us go",
+        "This station challenge is great",
+        "Together makes progress, go team",
+        "Full Green Dot energy, sprinting ahead"
+      ]
+    };
+
+    const ENERGY_TIPS = {
+      zh: [
+        "绿点能量加持，今天也是成就不凡的一天",
+        "小贴士：在留言墙发一句「众行致远」可触发隐藏彩蛋",
+        "了解队友的商业化学反应风格，合作效率翻倍",
+        "试试连续点击左上角的小绿点 5 次？"
+      ],
+      en: [
+        "Green Dot Energy Boost, make an impact that matters",
+        "Tip: Post Together makes progress on the wall for a secret",
+        "Check your teammates Business Chemistry styles to collaborate faster",
+        "Try tapping the top-left green dot 5 times"
+      ]
+    };
+
+    let BLOCKED_KEYWORDS = [
+      "傻", "蠢", "笨", "垃圾", "废物", "滚", "妈的", "卧槽", "操", "靠", "狗屁",
+      "脑残", "神经病", "白痴", "讨厌", "无聊", "恶心", "去死", "辞职", "跑路",
+      "加班到死", "破公司", "烂", "坑爹", "fuck", "shit", "bitch", "ass", "damn",
+      "crap", "stupid", "idiot", "dumb", "trash", "garbage", "suck", "sucks",
+      "hate", "boring", "wtf", "stfu", "bull", "hell", "die", "kill", "loser",
+      "ugly", "scam", "http://", "https://", "www.", ".com", ".cn", ".net"
+    ];
+
     /* ==========================================================
-       SIMPLE, INTUITIVE, WELCOMING BILINGUAL I18N DICTIONARY
+       BILINGUAL I18N DICTIONARY (NO EMOJIS)
        ========================================================== */
     const I18N = {
       zh: {
@@ -806,10 +1084,10 @@
         lblSelectAvatar: "选个代表你的头像",
         avatarSubHint: "点选你喜欢的风格",
         teamModalSaveBtn: "开启今日旅程",
-        teamErrRange: (max) => `请输入 1 到 ${max} 之间的组号哦`,
+        teamErrRange: (max) => `请输入 1 到 ${max} 之间的组号`,
         btnEditProfile: "换头像/花名",
         announcementTag: "现场通知",
-        noAnnouncement: "欢迎加入！祝大家今天玩得开心",
+        noAnnouncement: "欢迎加入，祝大家今天玩得开心",
         fastpassTitle: "我的专属行程",
         fpWindowNote: "实时导航",
         fpFullTableBtn: "全部 6 轮",
@@ -828,22 +1106,37 @@
         fpNextLabel: "下一站点",
         fpRound1Label: "第 1 轮站点",
         fpRound2Label: "第 2 轮站点",
-        fpAfter1800: "今日 6 大站点体验圆满结束啦",
+        fpAfter1800: "今日 6 大站点体验圆满结束",
         fpBreakRotation: "换场休息中",
         fpBreakSub: "请前往下一站场地",
-        fpAllDone: "全部通关啦！",
+        fpAllDone: "全部通关",
         fpAllDoneSub: "为你们的默契点赞",
         fpSelectTeamPrompt: "点这里选组号，查看你的专属路线",
-        drushCardTitle: "D-Rush",
-        drushSub: "玩跑酷小游戏，冲榜拿第一！",
+        bcCardTitle: "Business Chemistry 商业化学反应",
+        bcCardSub: "探索四大职场风格与团队协同秘籍",
+        bcUnsetBadge: "测测风格",
+        bcDrawerSubtitle: "点击卡片切换类型，下方查看详细解析",
+        bcSetStyleBtn: "设为我的风格",
+        bcCurrentStyleBtn: "当前已选风格",
+        bcTabTraits: "核心特质",
+        bcTabStress: "动力与压力",
+        bcTabFlex: "协同秘籍",
+        bcLabelMindset: "思维方式",
+        bcLabelFocus: "关注重心",
+        bcLabelDecision: "决策风格",
+        bcLabelEnergize: "赋能动力点",
+        bcLabelDrain: "消耗雷区",
+        bcLabelFlexHeader: "如何与此风格高效沟通与协同",
+        drushCardTitle: "D-Rush 像素跑酷",
+        drushSub: "玩跑酷小游戏，冲榜拿第一",
         drushNoRecord: "等你破纪录",
-        sunriseGateTitle: "隐藏关卡",
+        sunriseGateTitle: "Project Sunrise 隐藏关卡",
         badgeLocked: "待开启",
         badgeUnlocked: "已开启",
         sunrisePasscodePrompt: "输入主持人口令，开启神秘任务：",
         sunrisePlaceholder: "输入 14 位神秘口令",
         btnUnlock: "解锁",
-        errPasscode: "口令不对哦，留意主持人的提示！",
+        errPasscode: "口令不对，请留意主持人的提示",
         unlockedSuccess: "神秘任务已开启",
         launchMainSunrise: "进入日出计划任务",
         portalHome: "主页面",
@@ -861,20 +1154,21 @@
         st3: "勤业智库",
         st4: "情商罗盘",
         st5: "AI 纪元",
-        emptyLeaderboard: "比赛火热进行中，精彩排名马上揭晓！",
+        emptyLeaderboard: "比赛火热进行中，精彩排名马上揭晓",
         msgBoardTitle: "大家都在聊",
         msgBoardSub: "给队友打气，分享你的现场高光时刻",
         msgCountFormat: (n) => `${n} 条留言`,
-        msgPlaceholder: "写句加油或分享心情吧...",
-        msgFriendlyTip: "每分钟可发 1 条留言哦",
+        msgPlaceholder: "写句加油或点击上方快捷短语...",
+        msgFriendlyTip: "每分钟可发 1 条友善留言",
+        msgBlockedNotice: "让我们保持积极友善的交流氛围，换句话试试吧",
         msgCooldownWait: (s) => `休息 ${s} 秒后就能再发啦`,
-        emptyMessages: "快来发出今天的第一条加油弹幕吧！",
+        emptyMessages: "快来发出今天的第一条加油留言吧",
         btnSendMsg: "发送",
-        eggFoundTitle: "惊喜彩蛋！",
-        btnCloseEgg: "太酷啦 (Close)",
-        eggDotMsg: "【隐藏彩蛋】你发现了绿点能量开关！再次连点 5 次可关闭特效。",
-        eggSecretMsg: "【极客彩蛋】DeloitteLand 2026 祝你入职快乐，前程似锦！",
-        eggValueMsg: "【价值观彩蛋】“众行致远 (Together makes progress)” 祝你们团队勇夺桂冠！"
+        eggFoundTitle: "发现隐藏彩蛋",
+        btnCloseEgg: "收下祝福",
+        eggDotMsg: "【隐藏彩蛋】你发现了绿点能量开关，再次连点 5 次可切换特效。",
+        eggSecretMsg: "【极客彩蛋】DeloitteLand 2026 祝你入职快乐，前程似锦。",
+        eggValueMsg: "【价值观彩蛋】「众行致远 Together makes progress」祝你们团队勇夺桂冠。"
       },
       en: {
         langToggle: "中",
@@ -882,18 +1176,18 @@
         modalHeaderTitle: "Welcome to DeloitteLand",
         btnBackToHub: "Back",
         btnRandomAll: "Shuffle",
-        teamModalTitle: "What's your team number?",
+        teamModalTitle: "What is your team number?",
         teamRangeHint: (max) => `Teams 1 - ${max}`,
         lblModalNickname: "Pick a fun nickname",
-        nickInputPlaceholder: "Type a name or tap Shuffle",
+        nickInputPlaceholder: "Type a name or tap Randomize",
         btnRandomNick: "Randomize",
         lblSelectAvatar: "Choose your avatar",
-        avatarSubHint: "Pick a vibe you like",
-        teamModalSaveBtn: "Let's Go!",
+        avatarSubHint: "Pick a style you like",
+        teamModalSaveBtn: "Start Journey",
         teamErrRange: (max) => `Please enter a team number between 1 and ${max}`,
         btnEditProfile: "Edit Profile",
         announcementTag: "Live Updates",
-        noAnnouncement: "Welcome aboard! Have an awesome time today",
+        noAnnouncement: "Welcome aboard, have a great session today",
         fastpassTitle: "My Schedule",
         fpWindowNote: "Live Guide",
         fpFullTableBtn: "All 6 Rounds",
@@ -912,23 +1206,38 @@
         fpNextLabel: "UP NEXT",
         fpRound1Label: "ROUND 1",
         fpRound2Label: "ROUND 2",
-        fpAfter1800: "All station rotations are complete! Great job",
+        fpAfter1800: "All station rotations are complete",
         fpBreakRotation: "Rotation Break",
         fpBreakSub: "Head over to your next room",
-        fpAllDone: "All Stations Done!",
-        fpAllDoneSub: "Awesome teamwork today",
-        fpSelectTeamPrompt: "Tap here to pick your team & see your route",
+        fpAllDone: "All Stations Done",
+        fpAllDoneSub: "Great teamwork today",
+        fpSelectTeamPrompt: "Tap here to pick your team and see your route",
+        bcCardTitle: "Business Chemistry",
+        bcCardSub: "Explore the 4 working styles and team flex tips",
+        bcUnsetBadge: "Pick Style",
+        bcDrawerSubtitle: "Tap any style card to inspect traits and flex tips",
+        bcSetStyleBtn: "Set as My Style",
+        bcCurrentStyleBtn: "My Active Style",
+        bcTabTraits: "Traits",
+        bcTabStress: "Dynamics",
+        bcTabFlex: "Flex Tips",
+        bcLabelMindset: "Mindset",
+        bcLabelFocus: "Core Focus",
+        bcLabelDecision: "Decision Style",
+        bcLabelEnergize: "What Energizes Them",
+        bcLabelDrain: "What Drains Them",
+        bcLabelFlexHeader: "How to Flex and Collaborate",
         drushCardTitle: "D-Rush Arcade",
-        drushSub: "Play the mini-game & beat the high score!",
-        drushNoRecord: "Be the first!",
+        drushSub: "Play the mini-game and beat the high score",
+        drushNoRecord: "Be the first",
         sunriseGateTitle: "Project Sunrise Quest",
         badgeLocked: "LOCKED",
         badgeUnlocked: "READY",
-        sunrisePasscodePrompt: "Enter the host's secret code to unlock:",
+        sunrisePasscodePrompt: "Enter the host secret code to unlock:",
         sunrisePlaceholder: "14-letter secret code",
         btnUnlock: "Unlock",
-        errPasscode: "Hmm, that code didn't work. Listen for the host's hint!",
-        unlockedSuccess: "Secret Quest Unlocked!",
+        errPasscode: "Code incorrect, listen for the host hint",
+        unlockedSuccess: "Secret Quest Unlocked",
         launchMainSunrise: "Start Project Sunrise",
         portalHome: "Main Hub",
         srNode1: "Node 1",
@@ -945,25 +1254,332 @@
         st3: "Knowledge Clash",
         st4: "EQ Matrix",
         st5: "The AI Era",
-        emptyLeaderboard: "Games are underway — live rankings coming soon!",
+        emptyLeaderboard: "Games are underway, live rankings coming soon",
         msgBoardTitle: "Community Wall",
-        msgBoardSub: "Cheer for your team & share the fun",
+        msgBoardSub: "Cheer for your team and share the fun",
         msgCountFormat: (n) => `${n} msgs`,
-        msgPlaceholder: "Send a shoutout to your team...",
-        msgFriendlyTip: "You can post 1 message per minute",
+        msgPlaceholder: "Write a shoutout or tap a quick cheer above...",
+        msgFriendlyTip: "1 friendly post per minute",
+        msgBlockedNotice: "Let us keep the wall positive and supportive",
         msgCooldownWait: (s) => `Ready to post again in ${s}s`,
-        emptyMessages: "No messages yet — be the first to say hi!",
+        emptyMessages: "Be the first to post a team shoutout",
         btnSendMsg: "Post",
-        eggFoundTitle: "You Found a Secret!",
-        btnCloseEgg: "Awesome!",
-        eggDotMsg: "[Secret Mode] Green Dot Neon Pulse activated! Tap 5 times again to toggle.",
-        eggSecretMsg: "[Easter Egg] Welcome to DeloitteLand 2026 — have an unforgettable journey!",
-        eggValueMsg: "[Bonus Unlocked] 'Together makes progress!' Best of luck to your team!"
+        eggFoundTitle: "Secret Discovered",
+        btnCloseEgg: "Awesome",
+        eggDotMsg: "[Secret Mode] Green Dot Neon Pulse activated. Tap 5 times again to toggle.",
+        eggSecretMsg: "[Easter Egg] Welcome to DeloitteLand 2026, have an unforgettable journey.",
+        eggValueMsg: "[Bonus Unlocked] Together makes progress. Best of luck to your team."
       }
     };
 
     /* ==========================================================
-       AUTO-DETECT BROWSER LANGUAGE ON FIRST VISIT
+       BUSINESS CHEMISTRY DATA & INTERACTIVE DRAWER CONTROLLER
+       ========================================================== */
+    const CHEMISTRY_DATA = {
+      pioneer: {
+        key: "pioneer",
+        zhName: "开拓者",
+        enName: "Pioneer",
+        zhSub: "激发能量 · 探索未知",
+        enSub: "Energize & Explore",
+        tag: "Energy & Imagination",
+        colorClass: "text-type-pioneer",
+        borderClass: "border-type-pioneer",
+        pillStyle: "bg-type-pioneer/15 text-type-pioneer border-type-pioneer/40",
+        icon: "fa-bolt",
+        mottoCn: "“点燃创意能量，跳脱既有框架，以非凡想象开辟崭新航向”",
+        mottoEn: "“Spark imagination, transcend rigid boxes, and explore bold new horizons.”",
+        mindsetCn: "天马行空、高度崇尚直觉与颠覆性创新。看待世界充满无限可能性，拒绝被既有教条束缚。",
+        mindsetEn: "Spontaneous, intuitive, and idea-driven. Views challenges as whiteboards of limitless possibility.",
+        focusCn: "从零到一的拓荒探索、宏观愿景构建、颠覆式革新与跨界创新点子。",
+        focusEn: "0-to-1 exploration, inspiring broad visions, and bold out-of-the-box brainstorming.",
+        decisionCn: "基于直觉与远见快速拍板，乐于承担计算过后的创新风险，鼓励团队放手一搏。",
+        decisionEn: "Fast and intuitive decisions; willing to take calculated risks and back bold initiatives.",
+        energizers: [
+          { cn: "无拘无束的头脑风暴与开放式研讨", en: "Open-ended brainstorming and blue-sky visioning" },
+          { cn: "敏捷试错与快速验证新概念", en: "Agile experimentation and rapid prototyping" },
+          { cn: "充满能量、鼓励创新的活跃氛围", en: "High-energy, spontaneous team environments" }
+        ],
+        drainers: [
+          { cn: "繁冗琐碎的行政流程与微观细节核查", en: "Bureaucratic red tape and micro-level detail control" },
+          { cn: "听到‘我们过去向来都是这么做’的墨守成规言论", en: "Rigid dogmas like 'we have always done it this way'" },
+          { cn: "反复开无聊的例行汇报会议", en: "Repetitive, uninspiring status-check meetings" }
+        ],
+        flexTips: [
+          { cn: "沟通从宏观大局愿景切入，不要一上来用琐碎执行细节将其淹没", en: "Lead with the big picture and vision; avoid sinking into weeds immediately." },
+          { cn: "给他们的发散性构想留出探讨空间，肯定创意的闪光点", en: "Validate their creative energy before introducing operational boundaries." },
+          { cn: "以高节奏推进行动，协助他们把灵感转化为明确里程碑", en: "Match their tempo and help translate vision into concrete deliverable milestones." }
+        ]
+      },
+      driver: {
+        key: "driver",
+        zhName: "推动者",
+        enName: "Driver",
+        zhSub: "聚焦成果 · 疾速推进",
+        enSub: "Momentum & Results",
+        tag: "Momentum & Results",
+        colorClass: "text-deloitte-green",
+        borderClass: "border-deloitte-green",
+        pillStyle: "bg-deloitte-green/15 text-deloitte-green border-deloitte-green/40",
+        icon: "fa-bullseye",
+        mottoCn: "“聚焦成果，讲求实效，以清晰逻辑驱动业务破局”",
+        mottoEn: "“Focus on outcomes, quantify logic, and power past obstacles.”",
+        mindsetCn: "定量分析、推崇严密逻辑链条、追求黑白分明的确定性。善于抽丝剥茧，直击核心矛盾。",
+        mindsetEn: "Quantitative, logic-driven, seeking black-and-white clarity. Swiftly uncovers root issues.",
+        focusCn: "攻克高难度指标、快节奏高效率交付、竞争获胜以及切实可见的商业影响。",
+        focusEn: "High-tempo execution, challenging KPIs, clear commercial impact, and winning.",
+        decisionCn: "雷厉风行、就事论事。在掌握关键数据与底线逻辑后，能够毫不犹豫地拍板定夺。",
+        decisionEn: "Decisive, objective, and action-oriented once bottom-line metrics and data are verified.",
+        energizers: [
+          { cn: "攻克极具挑战性的量化业务指标与难题", en: "Tackling ambitious quantitative targets and hard problems" },
+          { cn: "高效直奔主题的沟通，迅速看到交付战果", en: "Direct, concise discussions with visible deliverable progress" },
+          { cn: "健康的竞争氛围与胜利的成就感", en: "Healthy competition and tangible bottom-line victories" }
+        ],
+        drainers: [
+          { cn: "目标涣散、缺乏明确结果导向的冗长拉锯讨论", en: "Unfocused, indecisive, meandering debates" },
+          { cn: "缺乏事实支撑的纯主观推测或过度情绪化反应", en: "Unsubstantiated opinions and emotional drama" },
+          { cn: "拖沓延误、推诿塞责与低效执行", en: "Delays, excuses, and lack of direct personal accountability" }
+        ],
+        flexTips: [
+          { cn: "直奔核心议题，少些寒暄铺垫，拿结构化数据和事实说话", en: "Be direct, concise, and lead immediately with data and facts." },
+          { cn: "明确量化产出（ROI/KPI），清晰交代方案的底线价值", en: "Frame proposals around bottom-line outcomes and ROI." },
+          { cn: "给出清晰的选项与建议方案，不要抛出无结论的开放式疑惑", en: "Present clear recommendations and choices rather than open dilemmas." }
+        ]
+      },
+      integrator: {
+        key: "integrator",
+        zhName: "整合者",
+        enName: "Integrator",
+        zhSub: "凝聚团队 · 构筑信任",
+        enSub: "Connect & Build Trust",
+        tag: "Connection & Trust",
+        colorClass: "text-type-integrator",
+        borderClass: "border-type-integrator",
+        pillStyle: "bg-type-integrator/15 text-type-integrator border-type-integrator/40",
+        icon: "fa-handshake",
+        mottoCn: "“倾听多元声音，构筑信任桥梁，以真诚连结凝聚卓越团队”",
+        mottoEn: "“Connect diverse perspectives, build deep trust, and forge collective unity.”",
+        mindsetCn: "同理心强、善于捕捉人际微妙动态。相信真正的成功离不开团队内部的彼此信任与紧密协作。",
+        mindsetEn: "Deeply empathetic and relationally attuned. Believes true success relies on team trust and unity.",
+        focusCn: "团队共同完成使命的成就感、深入有温度的伙伴关系、包容共赢的工作氛围。",
+        focusEn: "Consensus, shared team purpose, trusted partnerships, and inclusive culture.",
+        decisionCn: "倾向于多方征询顾虑与期望，在尊重团队成员共识与情感的前提下推进行动。",
+        decisionEn: "Considers impact on people; seeks diplomatic buy-in and alignment before moving forward.",
+        energizers: [
+          { cn: "大家同舟共济、紧密协作达成共赢使命", en: "Collaborative teamwork where everyone feels valued" },
+          { cn: "深入倾听利益相关方诉求，化解对立冲突", en: "Meaningful dialogue that bridges differences and heals friction" },
+          { cn: "充满人情味与温度的团队互相认可", en: "Authentic mutual support and recognition of contributions" }
+        ],
+        drainers: [
+          { cn: "针锋相对的零和博弈与冷漠的办公室政治", en: "Zero-sum cutthroat confrontation and toxic politics" },
+          { cn: "意见与情感诉求被漠视或被粗暴打断", en: "Having feelings or people considerations dismissed outright" },
+          { cn: "在孤立无援的孤岛环境中单打独斗", en: "Working in isolated silos without collaborative alignment" }
+        ],
+        flexTips: [
+          { cn: "在探讨工作任务前，真诚花一两分钟关注对方近况与团队感受", en: "Acknowledge the human element first before jumping into task lists." },
+          { cn: "主动征求其对团队成员和客户潜在反应的敏锐预判", en: "Invite their diplomatic insight on team consensus and stakeholder sentiment." },
+          { cn: "肯定团队在幕后的默默付出，倡导共识共赢", en: "Express genuine appreciation and foster collaborative teamwork." }
+        ]
+      },
+      guardian: {
+        key: "guardian",
+        zhName: "守护者",
+        enName: "Guardian",
+        zhSub: "恪守秩序 · 稳健护航",
+        enSub: "Structure & Quality",
+        tag: "Structure & Rigor",
+        colorClass: "text-type-guardian",
+        borderClass: "border-type-guardian",
+        pillStyle: "bg-type-guardian/15 text-type-guardian border-type-guardian/40",
+        icon: "fa-shield-halved",
+        mottoCn: "“恪守秩序规程，洞察潜在风险，以极致严谨护航业务稳健前行”",
+        mottoEn: "“Uphold rigorous order, foresee risks, and safeguard sustainable quality.”",
+        mindsetCn: "审慎细致、求真务实。相信经得起考验的流程和详尽的历史数据是防范风险的最稳护城河。",
+        mindsetEn: "Meticulous, pragmatic, and methodical. Values proven track records, standards, and data rigor.",
+        focusCn: "井井有条的规划安排、严密合规的交付质量、稳定可预期的业务运行。",
+        focusEn: "Predictability, rigorous compliance, high quality, and disciplined execution.",
+        decisionCn: "深思熟虑，必须全面审查证据、事实和先例后才稳妥做出结论，拒绝冒进试错。",
+        decisionEn: "Deliberate and prudent; requires verified data and precedents before committing.",
+        energizers: [
+          { cn: "规划清晰、时间表井井有条的推进环境", en: "Well-structured plans, detailed agendas, and clear milestones" },
+          { cn: "深入钻研历史数据，拿出无懈可击的高品质工作底稿", en: "Deep diving into data to build bulletproof deliverables" },
+          { cn: "严守业务质量底线与稳健可控的风险预案", en: "Maintaining high standards and protecting projects from risk" }
+        ],
+        drainers: [
+          { cn: "朝令夕改、缺乏预兆的突发变更与仓促决策", en: "Last-minute chaos, sudden pivots, and rushed decisions" },
+          { cn: "毫无事实根据的盲目激进或未经检验的假说", en: "Reckless gambles without supporting historical evidence" },
+          { cn: "杂乱无章的文档资料与模糊不清的权责归属", en: "Disorganized documentation and ambiguous responsibilities" }
+        ],
+        flexTips: [
+          { cn: "提前提供背景材料与议程，预留充分的思考与核查时间", en: "Provide documents and agendas well ahead to allow digest time." },
+          { cn: "用事实、严谨数据和成功先例来论证方案的可行性", en: "Back up proposals with proven precedents, facts, and track records." },
+          { cn: "尊重既定流程与节点，保证交付的一致性与高标准", en: "Honor agreed processes, deadlines, and meticulous standards." }
+        ]
+      }
+    };
+
+    let currentInspectedBcType = 'driver';
+    let currentBcDetailTab = 'traits';
+    let participantBcStyle = localStorage.getItem('participant_bc_style') || '';
+
+    // Subtle Tone.js Audio for Business Chemistry
+    let bcAudioEnabled = true;
+    let bcAudioReady = false;
+    let bcClickSynth = null;
+    let bcTabSynth = null;
+
+    async function initBcAudioEngine() {
+      if (bcAudioReady || !window.Tone) return;
+      try {
+        await Tone.start();
+        bcClickSynth = new Tone.MembraneSynth({
+          pitchDecay: 0.01,
+          octaves: 2,
+          envelope: { attack: 0.001, decay: 0.08, sustain: 0.01, release: 0.08 }
+        }).toDestination();
+        bcClickSynth.volume.value = -10;
+
+        bcTabSynth = new Tone.Synth({
+          oscillator: { type: "sine" },
+          envelope: { attack: 0.005, decay: 0.1, sustain: 0.0, release: 0.08 }
+        }).toDestination();
+        bcTabSynth.volume.value = -12;
+
+        bcAudioReady = true;
+      } catch (e) {}
+    }
+
+    function toggleBcAudio() {
+      bcAudioEnabled = !bcAudioEnabled;
+      const icon = document.getElementById('bcAudioIcon');
+      if (icon) {
+        icon.className = bcAudioEnabled
+          ? "fa-solid fa-volume-high text-deloitte-green"
+          : "fa-solid fa-volume-xmark text-gray-500";
+      }
+      if (bcAudioEnabled) initBcAudioEngine();
+    }
+
+    function playBcSfx(type) {
+      if (!bcAudioEnabled) return;
+      initBcAudioEngine();
+      try {
+        const now = Tone.now();
+        if (type === 'click' && bcClickSynth) bcClickSynth.triggerAttackRelease("C3", "32n", now);
+        else if (type === 'tab' && bcTabSynth) bcTabSynth.triggerAttackRelease("E5", "32n", now);
+      } catch (e) {}
+    }
+
+    function selectBcType(typeKey, silent = false) {
+      if (!silent) playBcSfx('click');
+      currentInspectedBcType = typeKey;
+      const data = CHEMISTRY_DATA[typeKey];
+      if (!data) return;
+
+      const isZh = (currentLang === 'zh');
+
+      ['pioneer', 'driver', 'integrator', 'guardian'].forEach(k => {
+        const card = document.getElementById(`bcCard-${k}`);
+        const d = CHEMISTRY_DATA[k];
+        if (card && d) {
+          card.className = (k === typeKey)
+            ? `button-press cursor-pointer p-3.5 rounded-2xl bg-deloitte-cardbg border-2 ${d.borderClass} card-active-glow transition-all relative overflow-hidden group`
+            : `button-press cursor-pointer p-3.5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-white/30 card-shadow transition-all relative overflow-hidden group`;
+        }
+        const titleEl = document.getElementById(`bcGridTitle-${k}`);
+        const subEl = document.getElementById(`bcGridSub-${k}`);
+        if (titleEl && d) titleEl.textContent = isZh ? d.zhName : d.enName;
+        if (subEl && d) subEl.textContent = isZh ? d.zhSub : d.enSub;
+      });
+
+      document.getElementById('bcDetailName').textContent = isZh ? data.zhName : data.enName;
+      const tagEl = document.getElementById('bcDetailTag');
+      tagEl.textContent = data.tag;
+      tagEl.className = `text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 ${data.colorClass} font-bold`;
+
+      document.getElementById('bcDetailMotto').textContent = isZh ? data.mottoCn : data.mottoEn;
+
+      const iconBox = document.getElementById('bcDetailIconBox');
+      const icon = document.getElementById('bcDetailIcon');
+      iconBox.className = `w-11 h-11 rounded-2xl bg-white/5 border border-white/15 flex items-center justify-center text-lg shrink-0 ${data.colorClass}`;
+      icon.className = `fa-solid ${data.icon}`;
+
+      document.getElementById('bcDetailMindset').textContent = isZh ? data.mindsetCn : data.mindsetEn;
+      document.getElementById('bcDetailFocus').textContent = isZh ? data.focusCn : data.focusEn;
+      document.getElementById('bcDetailDecision').textContent = isZh ? data.decisionCn : data.decisionEn;
+
+      document.getElementById('bcDetailEnergizeList').innerHTML = data.energizers.map(item => `
+        <li class="flex items-start gap-2">
+          <i class="fa-solid fa-circle-check text-deloitte-green mt-1 text-xs shrink-0"></i>
+          <span class="text-white leading-relaxed">${isZh ? item.cn : item.en}</span>
+        </li>
+      `).join('');
+
+      document.getElementById('bcDetailDrainList').innerHTML = data.drainers.map(item => `
+        <li class="flex items-start gap-2">
+          <i class="fa-solid fa-circle-xmark text-rose-400 mt-1 text-xs shrink-0"></i>
+          <span class="text-white leading-relaxed">${isZh ? item.cn : item.en}</span>
+        </li>
+      `).join('');
+
+      document.getElementById('bcDetailFlexList').innerHTML = data.flexTips.map(item => `
+        <li class="flex items-start gap-2">
+          <span class="w-4 h-4 rounded bg-cyan-400/20 text-cyan-300 flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">
+            <i class="fa-solid fa-arrow-right"></i>
+          </span>
+          <span class="text-white leading-relaxed">${isZh ? item.cn : item.en}</span>
+        </li>
+      `).join('');
+
+      updateBcSetStyleButtonState();
+    }
+
+    function switchBcDetailTab(tabKey) {
+      playBcSfx('tab');
+      currentBcDetailTab = tabKey;
+      ['traits', 'stress', 'flex'].forEach(t => {
+        const btn = document.getElementById(`bcTabBtn-${t}`);
+        const content = document.getElementById(`bcTabContent-${t}`);
+        if (btn && content) {
+          if (t === tabKey) {
+            btn.className = "py-2 px-2 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black text-center";
+            content.classList.remove('hidden');
+          } else {
+            btn.className = "py-2 px-2 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white text-center";
+            content.classList.add('hidden');
+          }
+        }
+      });
+    }
+
+    function saveUserBcStyle() {
+      playBcSfx('click');
+      participantBcStyle = currentInspectedBcType;
+      localStorage.setItem('participant_bc_style', participantBcStyle);
+      updateBcSetStyleButtonState();
+      syncProfileToHeaderAndBoard();
+      triggerPartyConfetti();
+    }
+
+    function updateBcSetStyleButtonState() {
+      const btn = document.getElementById('btnSetMyBcStyle');
+      const icon = document.getElementById('btnSetMyBcIcon');
+      const text = document.getElementById('btnSetMyBcText');
+      if (!btn || !icon || !text) return;
+
+      if (participantBcStyle === currentInspectedBcType) {
+        btn.className = "button-press px-3 py-1.5 rounded-xl bg-white/15 border border-deloitte-green text-deloitte-green font-extrabold text-[11px] flex items-center gap-1.5 shrink-0 whitespace-nowrap";
+        icon.className = "fa-solid fa-check text-[10px]";
+        text.textContent = I18N[currentLang].bcCurrentStyleBtn;
+      } else {
+        btn.className = "button-press px-3 py-1.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-[11px] flex items-center gap-1.5 shrink-0 whitespace-nowrap shadow-sm";
+        icon.className = "fa-solid fa-tag text-[10px]";
+        text.textContent = I18N[currentLang].bcSetStyleBtn;
+      }
+    }
+
+    /* ==========================================================
+       AUTO-DETECT BROWSER LANGUAGE & LOAD ./info.txt
        ========================================================== */
     function detectInitialLanguage() {
       const saved = localStorage.getItem('participant_lang');
@@ -983,39 +1599,83 @@
     let currentRawAnnouncementData = null;
     let cachedMessagesList = [];
 
-    /* ==========================================================
-       OPTIONAL ./i18n.txt OVERRIDE LOADER
-       ========================================================== */
-    async function loadExternalI18nTxt() {
-      try {
-        const res = await fetch('./i18n.txt', { cache: 'no-cache' });
-        if (!res.ok) return;
-        const text = await res.text();
-        const lines = text.split(/\r?\n/);
-        let updated = false;
+    async function loadExternalInfoTxt() {
+      const filesToTry = ['./info.txt', './i18n.txt'];
+      for (const path of filesToTry) {
+        try {
+          const res = await fetch(path, { cache: 'no-cache' });
+          if (!res.ok) continue;
+          const text = await res.text();
+          const lines = text.split(/\r?\n/);
+          let updated = false;
 
-        for (const rawLine of lines) {
-          const line = rawLine.trim();
-          if (!line || line.startsWith('#')) continue;
-          const eqIdx = line.indexOf('=');
-          if (eqIdx === -1) continue;
+          const parsedCheersZh = [];
+          const parsedCheersEn = [];
+          const parsedTipsZh = [];
+          const parsedTipsEn = [];
 
-          const key = line.slice(0, eqIdx).trim();
-          const valPart = line.slice(eqIdx + 1).trim();
-          if (!key || !valPart) continue;
+          for (const rawLine of lines) {
+            const line = rawLine.trim();
+            if (!line || line.startsWith('#')) continue;
+            const eqIdx = line.indexOf('=');
+            if (eqIdx === -1) continue;
 
-          if (valPart.includes('|')) {
-            const [zhVal, enVal] = valPart.split('|').map(s => s.trim());
-            if (zhVal && typeof I18N.zh[key] !== 'function') I18N.zh[key] = zhVal;
-            if (enVal && typeof I18N.en[key] !== 'function') I18N.en[key] = enVal;
-            updated = true;
+            const key = line.slice(0, eqIdx).trim();
+            const valPart = line.slice(eqIdx + 1).trim();
+            if (!key || !valPart) continue;
+
+            if (key === 'BLOCKED_WORDS') {
+              const words = valPart.split(',').map(w => w.trim().toLowerCase()).filter(Boolean);
+              if (words.length > 0) BLOCKED_KEYWORDS = words;
+              updated = true;
+              continue;
+            }
+
+            if (key === 'LIST_NICKNAMES' && valPart.includes('|')) {
+              const [zhListStr, enListStr] = valPart.split('|');
+              const zhArr = zhListStr.split(',').map(s => s.trim()).filter(Boolean);
+              const enArr = enListStr.split(',').map(s => s.trim()).filter(Boolean);
+              if (zhArr.length > 0) FUNNY_NICKNAMES.zh = zhArr;
+              if (enArr.length > 0) FUNNY_NICKNAMES.en = enArr;
+              updated = true;
+              continue;
+            }
+
+            if (key.startsWith('CHEER_') && valPart.includes('|')) {
+              const [zhC, enC] = valPart.split('|').map(s => s.trim());
+              if (zhC) parsedCheersZh.push(zhC);
+              if (enC) parsedCheersEn.push(enC);
+              updated = true;
+              continue;
+            }
+
+            if (key.startsWith('TIP_') && valPart.includes('|')) {
+              const [zhT, enT] = valPart.split('|').map(s => s.trim());
+              if (zhT) parsedTipsZh.push(zhT);
+              if (enT) parsedTipsEn.push(enT);
+              updated = true;
+              continue;
+            }
+
+            if (valPart.includes('|')) {
+              const [zhVal, enVal] = valPart.split('|').map(s => s.trim());
+              if (zhVal && typeof I18N.zh[key] !== 'function') I18N.zh[key] = zhVal;
+              if (enVal && typeof I18N.en[key] !== 'function') I18N.en[key] = enVal;
+              updated = true;
+            }
           }
-        }
 
-        if (updated) {
-          setLanguage(currentLang);
-        }
-      } catch (e) {}
+          if (parsedCheersZh.length > 0) QUICK_CHEERS.zh = parsedCheersZh;
+          if (parsedCheersEn.length > 0) QUICK_CHEERS.en = parsedCheersEn;
+          if (parsedTipsZh.length > 0) ENERGY_TIPS.zh = parsedTipsZh;
+          if (parsedTipsEn.length > 0) ENERGY_TIPS.en = parsedTipsEn;
+
+          if (updated) {
+            setLanguage(currentLang);
+          }
+          return;
+        } catch (e) {}
+      }
     }
 
     /* ==========================================================
@@ -1106,6 +1766,41 @@
       if (senderName) senderName.textContent = displayNick;
       if (senderTeam) senderTeam.textContent = `Team ${teamStr}`;
 
+      // Sync Business Chemistry style badge on Header, Main Hub BC Card, and Message Board
+      const headerBcPill = document.getElementById('headerBcStylePill');
+      const senderBcBadge = document.getElementById('msgSenderBcBadge');
+      const bcHubCardBadge = document.getElementById('bcHubCardBadge');
+
+      if (participantBcStyle && CHEMISTRY_DATA[participantBcStyle]) {
+        const bcObj = CHEMISTRY_DATA[participantBcStyle];
+        const bcLabel = currentLang === 'zh' ? bcObj.zhName : bcObj.enName;
+
+        if (headerBcPill) {
+          headerBcPill.textContent = bcLabel;
+          headerBcPill.className = `text-[9px] font-extrabold px-1.5 py-0.5 rounded-full border shrink-0 transition-colors ${bcObj.pillStyle}`;
+          headerBcPill.classList.remove('hidden');
+        }
+        if (senderBcBadge) {
+          senderBcBadge.textContent = bcLabel;
+          senderBcBadge.className = `text-[9px] font-bold px-1.5 py-0.2 rounded border shrink-0 ${bcObj.pillStyle}`;
+          senderBcBadge.classList.remove('hidden');
+        }
+        if (bcHubCardBadge) {
+          bcHubCardBadge.innerHTML = `
+            <div class="flex items-center justify-center gap-1 text-xs font-black ${bcObj.colorClass}">
+              <i class="fa-solid ${bcObj.icon} text-[10px]"></i>
+              <span>${bcLabel}</span>
+            </div>
+          `;
+        }
+      } else {
+        if (headerBcPill) headerBcPill.classList.add('hidden');
+        if (senderBcBadge) senderBcBadge.classList.add('hidden');
+        if (bcHubCardBadge) {
+          bcHubCardBadge.innerHTML = `<span class="text-[10px] font-extrabold text-cyan-300 block">${I18N[currentLang].bcUnsetBadge}</span>`;
+        }
+      }
+
       if (participantNickname) {
         const drushName = participantTeamNumber
           ? `${participantNickname} (#${participantTeamNumber})`
@@ -1166,7 +1861,7 @@
         return;
       }
 
-      if (!nickVal) {
+      if (!nickVal || !isTextClean(nickVal)) {
         rollRandomNickname();
       }
 
@@ -1205,6 +1900,8 @@
 
       if (viewName === 'fastpass') {
         renderBundledFastPassDrawer();
+      } else if (viewName === 'bc') {
+        selectBcType(participantBcStyle || currentInspectedBcType || 'driver', true);
       } else if (viewName === 'drush') {
         syncProfileToHeaderAndBoard();
         const iframe = document.getElementById('drushAppIframe');
@@ -1420,10 +2117,15 @@
       if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
     }
 
-    /* ==========================================================
-       BUNDLED FASTPASS DRAWER: CLEAN 6-ROUND MOBILE CARD LIST
-       (Never squishes Chinese or English station names)
-       ========================================================== */
+    function getStationDisplayName(stIdx) {
+      const key = `st${stIdx}`;
+      if (I18N[currentLang] && I18N[currentLang][key]) {
+        return I18N[currentLang][key];
+      }
+      const st = FP_STATIONS[stIdx] || FP_STATIONS[0];
+      return currentLang === 'zh' ? st.zh : st.en;
+    }
+
     function renderBundledFastPassDrawer() {
       if (!participantTeamNumber) return;
       const t = I18N[currentLang];
@@ -1454,7 +2156,7 @@
         const venueName = currentLang === 'zh'
           ? (venueObj.zh || fallbackVenueZh)
           : (venueObj.en || venueObj.zh || fallbackVenueEn);
-        const stationName = currentLang === 'zh' ? station.zh : station.en;
+        const stationName = getStationDisplayName(stIdx);
         const isCurrent = (i === activeSlot);
         const isNext = (i === activeSlot + 1);
 
@@ -1507,13 +2209,10 @@
       listContainer.innerHTML = cardsHtml;
     }
 
-    /* ==========================================================
-       SYMMETRICAL 2-COL LIVE FASTPASS CARDS ON MAIN HUB
-       ========================================================== */
     function buildMiniStationCardHtml({ badgeText, badgeStyle, timeText, stationIdx, borderStyle }) {
       const st = FP_STATIONS[stationIdx] || FP_STATIONS[0];
       const vnObj = fpStationVenues[stationIdx] || {};
-      const stName = currentLang === 'zh' ? st.zh : st.en;
+      const stName = getStationDisplayName(stationIdx);
       const vnName = currentLang === 'zh'
         ? (vnObj.zh || `场地 ${stationIdx + 1}`)
         : (vnObj.en || vnObj.zh || `Venue ${stationIdx + 1}`);
@@ -1563,7 +2262,6 @@
       const WINDOW_START = 13 * 60 + 30; // 13:30 (810)
       const WINDOW_END = 18 * 60;        // 18:00 (1080)
 
-      // Before 13:30: Preview Round 1 & Round 2 cleanly so the user sees their first two stations
       if (currentMin < WINDOW_START) {
         const r1Card = buildMiniStationCardHtml({
           badgeText: t.fpRound1Label,
@@ -1612,7 +2310,7 @@
       let currentHtml = '';
       if (currentRoundIdx >= 0) {
         currentHtml = buildMiniStationCardHtml({
-          badgeText: `● ${t.fpCurrentLabel}`,
+          badgeText: t.fpCurrentLabel,
           badgeStyle: "text-deloitte-green",
           timeText: `${fpTimeSlots[currentRoundIdx].start}-${fpTimeSlots[currentRoundIdx].end}`,
           stationIdx: schedule[currentRoundIdx],
@@ -1661,26 +2359,11 @@
     /* ==========================================================
        NAVIGATION ROUND BUTTON (ENERGY BOOSTER + CONFETTI)
        ========================================================== */
-    const ENERGY_TIPS = {
-      zh: [
-        "绿点能量加持！今天也是成就不凡的一天！",
-        "小贴士：在留言墙发一句「众行致远」试试看？有惊喜！",
-        "保持好心情，和同组小伙伴多互动配合吧！",
-        "试试连续点击左上角的小绿点 5 次？"
-      ],
-      en: [
-        "Green Dot Energy Boost! Have a fantastic day!",
-        "Tip: Post 'Together makes progress' on the wall for a surprise!",
-        "Have fun connecting and collaborating with your team!",
-        "Try tapping the top-left green dot 5 times!"
-      ]
-    };
-
     function triggerEnergyBooster() {
       triggerPartyConfetti();
       const toast = document.getElementById('energyBoosterToast');
       const textEl = document.getElementById('energyBoosterText');
-      const list = ENERGY_TIPS[currentLang];
+      const list = ENERGY_TIPS[currentLang] || ENERGY_TIPS.zh;
       if (textEl) {
         textEl.textContent = list[Math.floor(Math.random() * list.length)];
       }
@@ -1914,10 +2597,74 @@
     }
 
     /* ==========================================================
-       ANTI-SPAM MESSAGE BOARD WITH EMBEDDED SVG AVATARS
+       COMMUNITY WALL: AUTO-MODERATION, QUICK CHEERS & 60S COOLDOWN
        ========================================================== */
     const MSG_COOLDOWN_MS = 60000;
     let cooldownInterval = null;
+
+    function isTextClean(rawStr) {
+      if (!rawStr) return false;
+      const normalized = rawStr.toLowerCase().trim();
+      if (normalized.length < 1) return false;
+
+      // 1. Block excessive repeated characters (e.g. "aaaaaaa" or "1111111")
+      if (/(.)\1{5,}/.test(normalized)) {
+        return false;
+      }
+
+      // 2. Check against blocked keywords list (from built-in + info.txt)
+      for (const word of BLOCKED_KEYWORDS) {
+        if (!word) continue;
+        if (normalized.includes(word.toLowerCase())) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function showModerationAlert() {
+      const alertEl = document.getElementById('msgModerationAlert');
+      const alertText = document.getElementById('msgModerationAlertText');
+      const input = document.getElementById('msgContent');
+      if (alertText) alertText.textContent = I18N[currentLang].msgBlockedNotice;
+      if (alertEl) alertEl.classList.remove('hidden');
+      if (input) {
+        input.classList.add('border-amber-400', 'shake');
+        setTimeout(() => input.classList.remove('shake'), 400);
+      }
+    }
+
+    function hideModerationAlert() {
+      const alertEl = document.getElementById('msgModerationAlert');
+      const input = document.getElementById('msgContent');
+      if (alertEl) alertEl.classList.add('hidden');
+      if (input) input.classList.remove('border-amber-400');
+    }
+
+    function renderQuickCheerChips() {
+      const container = document.getElementById('quickCheerChipsContainer');
+      if (!container) return;
+      const list = QUICK_CHEERS[currentLang] || QUICK_CHEERS.zh;
+      container.innerHTML = list.map((cheer, idx) => `
+        <button type="button" onclick="applyQuickCheer(${idx})"
+          class="button-press px-2.5 py-1 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-[10px] font-bold text-teal-300 whitespace-nowrap flex items-center gap-1">
+          <i class="fa-solid fa-bolt text-[8px]"></i>
+          <span>${escapeHtml(cheer)}</span>
+        </button>
+      `).join('');
+    }
+
+    function applyQuickCheer(idx) {
+      const list = QUICK_CHEERS[currentLang] || QUICK_CHEERS.zh;
+      const text = list[idx];
+      const input = document.getElementById('msgContent');
+      if (input && text) {
+        input.value = text;
+        hideModerationAlert();
+        input.focus();
+      }
+    }
 
     function getRemainingCooldownSeconds() {
       const lastTs = parseInt(localStorage.getItem('last_msg_post_ts') || '0', 10);
@@ -1962,18 +2709,20 @@
 
     function parseNicknameAndAvatar(rawNickname) {
       const str = rawNickname || 'Participant';
-      const match = str.match(/^\[av:(\d+)\]\s*(.*)$/);
+      // Supports [av:2|bc:driver] Name (#05) or [av:2] Name (#05)
+      const match = str.match(/^\[av:(\d+)(?:\|bc:([a-z]+))?\]\s*(.*)$/);
       if (match) {
         return {
           avatarId: parseInt(match[1], 10) % SVG_AVATARS.length,
-          displayName: match[2] || 'Participant'
+          bcStyle: match[2] || '',
+          displayName: match[3] || 'Participant'
         };
       }
       let hash = 0;
       for (let i = 0; i < str.length; i++) {
         hash = (hash * 31 + str.charCodeAt(i)) % SVG_AVATARS.length;
       }
-      return { avatarId: Math.abs(hash), displayName: str };
+      return { avatarId: Math.abs(hash), bcStyle: '', displayName: str };
     }
 
     async function loadMessages() {
@@ -1986,8 +2735,9 @@
             .limit(25);
 
           if (!error && Array.isArray(data)) {
-            cachedMessagesList = data;
-            renderMessageStream(data);
+            // Also filter incoming messages client-side so any legacy spam is hidden
+            cachedMessagesList = data.filter(m => isTextClean(m.content || m.message));
+            renderMessageStream(cachedMessagesList);
             return;
           }
         }
@@ -2018,15 +2768,25 @@
         const avSvg = getAvatarSvgById(parsed.avatarId);
         const timeStr = m.time || (m.created_at ? new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
 
+        let bcBadgeHtml = '';
+        if (parsed.bcStyle && CHEMISTRY_DATA[parsed.bcStyle]) {
+          const bcObj = CHEMISTRY_DATA[parsed.bcStyle];
+          const bcName = currentLang === 'zh' ? bcObj.zhName : bcObj.enName;
+          bcBadgeHtml = `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded border shrink-0 ${bcObj.pillStyle}">${bcName}</span>`;
+        }
+
         return `
           <div class="p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs flex items-start gap-2.5">
             <div class="w-8 h-8 rounded-xl overflow-hidden border border-white/15 shrink-0 mt-0.5">
               ${avSvg}
             </div>
             <div class="flex-1 min-w-0 space-y-0.5">
-              <div class="flex items-center justify-between text-[10px]">
-                <span class="font-bold text-teal-300 truncate">${escapeHtml(parsed.displayName)}</span>
-                <span class="text-gray-500 font-mono shrink-0 ml-2">${timeStr}</span>
+              <div class="flex items-center justify-between gap-1 text-[10px]">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <span class="font-bold text-teal-300 truncate">${escapeHtml(parsed.displayName)}</span>
+                  ${bcBadgeHtml}
+                </div>
+                <span class="text-gray-500 font-mono shrink-0">${timeStr}</span>
               </div>
               <p class="text-gray-200 text-xs leading-normal break-words">${escapeHtml(m.content || m.message)}</p>
             </div>
@@ -2052,13 +2812,21 @@
       const content = contentInput.value.trim();
       if (!content) return;
 
+      // Client-side moderation check
+      if (!isTextClean(content)) {
+        showModerationAlert();
+        return;
+      }
+
+      hideModerationAlert();
       btn.disabled = true;
 
       if (content.toLowerCase().includes("together makes progress") || content.includes("众行致远")) {
         showEasterEggModal(I18N[currentLang].eggValueMsg);
       }
 
-      const formattedNickname = `[av:${participantAvatarId}] ${participantNickname} (#${String(participantTeamNumber).padStart(2, '0')})`;
+      const bcPart = participantBcStyle ? `|bc:${participantBcStyle}` : '';
+      const formattedNickname = `[av:${participantAvatarId}${bcPart}] ${participantNickname} (#${String(participantTeamNumber).padStart(2, '0')})`;
 
       const newMsg = {
         nickname: formattedNickname,
@@ -2126,7 +2894,7 @@
     }
 
     /* ==========================================================
-       LANGUAGE SWITCHER (MAIN HEADER + MODAL SEGMENTED TOGGLE)
+       LANGUAGE SWITCHER (MAIN HEADER + MODAL + BC DRAWER)
        ========================================================== */
     function setLanguage(lang) {
       const prevLang = currentLang;
@@ -2136,6 +2904,9 @@
 
       const headerLangLabel = document.getElementById('langToggleLabel');
       if (headerLangLabel) headerLangLabel.textContent = I18N[lang].langToggle;
+
+      const bcDrawerLangLabel = document.getElementById('bcDrawerLangLabel');
+      if (bcDrawerLangLabel) bcDrawerLangLabel.textContent = I18N[lang].langToggle;
 
       const zhBtn = document.getElementById('modalLangZhBtn');
       const enBtn = document.getElementById('modalLangEnBtn');
@@ -2200,9 +2971,11 @@
       renderAvatarPickerGrid();
       updateModalLivePreview();
       syncProfileToHeaderAndBoard();
+      renderQuickCheerChips();
       updateMessageCooldownUI();
       renderLiveFastPassPanel();
       if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
+      selectBcType(currentInspectedBcType, true);
       renderLeaderboard();
       renderMessageStream(cachedMessagesList);
     }
@@ -2252,9 +3025,10 @@
        ========================================================== */
     window.addEventListener('load', async () => {
       setLanguage(currentLang);
-      loadExternalI18nTxt();
+      loadExternalInfoTxt();
       checkSunriseUnlockState();
       syncProfileToHeaderAndBoard();
+      selectBcType(participantBcStyle || 'driver', true);
       startCooldownTimer();
 
       await loadPortalAnnouncement();
