@@ -2,10 +2,8 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Business Chemistry 商业化学反应</title>
-  <!-- Supabase JS Client v2 -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Tone.js for subtle audio feedback -->
@@ -57,326 +55,329 @@
         radial-gradient(circle at 18% 12%, rgba(134, 188, 37, 0.08) 0%, transparent 45%),
         radial-gradient(circle at 82% 88%, rgba(0, 79, 89, 0.16) 0%, transparent 50%),
         radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.07) 0%, transparent 60%);
-      min-height: 100vh;
+      min-height: 100dvh;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .deloitte-dot {
       display: inline-block;
-      width: 0.58em;
-      height: 0.58em;
+      width: 0.55em;
+      height: 0.55em;
       background-color: #86BC25;
       border-radius: 50%;
       margin-left: 0.12em;
       vertical-align: baseline;
-      box-shadow: 0 0 14px rgba(134, 188, 37, 0.8);
+      box-shadow: 0 0 12px rgba(134, 188, 37, 0.8);
     }
 
     .card-shadow {
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
     .card-active-glow {
-      box-shadow: 0 20px 45px -8px rgba(134, 188, 37, 0.25), 0 0 0 2px rgba(134, 188, 37, 0.6);
+      box-shadow: 0 14px 35px -8px rgba(134, 188, 37, 0.28), 0 0 0 2px rgba(134, 188, 37, 0.65);
     }
 
     .button-press {
       transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .button-press:active {
-      transform: scale(0.97) translateY(2px);
+      transform: scale(0.96);
     }
 
     @keyframes popIn {
-      0% { opacity: 0; transform: scale(0.96) translateY(12px); }
+      0% { opacity: 0; transform: scale(0.97) translateY(8px); }
       100% { opacity: 1; transform: scale(1) translateY(0); }
     }
     .animate-pop-in {
-      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-8px); }
-      40%, 80% { transform: translateX(8px); }
-    }
-    .shake-error { animation: shake 0.4s ease-in-out; }
-
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0b0e14;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.16);
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(134, 188, 37, 0.4);
-    }
+    /* Strict Single-Language Visibility Controller (Only CN or Only EN) */
+    body.lang-cn .lang-en-el { display: none !important; }
+    body.lang-en .lang-cn-el { display: none !important; }
   </style>
 </head>
 
-<body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+<body class="lang-cn text-white font-sans flex flex-col justify-between min-h-[100dvh] selection:bg-deloitte-green selection:text-black">
 
-  <!-- Gate / Login Overlay -->
-  <div id="passwordGate" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#080b11] p-4">
-    <div id="gateCard" class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center animate-pop-in relative overflow-hidden">
+  <!-- Welcome Pop-up Overlay -->
+  <div id="welcomeModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#080b11]/90 backdrop-blur-md p-4 transition-opacity duration-200">
+    <div class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-8 max-w-sm w-full card-shadow space-y-5 text-center animate-pop-in relative overflow-hidden">
       <div class="absolute -right-12 -top-12 w-32 h-32 bg-deloitte-green/15 rounded-full blur-2xl pointer-events-none"></div>
 
-      <div class="space-y-3 relative z-10">
-        <div class="w-16 h-16 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-2xl mx-auto shadow-lg shadow-deloitte-green/20">
-          <i class="fa-solid fa-shield-halved"></i>
+      <!-- Language Toggle Pill in Pop-up -->
+      <div class="flex justify-end relative z-10">
+        <button type="button" onclick="toggleLanguage()" class="button-press px-3 py-1.5 rounded-full text-xs font-bold bg-white/10 hover:bg-white/15 border border-white/15 text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-globe text-deloitte-green"></i>
+          <span class="lang-toggle-label">EN</span>
+        </button>
+      </div>
+
+      <!-- Icon & Required Prompt -->
+      <div class="space-y-3.5 relative z-10">
+        <div class="w-14 h-14 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-2xl mx-auto shadow-lg shadow-deloitte-green/20">
+          <i class="fa-solid fa-flask"></i>
         </div>
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-black text-white">Business Chemistry<span class="deloitte-dot"></span></h1>
-          <p class="text-xs text-gray-400 mt-1 font-cn">请登录管理员账号以访问商业化学指南<br><span class="text-[11px] text-gray-500">Sign in to access Business Chemistry Guide</span></p>
+        <h1 class="text-2xl font-black text-white tracking-tight">
+          Business Chemistry<span class="deloitte-dot"></span>
+        </h1>
+        <div class="pt-1 space-y-1.5">
+          <p class="text-base sm:text-lg font-extrabold text-white leading-snug">
+            Are you ready to explore Business Chemistry?
+          </p>
+          <p class="text-sm sm:text-base font-bold text-deloitte-green font-cn">
+            你准备好探索商业化学反应了吗？
+          </p>
         </div>
       </div>
 
-      <form onsubmit="handleLoginSubmit(event)" class="space-y-3.5 relative z-10 text-left">
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">账号 / Email</label>
-          <div class="relative">
-            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
-              <i class="fa-solid fa-envelope"></i>
-            </span>
-            <input id="emailInput" type="email" placeholder="admin@deloitte.com" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">密码 / Password</label>
-          <div class="relative">
-            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
-              <i class="fa-solid fa-lock"></i>
-            </span>
-            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-10 text-sm text-white placeholder-gray-600 transition-colors" required>
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs transition-colors" title="显示/隐藏密码">
-              <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
-            </button>
-          </div>
-        </div>
-
-        <p id="errorMessage" class="hidden text-xs text-rose-400 font-semibold font-cn flex items-center gap-1.5 pt-1">
-          <i class="fa-solid fa-circle-exclamation text-rose-500 shrink-0"></i>
-          <span id="errorText">账号或密码错误 / Invalid credentials</span>
-        </p>
-
-        <button id="submitBtn" type="submit" class="button-press w-full mt-2 py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
-          <span id="btnText">验证并登录 · Sign In</span>
+      <!-- Action Button -->
+      <div class="relative z-10 pt-2">
+        <button onclick="enterExplorer()" class="button-press w-full py-3.5 rounded-2xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
+          <span class="lang-cn-el font-cn">开始探索</span>
+          <span class="lang-en-el">Start Exploring</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
         </button>
-      </form>
-
+      </div>
     </div>
   </div>
 
-  <!-- Top Navigation Bar -->
-  <header class="w-full border-b border-white/10 bg-deloitte-black/80 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+  <!-- Sticky Mobile-First Top Navigation Bar -->
+  <header class="w-full border-b border-white/10 bg-deloitte-black/85 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
       <!-- Title & Branding -->
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="scrollToTop()">
-        <span class="font-black text-xl sm:text-2xl tracking-tight text-white">
+      <div class="flex items-center space-x-2 cursor-pointer" onclick="scrollToTop()">
+        <span class="font-black text-lg sm:text-2xl tracking-tight text-white">
           Business Chemistry<span class="deloitte-dot"></span>
         </span>
       </div>
 
-      <!-- SFX Toggle & Logout -->
-      <div class="flex items-center space-x-2 sm:space-x-3 text-xs">
-        <button id="audioToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 flex items-center space-x-2 transition-all">
-          <i id="audioIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
-          <span id="audioText" class="text-gray-300">SFX</span>
+      <!-- Language Switcher & SFX Button -->
+      <div class="flex items-center space-x-2">
+        <button id="langToggleBtn" onclick="toggleLanguage()" class="button-press px-3 py-1.5 rounded-full text-xs font-extrabold bg-deloitte-green/15 hover:bg-deloitte-green/25 border border-deloitte-green/40 text-white flex items-center space-x-1.5 transition-all">
+          <i class="fa-solid fa-globe text-deloitte-green text-xs"></i>
+          <span class="lang-toggle-label">EN</span>
         </button>
-        <button type="button" onclick="handleLogout()" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 hover:border-rose-500/30 border border-white/10 text-gray-300 hover:text-rose-300 transition-all flex items-center space-x-1.5" title="退出登录">
-          <i class="fa-solid fa-arrow-right-from-bracket text-xs text-deloitte-green"></i>
-          <span class="hidden sm:inline">退出</span>
+
+        <button id="audioToggleBtn" onclick="toggleAudio()" class="button-press w-8 h-8 sm:w-auto sm:px-3 sm:py-1.5 rounded-full text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center sm:space-x-1.5 transition-all" aria-label="Toggle Sound">
+          <i id="audioIcon" class="fa-solid fa-volume-high text-deloitte-green"></i>
+          <span id="audioText" class="text-gray-300 hidden sm:inline">SFX</span>
         </button>
       </div>
     </div>
   </header>
 
-  <main class="flex-grow max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+  <!-- Main Content Container -->
+  <main class="flex-grow max-w-5xl mx-auto w-full px-3.5 sm:px-6 py-4 sm:py-8">
 
-    <!-- Interactive Explorer Section -->
-    <section id="typesSection" class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-white/10 pb-4 gap-2">
+    <section id="typesSection" class="space-y-4 sm:space-y-6">
+      <!-- Concise Section Header -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
         <div>
-          <span class="text-xs font-bold text-deloitte-green uppercase tracking-widest block">The 4 Styles</span>
-          <h2 class="text-2xl sm:text-3xl font-black text-white">四大类型总览 · Interactive Explorer</h2>
+          <h2 class="text-lg sm:text-2xl font-black text-white">
+            <span class="lang-cn-el font-cn">四大类型总览</span>
+            <span class="lang-en-el">The 4 Working Styles</span>
+          </h2>
+          <p class="text-[11px] sm:text-xs text-gray-400 mt-0.5">
+            <span class="lang-cn-el font-cn">点击卡片切换类型，下方查看详细解析</span>
+            <span class="lang-en-el">Tap any style card to inspect traits & flex tips below</span>
+          </p>
         </div>
-        <p class="text-xs text-gray-400">
-          点击任意卡片深入解析 · Click any card to inspect detailed traits & flex tips.
-        </p>
       </div>
 
-      <!-- 4 Type Selection Cards Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- 2x2 Mobile Grid / 4-Column Desktop Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         
         <!-- Type 1: Pioneer -->
-        <div id="card-pioneer" onclick="selectType('pioneer')" class="button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-pioneer/60 card-shadow transition-all relative overflow-hidden group">
-          <div class="absolute -right-8 -top-8 w-24 h-24 bg-type-pioneer/15 rounded-full blur-xl group-hover:bg-type-pioneer/30 transition-all"></div>
-          <div class="flex items-center justify-between mb-3">
-            <div class="w-11 h-11 rounded-xl bg-type-pioneer/15 border border-type-pioneer/30 flex items-center justify-center text-type-pioneer text-lg">
+        <div id="card-pioneer" onclick="selectType('pioneer')" class="button-press cursor-pointer p-3.5 sm:p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-pioneer/60 card-shadow transition-all relative overflow-hidden group">
+          <div class="absolute -right-6 -top-6 w-16 h-16 bg-type-pioneer/15 rounded-full blur-xl pointer-events-none"></div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-type-pioneer/15 border border-type-pioneer/30 flex items-center justify-center text-type-pioneer text-sm sm:text-lg">
               <i class="fa-solid fa-bolt"></i>
             </div>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-type-pioneer/10 border border-type-pioneer/30 text-type-pioneer font-bold">
-              开拓者 · Pioneer
+            <span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-md bg-type-pioneer/10 border border-type-pioneer/30 text-type-pioneer">
+              <span class="lang-cn-el">开拓者</span>
+              <span class="lang-en-el">Pioneer</span>
             </span>
           </div>
-          <h3 class="text-xl font-black text-white group-hover:text-type-pioneer transition-colors">Pioneer</h3>
-          <p class="text-xs text-gray-300 font-cn mt-0.5">激发能量 · 探索未知</p>
-          <p class="text-[11px] text-gray-400">Energize & Explore Possibility</p>
-          <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-gray-300 space-y-1">
-            <div class="flex items-center justify-between"><span>外向随性</span><span class="text-gray-400">Outgoing & Spontaneous</span></div>
-            <div class="flex items-center justify-between"><span>勇于冒险</span><span class="text-gray-400">Risk-Tolerant</span></div>
-            <div class="flex items-center justify-between"><span>放眼大局</span><span class="text-gray-400">Big-Picture</span></div>
+          <h3 class="text-base sm:text-xl font-black text-white group-hover:text-type-pioneer transition-colors">
+            <span class="lang-cn-el font-cn">开拓者</span>
+            <span class="lang-en-el">Pioneer</span>
+          </h3>
+          <p class="lang-cn-el text-[11px] sm:text-xs text-gray-300 font-cn mt-0.5 truncate">激发能量 · 探索未知</p>
+          <p class="lang-en-el text-[11px] sm:text-xs text-gray-300 mt-0.5 truncate">Energize & Explore Possibility</p>
+          <div class="mt-2.5 pt-2.5 border-t border-white/10 text-[10px] sm:text-[11px] text-gray-400 space-y-1">
+            <div class="lang-cn-el truncate">· 外向随性 · 勇于冒险 · 放眼大局</div>
+            <div class="lang-en-el truncate">· Outgoing & Spontaneous</div>
+            <div class="lang-en-el hidden sm:block truncate">· Risk-Tolerant · Big-Picture</div>
           </div>
         </div>
 
         <!-- Type 2: Driver -->
-        <div id="card-driver" onclick="selectType('driver')" class="button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-deloitte-green/60 card-active-glow transition-all relative overflow-hidden group">
-          <div class="absolute -right-8 -top-8 w-24 h-24 bg-deloitte-green/15 rounded-full blur-xl group-hover:bg-deloitte-green/30 transition-all"></div>
-          <div class="flex items-center justify-between mb-3">
-            <div class="w-11 h-11 rounded-xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-lg">
+        <div id="card-driver" onclick="selectType('driver')" class="button-press cursor-pointer p-3.5 sm:p-5 rounded-2xl bg-deloitte-cardbg border-2 border-deloitte-green/60 card-active-glow transition-all relative overflow-hidden group">
+          <div class="absolute -right-6 -top-6 w-16 h-16 bg-deloitte-green/15 rounded-full blur-xl pointer-events-none"></div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green text-sm sm:text-lg">
               <i class="fa-solid fa-bullseye"></i>
             </div>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green font-bold">
-              推动者 · Driver
+            <span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-md bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green">
+              <span class="lang-cn-el">推动者</span>
+              <span class="lang-en-el">Driver</span>
             </span>
           </div>
-          <h3 class="text-xl font-black text-white group-hover:text-deloitte-green transition-colors">Driver</h3>
-          <p class="text-xs text-gray-300 font-cn mt-0.5">聚焦成果 · 疾速推进</p>
-          <p class="text-[11px] text-gray-400">Momentum & Drive Results</p>
-          <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-gray-300 space-y-1">
-            <div class="flex items-center justify-between"><span>定量逻辑</span><span class="text-gray-400">Quantitative & Logical</span></div>
-            <div class="flex items-center justify-between"><span>直率果断</span><span class="text-gray-400">Direct & Decisive</span></div>
-            <div class="flex items-center justify-between"><span>目标导向</span><span class="text-gray-400">Results-Driven</span></div>
+          <h3 class="text-base sm:text-xl font-black text-white group-hover:text-deloitte-green transition-colors">
+            <span class="lang-cn-el font-cn">推动者</span>
+            <span class="lang-en-el">Driver</span>
+          </h3>
+          <p class="lang-cn-el text-[11px] sm:text-xs text-gray-300 font-cn mt-0.5 truncate">聚焦成果 · 疾速推进</p>
+          <p class="lang-en-el text-[11px] sm:text-xs text-gray-300 mt-0.5 truncate">Momentum & Drive Results</p>
+          <div class="mt-2.5 pt-2.5 border-t border-white/10 text-[10px] sm:text-[11px] text-gray-400 space-y-1">
+            <div class="lang-cn-el truncate">· 定量逻辑 · 直率果断 · 目标导向</div>
+            <div class="lang-en-el truncate">· Quantitative & Logical</div>
+            <div class="lang-en-el hidden sm:block truncate">· Direct & Decisive · Results-Driven</div>
           </div>
         </div>
 
         <!-- Type 3: Integrator -->
-        <div id="card-integrator" onclick="selectType('integrator')" class="button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-integrator/60 card-shadow transition-all relative overflow-hidden group">
-          <div class="absolute -right-8 -top-8 w-24 h-24 bg-type-integrator/15 rounded-full blur-xl group-hover:bg-type-integrator/30 transition-all"></div>
-          <div class="flex items-center justify-between mb-3">
-            <div class="w-11 h-11 rounded-xl bg-type-integrator/15 border border-type-integrator/30 flex items-center justify-center text-type-integrator text-lg">
+        <div id="card-integrator" onclick="selectType('integrator')" class="button-press cursor-pointer p-3.5 sm:p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-integrator/60 card-shadow transition-all relative overflow-hidden group">
+          <div class="absolute -right-6 -top-6 w-16 h-16 bg-type-integrator/15 rounded-full blur-xl pointer-events-none"></div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-type-integrator/15 border border-type-integrator/30 flex items-center justify-center text-type-integrator text-sm sm:text-lg">
               <i class="fa-solid fa-handshake"></i>
             </div>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-type-integrator/10 border border-type-integrator/30 text-type-integrator font-bold">
-              整合者 · Integrator
+            <span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-md bg-type-integrator/10 border border-type-integrator/30 text-type-integrator">
+              <span class="lang-cn-el">整合者</span>
+              <span class="lang-en-el">Integrator</span>
             </span>
           </div>
-          <h3 class="text-xl font-black text-white group-hover:text-type-integrator transition-colors">Integrator</h3>
-          <p class="text-xs text-gray-300 font-cn mt-0.5">凝聚团队 · 构筑信任</p>
-          <p class="text-[11px] text-gray-400">Connect & Build Trust</p>
-          <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-gray-300 space-y-1">
-            <div class="flex items-center justify-between"><span>同理共情</span><span class="text-gray-400">Empathetic & Caring</span></div>
-            <div class="flex items-center justify-between"><span>寻求共识</span><span class="text-gray-400">Consensus-Builder</span></div>
-            <div class="flex items-center justify-between"><span>注重关系</span><span class="text-gray-400">Relationship-Focused</span></div>
+          <h3 class="text-base sm:text-xl font-black text-white group-hover:text-type-integrator transition-colors">
+            <span class="lang-cn-el font-cn">整合者</span>
+            <span class="lang-en-el">Integrator</span>
+          </h3>
+          <p class="lang-cn-el text-[11px] sm:text-xs text-gray-300 font-cn mt-0.5 truncate">凝聚团队 · 构筑信任</p>
+          <p class="lang-en-el text-[11px] sm:text-xs text-gray-300 mt-0.5 truncate">Connect & Build Trust</p>
+          <div class="mt-2.5 pt-2.5 border-t border-white/10 text-[10px] sm:text-[11px] text-gray-400 space-y-1">
+            <div class="lang-cn-el truncate">· 同理共情 · 寻求共识 · 注重关系</div>
+            <div class="lang-en-el truncate">· Empathetic & Caring</div>
+            <div class="lang-en-el hidden sm:block truncate">· Consensus-Builder · Relationship</div>
           </div>
         </div>
 
         <!-- Type 4: Guardian -->
-        <div id="card-guardian" onclick="selectType('guardian')" class="button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-guardian/60 card-shadow transition-all relative overflow-hidden group">
-          <div class="absolute -right-8 -top-8 w-24 h-24 bg-type-guardian/15 rounded-full blur-xl group-hover:bg-type-guardian/30 transition-all"></div>
-          <div class="flex items-center justify-between mb-3">
-            <div class="w-11 h-11 rounded-xl bg-type-guardian/15 border border-type-guardian/30 flex items-center justify-center text-type-guardian text-lg">
+        <div id="card-guardian" onclick="selectType('guardian')" class="button-press cursor-pointer p-3.5 sm:p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-type-guardian/60 card-shadow transition-all relative overflow-hidden group">
+          <div class="absolute -right-6 -top-6 w-16 h-16 bg-type-guardian/15 rounded-full blur-xl pointer-events-none"></div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-type-guardian/15 border border-type-guardian/30 flex items-center justify-center text-type-guardian text-sm sm:text-lg">
               <i class="fa-solid fa-shield-halved"></i>
             </div>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-type-guardian/10 border border-type-guardian/30 text-type-guardian font-bold">
-              守护者 · Guardian
+            <span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-md bg-type-guardian/10 border border-type-guardian/30 text-type-guardian">
+              <span class="lang-cn-el">守护者</span>
+              <span class="lang-en-el">Guardian</span>
             </span>
           </div>
-          <h3 class="text-xl font-black text-white group-hover:text-type-guardian transition-colors">Guardian</h3>
-          <p class="text-xs text-gray-300 font-cn mt-0.5">恪守秩序 · 稳健护航</p>
-          <p class="text-[11px] text-gray-400">Structure & Protect Quality</p>
-          <div class="mt-4 pt-3 border-t border-white/10 text-[11px] text-gray-300 space-y-1">
-            <div class="flex items-center justify-between"><span>严谨细致</span><span class="text-gray-400">Meticulous & Thorough</span></div>
-            <div class="flex items-center justify-between"><span>务实审慎</span><span class="text-gray-400">Pragmatic & Prudent</span></div>
-            <div class="flex items-center justify-between"><span>恪守规范</span><span class="text-gray-400">Order & Standards</span></div>
+          <h3 class="text-base sm:text-xl font-black text-white group-hover:text-type-guardian transition-colors">
+            <span class="lang-cn-el font-cn">守护者</span>
+            <span class="lang-en-el">Guardian</span>
+          </h3>
+          <p class="lang-cn-el text-[11px] sm:text-xs text-gray-300 font-cn mt-0.5 truncate">恪守秩序 · 稳健护航</p>
+          <p class="lang-en-el text-[11px] sm:text-xs text-gray-300 mt-0.5 truncate">Structure & Protect Quality</p>
+          <div class="mt-2.5 pt-2.5 border-t border-white/10 text-[10px] sm:text-[11px] text-gray-400 space-y-1">
+            <div class="lang-cn-el truncate">· 严谨细致 · 务实审慎 · 恪守规范</div>
+            <div class="lang-en-el truncate">· Meticulous & Thorough</div>
+            <div class="lang-en-el hidden sm:block truncate">· Pragmatic & Prudent · Standards</div>
           </div>
         </div>
 
       </div>
 
-      <div id="typeDetailContainer" class="p-6 sm:p-8 rounded-3xl bg-deloitte-cardbg border-2 border-white/15 card-shadow space-y-6 animate-pop-in">
+      <!-- Detailed Inspector Container -->
+      <div id="typeDetailContainer" class="p-4 sm:p-7 rounded-3xl bg-deloitte-cardbg border-2 border-white/15 card-shadow space-y-4 sm:space-y-6 animate-pop-in">
         
         <!-- Header Banner for Selected Type -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-white/10">
-          <div class="flex items-center space-x-4">
-            <div id="detailTypeIconBox" class="w-14 h-14 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-2xl text-deloitte-green">
+        <div class="space-y-4 pb-4 border-b border-white/10">
+          <div class="flex items-start space-x-3.5">
+            <div id="detailTypeIconBox" class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-xl sm:text-2xl text-deloitte-green shrink-0">
               <i id="detailTypeIcon" class="fa-solid fa-bullseye"></i>
             </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 id="detailTypeName" class="text-2xl sm:text-3xl font-black text-white">Driver · 推动者</h3>
-                <span id="detailTypeTag" class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-deloitte-green/20 text-deloitte-green font-bold">
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 id="detailTypeName" class="text-xl sm:text-3xl font-black text-white">推动者</h3>
+                <span id="detailTypeTag" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-deloitte-green/20 text-deloitte-green font-bold">
                   Momentum & Results
                 </span>
               </div>
-              <p id="detailTypeMottoCn" class="text-xs sm:text-sm text-gray-200 font-cn mt-0.5 font-bold">
+              <p id="detailTypeMottoCn" class="lang-cn-el text-xs sm:text-sm text-gray-200 font-cn mt-1 font-bold leading-snug">
                 “聚焦成果，讲求实效，以清晰逻辑驱动业务破局”
               </p>
-              <p id="detailTypeMottoEn" class="text-xs text-gray-400">
+              <p id="detailTypeMottoEn" class="lang-en-el text-xs sm:text-sm text-gray-200 mt-1 font-semibold leading-snug">
                 "Focus on outcomes, quantify logic, and power past obstacles."
               </p>
             </div>
           </div>
 
-          <!-- Section Switcher Buttons -->
-          <div class="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 overflow-x-auto">
-            <button id="tabBtn-traits" onclick="switchDetailTab('traits')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black whitespace-nowrap">
-              核心特质 · Traits
+          <!-- Mobile-Optimized Full-Width 3-Tab Segmented Control -->
+          <div class="grid grid-cols-3 gap-1 bg-black/50 p-1 rounded-xl border border-white/10">
+            <button id="tabBtn-traits" onclick="switchDetailTab('traits')" class="py-2 px-2 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black text-center">
+              <span class="lang-cn-el font-cn">核心特质</span>
+              <span class="lang-en-el">Traits</span>
             </button>
-            <button id="tabBtn-stress" onclick="switchDetailTab('stress')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white whitespace-nowrap">
-              动力与压力 · Dynamics
+            <button id="tabBtn-stress" onclick="switchDetailTab('stress')" class="py-2 px-2 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white text-center">
+              <span class="lang-cn-el font-cn">动力与压力</span>
+              <span class="lang-en-el">Dynamics</span>
             </button>
-            <button id="tabBtn-flex" onclick="switchDetailTab('flex')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white whitespace-nowrap">
-              协同秘籍 · Flex Tips
+            <button id="tabBtn-flex" onclick="switchDetailTab('flex')" class="py-2 px-2 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white text-center">
+              <span class="lang-cn-el font-cn">协同秘籍</span>
+              <span class="lang-en-el">Flex Tips</span>
             </button>
           </div>
         </div>
 
         <!-- Detail Tab 1: Mindset & Characteristics -->
-        <div id="tabContent-traits" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div id="tabContent-traits" class="space-y-3">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
             
             <!-- Mindset -->
-            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
-              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider block flex items-center gap-1.5">
-                <i class="fa-solid fa-brain"></i> 思维方式 · Mindset
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-brain"></i>
+                <span class="lang-cn-el font-cn">思维方式</span>
+                <span class="lang-en-el">Mindset</span>
               </span>
-              <p id="detailMindsetCn" class="text-xs sm:text-sm text-gray-200 leading-relaxed font-cn font-semibold">
+              <p id="detailMindsetCn" class="lang-cn-el text-xs sm:text-sm text-gray-200 leading-relaxed font-cn">
                 定量分析、推崇严密逻辑链条、追求黑白分明的确定性。善于抽丝剥茧，直击核心矛盾。
               </p>
-              <p id="detailMindsetEn" class="text-[11px] sm:text-xs text-gray-400 leading-normal">
+              <p id="detailMindsetEn" class="lang-en-el text-xs sm:text-sm text-gray-200 leading-relaxed">
                 Quantitative, logic-driven, seeking black-and-white clarity. Swiftly uncovers root issues.
               </p>
             </div>
 
             <!-- Focus -->
-            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
-              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider block flex items-center gap-1.5">
-                <i class="fa-solid fa-crosshairs"></i> 关注重心 · Core Focus
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-crosshairs"></i>
+                <span class="lang-cn-el font-cn">关注重心</span>
+                <span class="lang-en-el">Core Focus</span>
               </span>
-              <p id="detailFocusCn" class="text-xs sm:text-sm text-gray-200 leading-relaxed font-cn font-semibold">
+              <p id="detailFocusCn" class="lang-cn-el text-xs sm:text-sm text-gray-200 leading-relaxed font-cn">
                 攻克高难度指标、快节奏高效率交付、竞争获胜以及切实可见的商业影响。
               </p>
-              <p id="detailFocusEn" class="text-[11px] sm:text-xs text-gray-400 leading-normal">
+              <p id="detailFocusEn" class="lang-en-el text-xs sm:text-sm text-gray-200 leading-relaxed">
                 High-tempo execution, challenging KPIs, clear commercial impact, and winning.
               </p>
             </div>
 
             <!-- Decision Style -->
-            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
-              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider block flex items-center gap-1.5">
-                <i class="fa-solid fa-gavel"></i> 决策风格 · Decision Style
+            <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+              <span class="text-xs font-bold text-deloitte-green uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-gavel"></i>
+                <span class="lang-cn-el font-cn">决策风格</span>
+                <span class="lang-en-el">Decision Style</span>
               </span>
-              <p id="detailDecisionCn" class="text-xs sm:text-sm text-gray-200 leading-relaxed font-cn font-semibold">
+              <p id="detailDecisionCn" class="lang-cn-el text-xs sm:text-sm text-gray-200 leading-relaxed font-cn">
                 雷厉风行、就事论事。在掌握关键数据与底线逻辑后，能够毫不犹豫地拍板定夺。
               </p>
-              <p id="detailDecisionEn" class="text-[11px] sm:text-xs text-gray-400 leading-normal">
+              <p id="detailDecisionEn" class="lang-en-el text-xs sm:text-sm text-gray-200 leading-relaxed">
                 Decisive, objective, and action-oriented once bottom-line metrics and data are verified.
               </p>
             </div>
@@ -385,36 +386,39 @@
         </div>
 
         <!-- Detail Tab 2: Energizers vs Drainers -->
-        <div id="tabContent-stress" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="tabContent-stress" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           
           <!-- What Energizes -->
-          <div class="p-5 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 space-y-3">
-            <div class="flex items-center gap-2 text-deloitte-green font-bold text-sm">
+          <div class="p-4 sm:p-5 rounded-2xl bg-emerald-950/20 border border-emerald-900/40 space-y-3">
+            <div class="flex items-center gap-2 text-deloitte-green font-bold text-xs sm:text-sm">
               <i class="fa-solid fa-battery-full"></i>
-              <span>赋能动力点 · What Energizes Them</span>
+              <span class="lang-cn-el font-cn">赋能动力点</span>
+              <span class="lang-en-el">What Energizes Them</span>
             </div>
-            <ul id="detailEnergizeList" class="space-y-2.5 text-xs sm:text-sm text-gray-300"></ul>
+            <ul id="detailEnergizeList" class="space-y-2.5 text-xs sm:text-sm text-gray-200"></ul>
           </div>
 
           <!-- What Drains -->
-          <div class="p-5 rounded-2xl bg-rose-950/20 border border-rose-900/40 space-y-3">
-            <div class="flex items-center gap-2 text-rose-400 font-bold text-sm">
+          <div class="p-4 sm:p-5 rounded-2xl bg-rose-950/20 border border-rose-900/40 space-y-3">
+            <div class="flex items-center gap-2 text-rose-400 font-bold text-xs sm:text-sm">
               <i class="fa-solid fa-triangle-exclamation"></i>
-              <span>消耗雷区 · What Drains Them</span>
+              <span class="lang-cn-el font-cn">消耗雷区</span>
+              <span class="lang-en-el">What Drains Them</span>
             </div>
-            <ul id="detailDrainList" class="space-y-2.5 text-xs sm:text-sm text-gray-300"></ul>
+            <ul id="detailDrainList" class="space-y-2.5 text-xs sm:text-sm text-gray-200"></ul>
           </div>
 
         </div>
 
         <!-- Detail Tab 3: Collaboration & Flexing Tips -->
-        <div id="tabContent-flex" class="hidden space-y-4">
-          <div class="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-900/40 space-y-3">
-            <div class="flex items-center gap-2 text-cyan-400 font-bold text-sm">
+        <div id="tabContent-flex" class="hidden">
+          <div class="p-4 sm:p-5 rounded-2xl bg-cyan-950/20 border border-cyan-900/40 space-y-3">
+            <div class="flex items-center gap-2 text-cyan-400 font-bold text-xs sm:text-sm">
               <i class="fa-solid fa-comments"></i>
-              <span>如何与此风格高效沟通与协同 · How to Flex and Collaborate</span>
+              <span class="lang-cn-el font-cn">如何与此风格高效沟通与协同</span>
+              <span class="lang-en-el">How to Flex and Collaborate</span>
             </div>
-            <ul id="detailFlexList" class="space-y-3 text-xs sm:text-sm text-gray-300"></ul>
+            <ul id="detailFlexList" class="space-y-3 text-xs sm:text-sm text-gray-200"></ul>
           </div>
         </div>
 
@@ -425,102 +429,47 @@
 
   <script>
     /* ==========================================================
-       0. SUPABASE AUTHENTICATION
+       0. WELCOME MODAL & STRICT CN / EN CONTROLLER
        ========================================================== */
-    const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
-    let supabaseClient = null;
+    // Default language based on browser preference, strictly 'cn' or 'en'
+    let currentLang = (navigator.language && navigator.language.toLowerCase().startsWith('zh')) ? 'cn' : 'en';
 
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    function enterExplorer() {
+      playSfx('click');
+      const modal = document.getElementById('welcomeModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 220);
     }
 
-    async function initAuth() {
-      if (!supabaseClient) {
-        showAuthError("Supabase 脚本加载失败，请检查网络");
-        return;
-      }
-      try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) {
-          renderAuthorized();
-        } else {
-          document.getElementById('emailInput').focus();
-        }
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-          if (event === 'SIGNED_IN' && session) renderAuthorized();
-          else if (event === 'SIGNED_OUT') renderLocked();
-        });
-      } catch (err) {
-        console.error("Auth init error:", err);
-      }
+    function toggleLanguage() {
+      playSfx('tab');
+      currentLang = currentLang === 'cn' ? 'en' : 'cn';
+      applyLanguageUI();
     }
 
-    async function handleLoginSubmit(event) {
-      event.preventDefault();
-      const email = document.getElementById('emailInput').value.trim();
-      const password = document.getElementById('passwordInput').value;
-      const submitBtn = document.getElementById('submitBtn');
-      const btnText = document.getElementById('btnText');
+    function applyLanguageUI() {
+      document.body.classList.remove('lang-cn', 'lang-en');
+      document.body.classList.add(`lang-${currentLang}`);
 
-      if (!supabaseClient) {
-        showAuthError("无法连接到认证服务");
-        return;
-      }
+      // Button shows the target language you can switch to
+      const nextLangLabel = currentLang === 'cn' ? 'EN' : '中文';
+      document.querySelectorAll('.lang-toggle-label').forEach(el => {
+        el.textContent = nextLangLabel;
+      });
 
-      submitBtn.disabled = true;
-      btnText.textContent = "验证中 · Verifying...";
-      submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
-
-      try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) {
-          showAuthError(error.message);
-        } else if (data?.user) {
-          document.getElementById('errorMessage').classList.add('hidden');
-          renderAuthorized();
-        }
-      } catch (err) {
-        showAuthError("请求异常: " + (err.message || "Network Error"));
-      } finally {
-        submitBtn.disabled = false;
-        btnText.textContent = "验证并登录 · Sign In";
-        submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+      const data = CHEMISTRY_DATA[currentSelectedType];
+      if (data) {
+        updateTypeNameDisplay(data);
       }
     }
 
-    function showAuthError(message) {
-      const errorEl = document.getElementById('errorMessage');
-      const errorText = document.getElementById('errorText');
-      const gateCard = document.getElementById('gateCard');
-      errorText.textContent = message;
-      errorEl.classList.remove('hidden');
-      gateCard.classList.remove('shake-error');
-      void gateCard.offsetWidth;
-      gateCard.classList.add('shake-error');
-    }
-
-    async function handleLogout() {
-      if (supabaseClient) await supabaseClient.auth.signOut();
-    }
-
-    function renderAuthorized() {
-      document.getElementById('passwordGate').classList.add('hidden');
-    }
-
-    function renderLocked() {
-      document.getElementById('passwordGate').classList.remove('hidden');
-      const passwordInput = document.getElementById('passwordInput');
-      if (passwordInput) passwordInput.value = '';
-      document.getElementById('errorMessage').classList.add('hidden');
-    }
-
-    function togglePasswordVisibility() {
-      const input = document.getElementById('passwordInput');
-      const icon = document.getElementById('toggleEyeIcon');
-      const visible = input.type === 'password';
-      input.type = visible ? 'text' : 'password';
-      icon.className = visible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    function updateTypeNameDisplay(data) {
+      const parts = data.name.split(' · ');
+      const enName = parts[0] || data.name;
+      const cnName = parts[1] || data.name;
+      document.getElementById("detailTypeName").textContent = currentLang === 'cn' ? cnName : enName;
     }
 
     /* ==========================================================
@@ -528,7 +477,6 @@
        ========================================================== */
     let audioEnabled = true;
     let audioReady = false;
-
     let clickSynth = null;
     let tabSynth = null;
 
@@ -536,7 +484,6 @@
       if (audioReady) return;
       try {
         await Tone.start();
-        
         clickSynth = new Tone.MembraneSynth({
           pitchDecay: 0.01,
           octaves: 2,
@@ -562,11 +509,11 @@
       const text = document.getElementById("audioText");
       if (audioEnabled) {
         if (icon) icon.className = "fa-solid fa-volume-high text-deloitte-green";
-        if (text) text.className = "text-gray-300";
+        if (text) text.className = "text-gray-300 hidden sm:inline";
         initAudioEngine();
       } else {
         if (icon) icon.className = "fa-solid fa-volume-xmark text-deloitte-gray";
-        if (text) text.className = "text-deloitte-gray";
+        if (text) text.className = "text-deloitte-gray hidden sm:inline";
       }
     }
 
@@ -583,19 +530,14 @@
       } catch (e) {}
     }
 
-    function scrollToSection(id) {
-      playSfx('click');
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
-
     function scrollToTop() {
       playSfx('click');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    /* ==========================================================
+       2. ORIGINAL BUSINESS CHEMISTRY DATA (UNMODIFIED)
+       ========================================================== */
     const CHEMISTRY_DATA = {
       pioneer: {
         name: "Pioneer · 开拓者",
@@ -731,21 +673,21 @@
       allCards.forEach(key => {
         const el = document.getElementById(`card-${key}`);
         if (key === typeKey) {
-          el.className = `button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 ${data.borderClass} card-active-glow transition-all relative overflow-hidden group`;
+          el.className = `button-press cursor-pointer p-3.5 sm:p-5 rounded-2xl bg-deloitte-cardbg border-2 ${data.borderClass} card-active-glow transition-all relative overflow-hidden group`;
         } else {
-          el.className = `button-press cursor-pointer p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-white/30 card-shadow transition-all relative overflow-hidden group`;
+          el.className = `button-press cursor-pointer p-3.5 sm:p-5 rounded-2xl bg-deloitte-cardbg border-2 border-white/10 hover:border-white/30 card-shadow transition-all relative overflow-hidden group`;
         }
       });
 
-      document.getElementById("detailTypeName").textContent = data.name;
+      updateTypeNameDisplay(data);
       document.getElementById("detailTypeTag").textContent = data.tag;
-      document.getElementById("detailTypeTag").className = `text-xs font-mono px-2.5 py-0.5 rounded-full bg-white/10 ${data.colorClass} font-bold`;
+      document.getElementById("detailTypeTag").className = `text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-white/10 ${data.colorClass} font-bold`;
       document.getElementById("detailTypeMottoCn").textContent = data.mottoCn;
       document.getElementById("detailTypeMottoEn").textContent = data.mottoEn;
 
       const iconBox = document.getElementById("detailTypeIconBox");
       const icon = document.getElementById("detailTypeIcon");
-      iconBox.className = `w-14 h-14 rounded-2xl bg-white/5 border border-white/15 flex items-center justify-center text-2xl ${data.colorClass}`;
+      iconBox.className = `w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/5 border border-white/15 flex items-center justify-center text-xl sm:text-2xl shrink-0 ${data.colorClass}`;
       icon.className = `fa-solid ${data.icon}`;
 
       document.getElementById("detailMindsetCn").textContent = data.mindsetCn;
@@ -757,22 +699,22 @@
 
       const energizeList = document.getElementById("detailEnergizeList");
       energizeList.innerHTML = data.energizers.map(item => `
-        <li class="flex items-start gap-2">
-          <i class="fa-solid fa-circle-check text-deloitte-green mt-1 text-xs"></i>
+        <li class="flex items-start gap-2.5">
+          <i class="fa-solid fa-circle-check text-deloitte-green mt-1 text-xs shrink-0"></i>
           <div>
-            <strong class="font-cn text-white block">${item.cn}</strong>
-            <span class="text-gray-400 text-[11px]">${item.en}</span>
+            <span class="lang-cn-el font-cn text-white leading-relaxed">${item.cn}</span>
+            <span class="lang-en-el text-white leading-relaxed">${item.en}</span>
           </div>
         </li>
       `).join('');
 
       const drainList = document.getElementById("detailDrainList");
       drainList.innerHTML = data.drainers.map(item => `
-        <li class="flex items-start gap-2">
-          <i class="fa-solid fa-circle-xmark text-rose-400 mt-1 text-xs"></i>
+        <li class="flex items-start gap-2.5">
+          <i class="fa-solid fa-circle-xmark text-rose-400 mt-1 text-xs shrink-0"></i>
           <div>
-            <strong class="font-cn text-white block">${item.cn}</strong>
-            <span class="text-gray-400 text-[11px]">${item.en}</span>
+            <span class="lang-cn-el font-cn text-white leading-relaxed">${item.cn}</span>
+            <span class="lang-en-el text-white leading-relaxed">${item.en}</span>
           </div>
         </li>
       `).join('');
@@ -784,8 +726,8 @@
             <i class="fa-solid fa-arrow-right"></i>
           </span>
           <div>
-            <strong class="font-cn text-white block">${item.cn}</strong>
-            <span class="text-gray-400 text-[11px]">${item.en}</span>
+            <span class="lang-cn-el font-cn text-white leading-relaxed">${item.cn}</span>
+            <span class="lang-en-el text-white leading-relaxed">${item.en}</span>
           </div>
         </li>
       `).join('');
@@ -805,18 +747,18 @@
         const btn = document.getElementById(`tabBtn-${t}`);
         const content = document.getElementById(`tabContent-${t}`);
         if (t === tabKey) {
-          btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black whitespace-nowrap";
+          btn.className = "py-2 px-2 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black text-center";
           content.classList.remove("hidden");
         } else {
-          btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white whitespace-nowrap";
+          btn.className = "py-2 px-2 rounded-lg text-xs font-bold transition-all text-gray-300 hover:text-white text-center";
           content.classList.add("hidden");
         }
       });
     }
 
     window.addEventListener("load", () => {
+      applyLanguageUI();
       selectType('driver');
-      initAuth();
     });
 
     document.addEventListener("click", () => {
