@@ -58,7 +58,6 @@
             user-select: none;
         }
 
-        /* Subtle Hacker Dot-Matrix Background */
         .hacker-bg {
             position: fixed;
             inset: 0;
@@ -78,7 +77,6 @@
             opacity: 0.25;
         }
 
-        /* App-like Sleek Panels */
         .app-surface {
             background: rgba(11, 17, 30, 0.88);
             backdrop-filter: blur(16px);
@@ -116,7 +114,6 @@
         ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.2); border-radius: 9999px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(134, 188, 37, 0.6); }
 
-        /* Prevent iOS Safari zoom on input focus */
         @media (max-width: 767px) {
             input[type="text"] {
                 font-size: 16px !important;
@@ -134,7 +131,7 @@
 
         const STORAGE_KEY = 'PROJECT_SUNRISE_STATE_V2';
 
-        // BILINGUAL DICTIONARY (Preserving all strings & Easter Eggs)
+        // BILINGUAL DICTIONARY
         const dict = {
             en: {
                 projectSunrise: "Project Sunrise",
@@ -871,18 +868,15 @@
         function QuestView() {
             const saved = loadSavedState();
 
-            // Dynamic Data & Supabase State loaded from info.txt
+            // Dynamic Data & Supabase State
             const [appData, setAppData] = useState(null);
             const [loadingInfo, setLoadingInfo] = useState(true);
             const [sbClient, setSbClient] = useState(null);
             const [sbConnected, setSbConnected] = useState(false);
-            const [nodePasswords, setNodePasswords] = useState({
-                logs: ["1917"],
-                ledger: ["GUARDIAN"],
-                banking: ["TOGETHER MAKES PROGRESS", "TOGETHERMAKESPROGRESS"]
-            });
+            const [nodePasswords, setNodePasswords] = useState({ logs: [], ledger: [], banking: [] });
+            const [overrideCodes, setOverrideCodes] = useState({ puzzle1: [], puzzle2: [], puzzle3: [], puzzle4: [] });
+            const [verifyingPuzzleKey, setVerifyingPuzzleKey] = useState(null);
 
-            // Normalize legacy saved tabs ('org', 'security', 'vendor') into 'hub' + hubSubTab
             const initialRawTab = (saved && saved.activeTab) || 'hub';
             const isLegacyHubTab = ['org', 'security', 'vendor'].includes(initialRawTab);
 
@@ -948,7 +942,7 @@
             const allNodesUnlocked = unlockedNodes.logs && unlockedNodes.ledger && unlockedNodes.banking;
             const allPuzzlesSolved = solvedPuzzles.puzzle1 && solvedPuzzles.puzzle2 && solvedPuzzles.puzzle3 && solvedPuzzles.puzzle4;
 
-            // Load info.txt and initialize Supabase for the 3 Node Passwords
+            // Load info.txt and initialize Supabase for both Node Passwords & Halt TXN Override Codes
             useEffect(() => {
                 async function bootSystem() {
                     try {
@@ -958,34 +952,59 @@
                         const parsed = parseInfoTxt(text);
                         setAppData(parsed);
 
-                        const fb1 = parsed.supabase.FALLBACK_NODE1_KEY || '1917';
-                        const fb2 = parsed.supabase.FALLBACK_NODE2_KEY || 'GUARDIAN';
-                        const fb3 = parsed.supabase.FALLBACK_NODE3_KEY || 'TOGETHER MAKES PROGRESS';
+                        // Optional fallback if present in info.txt
+                        const fb1 = parsed.supabase.FALLBACK_NODE1_KEY || '';
+                        const fb2 = parsed.supabase.FALLBACK_NODE2_KEY || '';
+                        const fb3 = parsed.supabase.FALLBACK_NODE3_KEY || '';
                         setNodePasswords({
-                            logs: [fb1],
-                            ledger: [fb2],
-                            banking: [fb3, fb3.replace(/\s+/g, '')]
+                            logs: fb1 ? [fb1] : [],
+                            ledger: fb2 ? [fb2] : [],
+                            banking: fb3 ? [fb3, fb3.replace(/\s+/g, '')] : []
                         });
 
+                        if (parsed.overrideAnswers && Object.keys(parsed.overrideAnswers).length > 0) {
+                            setOverrideCodes(prev => ({ ...prev, ...parsed.overrideAnswers }));
+                        }
+
+                        // Initialize Supabase client from info.txt
                         const sbUrl = parsed.supabase.SUPABASE_URL;
                         const sbKey = parsed.supabase.SUPABASE_ANON_KEY;
                         if (sbUrl && sbKey && !sbUrl.includes('your-project-id') && window.supabase) {
                             const client = window.supabase.createClient(sbUrl, sbKey);
                             setSbClient(client);
-                            const { data, error } = await client.from('sunrise_nodes').select('node_key, password');
-                            if (!error && data && data.length > 0) {
-                                const supaMap = {};
-                                data.forEach(row => {
+
+                            // 1. Fetch 3 Node Passwords from Supabase 'sunrise_nodes'
+                            const { data: nodeData, error: nodeErr } = await client
+                                .from('sunrise_nodes')
+                                .select('node_key, password');
+                            if (!nodeErr && nodeData && nodeData.length > 0) {
+                                const supaNodes = {};
+                                nodeData.forEach(row => {
                                     if (row.node_key && row.password) {
-                                        supaMap[row.node_key] = [row.password, row.password.replace(/\s+/g, '')];
+                                        supaNodes[row.node_key] = [row.password, row.password.replace(/\s+/g, '')];
                                     }
                                 });
-                                setNodePasswords(prev => ({ ...prev, ...supaMap }));
+                                setNodePasswords(prev => ({ ...prev, ...supaNodes }));
+                                setSbConnected(true);
+                            }
+
+                            // 2. Fetch 4 Halt TXN Override Codes from Supabase 'sunrise_override_codes'
+                            const { data: haltData, error: haltErr } = await client
+                                .from('sunrise_override_codes')
+                                .select('puzzle_key, accepted_answers');
+                            if (!haltErr && haltData && haltData.length > 0) {
+                                const supaHalt = {};
+                                haltData.forEach(row => {
+                                    if (row.puzzle_key && row.accepted_answers) {
+                                        supaHalt[row.puzzle_key] = row.accepted_answers.split('|').map(s => s.trim()).filter(Boolean);
+                                    }
+                                });
+                                setOverrideCodes(prev => ({ ...prev, ...supaHalt }));
                                 setSbConnected(true);
                             }
                         }
                     } catch (err) {
-                        console.error("Error loading info.txt:", err);
+                        console.error("Error loading info.txt or Supabase:", err);
                     } finally {
                         setLoadingInfo(false);
                     }
@@ -1051,7 +1070,7 @@
             const handleN3TitleClick = () => setN3TitleClicks(prev => (prev + 1 >= 3 ? (setShowSecretProtocol(s => !s), 0) : prev + 1));
             const handleShieldClick = () => setShieldClicks(prev => (prev + 1 >= 5 ? (setShowVictoryBlessing(true), 0) : prev + 1));
 
-            // Verify 3 Node Passwords against Supabase (with live query + preloaded cache)
+            // Verify 3 Node Passwords against Supabase
             const handleUnlock = async (e, nodeKey) => {
                 e.preventDefault();
                 if (nodeLockoutTimer > 0 || verifyingNode) return;
@@ -1105,8 +1124,9 @@
                 setTimeout(() => setEasterEggToast(''), 6500);
             };
 
-            const handleVerifyPuzzle = (key, acceptedAnswers) => {
-                if (haltLockoutTimer > 0) return;
+            // Verify Halt TXN Override Code directly against Supabase 'sunrise_override_codes'
+            const handleVerifyPuzzle = async (key) => {
+                if (haltLockoutTimer > 0 || verifyingPuzzleKey) return;
 
                 const rawVal = (puzzleInputs[key] || '').trim();
                 const userVal = rawVal.toUpperCase().replace(/[#\-_/]/g, '').replace(/\s+/g, '');
@@ -1128,6 +1148,7 @@
                     triggerEasterEggToast(t.haltJokeCoffee); return;
                 }
 
+                // Anti-Badge Enumeration Check
                 if (key === 'puzzle1' && (userVal.includes('EMP') || /^\d+$/.test(userVal))) {
                     setWarningToast(t.badgeEnumWarning);
                     setTimeout(() => setWarningToast(''), 4500);
@@ -1136,6 +1157,26 @@
                     applyHaltStrike();
                     return;
                 }
+
+                setVerifyingPuzzleKey(key);
+                let acceptedAnswers = overrideCodes[key] || [];
+
+                // Live query to Supabase 'sunrise_override_codes' table
+                if (sbClient) {
+                    try {
+                        const { data, error } = await sbClient
+                            .from('sunrise_override_codes')
+                            .select('accepted_answers')
+                            .eq('puzzle_key', key)
+                            .maybeSingle();
+                        if (!error && data && data.accepted_answers) {
+                            acceptedAnswers = data.accepted_answers.split('|').map(s => s.trim()).filter(Boolean);
+                            setOverrideCodes(prev => ({ ...prev, [key]: acceptedAnswers }));
+                            setSbConnected(true);
+                        }
+                    } catch (err) {}
+                }
+                setVerifyingPuzzleKey(null);
 
                 const isMatch = (acceptedAnswers || []).some(ans => {
                     const cleanAns = ans.toUpperCase().trim().replace(/[#\-_/]/g, '').replace(/\s+/g, '');
@@ -1253,9 +1294,9 @@
 
                     const leftRows = [
                         ["Target Environment", "FTV-PROD-01 (FitVision, Inc.)"],
-                        ["Executed Action Code", "VOID-WIRE-INTERCEPT (Override Active)"],
-                        ["Routing Gateway Target", "GATE-BVI-INTERCEPT (EDD Clearing Intercept)"],
-                        ["Frozen Transfer ID", "TXN8824 (2026-06-15 03:00 UTC)"],
+                        ["Executed Action Code", `${(puzzleInputs.puzzle3 || 'VOID-WIRE-INTERCEPT').toUpperCase()} (Override Active)`],
+                        ["Routing Gateway Target", `${(puzzleInputs.puzzle4 || 'GATE-BVI-INTERCEPT').toUpperCase()} (EDD Clearing Intercept)`],
+                        ["Frozen Transfer ID", `${(puzzleInputs.puzzle2 || 'TXN8824').toUpperCase()} (2026-06-15 03:00 UTC)`],
                         ["Intercepted Amount", "$22,000,000.00 USD (Channel: SWIFT-EDD)"],
                         ["Beneficiary Entity", "APEX Shell Logistics (BVI Shell Co.)"]
                     ];
@@ -1280,7 +1321,7 @@
                     ctx.fillText("AUDIT FORENSIC ATTRIBUTION", 715, 370);
 
                     const rightRows = [
-                        ["Rogue Technical Actor", "Marcus Bergstrom (EMP004) — Unauthorized Scrub"],
+                        ["Rogue Technical Actor", `${(puzzleInputs.puzzle1 || 'Marcus Bergstrom').toUpperCase()} (EMP004) — Unauthorized Scrub`],
                         ["Executive Dispatch", "Victoria Vance (EMP001) — 03:00 SWIFT Dispatch"],
                         ["Policy Violation", "ISS-04 High Control Breach (Chained Scrub: CHG-4471)"],
                         ["Jurisdiction Risk Tier", "British Virgin Islands (EDD Watchlist Register)"]
@@ -1410,7 +1451,7 @@
                     {showRootModal && <RootInterceptModal onClose={() => setShowRootModal(false)} t={t} />}
                     {showDefconModal && <DefconModal onClose={() => setShowDefconModal(false)} t={t} />}
                     
-                    {/* 5-Item App Navigation Bar (Fits 100% on Mobile with Zero Overflow + Sleek Desktop Sidebar) */}
+                    {/* 5-Item App Navigation Bar */}
                     <nav className="order-last md:order-first w-full md:w-64 app-surface p-1.5 md:p-4 rounded-2xl grid grid-cols-5 md:flex md:flex-col gap-1 md:gap-2 shrink-0 z-20 items-center md:items-stretch shadow-2xl">
                         <div className="hidden md:flex mb-4 pb-4 border-b border-slate-800/80 justify-between items-center">
                             <div className="flex items-center gap-2.5 cursor-pointer select-none" onClick={handleSecretClick} title="Click 5x for Easter Egg">
@@ -1427,7 +1468,6 @@
                             </button>
                         </div>
                         
-                        {/* Consolidated Investigation Hub Button (1 Button for Directory, Security & Vendors) */}
                         <QuestNavBtn 
                             icon="fa-compass" 
                             label={t.investigationHub} 
@@ -1436,7 +1476,6 @@
                             onClick={() => {setActiveTab('hub'); setUnlockInput('');}} 
                         />
 
-                        {/* Desktop Quick Sub-Links under Investigation Hub */}
                         <div className="hidden md:flex flex-col gap-1 pl-3 border-l border-slate-800/80 ml-3 my-0.5">
                             {[
                                 { k: 'org', icon: 'fa-id-badge', l: t.directory },
@@ -1466,7 +1505,6 @@
                         
                         <div className="flex-grow hidden md:block"></div>
                         
-                        {/* Halt Transaction Button — Always Clickable & Visible on Mobile & Desktop */}
                         <QuestNavBtn 
                             icon="fa-bolt" 
                             label={t.haltTxn} 
@@ -1878,7 +1916,7 @@
                                 </div>
                             ))}
 
-                            {/* SYSTEM OVERRIDE TERMINAL */}
+                            {/* SYSTEM OVERRIDE TERMINAL (Verified via Supabase 'sunrise_override_codes') */}
                             {activeTab === 'mystery' && (
                                 !allNodesUnlocked ? (
                                     <div className="flex flex-col items-center justify-center h-full fade-in p-3 text-center">
@@ -2002,13 +2040,14 @@
 
                                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                                                 {[
-                                                    { k: 'puzzle1', t: t.identityMatch, p: t.empNameHint, e: appData.overrideAnswers.puzzle1 || ["MARCUS BERGSTROM"] },
-                                                    { k: 'puzzle2', t: t.auditFlag, p: t.suspiciousTxn, e: appData.overrideAnswers.puzzle2 || ["TXN8824"] },
-                                                    { k: 'puzzle3', t: t.executeAction, p: t.haltActionCode, e: appData.overrideAnswers.puzzle3 || ["VOID-WIRE-INTERCEPT"] },
-                                                    { k: 'puzzle4', t: t.routingGateway, p: t.routingGatewayHint, e: appData.overrideAnswers.puzzle4 || ["GATE-BVI-INTERCEPT"] }
+                                                    { k: 'puzzle1', t: t.identityMatch, p: t.empNameHint },
+                                                    { k: 'puzzle2', t: t.auditFlag, p: t.suspiciousTxn },
+                                                    { k: 'puzzle3', t: t.executeAction, p: t.haltActionCode },
+                                                    { k: 'puzzle4', t: t.routingGateway, p: t.routingGatewayHint }
                                                 ].map((puz, idx) => {
                                                     const isSolved = solvedPuzzles[puz.k];
                                                     const hasError = puzzleErrors[puz.k];
+                                                    const isVerifyingThis = verifyingPuzzleKey === puz.k;
                                                     return (
                                                         <div key={puz.k} className={`app-surface border p-4 rounded-2xl flex flex-col justify-between min-h-[160px] ${isSolved ? 'border-deloitte-green bg-deloitte-green/5' : 'border-slate-800'}`}>
                                                             <div>
@@ -2023,9 +2062,9 @@
                                                                 <div className="text-deloitte-green font-mono font-bold text-center tracking-widest border border-deloitte-green/40 py-2.5 bg-slate-950 rounded-xl text-xs">{t.verified}</div>
                                                             ) : (
                                                                 <div className="flex gap-2">
-                                                                    <input type="text" placeholder={t.enter} value={puzzleInputs[puz.k] || ''} disabled={haltLockoutTimer > 0} onChange={(e) => setPuzzleInputs({ ...puzzleInputs, [puz.k]: e.target.value })} onKeyDown={(e) => e.key === 'Enter' && handleVerifyPuzzle(puz.k, puz.e)} className={`w-full bg-slate-950 border ${hasError ? 'border-red-500 text-red-400' : 'border-slate-700 text-white focus:border-deloitte-green'} ${haltLockoutTimer > 0 ? 'opacity-40 cursor-not-allowed' : ''} rounded-xl p-2.5 text-center font-mono text-xs uppercase outline-none transition-colors`} />
-                                                                    <button type="button" disabled={haltLockoutTimer > 0} onClick={() => handleVerifyPuzzle(puz.k, puz.e)} className={`bg-red-600 hover:bg-red-500 text-white px-3.5 rounded-xl text-xs font-mono font-bold uppercase transition-colors shrink-0 cursor-pointer ${haltLockoutTimer > 0 ? 'opacity-40 cursor-not-allowed' : ''}`}>
-                                                                        {t.verifyBtn}
+                                                                    <input type="text" placeholder={t.enter} value={puzzleInputs[puz.k] || ''} disabled={haltLockoutTimer > 0 || isVerifyingThis} onChange={(e) => setPuzzleInputs({ ...puzzleInputs, [puz.k]: e.target.value })} onKeyDown={(e) => e.key === 'Enter' && handleVerifyPuzzle(puz.k)} className={`w-full bg-slate-950 border ${hasError ? 'border-red-500 text-red-400' : 'border-slate-700 text-white focus:border-deloitte-green'} ${haltLockoutTimer > 0 ? 'opacity-40 cursor-not-allowed' : ''} rounded-xl p-2.5 text-center font-mono text-xs uppercase outline-none transition-colors`} />
+                                                                    <button type="button" disabled={haltLockoutTimer > 0 || isVerifyingThis} onClick={() => handleVerifyPuzzle(puz.k)} className={`bg-red-600 hover:bg-red-500 text-white px-3.5 rounded-xl text-xs font-mono font-bold uppercase transition-colors shrink-0 cursor-pointer ${haltLockoutTimer > 0 ? 'opacity-40 cursor-not-allowed' : ''}`}>
+                                                                        {isVerifyingThis ? <i className="fa-solid fa-circle-notch fa-spin"></i> : t.verifyBtn}
                                                                     </button>
                                                                 </div>
                                                             )}
