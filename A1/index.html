@@ -127,32 +127,80 @@
 <body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
 
   <!-- ==========================================================
-       MODAL 1: TEAM NUMBER ONBOARDING GATE
+       MODAL 1: ONBOARDING PROFILE GATE (TEAM + NICKNAME + SVG AVATAR)
        ========================================================== -->
-  <div id="teamGateModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
-    <div id="teamGateCard" class="bg-deloitte-cardbg border-2 border-deloitte-green/40 rounded-3xl p-6 max-w-xs w-full text-center space-y-5 card-shadow">
-      <div class="relative w-16 h-16 mx-auto">
-        <div class="absolute inset-0 rounded-2xl bg-deloitte-green/20 blur-md animate-pulse"></div>
-        <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-deloitte-green/30 to-deloitte-teal/40 border border-deloitte-green/50 flex items-center justify-center text-deloitte-green text-2xl shadow-lg">
-          <i class="fa-solid fa-users-viewfinder"></i>
+  <div id="teamGateModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/85 backdrop-blur-md p-3.5 overflow-y-auto">
+    <div id="teamGateCard" class="bg-deloitte-cardbg border-2 border-deloitte-green/40 rounded-3xl p-5 max-w-sm w-full space-y-4 card-shadow my-auto">
+      
+      <!-- Top Live Profile Preview & Randomize All Button -->
+      <div class="flex items-center justify-between bg-black/50 border border-white/10 rounded-2xl p-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div id="modalAvatarPreview" class="w-14 h-14 rounded-2xl overflow-hidden border-2 border-deloitte-green shadow-md shadow-deloitte-green/20 shrink-0 bg-black"></div>
+          <div class="text-left min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-mono font-extrabold px-1.5 py-0.5 rounded bg-deloitte-green/20 text-deloitte-green border border-deloitte-green/30" id="modalTeamPreviewBadge">TEAM #--</span>
+              <span id="modalAvatarTitleTag" class="text-[10px] text-gray-400 truncate">冰美式战神</span>
+            </div>
+            <div id="modalNicknamePreview" class="text-sm font-black text-white truncate mt-1">New Explorer</div>
+          </div>
         </div>
+
+        <button type="button" onclick="randomizeFullPersona()" class="button-press px-2.5 py-2 rounded-xl bg-deloitte-green/15 hover:bg-deloitte-green/25 border border-deloitte-green/40 text-deloitte-green text-xs font-bold flex flex-col items-center gap-0.5 shrink-0" title="Randomize Avatar & Nickname">
+          <i class="fa-solid fa-dice text-sm"></i>
+          <span class="text-[9px]" data-i18n="btnRandomAll">随机人设</span>
+        </button>
       </div>
 
-      <div class="space-y-1">
-        <h2 class="text-lg font-black text-white tracking-tight" data-i18n="teamModalTitle">绑定您的所属小组</h2>
-        <p id="teamModalSubtitle" class="text-xs text-gray-400">输入组号 (1 - 36)，实时追踪当前与下一站行程</p>
-      </div>
-
-      <form onsubmit="handleSaveTeamNumber(event)" class="space-y-4">
-        <div class="relative">
-          <input type="number" id="teamNumberInput" inputmode="numeric" min="1" max="36" placeholder="1 - 36" required
-            class="w-full bg-black/70 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-2xl py-3 px-4 text-center text-2xl font-black text-deloitte-green font-mono">
-          <span id="teamMaxSuffix" class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-mono text-gray-500">/ 36</span>
+      <form onsubmit="handleSaveTeamNumber(event)" class="space-y-3.5 text-left">
+        
+        <!-- 1. Team Number Input -->
+        <div>
+          <label class="block text-[11px] font-extrabold uppercase tracking-wider text-gray-300 mb-1">
+            1. <span data-i18n="teamModalTitle">选择所属小组</span>
+            <span id="teamModalSubtitle" class="text-[10px] font-normal text-gray-400 ml-1">(1 - 36)</span>
+          </label>
+          <div class="relative">
+            <input type="number" id="teamNumberInput" inputmode="numeric" min="1" max="36" placeholder="1 - 36" required
+              oninput="updateModalLivePreview()"
+              class="w-full bg-black/70 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-2 px-3.5 text-base font-black text-deloitte-green font-mono">
+            <span id="teamMaxSuffix" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-mono text-gray-500">/ 36</span>
+          </div>
         </div>
-        <p id="teamInputError" class="hidden text-xs text-rose-400 font-semibold"></p>
+
+        <!-- 2. Funny Nickname Input + Dice Button -->
+        <div>
+          <label class="block text-[11px] font-extrabold uppercase tracking-wider text-gray-300 mb-1">
+            2. <span data-i18n="lblModalNickname">输入你的趣味花名 (Nickname)</span>
+          </label>
+          <div class="flex gap-1.5">
+            <input type="text" id="modalNicknameInput" maxlength="16" required
+              oninput="updateModalLivePreview()"
+              placeholder="输入或点击右侧随机生成"
+              class="flex-1 bg-black/70 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-2 px-3 text-xs font-bold text-white">
+            <button type="button" onclick="rollRandomNickname()" class="button-press px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-bold text-amber-300 flex items-center gap-1 shrink-0">
+              <i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i>
+              <span data-i18n="btnRandomNick">随机花名</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Locally Generated Diverse & Funny SVG Avatar Grid -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-[11px] font-extrabold uppercase tracking-wider text-gray-300">
+              3. <span data-i18n="lblSelectAvatar">选择专属头像 (Avatar)</span>
+            </label>
+            <span class="text-[10px] text-gray-500" data-i18n="avatarSubHint">12 款趣味职场形象</span>
+          </div>
+          <div id="avatarPickerGrid" class="grid grid-cols-6 gap-2 bg-black/40 p-2.5 rounded-2xl border border-white/10">
+            <!-- 12 SVG Avatars rendered via JS -->
+          </div>
+        </div>
+
+        <p id="teamInputError" class="hidden text-xs text-rose-400 font-semibold text-center"></p>
 
         <button type="submit" class="button-press w-full py-3 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs tracking-wide shadow-lg shadow-deloitte-green/20 flex items-center justify-center gap-1.5">
-          <span data-i18n="teamModalSaveBtn">确认进入乐园</span>
+          <span data-i18n="teamModalSaveBtn">保存并进入德勤乐园</span>
           <i class="fa-solid fa-arrow-right text-[10px]"></i>
         </button>
       </form>
@@ -166,30 +214,29 @@
     <div class="max-w-md mx-auto px-4 h-15 py-2.5 flex items-center justify-between">
       
       <!-- Fun Animated DeloitteLand Logo -->
-      <div class="flex items-center gap-2.5 select-none">
-        <div onclick="handleDotEggClick()" class="relative w-9 h-9 rounded-xl bg-gradient-to-br from-deloitte-green/25 via-deloitte-teal/30 to-deloitte-navy/40 border border-deloitte-green/50 flex items-center justify-center shadow-md shadow-deloitte-green/15 cursor-pointer group">
+      <div class="flex items-center gap-2.5 select-none min-w-0">
+        <div onclick="handleDotEggClick()" class="relative w-9 h-9 rounded-xl bg-gradient-to-br from-deloitte-green/25 via-deloitte-teal/30 to-deloitte-navy/40 border border-deloitte-green/50 flex items-center justify-center shadow-md shadow-deloitte-green/15 cursor-pointer group shrink-0">
           <i class="fa-solid fa-rocket text-deloitte-green text-sm logo-float group-active:scale-125 transition-transform"></i>
           <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-deloitte-green border-2 border-[#080b11] animate-ping"></span>
           <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-deloitte-green border-2 border-[#080b11]"></span>
         </div>
-        <div>
+        <div class="min-w-0">
           <div class="flex items-baseline leading-none">
             <span class="font-black text-base tracking-tight text-white">Deloitte</span>
             <span class="font-black text-base tracking-tight text-deloitte-green">Land</span>
             <span id="easterDot" class="deloitte-dot" onclick="handleDotEggClick()"></span>
           </div>
-          <div class="flex items-center gap-1.5 mt-0.5">
-            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest" data-i18n="subTitle">学员端</span>
-            <button type="button" onclick="openTeamGateModal()" class="text-[9px] font-mono font-bold text-lime-300 bg-lime-400/15 border border-lime-400/30 px-1.5 py-0.2 rounded hover:bg-lime-400/25 transition-colors flex items-center gap-1">
-              <i class="fa-solid fa-pen text-[7px]"></i>
-              <span id="headerTeamBadge">TEAM #--</span>
-            </button>
-          </div>
+          <!-- User Avatar + Nickname + Team Pill (Click to edit profile) -->
+          <button type="button" onclick="openTeamGateModal()" class="mt-1 flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full pr-2 pl-0.5 py-0.5 transition-colors max-w-[190px]">
+            <div id="headerAvatarIcon" class="w-4 h-4 rounded-full overflow-hidden shrink-0"></div>
+            <span id="headerNicknameText" class="text-[10px] font-bold text-gray-200 truncate">Rookie</span>
+            <span id="headerTeamBadge" class="text-[9px] font-mono font-extrabold text-lime-300 bg-lime-400/15 px-1 rounded shrink-0">#--</span>
+          </button>
         </div>
       </div>
 
       <!-- Right Action Tools -->
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 shrink-0">
         <button type="button" onclick="triggerEnergyBooster()" class="button-press w-8 h-8 rounded-full bg-deloitte-green/15 hover:bg-deloitte-green/25 border border-deloitte-green/40 text-deloitte-green flex items-center justify-center text-xs shadow-sm shadow-deloitte-green/20" title="Daily Energy Boost">
           <i class="fa-solid fa-wand-magic-sparkles"></i>
         </button>
@@ -256,7 +303,7 @@
 
           <div class="flex items-center gap-1.5">
             <button type="button" onclick="openTeamGateModal()" class="button-press px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-bold text-lime-300 flex items-center gap-1">
-              <i class="fa-solid fa-users text-[9px]"></i>
+              <i class="fa-solid fa-user-pen text-[9px]"></i>
               <span id="fpCardTeamLabel">组号</span>
             </button>
             <button type="button" onclick="openAppView('fastpass')"
@@ -267,7 +314,7 @@
           </div>
         </div>
 
-        <!-- Dynamic Current & Next Station Container (Tap to open full FastPass drawer) -->
+        <!-- Dynamic Current & Next Station Container -->
         <div id="fpLiveStationsBox" onclick="openAppView('fastpass')" class="grid grid-cols-2 gap-2.5 pt-0.5 cursor-pointer">
           <!-- Populated dynamically via JS -->
         </div>
@@ -405,7 +452,7 @@
       </div>
     </div>
 
-    <!-- 05. Participant Live Message Board (Rate-limited 1 msg / 60s) -->
+    <!-- 05. Participant Live Message Board (With User SVG Avatar + 60s Rate Limit) -->
     <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -421,13 +468,23 @@
       </div>
 
       <form onsubmit="handlePostMessage(event)" class="space-y-2 bg-black/40 p-2.5 rounded-xl border border-white/10">
-        <div class="grid grid-cols-3 gap-2">
-          <input id="msgNickname" type="text" placeholder="昵称" maxlength="15" required
-            class="col-span-1 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-gray-600">
-          <input id="msgContent" type="text" placeholder="说点什么为队友打气..." maxlength="100" required
-            class="col-span-2 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-gray-600">
+        <!-- Active Sender Identity Bar -->
+        <div class="flex items-center justify-between pb-1 border-b border-white/5">
+          <div class="flex items-center gap-2 min-w-0">
+            <div id="msgSenderAvatar" class="w-6 h-6 rounded-lg overflow-hidden border border-teal-400/50 shrink-0"></div>
+            <span id="msgSenderNameDisplay" class="text-xs font-bold text-teal-300 truncate">New Explorer</span>
+            <span id="msgSenderTeamDisplay" class="text-[10px] font-mono text-gray-400 shrink-0">#--</span>
+          </div>
+          <button type="button" onclick="openTeamGateModal()" class="text-[10px] text-gray-400 hover:text-white flex items-center gap-1 shrink-0">
+            <i class="fa-solid fa-sliders text-[9px] text-teal-400"></i>
+            <span data-i18n="btnEditProfile">改人设</span>
+          </button>
         </div>
-        <div class="flex items-center justify-between pt-1">
+
+        <input id="msgContent" type="text" placeholder="说点什么为队友打气..." maxlength="100" required
+          class="w-full bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-lg px-2.5 py-2 text-xs text-white placeholder-gray-600">
+
+        <div class="flex items-center justify-between pt-0.5">
           <div id="msgCooldownStatus" class="text-[10px] text-gray-400 flex items-center gap-1">
             <i class="fa-regular fa-clock text-[9px] text-teal-400"></i>
             <span data-i18n="msgFriendlyTip">友善互动 · 60秒冷却防刷屏</span>
@@ -440,7 +497,7 @@
         </div>
       </form>
 
-      <div id="messageListContainer" class="max-h-60 overflow-y-auto space-y-2 pr-0.5"></div>
+      <div id="messageListContainer" class="max-h-64 overflow-y-auto space-y-2 pr-0.5"></div>
     </div>
 
     <!-- Hidden Easter Egg Trigger Area -->
@@ -456,7 +513,6 @@
        IN-APP SLIDE-OVER VIEW 1: BUNDLED NATIVE FASTPASS SCHEDULE
        ========================================================== -->
   <div id="appView-fastpass" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
-    <!-- App View Top Bar -->
     <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
       <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
         <button type="button" onclick="closeAppView()" class="button-press px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white flex items-center gap-1.5">
@@ -470,17 +526,14 @@
         </div>
 
         <button type="button" onclick="openTeamGateModal()" class="button-press px-3 py-1.5 rounded-xl bg-lime-400/15 hover:bg-lime-400/25 border border-lime-400/30 text-xs font-bold text-lime-300 flex items-center gap-1">
-          <i class="fa-solid fa-users text-[10px]"></i>
+          <i class="fa-solid fa-user-pen text-[10px]"></i>
           <span data-i18n="fpChangeTeamBtn">换组</span>
         </button>
       </div>
     </div>
 
-    <!-- Bundled FastPass Timetable Body -->
     <div class="flex-1 overflow-y-auto p-4 safe-bottom">
       <div class="max-w-2xl mx-auto space-y-4">
-        
-        <!-- Team Banner Card -->
         <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex items-center justify-between">
           <div>
             <div class="flex items-center gap-1.5">
@@ -495,7 +548,6 @@
           </div>
         </div>
 
-        <!-- 6-Round Schedule Table -->
         <div class="bg-deloitte-cardbg border border-white/10 rounded-2xl overflow-hidden card-shadow">
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -507,9 +559,7 @@
                   <th class="py-3 px-3.5 text-right" data-i18n="thStatus">状态</th>
                 </tr>
               </thead>
-              <tbody id="fpDrawerTableBody" class="divide-y divide-white/5 text-xs">
-                <!-- Populated dynamically via JS -->
-              </tbody>
+              <tbody id="fpDrawerTableBody" class="divide-y divide-white/5 text-xs"></tbody>
             </table>
           </div>
           <div class="px-4 py-3 border-t border-white/10 bg-black/30 flex items-center justify-between text-[11px] text-gray-400">
@@ -517,7 +567,6 @@
             <span id="fpDrawerFooterScale" class="font-mono text-gray-500">FastPass</span>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -560,13 +609,11 @@
           <span data-i18n="btnBackToHub">返回</span>
         </button>
 
-        <!-- In-App Node Switcher Pills -->
         <div class="flex items-center gap-1 overflow-x-auto no-scrollbar bg-black/50 p-1 rounded-xl border border-white/10">
           <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/sunrise', 0)" id="srNodeBtn-0"
             class="button-press px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-amber-400 text-black whitespace-nowrap">
             <span data-i18n="portalHome">主站</span>
           </button>
-          <!--
           <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/diyiguan', 1)" id="srNodeBtn-1"
             class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold text-gray-300 hover:text-white whitespace-nowrap">
             Node 1
@@ -579,7 +626,6 @@
             class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold text-gray-300 hover:text-white whitespace-nowrap">
             Node 3
           </button>
-          -->
         </div>
 
         <button type="button" onclick="reloadSunriseIframe()" class="button-press w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 flex items-center justify-center text-xs shrink-0" title="Reload">
@@ -624,6 +670,104 @@
     }
 
     /* ==========================================================
+       LOCALLY GENERATED FUNNY & DIVERSE SVG AVATARS (12 ARCHETYPES)
+       ========================================================== */
+    const SVG_AVATARS = [
+      {
+        id: 0,
+        zh: "冰美式战神",
+        en: "Espresso Ninja",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#004F59"/><circle cx="50" cy="56" r="28" fill="#FCD5B5"/><path d="M20 46 Q25 15 55 20 Q80 15 82 46 Z" fill="#1E293B"/><circle cx="39" cy="52" r="7" fill="#FFF"/><circle cx="61" cy="52" r="7" fill="#FFF"/><circle cx="39" cy="52" r="3" fill="#080b11"/><circle cx="61" cy="52" r="3" fill="#080b11"/><path d="M32 60 Q39 63 46 60" stroke="#94A3B8" stroke-width="2" fill="none"/><path d="M54 60 Q61 63 68 60" stroke="#94A3B8" stroke-width="2" fill="none"/><path d="M42 68 Q50 75 58 68" stroke="#080b11" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="64" y="64" width="18" height="24" rx="3" fill="#FFF" stroke="#080b11" stroke-width="2"/><rect x="66" y="70" width="14" height="14" fill="#78350F"/><line x1="70" y1="64" x2="54" y2="69" stroke="#86BC25" stroke-width="3" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 1,
+        zh: "墨镜控场王",
+        en: "Deal-With-It Pro",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#002776"/><circle cx="30" cy="34" r="18" fill="#111827"/><circle cx="70" cy="34" r="18" fill="#111827"/><circle cx="50" cy="26" r="20" fill="#111827"/><circle cx="50" cy="58" r="27" fill="#8D5524"/><rect x="24" y="45" width="22" height="11" fill="#080b11"/><rect x="54" y="45" width="22" height="11" fill="#080b11"/><rect x="46" y="47" width="8" height="4" fill="#080b11"/><rect x="27" y="47" width="6" height="3" fill="#FFF"/><rect x="57" y="47" width="6" height="3" fill="#FFF"/><path d="M40 69 Q53 74 62 65" stroke="#FFF" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="78" cy="22" r="6" fill="#86BC25"/></svg>`
+      },
+      {
+        id: 2,
+        zh: "AI 赛博新星",
+        en: "AI Era Cyborg",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#0F172A"/><line x1="50" y1="6" x2="50" y2="22" stroke="#86BC25" stroke-width="4"/><circle cx="50" cy="8" r="6" fill="#86BC25"/><circle cx="50" cy="58" r="27" fill="#F3C299"/><polygon points="22,42 35,18 48,34 56,16 68,34 80,22 78,44" fill="#E2E8F0"/><rect x="24" y="44" width="52" height="14" rx="7" fill="#080b11" stroke="#38BDF8" stroke-width="2"/><line x1="30" y1="51" x2="70" y2="51" stroke="#86BC25" stroke-width="3"/><path d="M42 69 Q50 74 58 69" stroke="#080b11" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 3,
+        zh: "透视表大法师",
+        en: "Deck Wizard",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#311042"/><circle cx="50" cy="62" r="26" fill="#FFDBAC"/><polygon points="14,42 86,42 50,6" fill="#002776" stroke="#86BC25" stroke-width="2"/><ellipse cx="50" cy="42" rx="38" ry="6" fill="#002776" stroke="#86BC25" stroke-width="2"/><circle cx="50" cy="26" r="5" fill="#86BC25"/><circle cx="39" cy="58" r="8" stroke="#F59E0B" stroke-width="2.5" fill="none"/><circle cx="61" cy="58" r="8" stroke="#F59E0B" stroke-width="2.5" fill="none"/><line x1="47" y1="58" x2="53" y2="58" stroke="#F59E0B" stroke-width="2.5"/><circle cx="39" cy="58" r="3" fill="#080b11"/><circle cx="61" cy="58" r="3" fill="#080b11"/><path d="M43 72 Q50 78 57 72" stroke="#080b11" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 4,
+        zh: "奶茶续命喵",
+        en: "Boba Cat Coder",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#1E1B4B"/><polygon points="22,42 26,16 42,32" fill="#EC4899" stroke="#FFF" stroke-width="2"/><polygon points="78,42 74,16 58,32" fill="#EC4899" stroke="#FFF" stroke-width="2"/><circle cx="50" cy="58" r="27" fill="#FCD5B5"/><path d="M22 52 Q24 26 50 28 Q76 26 78 52" fill="#7C2D12"/><circle cx="38" cy="55" r="3.5" fill="#080b11"/><path d="M56 55 Q61 50 66 55" stroke="#080b11" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="31" cy="62" r="4" fill="#F472B6" opacity="0.6"/><circle cx="69" cy="62" r="4" fill="#F472B6" opacity="0.6"/><path d="M44 66 Q47 70 50 66 Q53 70 56 66" stroke="#080b11" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 5,
+        zh: "佛系对齐大师",
+        en: "Zen Aligner",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#064E3B"/><circle cx="50" cy="54" r="38" fill="none" stroke="#86BC25" stroke-width="2" stroke-dasharray="4 4"/><circle cx="50" cy="20" r="11" fill="#1F2937"/><circle cx="50" cy="58" r="26" fill="#D49A6A"/><path d="M24 52 Q30 30 50 30 Q70 30 76 52" fill="#1F2937"/><circle cx="50" cy="43" r="4.5" fill="#86BC25"/><path d="M34 55 Q39 59 44 55" stroke="#080b11" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M56 55 Q61 59 66 55" stroke="#080b11" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M41 68 Q50 74 59 68" stroke="#080b11" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 6,
+        zh: "绿点摇滚客",
+        en: "Green Dot Rocker",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#111827"/><polygon points="44,34 40,8 50,14 60,6 56,34" fill="#86BC25"/><circle cx="50" cy="58" r="26" fill="#E0AC69"/><polygon points="38,44 41,52 49,52 43,57 45,65 38,60 31,65 33,57 27,52 35,52" fill="#F59E0B"/><circle cx="61" cy="54" r="3.5" fill="#080b11"/><path d="M40 68 Q50 78 60 68 Z" fill="#FFF" stroke="#080b11" stroke-width="2"/></svg>`
+      },
+      {
+        id: 7,
+        zh: "明察秋毫神探",
+        en: "Audit Detective",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#1E293B"/><circle cx="50" cy="60" r="26" fill="#FCD5B5"/><path d="M20 44 Q50 18 80 44 Z" fill="#92400E" stroke="#78350F" stroke-width="2"/><ellipse cx="50" cy="44" rx="34" ry="5" fill="#78350F"/><circle cx="38" cy="56" r="3.5" fill="#080b11"/><circle cx="62" cy="56" r="10" fill="rgba(56,189,248,0.25)" stroke="#F59E0B" stroke-width="3"/><circle cx="62" cy="56" r="5" fill="#080b11"/><line x1="70" y1="62" x2="78" y2="74" stroke="#F59E0B" stroke-width="3"/><path d="M38 69 Q44 65 50 69 Q56 65 62 69" stroke="#451A03" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 8,
+        zh: "敏捷看板忍者",
+        en: "Agile Ninja",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#004F59"/><circle cx="50" cy="54" r="28" fill="#111827"/><rect x="25" y="43" width="50" height="16" rx="6" fill="#F3C299"/><rect x="22" y="34" width="56" height="9" fill="#86BC25"/><circle cx="50" cy="38.5" r="3" fill="#080b11"/><line x1="33" y1="48" x2="43" y2="51" stroke="#080b11" stroke-width="2.5" stroke-linecap="round"/><line x1="67" y1="48" x2="57" y2="51" stroke="#080b11" stroke-width="2.5" stroke-linecap="round"/><circle cx="39" cy="53" r="3" fill="#080b11"/><circle cx="61" cy="53" r="3" fill="#080b11"/></svg>`
+      },
+      {
+        id: 9,
+        zh: "合伙人狮子王",
+        en: "Partner Lion",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#002776"/><circle cx="50" cy="56" r="34" fill="#B45309"/><circle cx="50" cy="56" r="24" fill="#F59E0B"/><polygon points="34,26 42,12 50,22 58,12 66,26" fill="#FDE047" stroke="#CA8A04" stroke-width="1.5"/><circle cx="41" cy="52" r="3.5" fill="#080b11"/><circle cx="59" cy="52" r="7" stroke="#FEF08A" stroke-width="2" fill="none"/><circle cx="59" cy="52" r="3" fill="#080b11"/><polygon points="46,60 54,60 50,65" fill="#78350F"/><path d="M42 69 Q50 74 58 69" stroke="#080b11" stroke-width="2.5" fill="none" stroke-linecap="round"/><polygon points="40,80 50,85 40,90" fill="#86BC25"/><polygon points="60,80 50,85 60,90" fill="#86BC25"/><circle cx="50" cy="85" r="3" fill="#FFF"/></svg>`
+      },
+      {
+        id: 10,
+        zh: "星际探索宇航员",
+        en: "Astro Explorer",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#080B11"/><circle cx="18" cy="20" r="3" fill="#86BC25"/><circle cx="84" cy="28" r="2" fill="#FFF"/><circle cx="50" cy="54" r="33" fill="#E2E8F0" stroke="#94A3B8" stroke-width="3"/><circle cx="50" cy="54" r="24" fill="#8D5524"/><path d="M26 48 Q50 32 74 48" fill="none" stroke="#38BDF8" stroke-width="2" opacity="0.7"/><circle cx="40" cy="52" r="3.5" fill="#FFF"/><circle cx="60" cy="52" r="3.5" fill="#FFF"/><path d="M42 64 Q50 72 58 64" stroke="#FFF" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`
+      },
+      {
+        id: 11,
+        zh: "深夜赶稿极客",
+        en: "Midnight Hacker",
+        svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#0F172A"/><path d="M16 86 Q18 20 50 20 Q82 20 84 86 Z" fill="#1E293B" stroke="#86BC25" stroke-width="2"/><circle cx="50" cy="58" r="23" fill="#FFDBAC"/><rect x="30" y="48" width="17" height="11" rx="2" fill="#38BDF8" opacity="0.85"/><rect x="53" y="48" width="17" height="11" rx="2" fill="#38BDF8" opacity="0.85"/><line x1="47" y1="53" x2="53" y2="53" stroke="#FFF" stroke-width="2"/><path d="M44 70 L56 68" stroke="#080b11" stroke-width="2.5" stroke-linecap="round"/></svg>`
+      }
+    ];
+
+    /* ==========================================================
+       FUNNY RANDOM NICKNAME POOL (BILINGUAL)
+       ========================================================== */
+    const FUNNY_NICKNAMES = {
+      zh: [
+        "PPT纺织厂厂长", "Excel野生驯兽师", "Ctrl+S信仰者", "冰美式永动机",
+        "茶水间潜伏者", "颗粒度对齐大师", "底层逻辑建筑师", "死线冲浪手",
+        "VLOOKUP魔法师", "会议室气氛组", "带薪思考家", "绿点守护者",
+        "闭环捕手", "赋能先锋", "波霸奶茶股东", "全村的希望",
+        "永不报错锦鲤", "键盘钢琴家", "早八特困生", "日出计划特工"
+      ],
+      en: [
+        "Deck Ninja", "Pivot Wizard", "Ctrl+S Believer", "Espresso Engine",
+        "Snack Bar VIP", "Granular Aligner", "Synergy Master", "Deadline Surfer",
+        "VLOOKUP Sorcerer", "Vibe Manager", "Thinker-in-Chief", "Green Dot Hero",
+        "Loop Closer", "Boba Shareholder", "Zero-Bug Koi", "Slide Architect",
+        "120% Bandwidth", "Phase 1 Pilot", "MECE Champion", "Sunrise Agent"
+      ]
+    };
+
+    /* ==========================================================
        BILINGUAL (EN/ZH) I18N DICTIONARY
        ========================================================== */
     const I18N = {
@@ -631,10 +775,15 @@
         langToggle: "EN",
         subTitle: "学员端",
         btnBackToHub: "返回",
-        teamModalTitle: "绑定您的所属小组",
-        teamModalSub: (max) => `请输入组号 (1 - ${max})，自动同步当前与下一站行程`,
-        teamModalSaveBtn: "确认进入乐园",
+        btnRandomAll: "随机人设",
+        teamModalTitle: "选择所属小组",
+        lblModalNickname: "输入你的趣味花名 (Nickname)",
+        btnRandomNick: "随机花名",
+        lblSelectAvatar: "选择专属头像 (Avatar)",
+        avatarSubHint: "12 款趣味职场形象",
+        teamModalSaveBtn: "保存并进入德勤乐园",
         teamErrRange: (max) => `请输入 1 至 ${max} 之间的有效组号`,
+        btnEditProfile: "改人设",
         announcementTag: "现场广播",
         noAnnouncement: "暂无现场广播通知",
         fastpassTitle: "FastPass 实时行程",
@@ -651,14 +800,14 @@
         statusNext: "下一站",
         statusDone: "已完成",
         statusWaiting: "待开始",
-        fpFooterDuration: "每环节 30 分钟 · 轮转 10 分钟",
+        fpFooterDuration: "每环节 30 分钟 · 轮转 10 分钟 (含茶歇)",
         fpCurrentLabel: "当前环节",
         fpNextLabel: "下一环节",
         fpBefore1330: "下午场活动将于 13:30 准时开启",
         fpAfter1800: "今日 13:30 - 18:00 站点轮转已圆满结束",
         fpBreakRotation: "换场与茶歇时间",
         fpAllDone: "全部轮次已完成",
-        fpSelectTeamPrompt: "点击此处选择您的组号以显示实时站点",
+        fpSelectTeamPrompt: "点击此处设置您的小组与专属花名头像",
         drushSub: "点击直接进入游戏 · 刷最高分",
         drushNoRecord: "虚位以待",
         sunriseGateTitle: "日出计划秘钥",
@@ -685,9 +834,8 @@
         emptyLeaderboard: "暂无赛段积分记录，请等待站点录入...",
         msgBoardTitle: "互动留言墙",
         msgBoardSub: "团队打气与现场心得交流（每分钟限发 1 条）",
-        nicknamePlaceholder: "昵称",
         msgPlaceholder: "说点什么为队友打气...",
-        msgFriendlyTip: "友善互动",
+        msgFriendlyTip: "友善互动 · 60秒冷却防刷屏",
         msgCooldownWait: (s) => `请等待 ${s} 秒后再发送`,
         emptyMessages: "暂无互动留言，快来发送第一条打气弹幕吧！",
         btnSendMsg: "发送",
@@ -701,10 +849,15 @@
         langToggle: "中",
         subTitle: "Participant",
         btnBackToHub: "Back",
+        btnRandomAll: "Random",
         teamModalTitle: "Select Your Team Number",
-        teamModalSub: (max) => `Enter Team # (1 - ${max}) to track your live station route`,
-        teamModalSaveBtn: "Confirm & Enter",
+        lblModalNickname: "Your Fun Nickname",
+        btnRandomNick: "Shuffle",
+        lblSelectAvatar: "Choose Your Avatar",
+        avatarSubHint: "12 Quirky Archetypes",
+        teamModalSaveBtn: "Save & Enter Hub",
         teamErrRange: (max) => `Please enter a valid team number between 1 and ${max}`,
+        btnEditProfile: "Edit Profile",
         announcementTag: "Live Broadcast",
         noAnnouncement: "No active broadcast from host yet.",
         fastpassTitle: "FastPass Live Route",
@@ -721,14 +874,14 @@
         statusNext: "UP NEXT",
         statusDone: "Done",
         statusWaiting: "Upcoming",
-        fpFooterDuration: "30m Session · 10m Rotation",
+        fpFooterDuration: "30m Session · 10m Rotation (incl. break)",
         fpCurrentLabel: "CURRENT STATION",
         fpNextLabel: "UP NEXT",
         fpBefore1330: "Afternoon rotations begin at 1:30 PM",
         fpAfter1800: "1:30 PM - 6:00 PM rotations have concluded",
         fpBreakRotation: "Rotation / Break Time",
         fpAllDone: "All stations completed",
-        fpSelectTeamPrompt: "Tap here to set your team number",
+        fpSelectTeamPrompt: "Tap here to set your team, nickname & avatar",
         drushSub: "Tap to launch game & beat the record",
         drushNoRecord: "No record yet",
         sunriseGateTitle: "Project Sunrise Vault",
@@ -754,8 +907,7 @@
         st5: "The AI Era",
         emptyLeaderboard: "No scores recorded yet. Standings will appear once judges submit scores.",
         msgBoardTitle: "Community Board",
-        msgBoardSub: "Share cheers & notes",
-        nicknamePlaceholder: "Nickname",
+        msgBoardSub: "Share cheers & notes (1 msg / min limit)",
         msgPlaceholder: "Cheer for your team...",
         msgFriendlyTip: "Friendly Community · 60s cooldown",
         msgCooldownWait: (s) => `Wait ${s}s before next post`,
@@ -772,7 +924,180 @@
     let currentLang = localStorage.getItem('participant_lang') || 'zh';
     let currentCohortScale = parseInt(localStorage.getItem('participant_cohort_scale') || '36', 10);
     let participantTeamNumber = parseInt(localStorage.getItem('participant_team_num') || '0', 10) || null;
+    let participantNickname = localStorage.getItem('participant_nickname') || '';
+    let participantAvatarId = parseInt(localStorage.getItem('participant_avatar_id') || '0', 10);
+    if (isNaN(participantAvatarId) || participantAvatarId < 0 || participantAvatarId >= SVG_AVATARS.length) {
+      participantAvatarId = 0;
+    }
     let currentRawAnnouncementData = null;
+
+    /* ==========================================================
+       AVATAR & PROFILE MODAL LOGIC
+       ========================================================== */
+    function getAvatarSvgById(id) {
+      const idx = Math.abs(parseInt(id, 10) || 0) % SVG_AVATARS.length;
+      return SVG_AVATARS[idx].svg;
+    }
+
+    function renderAvatarPickerGrid() {
+      const grid = document.getElementById('avatarPickerGrid');
+      if (!grid) return;
+
+      grid.innerHTML = SVG_AVATARS.map(av => {
+        const isSelected = av.id === participantAvatarId;
+        const borderCls = isSelected
+          ? "border-2 border-deloitte-green ring-2 ring-deloitte-green/40 scale-105"
+          : "border border-white/15 opacity-75 hover:opacity-100";
+        return `
+          <button type="button" onclick="selectAvatar(${av.id})"
+            class="button-press aspect-square rounded-xl overflow-hidden transition-all ${borderCls}"
+            title="${currentLang === 'zh' ? av.zh : av.en}">
+            ${av.svg}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectAvatar(id) {
+      participantAvatarId = id;
+      renderAvatarPickerGrid();
+      updateModalLivePreview();
+    }
+
+    function rollRandomNickname() {
+      const pool = FUNNY_NICKNAMES[currentLang];
+      const currentVal = document.getElementById('modalNicknameInput')?.value.trim();
+      let picked = pool[Math.floor(Math.random() * pool.length)];
+      if (pool.length > 1 && picked === currentVal) {
+        picked = pool[(pool.indexOf(picked) + 1) % pool.length];
+      }
+      const input = document.getElementById('modalNicknameInput');
+      if (input) input.value = picked;
+      updateModalLivePreview();
+    }
+
+    function randomizeFullPersona() {
+      participantAvatarId = Math.floor(Math.random() * SVG_AVATARS.length);
+      renderAvatarPickerGrid();
+      rollRandomNickname();
+    }
+
+    function updateModalLivePreview() {
+      const previewBox = document.getElementById('modalAvatarPreview');
+      const teamBadge = document.getElementById('modalTeamPreviewBadge');
+      const avatarTag = document.getElementById('modalAvatarTitleTag');
+      const nickPreview = document.getElementById('modalNicknamePreview');
+
+      const teamVal = document.getElementById('teamNumberInput')?.value.trim();
+      const nickVal = document.getElementById('modalNicknameInput')?.value.trim();
+      const avObj = SVG_AVATARS[participantAvatarId] || SVG_AVATARS[0];
+
+      if (previewBox) previewBox.innerHTML = avObj.svg;
+      if (teamBadge) teamBadge.textContent = teamVal ? `TEAM #${String(teamVal).padStart(2, '0')}` : 'TEAM #--';
+      if (avatarTag) avatarTag.textContent = currentLang === 'zh' ? avObj.zh : avObj.en;
+      if (nickPreview) nickPreview.textContent = nickVal || (currentLang === 'zh' ? '未命名新星' : 'New Explorer');
+    }
+
+    function syncProfileToHeaderAndBoard() {
+      const avSvg = getAvatarSvgById(participantAvatarId);
+      const teamStr = participantTeamNumber ? `#${String(participantTeamNumber).padStart(2, '0')}` : '#--';
+      const displayNick = participantNickname || (currentLang === 'zh' ? '未命名' : 'Explorer');
+
+      const headerAv = document.getElementById('headerAvatarIcon');
+      const headerNick = document.getElementById('headerNicknameText');
+      const headerTeam = document.getElementById('headerTeamBadge');
+
+      if (headerAv) headerAv.innerHTML = avSvg;
+      if (headerNick) headerNick.textContent = displayNick;
+      if (headerTeam) headerTeam.textContent = teamStr;
+
+      const senderAv = document.getElementById('msgSenderAvatar');
+      const senderName = document.getElementById('msgSenderNameDisplay');
+      const senderTeam = document.getElementById('msgSenderTeamDisplay');
+
+      if (senderAv) senderAv.innerHTML = avSvg;
+      if (senderName) senderName.textContent = displayNick;
+      if (senderTeam) senderTeam.textContent = `Team ${teamStr}`;
+
+      // Sync to D-Rush localStorage
+      if (participantNickname) {
+        const drushName = participantTeamNumber
+          ? `${participantNickname} (#${participantTeamNumber})`
+          : participantNickname;
+        try { localStorage.setItem('drush_player_name', drushName); } catch (e) {}
+      }
+    }
+
+    function openTeamGateModal() {
+      const modal = document.getElementById('teamGateModal');
+      const teamInput = document.getElementById('teamNumberInput');
+      const nickInput = document.getElementById('modalNicknameInput');
+      const subtitle = document.getElementById('teamModalSubtitle');
+      const suffix = document.getElementById('teamMaxSuffix');
+      const err = document.getElementById('teamInputError');
+
+      if (err) err.classList.add('hidden');
+      if (teamInput) {
+        teamInput.max = currentCohortScale;
+        teamInput.placeholder = `1 - ${currentCohortScale}`;
+        teamInput.value = participantTeamNumber || '';
+      }
+      if (nickInput) {
+        if (!participantNickname) {
+          const pool = FUNNY_NICKNAMES[currentLang];
+          nickInput.value = pool[Math.floor(Math.random() * pool.length)];
+        } else {
+          nickInput.value = participantNickname;
+        }
+      }
+      if (subtitle) subtitle.textContent = `(1 - ${currentCohortScale})`;
+      if (suffix) suffix.textContent = `/ ${currentCohortScale}`;
+
+      renderAvatarPickerGrid();
+      updateModalLivePreview();
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function handleSaveTeamNumber(e) {
+      e.preventDefault();
+      const teamInput = document.getElementById('teamNumberInput');
+      const nickInput = document.getElementById('modalNicknameInput');
+      const err = document.getElementById('teamInputError');
+      const card = document.getElementById('teamGateCard');
+
+      const val = parseInt(teamInput.value, 10);
+      const nickVal = (nickInput.value || '').trim();
+
+      if (isNaN(val) || val < 1 || val > currentCohortScale) {
+        err.textContent = I18N[currentLang].teamErrRange(currentCohortScale);
+        err.classList.remove('hidden');
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+        return;
+      }
+
+      if (!nickVal) {
+        rollRandomNickname();
+      }
+
+      participantTeamNumber = val;
+      participantNickname = (nickInput.value || '').trim();
+
+      localStorage.setItem('participant_team_num', String(participantTeamNumber));
+      localStorage.setItem('participant_nickname', participantNickname);
+      localStorage.setItem('participant_avatar_id', String(participantAvatarId));
+
+      syncProfileToHeaderAndBoard();
+
+      const modal = document.getElementById('teamGateModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      renderLiveFastPassPanel();
+      if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
+    }
 
     /* ==========================================================
        IN-APP SLIDE-OVER VIEW STACK & HISTORY API CONTROLLER
@@ -794,8 +1119,7 @@
       if (viewName === 'fastpass') {
         renderBundledFastPassDrawer();
       } else if (viewName === 'drush') {
-        const nick = document.getElementById('msgNickname')?.value.trim() || (participantTeamNumber ? `Team ${String(participantTeamNumber).padStart(2, '0')}` : 'A1 Analyst');
-        try { localStorage.setItem('drush_player_name', nick); } catch (e) {}
+        syncProfileToHeaderAndBoard();
         const iframe = document.getElementById('drushAppIframe');
         if (iframe && iframe.src === 'about:blank') {
           iframe.src = 'https://www.projectsunrise.win/game';
@@ -906,7 +1230,6 @@
       { start: '17:20', end: '17:50', startMin: 1040, endMin: 1070 }
     ];
 
-    // 24-Team Matrix (Teams 1 - 24)
     const SCHEDULE_MATRIX_24 = [
       [0, 1, 2, 3, 4, 5], [3, 0, 1, 5, 4, 2], [5, 3, 4, 2, 0, 1], [2, 0, 3, 5, 1, 4],
       [4, 2, 0, 5, 1, 3], [0, 5, 1, 4, 2, 3], [4, 0, 2, 1, 3, 5], [3, 4, 5, 0, 2, 1],
@@ -916,7 +1239,6 @@
       [1, 5, 0, 4, 3, 2], [1, 4, 5, 3, 0, 2], [4, 5, 2, 0, 3, 1], [3, 2, 1, 4, 5, 0]
     ];
 
-    // 36-Team Matrix (Teams 1 - 36)
     const SCHEDULE_MATRIX_36 = [
       [0, 1, 2, 3, 4, 5], [1, 2, 3, 4, 5, 0], [2, 3, 4, 5, 0, 1], [3, 4, 5, 0, 1, 2],
       [4, 5, 0, 1, 2, 3], [5, 0, 1, 2, 3, 4], [0, 2, 4, 1, 3, 5], [1, 3, 5, 2, 4, 0],
@@ -929,16 +1251,13 @@
       [2, 4, 1, 3, 0, 5], [3, 5, 2, 4, 1, 0], [4, 0, 3, 5, 2, 1], [5, 1, 4, 0, 3, 2]
     ];
 
-    // Explicit 48-Team Matrix (Teams 1 - 48)
     const SCHEDULE_MATRIX_48 = [
-      // Teams 1 - 24
       [0, 1, 2, 3, 4, 5], [3, 0, 1, 5, 4, 2], [5, 3, 4, 2, 0, 1], [2, 0, 3, 5, 1, 4],
       [4, 2, 0, 5, 1, 3], [0, 5, 1, 4, 2, 3], [4, 0, 2, 1, 3, 5], [3, 4, 5, 0, 2, 1],
       [2, 1, 3, 4, 0, 5], [1, 2, 0, 3, 5, 4], [5, 3, 0, 2, 4, 1], [1, 0, 3, 5, 2, 4],
       [5, 4, 2, 1, 3, 0], [3, 1, 5, 2, 4, 0], [0, 4, 1, 3, 5, 2], [2, 5, 4, 0, 1, 3],
       [5, 3, 4, 1, 2, 0], [0, 3, 5, 2, 1, 4], [2, 1, 4, 0, 5, 3], [4, 2, 3, 1, 0, 5],
       [1, 5, 0, 4, 3, 2], [1, 4, 5, 3, 0, 2], [4, 5, 2, 0, 3, 1], [3, 2, 1, 4, 5, 0],
-      // Teams 25 - 48
       [0, 1, 2, 3, 4, 5], [3, 0, 1, 5, 4, 2], [5, 3, 4, 2, 0, 1], [2, 0, 3, 5, 1, 4],
       [4, 2, 0, 5, 1, 3], [0, 5, 1, 4, 2, 3], [4, 0, 2, 1, 3, 5], [3, 4, 5, 0, 2, 1],
       [2, 1, 3, 4, 0, 5], [1, 2, 0, 3, 5, 4], [5, 3, 0, 2, 4, 1], [1, 0, 3, 5, 2, 4],
@@ -1077,13 +1396,9 @@
 
     function renderLiveFastPassPanel() {
       const box = document.getElementById('fpLiveStationsBox');
-      const headerBadge = document.getElementById('headerTeamBadge');
       const cardTeamBtn = document.getElementById('fpCardTeamLabel');
       const t = I18N[currentLang];
 
-      if (headerBadge) {
-        headerBadge.textContent = participantTeamNumber ? `TEAM #${participantTeamNumber}` : (currentLang === 'zh' ? '选择组号' : 'SET TEAM');
-      }
       if (cardTeamBtn) {
         cardTeamBtn.textContent = participantTeamNumber ? `#${participantTeamNumber}` : (currentLang === 'zh' ? '选组号' : 'Team');
       }
@@ -1102,7 +1417,6 @@
       const now = new Date();
       const currentMin = now.getHours() * 60 + now.getMinutes();
 
-      // Strictly only show station activities between 1:30 PM (810m) and 6:00 PM (1080m)
       const WINDOW_START = 13 * 60 + 30; // 13:30 (810)
       const WINDOW_END = 18 * 60;        // 18:00 (1080)
 
@@ -1219,63 +1533,6 @@
       }
 
       box.innerHTML = currentHtml + nextHtml;
-    }
-
-    /* ==========================================================
-       TEAM SELECTION MODAL HANDLERS
-       ========================================================== */
-    function openTeamGateModal() {
-      const modal = document.getElementById('teamGateModal');
-      const input = document.getElementById('teamNumberInput');
-      const subtitle = document.getElementById('teamModalSubtitle');
-      const suffix = document.getElementById('teamMaxSuffix');
-      const err = document.getElementById('teamInputError');
-
-      if (err) err.classList.add('hidden');
-      if (input) {
-        input.max = currentCohortScale;
-        input.placeholder = `1 - ${currentCohortScale}`;
-        input.value = participantTeamNumber || '';
-      }
-      if (subtitle) subtitle.textContent = I18N[currentLang].teamModalSub(currentCohortScale);
-      if (suffix) suffix.textContent = `/ ${currentCohortScale}`;
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      setTimeout(() => input && input.focus(), 50);
-    }
-
-    function handleSaveTeamNumber(e) {
-      e.preventDefault();
-      const input = document.getElementById('teamNumberInput');
-      const err = document.getElementById('teamInputError');
-      const card = document.getElementById('teamGateCard');
-      const val = parseInt(input.value, 10);
-
-      if (isNaN(val) || val < 1 || val > currentCohortScale) {
-        err.textContent = I18N[currentLang].teamErrRange(currentCohortScale);
-        err.classList.remove('hidden');
-        card.classList.remove('shake');
-        void card.offsetWidth;
-        card.classList.add('shake');
-        return;
-      }
-
-      participantTeamNumber = val;
-      localStorage.setItem('participant_team_num', String(val));
-
-      const defaultTeamName = `Team ${String(val).padStart(2, '0')}`;
-      const nickInput = document.getElementById('msgNickname');
-      if (nickInput && !nickInput.value.trim()) {
-        nickInput.value = defaultTeamName;
-      }
-      try { localStorage.setItem('drush_player_name', nickInput?.value.trim() || defaultTeamName); } catch (err) {}
-
-      const modal = document.getElementById('teamGateModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      renderLiveFastPassPanel();
-      if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
     }
 
     /* ==========================================================
@@ -1534,7 +1791,7 @@
     }
 
     /* ==========================================================
-       ANTI-SPAM MESSAGE BOARD (1 MESSAGE PER 60 SECONDS)
+       ANTI-SPAM MESSAGE BOARD WITH EMBEDDED SVG AVATARS
        ========================================================== */
     const MSG_COOLDOWN_MS = 60000;
     let cooldownInterval = null;
@@ -1580,6 +1837,23 @@
       }
     }
 
+    function parseNicknameAndAvatar(rawNickname) {
+      const str = rawNickname || 'Participant';
+      const match = str.match(/^\[av:(\d+)\]\s*(.*)$/);
+      if (match) {
+        return {
+          avatarId: parseInt(match[1], 10) % SVG_AVATARS.length,
+          displayName: match[2] || 'Participant'
+        };
+      }
+      // Deterministic fallback avatar hash for older messages
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash * 31 + str.charCodeAt(i)) % SVG_AVATARS.length;
+      }
+      return { avatarId: Math.abs(hash), displayName: str };
+    }
+
     async function loadMessages() {
       try {
         if (supabaseClient) {
@@ -1616,18 +1890,26 @@
         return;
       }
 
-      container.innerHTML = msgs.map(m => `
-        <div class="p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs space-y-1">
-          <div class="flex items-center justify-between text-[10px]">
-            <span class="font-bold text-teal-300 flex items-center gap-1">
-              <i class="fa-regular fa-user text-[9px]"></i>
-              ${escapeHtml(m.nickname || 'Participant')}
-            </span>
-            <span class="text-gray-500 font-mono">${m.time || (m.created_at ? new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '')}</span>
+      container.innerHTML = msgs.map(m => {
+        const parsed = parseNicknameAndAvatar(m.nickname);
+        const avSvg = getAvatarSvgById(parsed.avatarId);
+        const timeStr = m.time || (m.created_at ? new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
+
+        return `
+          <div class="p-2.5 rounded-xl bg-black/40 border border-white/10 text-xs flex items-start gap-2.5">
+            <div class="w-8 h-8 rounded-xl overflow-hidden border border-white/15 shrink-0 mt-0.5">
+              ${avSvg}
+            </div>
+            <div class="flex-1 min-w-0 space-y-0.5">
+              <div class="flex items-center justify-between text-[10px]">
+                <span class="font-bold text-teal-300 truncate">${escapeHtml(parsed.displayName)}</span>
+                <span class="text-gray-500 font-mono shrink-0 ml-2">${timeStr}</span>
+              </div>
+              <p class="text-gray-200 text-xs leading-normal break-words">${escapeHtml(m.content || m.message)}</p>
+            </div>
           </div>
-          <p class="text-gray-200 text-xs leading-normal break-words">${escapeHtml(m.content || m.message)}</p>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     async function handlePostMessage(e) {
@@ -1637,23 +1919,26 @@
         return;
       }
 
-      const nickInput = document.getElementById('msgNickname');
+      if (!participantTeamNumber || !participantNickname) {
+        openTeamGateModal();
+        return;
+      }
+
       const contentInput = document.getElementById('msgContent');
       const btn = document.getElementById('msgSubmitBtn');
-
-      const nickname = nickInput.value.trim();
       const content = contentInput.value.trim();
-      if (!nickname || !content) return;
+      if (!content) return;
 
       btn.disabled = true;
-      try { localStorage.setItem('drush_player_name', nickname); } catch (err) {}
 
       if (content.toLowerCase().includes("together makes progress") || content.includes("众行致远")) {
         showEasterEggModal(I18N[currentLang].eggValueMsg);
       }
 
+      const formattedNickname = `[av:${participantAvatarId}] ${participantNickname} (#${String(participantTeamNumber).padStart(2, '0')})`;
+
       const newMsg = {
-        nickname,
+        nickname: formattedNickname,
         message: content,
         content: content,
         created_at: new Date().toISOString()
@@ -1737,10 +2022,8 @@
         foldBadge.textContent = isLeaderboardOpen ? I18N[lang].clickToCollapse : I18N[lang].clickToExpand;
       }
 
-      const nickInput = document.getElementById('msgNickname');
       const contentInput = document.getElementById('msgContent');
       const passcodePin = document.getElementById('sunrisePasscodeInput');
-      if (nickInput) nickInput.placeholder = I18N[lang].nicknamePlaceholder;
       if (contentInput) contentInput.placeholder = I18N[lang].msgPlaceholder;
       if (passcodePin) passcodePin.placeholder = I18N[lang].sunrisePlaceholder;
 
@@ -1750,6 +2033,8 @@
         document.getElementById('announcementBody').textContent = I18N[lang].noAnnouncement;
       }
 
+      updateModalLivePreview();
+      syncProfileToHeaderAndBoard();
       updateMessageCooldownUI();
       renderLiveFastPassPanel();
       if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
@@ -1802,6 +2087,7 @@
     window.addEventListener('load', async () => {
       setLanguage(currentLang);
       checkSunriseUnlockState();
+      syncProfileToHeaderAndBoard();
       startCooldownTimer();
 
       await loadPortalAnnouncement();
@@ -1810,13 +2096,9 @@
       fetchLiveLeaderboard();
       loadMessages();
 
-      if (!participantTeamNumber || participantTeamNumber > currentCohortScale) {
+      // Open Profile + Team Setup Modal if team or nickname is not yet configured
+      if (!participantTeamNumber || participantTeamNumber > currentCohortScale || !participantNickname) {
         openTeamGateModal();
-      } else {
-        const nickInput = document.getElementById('msgNickname');
-        if (nickInput && !nickInput.value.trim()) {
-          nickInput.value = `Team ${String(participantTeamNumber).padStart(2, '0')}`;
-        }
       }
 
       setInterval(() => {
