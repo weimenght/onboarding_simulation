@@ -134,15 +134,15 @@
       
       <!-- Modal Top Header: Welcoming Title + Segmented CN/EN Language Toggle -->
       <div class="flex items-center justify-between border-b border-white/10 pb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-6 h-6 rounded-lg bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-xs">
-            <i class="fa-solid fa-sparkles"></i>
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-6 h-6 rounded-lg bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-xs shrink-0">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
           </div>
-          <span class="font-black text-sm tracking-tight text-white" data-i18n="modalHeaderTitle">欢迎来到德勤乐园 👋</span>
+          <span class="font-black text-sm tracking-tight text-white truncate" data-i18n="modalHeaderTitle">欢迎来到德勤乐园</span>
         </div>
 
         <!-- Segmented Language Switcher inside Modal -->
-        <div class="bg-black/60 border border-white/15 rounded-full p-0.5 flex items-center text-[11px]">
+        <div class="bg-black/60 border border-white/15 rounded-full p-0.5 flex items-center text-[11px] shrink-0">
           <button type="button" id="modalLangZhBtn" onclick="setLanguage('zh')" class="px-2.5 py-0.5 rounded-full font-bold transition-all bg-deloitte-green text-black">
             中文
           </button>
@@ -306,7 +306,7 @@
     <!-- 02. Essential Mission Cards: Live FastPass Tracker & D-Rush -->
     <div class="space-y-3">
       
-      <!-- FastPass Live Current & Next Station Card (1:30 PM - 6:00 PM) -->
+      <!-- FastPass Live Current & Next Station Card -->
       <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-lime-500/30 card-shadow space-y-3 relative overflow-hidden">
         <div class="absolute -right-6 -top-6 w-20 h-20 bg-lime-500/10 rounded-full blur-xl pointer-events-none"></div>
 
@@ -321,7 +321,7 @@
                 <h2 class="text-xs font-black text-white uppercase tracking-wider truncate" data-i18n="fastpassTitle">我的专属行程</h2>
                 <span id="fpCohortBadge" class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-lime-400/20 text-lime-300 border border-lime-400/30 shrink-0">FP-36</span>
               </div>
-              <p class="text-[10px] text-gray-400 font-mono truncate mt-0.5">13:30 - 18:00 · <span data-i18n="fpWindowNote">实时更新</span></p>
+              <p class="text-[10px] text-gray-400 font-mono truncate mt-0.5"><span id="fpCardTimeWindow">13:50 - 17:50</span> · <span data-i18n="fpWindowNote">实时导航</span></p>
             </div>
           </div>
 
@@ -332,7 +332,7 @@
             </button>
             <button type="button" onclick="openAppView('fastpass')"
               class="button-press h-7 px-2.5 rounded-lg bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-[10px] flex items-center justify-center gap-1 shadow-sm whitespace-nowrap">
-              <span data-i18n="fpFullTableBtn">完整日程</span>
+              <span data-i18n="fpFullTableBtn">全部 6 轮</span>
               <i class="fa-solid fa-chevron-right text-[8px]"></i>
             </button>
           </div>
@@ -355,7 +355,7 @@
           </div>
           <div class="min-w-0 flex-1">
             <div class="text-xs font-black text-white group-hover:text-deloitte-green transition-colors flex items-center gap-1.5">
-              <span class="truncate">D-Rush 跑酷小游戏</span>
+              <span class="truncate" data-i18n="drushCardTitle">D-Rush</span>
               <i class="fa-solid fa-chevron-right text-[9px] text-deloitte-green shrink-0"></i>
             </div>
             <div class="text-[10px] text-gray-400 mt-0.5 truncate" data-i18n="drushSub">玩跑酷小游戏，冲榜拿第一！</div>
@@ -383,16 +383,16 @@
           <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xs shrink-0">
             <i class="fa-solid fa-sun"></i>
           </div>
-          <h2 class="text-xs font-black text-white uppercase tracking-wider truncate" data-i18n="sunriseGateTitle">Project Sunrise 隐藏关卡</h2>
+          <h2 class="text-xs font-black text-white uppercase tracking-wider truncate" data-i18n="sunriseGateTitle">隐藏关卡</h2>
         </div>
-        <span id="sunriseStatusBadge" class="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 shrink-0" data-i18n="badgeLocked">未解锁</span>
+        <span id="sunriseStatusBadge" class="text-[10px] font-mono text-amber-400/80 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 shrink-0" data-i18n="badgeLocked">待开启</span>
       </div>
 
       <!-- Locked State Input -->
       <div id="sunriseInputSection" class="space-y-2">
         <p class="text-[11px] text-gray-400" data-i18n="sunrisePasscodePrompt">输入主持人口令，开启神秘任务：</p>
         <div class="flex items-center gap-2">
-          <input id="sunrisePasscodeInput" type="text" placeholder="输入14位口令"
+          <input id="sunrisePasscodeInput" type="text" placeholder="输入 14 位神秘口令"
             class="flex-1 h-10 min-w-0 bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-xl px-3 text-xs font-mono text-white placeholder-gray-600 uppercase">
           <button type="button" onclick="verifySunrisePasscode()"
             class="button-press h-10 px-4 bg-amber-400 hover:bg-amber-300 text-black text-xs font-black rounded-xl flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap">
@@ -409,7 +409,7 @@
       <!-- Unlocked State Action -->
       <div id="sunriseUnlockedLinks" class="hidden pt-1 space-y-2.5">
         <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
-          <span class="text-xs font-bold text-amber-300" data-i18n="unlockedSuccess">✨ 神秘任务已开启</span>
+          <span class="text-xs font-bold text-amber-300" data-i18n="unlockedSuccess">神秘任务已开启</span>
           <span class="text-[10px] text-gray-400 font-mono">esirnustcejorp</span>
         </div>
         <button type="button" onclick="openAppView('sunrise')"
@@ -468,7 +468,7 @@
             <span data-i18n="st4">情商罗盘</span>
           </button>
           <button type="button" onclick="filterLeaderboardStation('5')" id="stFilterBtn-5" class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-400 whitespace-nowrap">
-            <span data-i18n="st5">AI纪元</span>
+            <span data-i18n="st5">AI 纪元</span>
           </button>
         </div>
 
@@ -485,10 +485,10 @@
           </div>
           <div class="min-w-0">
             <h2 class="text-xs font-black text-white uppercase tracking-wider truncate" data-i18n="msgBoardTitle">大家都在聊</h2>
-            <div class="text-[10px] text-gray-500 truncate mt-0.5" data-i18n="msgBoardSub">给队友打气，分享你的现场高光时刻 ✨</div>
+            <div class="text-[10px] text-gray-500 truncate mt-0.5" data-i18n="msgBoardSub">给队友打气，分享你的现场高光时刻</div>
           </div>
         </div>
-        <span id="msgCountBadge" class="text-[10px] font-mono text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded-full border border-teal-500/20 shrink-0">0 msgs</span>
+        <span id="msgCountBadge" class="text-[10px] font-mono text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded-full border border-teal-500/20 shrink-0 whitespace-nowrap">0</span>
       </div>
 
       <form onsubmit="handlePostMessage(event)" class="space-y-2.5 bg-black/40 p-3 rounded-xl border border-white/10">
@@ -535,10 +535,11 @@
 
   <!-- ==========================================================
        IN-APP SLIDE-OVER VIEW 1: BUNDLED NATIVE FASTPASS SCHEDULE
+       (Clean Mobile Card List — Never Squishes Chinese Text)
        ========================================================== -->
   <div id="appView-fastpass" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
     <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
-      <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+      <div class="max-w-md mx-auto px-4 h-14 flex items-center justify-between gap-2">
         <button type="button" onclick="closeAppView()" class="button-press h-8 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white flex items-center gap-1.5 whitespace-nowrap">
           <i class="fa-solid fa-chevron-left text-deloitte-green text-xs"></i>
           <span data-i18n="btnBackToHub">返回</span>
@@ -557,40 +558,34 @@
     </div>
 
     <div class="flex-1 overflow-y-auto p-4 safe-bottom">
-      <div class="max-w-2xl mx-auto space-y-4">
+      <div class="max-w-md mx-auto space-y-3.5">
+        
+        <!-- Team Header Banner -->
         <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex items-center justify-between gap-2">
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-deloitte-green animate-pulse"></span>
               <span class="text-[10px] uppercase font-extrabold tracking-wider text-deloitte-green" data-i18n="fpDrawerBadge">我的专属行程表</span>
             </div>
-            <h3 id="fpDrawerTeamTitle" class="text-lg font-black text-white mt-0.5 truncate">第 -- 组 · 活动日程</h3>
+            <h3 id="fpDrawerTeamTitle" class="text-lg font-black text-white mt-0.5 truncate">第 -- 组 · 今日路线</h3>
           </div>
           <div class="text-right font-mono shrink-0">
-            <span id="fpDrawerTimeRange" class="text-xs text-gray-400 block">13:50 - 17:50</span>
-            <span id="fpDrawerLiveStatus" class="text-[11px] text-deloitte-green font-bold">LIVE</span>
+            <span id="fpDrawerTimeRange" class="text-xs text-gray-300 font-bold block">13:50 - 17:50</span>
+            <span id="fpDrawerLiveStatus" class="text-[10px] text-deloitte-green font-bold">进行中</span>
           </div>
         </div>
 
-        <div class="bg-deloitte-cardbg border border-white/10 rounded-2xl overflow-hidden card-shadow">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="border-b border-white/10 text-[11px] font-bold text-gray-400 bg-white/[0.02]">
-                  <th class="py-3 px-3.5 font-mono whitespace-nowrap" data-i18n="thTime">时间</th>
-                  <th class="py-3 px-3.5 whitespace-nowrap" data-i18n="thStation">挑战站点</th>
-                  <th class="py-3 px-3.5 whitespace-nowrap" data-i18n="thVenue">场地</th>
-                  <th class="py-3 px-3.5 text-right whitespace-nowrap" data-i18n="thStatus">进度</th>
-                </tr>
-              </thead>
-              <tbody id="fpDrawerTableBody" class="divide-y divide-white/5 text-xs"></tbody>
-            </table>
-          </div>
-          <div class="px-4 py-3 border-t border-white/10 bg-black/30 flex items-center justify-between text-[11px] text-gray-400">
-            <span data-i18n="fpFooterDuration">每轮体验 30 分钟 · 换场休息 10 分钟</span>
-            <span id="fpDrawerFooterScale" class="font-mono text-gray-500">FastPass</span>
-          </div>
+        <!-- 6 Rounds Mobile Schedule List (Clean, Un-squished Cards) -->
+        <div id="fpDrawerRoundsList" class="space-y-2.5">
+          <!-- Populated dynamically via JS -->
         </div>
+
+        <!-- Footer Duration Note -->
+        <div class="px-4 py-3 rounded-xl border border-white/10 bg-black/40 flex items-center justify-between text-[11px] text-gray-400">
+          <span data-i18n="fpFooterDuration">每轮体验 30 分钟 · 换场休息 10 分钟</span>
+          <span id="fpDrawerFooterScale" class="font-mono text-gray-500">FastPass</span>
+        </div>
+
       </div>
     </div>
   </div>
@@ -608,7 +603,7 @@
 
         <div class="flex items-center gap-1.5">
           <i class="fa-solid fa-gamepad text-deloitte-green text-xs"></i>
-          <span class="font-extrabold text-xs text-white tracking-wider">D-RUSH ARCADE</span>
+          <span class="font-extrabold text-xs text-white tracking-wider">D-RUSH</span>
         </div>
 
         <button type="button" onclick="reloadDrushIframe()" class="button-press w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 flex items-center justify-center text-xs" title="Reload Game">
@@ -636,20 +631,22 @@
         <div class="flex items-center gap-1 overflow-x-auto no-scrollbar bg-black/50 p-1 rounded-xl border border-white/10">
           <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/sunrise', 0)" id="srNodeBtn-0"
             class="button-press px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-amber-400 text-black whitespace-nowrap">
-            <span data-i18n="portalHome">主站</span>
+            <span data-i18n="portalHome">主页面</span>
           </button>
+          <!--
           <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/diyiguan', 1)" id="srNodeBtn-1"
             class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold text-gray-300 hover:text-white whitespace-nowrap">
-            Node 1
+            <span data-i18n="srNode1">第一关</span>
           </button>
           <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/niveldos', 2)" id="srNodeBtn-2"
             class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold text-gray-300 hover:text-white whitespace-nowrap">
-            Node 2
+            <span data-i18n="srNode2">第二关</span>
           </button>
           <button type="button" onclick="switchSunriseNode('https://www.projectsunrise.win/sankyu', 3)" id="srNodeBtn-3"
             class="button-press px-2.5 py-1 rounded-lg text-[11px] font-bold text-gray-300 hover:text-white whitespace-nowrap">
-            Node 3
+            <span data-i18n="srNode3">第三关</span>
           </button>
+          -->
         </div>
 
         <button type="button" onclick="reloadSunriseIframe()" class="button-press w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 flex items-center justify-center text-xs shrink-0" title="Reload">
@@ -672,7 +669,7 @@
         <i class="fa-solid fa-gift"></i>
       </div>
       <div>
-        <h3 class="text-base font-black text-white" data-i18n="eggFoundTitle">惊喜彩蛋！🎉</h3>
+        <h3 class="text-base font-black text-white" data-i18n="eggFoundTitle">惊喜彩蛋</h3>
         <p id="easterEggText" class="text-xs text-gray-300 mt-1 leading-relaxed"></p>
       </div>
       <button type="button" onclick="closeEasterEggModal()" class="button-press w-full py-2.5 rounded-xl bg-deloitte-green text-black font-extrabold text-xs" data-i18n="btnCloseEgg">
@@ -793,13 +790,12 @@
 
     /* ==========================================================
        SIMPLE, INTUITIVE, WELCOMING BILINGUAL I18N DICTIONARY
-       (Supports dynamic overrides from ./i18n.txt in the same folder)
        ========================================================== */
     const I18N = {
       zh: {
         langToggle: "EN",
         subTitle: "学员端",
-        modalHeaderTitle: "欢迎来到德勤乐园 👋",
+        modalHeaderTitle: "欢迎来到德勤乐园",
         btnBackToHub: "返回",
         btnRandomAll: "换一批",
         teamModalTitle: "你在哪一组？",
@@ -813,46 +809,47 @@
         teamErrRange: (max) => `请输入 1 到 ${max} 之间的组号哦`,
         btnEditProfile: "换头像/花名",
         announcementTag: "现场通知",
-        noAnnouncement: "欢迎加入！祝大家今天玩得开心 🎉",
+        noAnnouncement: "欢迎加入！祝大家今天玩得开心",
         fastpassTitle: "我的专属行程",
-        fpWindowNote: "实时更新",
-        fpFullTableBtn: "完整日程",
+        fpWindowNote: "实时导航",
+        fpFullTableBtn: "全部 6 轮",
         fpChangeTeamBtn: "换组",
         fpDrawerBadge: "我的专属行程表",
         fpDrawerTitle: (t) => `第 ${t} 组 · 今日路线`,
         fpDrawerLiveActive: "进行中",
         fpDrawerLiveEnded: "已结束",
-        thTime: "时间",
-        thStation: "挑战站点",
-        thVenue: "场地",
-        thStatus: "进度",
+        fpRoundBadge: (r) => `第 ${r} 轮`,
         statusNow: "正在进行",
         statusNext: "下一站",
         statusDone: "已打卡",
         statusWaiting: "待开启",
         fpFooterDuration: "每轮体验 30 分钟 · 换场休息 10 分钟",
-        fpCurrentLabel: "当前这站",
-        fpNextLabel: "下一站去哪",
-        fpBefore1330: "13:30 准时发车",
-        fpBefore1330Sub: "先跟队友认识一下吧",
-        fpAfter1800: "今日 6 大站点体验圆满结束啦 🎉",
-        fpBreakRotation: "换场休息一下",
-        fpBreakSub: "慢走不急，前往下一站场地",
+        fpCurrentLabel: "当前站点",
+        fpNextLabel: "下一站点",
+        fpRound1Label: "第 1 轮站点",
+        fpRound2Label: "第 2 轮站点",
+        fpAfter1800: "今日 6 大站点体验圆满结束啦",
+        fpBreakRotation: "换场休息中",
+        fpBreakSub: "请前往下一站场地",
         fpAllDone: "全部通关啦！",
         fpAllDoneSub: "为你们的默契点赞",
-        fpSelectTeamPrompt: "点这里选组号，查看你的专属路线 👋",
+        fpSelectTeamPrompt: "点这里选组号，查看你的专属路线",
+        drushCardTitle: "D-Rush",
         drushSub: "玩跑酷小游戏，冲榜拿第一！",
-        drushNoRecord: "等你来破纪录",
-        sunriseGateTitle: "Project Sunrise 隐藏关卡",
+        drushNoRecord: "等你破纪录",
+        sunriseGateTitle: "隐藏关卡",
         badgeLocked: "待开启",
         badgeUnlocked: "已开启",
         sunrisePasscodePrompt: "输入主持人口令，开启神秘任务：",
         sunrisePlaceholder: "输入 14 位神秘口令",
         btnUnlock: "解锁",
         errPasscode: "口令不对哦，留意主持人的提示！",
-        unlockedSuccess: "✨ 神秘任务已开启",
+        unlockedSuccess: "神秘任务已开启",
         launchMainSunrise: "进入日出计划任务",
         portalHome: "主页面",
+        srNode1: "第一关",
+        srNode2: "第二关",
+        srNode3: "第三关",
         leaderboardTitle: "团队积分榜 Top 10",
         clickToExpand: "展开看看",
         clickToCollapse: "收起",
@@ -863,25 +860,26 @@
         st2: "信号解密",
         st3: "勤业智库",
         st4: "情商罗盘",
-        st5: "AI纪元",
+        st5: "AI 纪元",
         emptyLeaderboard: "比赛火热进行中，精彩排名马上揭晓！",
         msgBoardTitle: "大家都在聊",
-        msgBoardSub: "给队友打气，分享你的现场高光时刻 ✨",
+        msgBoardSub: "给队友打气，分享你的现场高光时刻",
+        msgCountFormat: (n) => `${n} 条留言`,
         msgPlaceholder: "写句加油或分享心情吧...",
         msgFriendlyTip: "每分钟可发 1 条留言哦",
         msgCooldownWait: (s) => `休息 ${s} 秒后就能再发啦`,
-        emptyMessages: "快来发出今天的第一条加油弹幕吧！🎉",
+        emptyMessages: "快来发出今天的第一条加油弹幕吧！",
         btnSendMsg: "发送",
-        eggFoundTitle: "惊喜彩蛋！🎉",
+        eggFoundTitle: "惊喜彩蛋！",
         btnCloseEgg: "太酷啦 (Close)",
-        eggDotMsg: "🟢【隐藏彩蛋】你发现了绿点能量开关！再次连点 5 次可关闭特效。",
-        eggSecretMsg: "⚡【极客彩蛋】DeloitteLand 2026 祝你入职快乐，前程似锦！",
-        eggValueMsg: "💫【价值观彩蛋】“众行致远 (Together makes progress)” 祝你们团队勇夺桂冠！"
+        eggDotMsg: "【隐藏彩蛋】你发现了绿点能量开关！再次连点 5 次可关闭特效。",
+        eggSecretMsg: "【极客彩蛋】DeloitteLand 2026 祝你入职快乐，前程似锦！",
+        eggValueMsg: "【价值观彩蛋】“众行致远 (Together makes progress)” 祝你们团队勇夺桂冠！"
       },
       en: {
         langToggle: "中",
         subTitle: "Participant",
-        modalHeaderTitle: "Welcome to DeloitteLand 👋",
+        modalHeaderTitle: "Welcome to DeloitteLand",
         btnBackToHub: "Back",
         btnRandomAll: "Shuffle",
         teamModalTitle: "What's your team number?",
@@ -895,34 +893,32 @@
         teamErrRange: (max) => `Please enter a team number between 1 and ${max}`,
         btnEditProfile: "Edit Profile",
         announcementTag: "Live Updates",
-        noAnnouncement: "Welcome aboard! Have an awesome time today 🎉",
+        noAnnouncement: "Welcome aboard! Have an awesome time today",
         fastpassTitle: "My Schedule",
         fpWindowNote: "Live Guide",
-        fpFullTableBtn: "Full Route",
+        fpFullTableBtn: "All 6 Rounds",
         fpChangeTeamBtn: "Team",
         fpDrawerBadge: "My Team Itinerary",
         fpDrawerTitle: (t) => `Team ${t} · Today's Route`,
         fpDrawerLiveActive: "LIVE",
         fpDrawerLiveEnded: "DONE",
-        thTime: "Time",
-        thStation: "Station",
-        thVenue: "Room",
-        thStatus: "Status",
-        statusNow: "HAPPENING NOW",
+        fpRoundBadge: (r) => `Round ${r}`,
+        statusNow: "IN PROGRESS",
         statusNext: "UP NEXT",
         statusDone: "Completed",
         statusWaiting: "Upcoming",
         fpFooterDuration: "30 mins per station · 10 mins break to move",
-        fpCurrentLabel: "RIGHT NOW",
+        fpCurrentLabel: "CURRENT",
         fpNextLabel: "UP NEXT",
-        fpBefore1330: "Starts at 1:30 PM",
-        fpBefore1330Sub: "Say hi to your teammates!",
-        fpAfter1800: "All station rotations are complete! Great job 🎉",
-        fpBreakRotation: "Travel & Break",
+        fpRound1Label: "ROUND 1",
+        fpRound2Label: "ROUND 2",
+        fpAfter1800: "All station rotations are complete! Great job",
+        fpBreakRotation: "Rotation Break",
         fpBreakSub: "Head over to your next room",
         fpAllDone: "All Stations Done!",
         fpAllDoneSub: "Awesome teamwork today",
-        fpSelectTeamPrompt: "Tap here to pick your team & see your route 👋",
+        fpSelectTeamPrompt: "Tap here to pick your team & see your route",
+        drushCardTitle: "D-Rush Arcade",
         drushSub: "Play the mini-game & beat the high score!",
         drushNoRecord: "Be the first!",
         sunriseGateTitle: "Project Sunrise Quest",
@@ -932,9 +928,12 @@
         sunrisePlaceholder: "14-letter secret code",
         btnUnlock: "Unlock",
         errPasscode: "Hmm, that code didn't work. Listen for the host's hint!",
-        unlockedSuccess: "✨ Secret Quest Unlocked!",
+        unlockedSuccess: "Secret Quest Unlocked!",
         launchMainSunrise: "Start Project Sunrise",
         portalHome: "Main Hub",
+        srNode1: "Node 1",
+        srNode2: "Node 2",
+        srNode3: "Node 3",
         leaderboardTitle: "Top 10 Teams",
         clickToExpand: "Show Ranks",
         clickToCollapse: "Hide",
@@ -948,22 +947,23 @@
         st5: "The AI Era",
         emptyLeaderboard: "Games are underway — live rankings coming soon!",
         msgBoardTitle: "Community Wall",
-        msgBoardSub: "Cheer for your team & share the fun ✨",
+        msgBoardSub: "Cheer for your team & share the fun",
+        msgCountFormat: (n) => `${n} msgs`,
         msgPlaceholder: "Send a shoutout to your team...",
         msgFriendlyTip: "You can post 1 message per minute",
         msgCooldownWait: (s) => `Ready to post again in ${s}s`,
-        emptyMessages: "No messages yet — be the first to say hi! 🎉",
+        emptyMessages: "No messages yet — be the first to say hi!",
         btnSendMsg: "Post",
-        eggFoundTitle: " You Found a Secret! 🎉",
+        eggFoundTitle: "You Found a Secret!",
         btnCloseEgg: "Awesome!",
-        eggDotMsg: "🟢 [Secret Mode] Green Dot Neon Pulse activated! Tap 5 times again to toggle.",
-        eggSecretMsg: "⚡ [Easter Egg] Welcome to DeloitteLand 2026 — have an unforgettable journey!",
-        eggValueMsg: "💫 [Bonus Unlocked] 'Together makes progress!' Best of luck to your team!"
+        eggDotMsg: "[Secret Mode] Green Dot Neon Pulse activated! Tap 5 times again to toggle.",
+        eggSecretMsg: "[Easter Egg] Welcome to DeloitteLand 2026 — have an unforgettable journey!",
+        eggValueMsg: "[Bonus Unlocked] 'Together makes progress!' Best of luck to your team!"
       }
     };
 
     /* ==========================================================
-       AMEND 1: AUTO-DETECT BROWSER LANGUAGE ON FIRST VISIT
+       AUTO-DETECT BROWSER LANGUAGE ON FIRST VISIT
        ========================================================== */
     function detectInitialLanguage() {
       const saved = localStorage.getItem('participant_lang');
@@ -981,10 +981,10 @@
       participantAvatarId = 0;
     }
     let currentRawAnnouncementData = null;
+    let cachedMessagesList = [];
 
     /* ==========================================================
-       AMEND 3: OPTIONAL ./i18n.txt OVERRIDE LOADER
-       Format per line: key = 中文内容 | English Content
+       OPTIONAL ./i18n.txt OVERRIDE LOADER
        ========================================================== */
     async function loadExternalI18nTxt() {
       try {
@@ -1015,9 +1015,7 @@
         if (updated) {
           setLanguage(currentLang);
         }
-      } catch (e) {
-        // Silently use built-in I18N dictionary if i18n.txt is not present
-      }
+      } catch (e) {}
     }
 
     /* ==========================================================
@@ -1290,15 +1288,15 @@
     }
 
     /* ==========================================================
-       FASTPASS MATRICES & STATIONS (EXPLICIT 24, 36, AND 48 MATRICES)
+       FASTPASS MATRICES & STATIONS (CRISP BILINGUAL STATION NAMES)
        ========================================================== */
     const FP_STATIONS = {
-      0: { zh: '一起拼未来', en: 'Piece by piece, we change', icon: 'fa-puzzle-piece' },
-      1: { zh: '培育您的职业道德之树', en: 'Plant Your Ethical Tree', icon: 'fa-tree' },
+      0: { zh: '一起拼未来', en: 'Piece by Piece', icon: 'fa-puzzle-piece' },
+      1: { zh: '职业道德之树', en: 'Ethical Tree', icon: 'fa-tree' },
       2: { zh: '信号解密', en: 'D.Signal', icon: 'fa-tower-broadcast' },
       3: { zh: '勤业智库', en: 'Knowledge Clash', icon: 'fa-brain' },
       4: { zh: '情商罗盘', en: 'EQ Matrix', icon: 'fa-compass' },
-      5: { zh: 'AI纪元', en: 'The AI Era', icon: 'fa-microchip' }
+      5: { zh: 'AI 纪元', en: 'The AI Era', icon: 'fa-microchip' }
     };
 
     let fpStationVenues = {
@@ -1399,22 +1397,33 @@
               fpStationVenues = { ...fpStationVenues, ...data.venues };
             }
             if (Array.isArray(data.time_slots) && data.time_slots.length === 6) {
-              fpTimeSlots = data.time_slots.map(slot => ({
-                start: slot.start,
-                end: slot.end,
-                startMin: typeof slot.startMin === 'number' ? slot.startMin : timeStrToMin(slot.start),
-                endMin: typeof slot.endMin === 'number' ? slot.endMin : timeStrToMin(slot.end)
-              }));
+              const validSlots = data.time_slots.filter(s => s && s.start && s.end);
+              if (validSlots.length === 6) {
+                fpTimeSlots = validSlots.map(slot => ({
+                  start: slot.start,
+                  end: slot.end,
+                  startMin: typeof slot.startMin === 'number' ? slot.startMin : timeStrToMin(slot.start),
+                  endMin: typeof slot.endMin === 'number' ? slot.endMin : timeStrToMin(slot.end)
+                }));
+              }
             }
           }
         }
       } catch (e) {
         console.warn("FastPass config fetch error:", e);
       }
+      const winEl = document.getElementById('fpCardTimeWindow');
+      if (winEl && fpTimeSlots.length === 6) {
+        winEl.textContent = `${fpTimeSlots[0].start} - ${fpTimeSlots[5].end}`;
+      }
       renderLiveFastPassPanel();
       if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
     }
 
+    /* ==========================================================
+       BUNDLED FASTPASS DRAWER: CLEAN 6-ROUND MOBILE CARD LIST
+       (Never squishes Chinese or English station names)
+       ========================================================== */
     function renderBundledFastPassDrawer() {
       if (!participantTeamNumber) return;
       const t = I18N[currentLang];
@@ -1429,64 +1438,102 @@
       const liveStatusEl = document.getElementById('fpDrawerLiveStatus');
       if (liveStatusEl) {
         liveStatusEl.textContent = (activeSlot === 99) ? t.fpDrawerLiveEnded : t.fpDrawerLiveActive;
-        liveStatusEl.className = (activeSlot === 99) ? "text-[11px] text-gray-500 font-bold" : "text-[11px] text-deloitte-green font-bold";
+        liveStatusEl.className = (activeSlot === 99) ? "text-[10px] text-gray-500 font-bold" : "text-[10px] text-deloitte-green font-bold";
       }
 
-      const tbody = document.getElementById('fpDrawerTableBody');
-      let rowsHtml = '';
+      const listContainer = document.getElementById('fpDrawerRoundsList');
+      let cardsHtml = '';
 
       for (let i = 0; i < 6; i++) {
         const slot = fpTimeSlots[i];
         const stIdx = schedule[i];
         const station = FP_STATIONS[stIdx];
-        const venueObj = fpStationVenues[stIdx] || { zh: `场地 ${stIdx + 1}`, en: `Venue ${stIdx + 1}` };
-        const venueName = currentLang === 'zh' ? venueObj.zh : venueObj.en;
+        const venueObj = fpStationVenues[stIdx] || {};
+        const fallbackVenueZh = `场地 ${stIdx + 1}`;
+        const fallbackVenueEn = `Venue ${stIdx + 1}`;
+        const venueName = currentLang === 'zh'
+          ? (venueObj.zh || fallbackVenueZh)
+          : (venueObj.en || venueObj.zh || fallbackVenueEn);
         const stationName = currentLang === 'zh' ? station.zh : station.en;
         const isCurrent = (i === activeSlot);
+        const isNext = (i === activeSlot + 1);
 
-        let rowBg = isCurrent ? "bg-deloitte-green/10" : "hover:bg-white/[0.02]";
-        let timeColor = isCurrent ? "text-deloitte-green font-extrabold" : "text-gray-300";
+        let cardBorder = "bg-deloitte-cardbg border-white/10";
+        if (isCurrent) cardBorder = "bg-deloitte-green/10 border-deloitte-green/50 shadow-md shadow-deloitte-green/10";
+        else if (isNext) cardBorder = "bg-lime-400/5 border-lime-400/30";
 
         let statusBadge = '';
         if (isCurrent) {
           statusBadge = `
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-deloitte-green text-black font-extrabold text-[10px]">
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-deloitte-green text-black font-extrabold text-[10px] shrink-0">
               <span class="w-1.5 h-1.5 rounded-full bg-black animate-ping"></span>
               ${t.statusNow}
             </span>`;
-        } else if (i === activeSlot + 1) {
+        } else if (isNext) {
           statusBadge = `
-            <span class="px-2 py-0.5 rounded-full bg-deloitte-green/15 text-deloitte-green font-bold text-[10px] border border-deloitte-green/30">
+            <span class="px-2.5 py-0.5 rounded-full bg-lime-400/15 text-lime-300 font-bold text-[10px] border border-lime-400/30 shrink-0">
               ${t.statusNext}
             </span>`;
         } else if (activeSlot !== -1 && i < activeSlot) {
-          statusBadge = `<span class="text-gray-500 text-[11px] font-semibold"><i class="fa-solid fa-check text-deloitte-green mr-1"></i>${t.statusDone}</span>`;
+          statusBadge = `<span class="text-gray-500 text-[11px] font-semibold shrink-0"><i class="fa-solid fa-check text-deloitte-green mr-1"></i>${t.statusDone}</span>`;
         } else {
-          statusBadge = `<span class="text-gray-600 text-[11px] font-semibold">${t.statusWaiting}</span>`;
+          statusBadge = `<span class="text-gray-500 text-[11px] font-semibold shrink-0">${t.statusWaiting}</span>`;
         }
 
-        rowsHtml += `
-          <tr class="transition-colors ${rowBg}">
-            <td class="py-3 px-3.5 font-mono font-bold whitespace-nowrap ${timeColor}">${slot.start} - ${slot.end}</td>
-            <td class="py-3 px-3.5">
-              <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-deloitte-green shrink-0">
-                  <i class="fa-solid ${station.icon} text-[10px]"></i>
-                </div>
-                <span class="font-bold text-white">${stationName}</span>
+        cardsHtml += `
+          <div class="p-3.5 rounded-2xl border transition-all ${cardBorder} flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-deloitte-green shrink-0">
+                <i class="fa-solid ${station.icon} text-sm"></i>
               </div>
-            </td>
-            <td class="py-3 px-3.5">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[11px] text-gray-200 whitespace-nowrap">
-                <i class="fa-solid fa-location-dot text-deloitte-green text-[10px]"></i>
-                ${venueName}
-              </span>
-            </td>
-            <td class="py-3 px-3.5 text-right whitespace-nowrap">${statusBadge}</td>
-          </tr>
+              <div class="min-w-0 flex-1 space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-white/10 text-gray-300 shrink-0">${t.fpRoundBadge(i + 1)}</span>
+                  <span class="text-xs font-mono font-bold ${isCurrent ? 'text-deloitte-green' : 'text-gray-300'}">${slot.start} - ${slot.end}</span>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-sm font-black text-white">${stationName}</span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/40 border border-white/10 text-[11px] text-gray-300">
+                    <i class="fa-solid fa-location-dot text-deloitte-green text-[9px]"></i>
+                    <span>${venueName}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            ${statusBadge}
+          </div>
         `;
       }
-      tbody.innerHTML = rowsHtml;
+      listContainer.innerHTML = cardsHtml;
+    }
+
+    /* ==========================================================
+       SYMMETRICAL 2-COL LIVE FASTPASS CARDS ON MAIN HUB
+       ========================================================== */
+    function buildMiniStationCardHtml({ badgeText, badgeStyle, timeText, stationIdx, borderStyle }) {
+      const st = FP_STATIONS[stationIdx] || FP_STATIONS[0];
+      const vnObj = fpStationVenues[stationIdx] || {};
+      const stName = currentLang === 'zh' ? st.zh : st.en;
+      const vnName = currentLang === 'zh'
+        ? (vnObj.zh || `场地 ${stationIdx + 1}`)
+        : (vnObj.en || vnObj.zh || `Venue ${stationIdx + 1}`);
+
+      return `
+        <div class="min-h-[92px] p-3 rounded-xl border ${borderStyle} flex flex-col justify-between min-w-0">
+          <div class="flex items-center justify-between gap-1">
+            <span class="text-[10px] font-extrabold uppercase truncate ${badgeStyle}">${badgeText}</span>
+            <span class="text-[9px] font-mono text-gray-300 bg-black/40 px-1.5 py-0.5 rounded shrink-0">${timeText}</span>
+          </div>
+          <div class="flex items-center gap-1.5 mt-1.5 min-w-0">
+            <i class="fa-solid ${st.icon} text-xs text-deloitte-green shrink-0"></i>
+            <span class="text-xs font-black text-white truncate">${stName}</span>
+          </div>
+          <div class="text-[10px] text-gray-300 truncate mt-1 flex items-center gap-1">
+            <i class="fa-solid fa-location-dot text-[9px] text-lime-400 shrink-0"></i>
+            <span class="truncate">${vnName}</span>
+          </div>
+        </div>
+      `;
     }
 
     function renderLiveFastPassPanel() {
@@ -1509,50 +1556,42 @@
         return;
       }
 
+      const schedule = getScheduleForTeam(participantTeamNumber, currentCohortScale);
       const now = new Date();
       const currentMin = now.getHours() * 60 + now.getMinutes();
 
       const WINDOW_START = 13 * 60 + 30; // 13:30 (810)
       const WINDOW_END = 18 * 60;        // 18:00 (1080)
 
+      // Before 13:30: Preview Round 1 & Round 2 cleanly so the user sees their first two stations
       if (currentMin < WINDOW_START) {
-        const schedule = getScheduleForTeam(participantTeamNumber, currentCohortScale);
-        const firstStationIdx = schedule ? schedule[0] : 0;
-        const firstStation = FP_STATIONS[firstStationIdx];
-        const firstVenue = fpStationVenues[firstStationIdx] || { zh: `场地 ${firstStationIdx + 1}`, en: `Venue ${firstStationIdx + 1}` };
-        const firstSlot = fpTimeSlots[0];
-
-        box.innerHTML = `
-          <div class="min-h-[88px] p-3 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between min-w-0">
-            <div class="flex items-center justify-between gap-1">
-              <span class="text-[10px] font-extrabold text-gray-400 uppercase truncate">${t.fpCurrentLabel}</span>
-              <span class="text-[9px] font-mono text-gray-500 shrink-0">13:30</span>
-            </div>
-            <div class="text-xs font-bold text-gray-200 truncate mt-1">${t.fpBefore1330}</div>
-            <div class="text-[10px] text-gray-500 truncate mt-0.5">${t.fpBefore1330Sub}</div>
-          </div>
-          <div class="min-h-[88px] p-3 rounded-xl bg-lime-400/10 border border-lime-400/30 flex flex-col justify-between min-w-0">
-            <div class="flex items-center justify-between gap-1">
-              <span class="text-[10px] font-extrabold text-lime-300 uppercase truncate">${t.fpNextLabel} (R1)</span>
-              <span class="text-[9px] font-mono text-gray-300 shrink-0">${firstSlot.start}</span>
-            </div>
-            <div class="text-xs font-black text-white truncate mt-1">${currentLang === 'zh' ? firstStation.zh : firstStation.en}</div>
-            <div class="text-[10px] text-lime-200 truncate mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-[9px]"></i>${currentLang === 'zh' ? firstVenue.zh : firstVenue.en}</div>
-          </div>
-        `;
+        const r1Card = buildMiniStationCardHtml({
+          badgeText: t.fpRound1Label,
+          badgeStyle: "text-deloitte-green",
+          timeText: `${fpTimeSlots[0].start}-${fpTimeSlots[0].end}`,
+          stationIdx: schedule[0],
+          borderStyle: "bg-deloitte-green/10 border-deloitte-green/40"
+        });
+        const r2Card = buildMiniStationCardHtml({
+          badgeText: t.fpRound2Label,
+          badgeStyle: "text-lime-300",
+          timeText: `${fpTimeSlots[1].start}-${fpTimeSlots[1].end}`,
+          stationIdx: schedule[1],
+          borderStyle: "bg-black/50 border-white/15"
+        });
+        box.innerHTML = r1Card + r2Card;
         return;
       }
 
       if (currentMin > WINDOW_END) {
         box.innerHTML = `
           <div class="col-span-2 p-3.5 rounded-xl bg-black/40 border border-white/10 text-center">
-            <span class="text-xs font-semibold text-gray-400"><i class="fa-solid fa-circle-check text-deloitte-green mr-1.5"></i>${t.fpAfter1800}</span>
+            <span class="text-xs font-semibold text-gray-300"><i class="fa-solid fa-circle-check text-deloitte-green mr-1.5"></i>${t.fpAfter1800}</span>
           </div>
         `;
         return;
       }
 
-      const schedule = getScheduleForTeam(participantTeamNumber, currentCohortScale);
       let currentRoundIdx = -1;
       let nextRoundIdx = -1;
 
@@ -1572,26 +1611,16 @@
 
       let currentHtml = '';
       if (currentRoundIdx >= 0) {
-        const stIdx = schedule[currentRoundIdx];
-        const st = FP_STATIONS[stIdx];
-        const vn = fpStationVenues[stIdx] || { zh: `场地 ${stIdx + 1}`, en: `Venue ${stIdx + 1}` };
-        const sl = fpTimeSlots[currentRoundIdx];
-        currentHtml = `
-          <div class="min-h-[88px] p-3 rounded-xl bg-deloitte-green/15 border border-deloitte-green/40 flex flex-col justify-between min-w-0">
-            <div class="flex items-center justify-between gap-1">
-              <span class="text-[10px] font-extrabold text-deloitte-green uppercase flex items-center gap-1 truncate">
-                <span class="w-1.5 h-1.5 rounded-full bg-deloitte-green animate-ping shrink-0"></span>
-                <span class="truncate">${t.fpCurrentLabel}</span>
-              </span>
-              <span class="text-[9px] font-mono text-gray-300 shrink-0">${sl.start}-${sl.end}</span>
-            </div>
-            <div class="text-xs font-black text-white truncate mt-1">${currentLang === 'zh' ? st.zh : st.en}</div>
-            <div class="text-[10px] text-deloitte-green font-semibold truncate mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-[9px]"></i>${currentLang === 'zh' ? vn.zh : vn.en}</div>
-          </div>
-        `;
+        currentHtml = buildMiniStationCardHtml({
+          badgeText: `● ${t.fpCurrentLabel}`,
+          badgeStyle: "text-deloitte-green",
+          timeText: `${fpTimeSlots[currentRoundIdx].start}-${fpTimeSlots[currentRoundIdx].end}`,
+          stationIdx: schedule[currentRoundIdx],
+          borderStyle: "bg-deloitte-green/15 border-deloitte-green/40"
+        });
       } else if (currentRoundIdx === -2) {
         currentHtml = `
-          <div class="min-h-[88px] p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col justify-between min-w-0">
+          <div class="min-h-[92px] p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col justify-between min-w-0">
             <span class="text-[10px] font-extrabold text-amber-300 uppercase truncate">${t.fpCurrentLabel}</span>
             <div class="text-xs font-bold text-white truncate mt-1"><i class="fa-solid fa-person-walking-arrow-right mr-1 text-amber-400"></i>${t.fpBreakRotation}</div>
             <div class="text-[10px] text-gray-400 truncate mt-0.5">${t.fpBreakSub}</div>
@@ -1599,7 +1628,7 @@
         `;
       } else {
         currentHtml = `
-          <div class="min-h-[88px] p-3 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between min-w-0">
+          <div class="min-h-[92px] p-3 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between min-w-0">
             <span class="text-[10px] font-bold text-gray-400 uppercase truncate">${t.fpCurrentLabel}</span>
             <div class="text-xs font-bold text-gray-300 truncate mt-1">${t.fpAllDone}</div>
             <div class="text-[10px] text-gray-500 truncate mt-0.5">${t.fpAllDoneSub}</div>
@@ -1609,23 +1638,16 @@
 
       let nextHtml = '';
       if (nextRoundIdx >= 0 && nextRoundIdx < fpTimeSlots.length) {
-        const nStIdx = schedule[nextRoundIdx];
-        const nSt = FP_STATIONS[nStIdx];
-        const nVn = fpStationVenues[nStIdx] || { zh: `场地 ${nStIdx + 1}`, en: `Venue ${nStIdx + 1}` };
-        const nSl = fpTimeSlots[nextRoundIdx];
-        nextHtml = `
-          <div class="min-h-[88px] p-3 rounded-xl bg-black/50 border border-white/15 flex flex-col justify-between min-w-0">
-            <div class="flex items-center justify-between gap-1">
-              <span class="text-[10px] font-extrabold text-lime-300 uppercase truncate">${t.fpNextLabel}</span>
-              <span class="text-[9px] font-mono text-gray-400 shrink-0">${nSl.start}-${nSl.end}</span>
-            </div>
-            <div class="text-xs font-bold text-gray-100 truncate mt-1">${currentLang === 'zh' ? nSt.zh : nSt.en}</div>
-            <div class="text-[10px] text-gray-400 truncate mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-[9px] text-lime-400"></i>${currentLang === 'zh' ? nVn.zh : nVn.en}</div>
-          </div>
-        `;
+        nextHtml = buildMiniStationCardHtml({
+          badgeText: t.fpNextLabel,
+          badgeStyle: "text-lime-300",
+          timeText: `${fpTimeSlots[nextRoundIdx].start}-${fpTimeSlots[nextRoundIdx].end}`,
+          stationIdx: schedule[nextRoundIdx],
+          borderStyle: "bg-black/50 border-white/15"
+        });
       } else {
         nextHtml = `
-          <div class="min-h-[88px] p-3 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between min-w-0">
+          <div class="min-h-[92px] p-3 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between min-w-0">
             <span class="text-[10px] font-bold text-gray-500 uppercase truncate">${t.fpNextLabel}</span>
             <div class="text-xs font-semibold text-gray-400 truncate mt-1">${t.fpAllDone}</div>
             <div class="text-[10px] text-gray-500 truncate mt-0.5">${t.fpAllDoneSub}</div>
@@ -1641,16 +1663,16 @@
        ========================================================== */
     const ENERGY_TIPS = {
       zh: [
-        "✨ 绿点能量加持！今天也是成就不凡的一天！",
-        "🚀 小贴士：在留言墙发一句「众行致远」试试看？有惊喜！",
-        "☕ 保持好心情，和同组小伙伴多互动配合吧！",
-        "🎯 试试连续点击左上角的小绿点 5 次？"
+        "绿点能量加持！今天也是成就不凡的一天！",
+        "小贴士：在留言墙发一句「众行致远」试试看？有惊喜！",
+        "保持好心情，和同组小伙伴多互动配合吧！",
+        "试试连续点击左上角的小绿点 5 次？"
       ],
       en: [
-        "✨ Green Dot Energy Boost! Have a fantastic day!",
-        "🚀 Tip: Post 'Together makes progress' on the wall for a surprise!",
-        "☕ Have fun connecting and collaborating with your team!",
-        "🎯 Try tapping the top-left green dot 5 times!"
+        "Green Dot Energy Boost! Have a fantastic day!",
+        "Tip: Post 'Together makes progress' on the wall for a surprise!",
+        "Have fun connecting and collaborating with your team!",
+        "Try tapping the top-left green dot 5 times!"
       ]
     };
 
@@ -1964,6 +1986,7 @@
             .limit(25);
 
           if (!error && Array.isArray(data)) {
+            cachedMessagesList = data;
             renderMessageStream(data);
             return;
           }
@@ -1971,7 +1994,7 @@
       } catch (err) {
         console.warn("Message board fetch error:", err);
       }
-      renderMessageStream([]);
+      renderMessageStream(cachedMessagesList);
     }
 
     function renderMessageStream(msgs) {
@@ -1979,7 +2002,7 @@
       const badge = document.getElementById('msgCountBadge');
       if (!container) return;
 
-      badge.textContent = `${msgs.length} msgs`;
+      if (badge) badge.textContent = I18N[currentLang].msgCountFormat(msgs.length);
 
       if (msgs.length === 0) {
         container.innerHTML = `
@@ -2181,6 +2204,7 @@
       renderLiveFastPassPanel();
       if (activeAppView === 'fastpass') renderBundledFastPassDrawer();
       renderLeaderboard();
+      renderMessageStream(cachedMessagesList);
     }
 
     function toggleLanguage() {
