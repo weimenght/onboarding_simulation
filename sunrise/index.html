@@ -10,7 +10,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
-    <title>PROJECT SUNRISE</title>
+    <title>PROJECT SUNRISE // SECURE OS</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,7 +27,6 @@
         if (window.tailwind) {
             tailwind.config = {
                 darkMode: 'class',
-                // hover: styles only on devices that can hover — no "sticky" hover on phones
                 future: { hoverOnlyWhenSupported: true },
                 theme: {
                     extend: {
@@ -38,12 +37,8 @@
                         },
                         colors: {
                             deloitte: {
-                                green: '#86BC25',
-                                cyan: '#06B6D4',
-                                obsidian: '#05080F',
-                                surface: '#0B111E',
-                                card: '#0F172A',
-                                border: '#1E293B'
+                                green: '#86BC25', cyan: '#06B6D4', obsidian: '#05080F',
+                                surface: '#0B111E', card: '#0F172A', border: '#1E293B'
                             }
                         }
                     }
@@ -59,20 +54,9 @@
             --safe-l: env(safe-area-inset-left, 0px);
         }
         *, *::before, *::after { box-sizing: border-box; }
-
-        html, body, #root {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        @supports (height: 100dvh) {
-            html, body, #root { height: 100dvh; }
-        }
-        html {
-            -webkit-text-size-adjust: 100%;
-            text-size-adjust: 100%;
-        }
+        html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; }
+        @supports (height: 100dvh) { html, body, #root { height: 100dvh; } }
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
         body {
             background-color: #05080F;
             color: #F1F5F9;
@@ -85,7 +69,6 @@
         }
         html[lang^="zh"] body { line-height: 1.6; }
 
-        /* Chrome (nav/buttons) is not selectable; data stays copyable */
         button, nav, .no-select { -webkit-user-select: none; user-select: none; }
         input, textarea { -webkit-user-select: text; user-select: text; }
         button { touch-action: manipulation; }
@@ -100,18 +83,13 @@
             background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.25) 50%);
             background-size: 100% 4px;
         }
-
-        /* Glass only on the shell bars (cheap on low-end phones); panels are solid */
         .glass {
             background: rgba(11, 17, 30, 0.86);
             -webkit-backdrop-filter: blur(14px);
             backdrop-filter: blur(14px);
             border: 1px solid rgba(255, 255, 255, 0.07);
         }
-        .panel {
-            background: rgba(11, 17, 30, 0.92);
-            border: 1px solid rgba(148, 163, 184, 0.12);
-        }
+        .panel { background: rgba(11, 17, 30, 0.92); border: 1px solid rgba(148, 163, 184, 0.12); }
         .card {
             background: rgba(15, 23, 42, 0.85);
             border: 1px solid rgba(148, 163, 184, 0.12);
@@ -136,27 +114,26 @@
         .field:disabled { opacity: .45; cursor: not-allowed; }
         input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
 
-        /* Upper-case label style; Latin gets tracking, Chinese stays tight */
         .caps { text-transform: uppercase; letter-spacing: .08em; }
         html[lang^="zh"] .caps { letter-spacing: .02em; }
 
-        /* Shell spacing with notch / home-indicator safe areas */
         .shell { padding-top: var(--safe-t); padding-left: var(--safe-l); padding-right: var(--safe-r); }
         .tabbar { padding-bottom: max(6px, var(--safe-b)); }
+        .safe-pad { padding: max(16px, var(--safe-t)) max(16px, var(--safe-r)) max(16px, var(--safe-b)) max(16px, var(--safe-l)); }
         .modal-backdrop {
             padding: max(16px, var(--safe-t)) max(16px, var(--safe-r)) max(16px, var(--safe-b)) max(16px, var(--safe-l));
         }
         @media (min-width: 768px) {
             .shell { padding: max(16px, var(--safe-t)) max(16px, var(--safe-r)) max(16px, var(--safe-b)) max(16px, var(--safe-l)); }
         }
-
-        .scroll-area {
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
-        }
+        .scroll-area { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
 
         .fade-in { animation: fadeIn .22s cubic-bezier(0.16, 1, 0.3, 1) both; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+        .pop-in { animation: popIn .35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        @keyframes popIn { from { opacity: 0; transform: scale(.94) translateY(8px); } to { opacity: 1; transform: none; } }
+        .toast-in { animation: toastIn .3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -164,10 +141,7 @@
         ::-webkit-scrollbar-thumb:hover { background: rgba(134, 188, 37, 0.6); }
         * { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.25) transparent; }
 
-        /* iOS zooms into any input < 16px on focus — prevent it */
-        @media (max-width: 767px) {
-            input, select, textarea { font-size: 16px !important; }
-        }
+        @media (max-width: 767px) { input, select, textarea { font-size: 16px !important; } }
 
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -187,7 +161,24 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useCallback } = React;
 
-        const STORAGE_KEY = 'PROJECT_SUNRISE_STATE_V2';
+        const STORAGE_KEY = 'PROJECT_SUNRISE_STATE_V3';
+        const PUZZLE_KEYS = ['puzzle1', 'puzzle2', 'puzzle3'];
+        const NODE_KEYS = ['logs', 'ledger', 'banking'];
+        const SECRET_IDS = ['shell', 'ghost', 'coffee', 'pizza', 'oven', 'memo', 'tier'];
+
+        // Which evidence each role can read. Directory is shared by everyone.
+        const ROLE_ACCESS = {
+            it: ['logs', 'infra'],
+            finance: ['ledger', 'po', 'vendors'],
+            compliance: ['policy', 'chg', 'edd', 'protocol']
+        };
+        const SECTION_OWNER = Object.fromEntries(Object.entries(ROLE_ACCESS).flatMap(([r, secs]) => secs.map(s => [s, r])));
+        const NODE_SECTION = { logs: 'logs', ledger: 'ledger', banking: 'protocol' };
+        const ROLE_META = {
+            it: { icon: 'fa-microchip', color: 'text-cyan-300', ring: 'border-cyan-400/60 bg-cyan-500/10' },
+            finance: { icon: 'fa-coins', color: 'text-amber-300', ring: 'border-amber-400/60 bg-amber-500/10' },
+            compliance: { icon: 'fa-scale-balanced', color: 'text-violet-300', ring: 'border-violet-400/60 bg-violet-500/10' }
+        };
 
         // ─────────────────────────────────────────────────────────────
         // BILINGUAL DICTIONARY
@@ -201,24 +192,17 @@
                 security: "Security",
                 vendors: "Vendors",
                 encryptedNodes: "Encrypted Nodes",
-                n1Logs: "N1: Logs",
-                n2Ledger: "N2: Ledger",
-                n3Protocol: "N3: Protocol",
-                n1Short: "Logs",
-                n2Short: "Ledger",
-                n3Short: "Protocol",
+                n1Logs: "N1: Logs", n2Ledger: "N2: Ledger", n3Protocol: "N3: Protocol",
+                n1Short: "Logs", n2Short: "Ledger", n3Short: "Protocol",
                 haltTxn: "Halt Transaction",
                 haltShort: "Halt",
                 decryptionStatus: "Decryption Status",
                 nodesLabel: "Nodes",
-                searchPlaceholderOrg: "Search directory (try 404)",
-                searchLogsPlaceholder: "Filter logs (try coffee)",
-                searchLedgerPlaceholder: "Filter ledger (try pizza)",
+                searchPlaceholderOrg: "Search name, role, ID or IP",
+                searchLogsPlaceholder: "Filter logs",
+                searchLedgerPlaceholder: "Filter ledger",
                 noResults: "No matching records.",
-                id: "ID",
-                dept: "Dept",
-                ext: "Ext",
-                ip: "IP",
+                id: "ID", dept: "Dept", ext: "Ext", ip: "IP",
                 n1Title: "Node 1: Server Logs",
                 n1Hint: "Talk to the NPCs to find the decryption key.",
                 n2Title: "Node 2: Offshore Ledger",
@@ -228,74 +212,54 @@
                 enterKey: "Enter decryption key",
                 decryptBtn: "Authenticate & Decrypt",
                 logDate: "Log date",
-                date: "Date",
-                time: "Time",
-                user: "User",
-                event: "Event",
-                status: "Status",
-                ticket: "Ticket",
-                txnId: "TXN ID",
-                vendorName: "Vendor Name",
-                approvedBy: "Approved By",
-                amount: "Amount",
-                riskTier: "Risk Tier",
-                capThreshold: "Capital Threshold",
-                jurisdiction: "Jurisdiction",
-                channel: "Channel",
-                anomalyFlag: "Anomaly Flag",
-                actionCode: "Action Code",
-                routingGw: "Routing Gateway",
-                authHash: "Auth Hash",
+                date: "Date", time: "Time", user: "User", event: "Event", status: "Status", ticket: "Ticket",
+                txnId: "TXN ID", vendorName: "Vendor Name", approvedBy: "Approved By", amount: "Amount",
+                riskTier: "Risk Tier", capThreshold: "Capital Threshold", jurisdiction: "Jurisdiction",
+                channel: "Channel", anomalyFlag: "Anomaly Flag", actionCode: "Action Code",
+                routingGw: "Routing Gateway", authHash: "Auth Hash",
                 missionAccomplished: "Mission accomplished. Rogue transfer halted, APEX Shell Logistics account frozen, and Summit & Co.'s audit integrity safeguarded.",
                 sysOverride: "System Override Terminal",
-                sysOverrideDesc: "Using the decrypted nodes, enter the rogue technical actor's full legal name, the illegal transaction ID, the matching action code, and the routing gateway that halts the transfer.",
+                sysOverrideDesc: "Pool your team's evidence, then enter three things: who ran the unapproved data scrub, which transaction is the illegal wire, and the protocol action code that stops it.",
                 terminalLockedTitle: "Terminal Locked",
-                terminalLockedDesc: "Decrypt all 3 nodes to unlock the System Override Terminal.",
+                terminalLockedDesc: "Decrypt all 3 nodes on this phone to unlock the System Override Terminal.",
                 terminalProgress: "Decryption Progress",
-                jumpToNode: "Jump to Node",
                 identityMatch: "Identity Match",
-                empNameHint: "Employee full legal name (e.g. Ana Farah)",
+                empNameHint: "Who ran the unapproved data scrub? Full legal name (e.g. Ana Farah)",
                 auditFlag: "Audit Flag",
-                suspiciousTxn: "Suspicious TXN ID (e.g. TXN0001)",
+                suspiciousTxn: "The illegal wire's TXN ID (e.g. TXN0001)",
                 executeAction: "Execute Action",
-                haltActionCode: "Halt action code (e.g. CLEAR-ROUTINE)",
-                routingGateway: "Routing Gateway",
-                routingGatewayHint: "Gateway intercept code (e.g. GW-ACH-METRO)",
+                haltActionCode: "Protocol action code (e.g. CLEAR-ROUTINE)",
                 verified: "VERIFIED",
                 verifyBtn: "Verify",
                 enter: "ENTER",
                 privActivities: "Privileged Activities (ISS-04)",
                 privDesc: "The activities below are privileged and require prior written approval from a Vice President or above. Performing one without prior VP approval is a reportable High Control Breach.",
-                dbExport: "Database Export:",
-                dbExportDesc: "Any export of production data exceeding 10,000 records.",
-                privEsc: "Privilege Escalation:",
-                privEscDesc: "Any elevation of an account's access rights.",
-                custData: "Customer Data Removal:",
-                custDataDesc: "Deletion or transfer of customer records.",
-                dataScrub: "Data Scrubbing:",
-                dataScrubDesc: "Any process that overwrites, masks, or irreversibly alters production data.",
-                auditLogMod: "Audit Log Modification:",
-                auditLogModDesc: "Editing or truncating audit logs.",
+                dbExport: "Database Export:", dbExportDesc: "Any export of production data exceeding 10,000 records.",
+                privEsc: "Privilege Escalation:", privEscDesc: "Any elevation of an account's access rights.",
+                custData: "Customer Data Removal:", custDataDesc: "Deletion or transfer of customer records.",
+                dataScrub: "Data Scrubbing:", dataScrubDesc: "Any process that overwrites, masks, or irreversibly alters production data.",
+                auditLogMod: "Audit Log Modification:", auditLogModDesc: "Editing or truncating audit logs.",
+                chgTitle: "Change Tickets (CHG Register)",
+                chgDesc: "Every privileged change in the server logs cites a CHG ticket. Under ISS-04, the ticket must carry VP-level approval before the work starts.",
+                activity: "Activity", requestedBy: "Requested By",
                 infraMap: "Infrastructure Map",
                 infraDesc: "Access Management System extract for FTV-PROD-01, showing current standing permissions.",
-                employee: "Employee",
-                system: "System",
-                accessLevel: "Access Level",
+                employee: "Employee", system: "System", accessLevel: "Access Level",
                 infraNote: "Note: All finance sign-offs and system change tickets (CHG) must align with standing role permissions in the Employee Directory.",
                 compWatchlist: "Compliance Watchlist (EDD)",
                 compDesc: "Any vendor payment routed to or through an Enhanced Due Diligence (EDD) jurisdiction requires Compliance sign-off before closing.",
                 poTitle: "Purchase Orders (Q2 2026)",
                 searchPO: "Search POs",
                 poDesc: "Every vendor payment must trace to an approved purchase order for the exact vendor name. A PO for a similarly named vendor does not count.",
-                poNum: "PO Number",
-                project: "Project",
-                approver: "Approver",
+                poNum: "PO Number", project: "Project", approver: "Approver",
                 vmTitle: "Vendor Master Database",
                 searchVendor: "Search vendors",
-                legalName: "Legal Name",
-                country: "Country",
-                risk: "Risk",
+                legalName: "Legal Name", country: "Country", risk: "Risk",
                 emergencyDesc: "Cross-reference the flagged transaction's amount, jurisdiction, settlement channel and anomaly type against the Global Banking Protocol matrix below.",
+                n3RuleTitle: "Protocol Rules",
+                n3Rule1: "A row applies only if all four match: amount, jurisdiction, channel and anomaly.",
+                n3Rule2: "Jurisdiction follows the money: use where the funds are actually being sent, not the vendor's registered country.",
+                n3Rule3: "If several anomalies apply, act on the most severe only: Vendor Mismatch / Shell > Unauthorized Signatory > Missing Purchase Order > Velocity Flag.",
                 pTier1: "Low", pTier2: "Elevated", pTier3: "High", pTier4: "Severe", pTier5: "Critical",
                 pJur1: "Standard", pJur2: "EDD Watchlist", pJur3: "Sanctioned List",
                 pAnom1: "Routine / No Flag", pAnom2: "Missing Purchase Order", pAnom3: "Unauthorized Signatory",
@@ -315,6 +279,7 @@
                 memoFooter: "NOTICE: Disclosed for regulatory amusement only. Contains zero override codes.",
                 closeMemo: "Acknowledge & Close",
                 close: "Close",
+                cancel: "Cancel",
                 lockoutTitle: "Security Firewall Engaged",
                 lockoutDesc: "Too many invalid attempts. Input frozen for:",
                 badgeEnumWarning: "Identify the employee by full legal name (e.g. Ana Farah).",
@@ -322,11 +287,12 @@
                 nextFreezeLabel: "Next freeze at",
                 groupNumLabel: "Group / Squad Number",
                 groupNumPlaceholder: "e.g. Group 12",
+                groupLabel: "Group",
                 timestampLabel: "Official Lockdown Timestamp (UTC+8)",
                 exportProofBtn: "Export Clearance Proof (JPEG)",
                 exportingText: "Generating proof…",
-                groupNumRequired: "Enter your group number to generate the proof.",
-                watermarkNotice: "The proof carries anti-tamper watermarks and a checksum. Judges rank squads by this timestamp.",
+                groupNumRequired: "Enter your group number to start.",
+                watermarkNotice: "The proof carries anti-tamper watermarks and a checksum. Squads are ranked by time to halt; secrets found break ties.",
                 certCardTitle: "Official Clearance & Leaderboard Verification",
                 rankingMetricNotice: "Official time of record",
                 downloadSuccess: "Proof ready. Show the JPEG to the judging panel.",
@@ -339,8 +305,59 @@
                 bootErrorDesc: "info.txt could not be loaded. Make sure it sits next to index.html and the page is served over http(s), not opened as a local file.",
                 retry: "Retry",
                 loading: "Mounting info.txt & Supabase nodes…",
-                n1EasterHint: "02:26 ROOT_LOGIN (3x tap)",
-                n2EasterHint: "TXN8892 (3x tap): Memo",
+
+                // Briefing & roles
+                briefingKicker: "Incident Briefing // 06:00",
+                briefingTitle: "A wire is about to leave. Stop it.",
+                briefingBody: "You're the newest associates on the Summit & Co. audit of FitVision. Overnight, a large payment was pushed out, and someone tried to erase the trail. It settles in {min} minutes. Find who covered it up, which payment it is, and the code that stops it.",
+                chooseRole: "Choose your role",
+                roleHint: "Each teammate takes a different role and sees different evidence. Nobody can solve it alone, so talk.",
+                roleIt: "Forensic IT", roleItDesc: "Server logs and the access map",
+                roleFinance: "Finance", roleFinanceDesc: "Ledger, purchase orders and vendor master",
+                roleCompliance: "Compliance", roleComplianceDesc: "Policy, change tickets, EDD watchlist and the protocol",
+                startMission: "Start Mission",
+                roleRequired: "Pick a role to start.",
+                yourRole: "Your role",
+                switchRole: "Switch role",
+                switchRoleWarn: "Switching role locks all evidence on this phone for {s} seconds while you are re-cleared.",
+                confirmSwitch: "Switch",
+                restrictedTitle: "Restricted evidence",
+                restrictedHeld: "Held by your {role} teammate. Ask them what it says.",
+                reclearing: "Re-clearance in progress: {s}s",
+
+                // Clock
+                clockLabel: "Wire settles in",
+                clockSettled: "Settled",
+                clockOvertime: "overtime",
+                clockHalted: "Halted",
+                timeToHalt: "Time to halt",
+
+                // Secrets
+                secretsLabel: "Secrets",
+                secretsTitle: "Secrets found",
+                secretsNote: "Secrets break ties on the leaderboard. Found ones are named; the rest show a clue.",
+                secretFound: "Secret found",
+                secrets: {
+                    shell: ["Retro Shell", "The logo hides an old game. It rewards persistence."],
+                    ghost: ["The Ghost Auditor", "Some employees only exist on error pages."],
+                    coffee: ["Kernel Panic", "The servers run on caffeine. Ask the logs."],
+                    pizza: ["Midnight Syndicate", "Not every late-night order was approved. Ask the ledger about dinner."],
+                    oven: ["Oven Cam", "Someone wanted root at 02:26. Keep asking why."],
+                    memo: ["Disciplinary Memo", "The biggest payment to the British Virgin Islands keeps a memo. Knock three times."],
+                    tier: ["Tier 6", "The protocol has a level above Critical. Its title knows."]
+                },
+
+                // Story beats
+                beatContinue: "Continue",
+                beatGoTerminal: "Go to terminal",
+                beatNotYours: "This node's evidence is read by your {role} teammate.",
+                beats: {
+                    logs: ["Node 1 decrypted", "Someone was very busy on the servers around 03:00, and tried to clean up after themselves."],
+                    ledger: ["Node 2 decrypted", "One payment left at exactly the wrong minute. It hasn't settled yet. There's still time."],
+                    banking: ["Node 3 decrypted", "The emergency protocol is open. Exactly one row stops the wire. Read the rules first."],
+                    all: ["All nodes decrypted", "The override terminal is live. Halt the wire before the settlement clock hits zero."]
+                },
+
                 n1RootModalTitle: "IT FORENSICS INTERCEPT // EMP042 (DANIEL PATEL)",
                 n1RootModalSub: "Automated packet capture on port 22 (SSH)",
                 n1RootModalBody: "EMP042's 02:26 ROOT_LOGIN_ATTEMPT shows zero financial malice. Daniel Patel was trying to SSH into the DU Barn kitchen's IoT oven cam to see whether fresh double-chocolate-chip cookies had been deployed.",
@@ -349,14 +366,13 @@
                 n2PizzaVendor: "The DU Barn Midnight Cookie Syndicate",
                 n2PizzaApprover: "Hungry Audit Senior",
                 n2PizzaStatus: "REJECTED (NICE TRY)",
-                n3EasterHint: "3x tap title: Secret Tier",
                 n3Tier6: "Tier 6: Apocalyptic",
                 n3Tier6Jur: "DU Barn Cookie Jar",
                 n3Tier6Anom: "Partner asks for a 'quick 5-min sync' on Friday at 16:55",
                 n3DefconTitle: "DEFCON 1: GLOBAL SANCTION OVERRIDE",
                 n3DefconBody: "Hold on! Executing LOCKDOWN-GLOBAL-SANCTION (HASH-9900) will lock every revolving door at Deloitte University, cut power to the espresso machines, and auto-order 10,000 Hawaiian pizzas (extra pineapple) to the Partner Lounge.",
                 n3DefconBtn: "Abort! Save the Espresso!",
-                haltJokeVance: "Nice try! Victoria Vance is the CEO who signed the wire, not the rogue engineer who scrubbed the server logs. Arresting the CEO without reading Node 1 will definitely hurt your year-end utilization! (0 strikes added)",
+                haltJokeVance: "Nice try! Victoria Vance is the CEO who signed the wire, not the engineer who scrubbed the server logs. Arresting the CEO without reading Node 1 will definitely hurt your year-end utilization! (0 strikes added)",
                 haltJokePartner: "Whoa! Blaming the Engagement Partner or the Intern is a bold career move, but they didn't scrub the server logs. (0 strikes added)",
                 haltJokePlsFix: "'Pls fix, thx' works on slide decks at 1:00 AM, but the firewall needs an actual override code! (0 strikes added)",
                 haltJokePassword: "Seriously? 'PASSWORD'? Even the DU Barn Wi-Fi has better security than that! (0 strikes added)",
@@ -371,24 +387,17 @@
                 security: "安全合规",
                 vendors: "供应商",
                 encryptedNodes: "加密节点",
-                n1Logs: "N1：日志",
-                n2Ledger: "N2：账本",
-                n3Protocol: "N3：协议",
-                n1Short: "日志",
-                n2Short: "账本",
-                n3Short: "协议",
+                n1Logs: "N1：日志", n2Ledger: "N2：账本", n3Protocol: "N3：协议",
+                n1Short: "日志", n2Short: "账本", n3Short: "协议",
                 haltTxn: "终止交易",
                 haltShort: "终止",
                 decryptionStatus: "解密状态",
                 nodesLabel: "节点",
-                searchPlaceholderOrg: "搜索目录（试试 404）",
-                searchLogsPlaceholder: "筛选日志（试试 coffee）",
-                searchLedgerPlaceholder: "筛选账本（试试 pizza）",
+                searchPlaceholderOrg: "搜索姓名、职位、编号或 IP",
+                searchLogsPlaceholder: "筛选日志",
+                searchLedgerPlaceholder: "筛选账本",
                 noResults: "没有匹配的记录。",
-                id: "编号",
-                dept: "部门",
-                ext: "分机",
-                ip: "IP 地址",
+                id: "编号", dept: "部门", ext: "分机", ip: "IP 地址",
                 n1Title: "节点 1：服务器日志",
                 n1Hint: "向 NPC 打听线索，获取解密密钥。",
                 n2Title: "节点 2：离岸账本",
@@ -398,74 +407,54 @@
                 enterKey: "输入解密密钥",
                 decryptBtn: "验证并解密",
                 logDate: "日志日期",
-                date: "日期",
-                time: "时间",
-                user: "用户",
-                event: "事件",
-                status: "状态",
-                ticket: "工单",
-                txnId: "交易 ID",
-                vendorName: "供应商名称",
-                approvedBy: "审批人",
-                amount: "金额",
-                riskTier: "风险等级",
-                capThreshold: "资金阈值",
-                jurisdiction: "管辖区",
-                channel: "结算渠道",
-                anomalyFlag: "异常标记",
-                actionCode: "行动代码",
-                routingGw: "路由网关",
-                authHash: "授权散列",
+                date: "日期", time: "时间", user: "用户", event: "事件", status: "状态", ticket: "工单",
+                txnId: "交易 ID", vendorName: "供应商名称", approvedBy: "审批人", amount: "金额",
+                riskTier: "风险等级", capThreshold: "资金阈值", jurisdiction: "管辖区",
+                channel: "结算渠道", anomalyFlag: "异常标记", actionCode: "行动代码",
+                routingGw: "路由网关", authHash: "授权散列",
                 missionAccomplished: "任务完成。违规转账已被拦截，APEX Shell Logistics 账户已冻结，Summit & Co. 的审计完整性得到保障。",
                 sysOverride: "系统覆盖终端",
-                sysOverrideDesc: "根据已解密节点的信息，依次输入：违规技术人员的法定全名、非法交易 ID、对应的行动代码，以及用于拦截转账的路由网关。",
+                sysOverrideDesc: "汇总全队的证据，然后输入三项：谁执行了未经批准的数据清洗、哪一笔是非法汇款，以及能拦截它的协议行动代码。",
                 terminalLockedTitle: "终端已锁定",
-                terminalLockedDesc: "解密全部 3 个节点后，方可进入系统覆盖终端。",
+                terminalLockedDesc: "在本机解密全部 3 个节点后，方可进入系统覆盖终端。",
                 terminalProgress: "解密进度",
-                jumpToNode: "前往节点",
                 identityMatch: "身份匹配",
-                empNameHint: "员工法定全名（例如 Ana Farah）",
+                empNameHint: "谁执行了未经批准的数据清洗？输入法定全名（例如 Ana Farah）",
                 auditFlag: "审计标记",
-                suspiciousTxn: "可疑交易 ID（例如 TXN0001）",
+                suspiciousTxn: "非法汇款的交易 ID（例如 TXN0001）",
                 executeAction: "执行行动",
-                haltActionCode: "终止行动代码（例如 CLEAR-ROUTINE）",
-                routingGateway: "路由网关",
-                routingGatewayHint: "网关拦截代码（例如 GW-ACH-METRO）",
+                haltActionCode: "协议行动代码（例如 CLEAR-ROUTINE）",
                 verified: "已验证",
                 verifyBtn: "验证",
                 enter: "输入",
                 privActivities: "特权活动（ISS-04）",
                 privDesc: "以下活动属于特权活动，须事先获得副总裁（VP）或以上级别的书面批准。未经 VP 事先批准即执行，属于须上报的重大控制违规（High Control Breach）。",
-                dbExport: "数据库导出：",
-                dbExportDesc: "导出超过 10,000 条记录的生产数据。",
-                privEsc: "权限提升：",
-                privEscDesc: "任何提升账户访问权限的操作。",
-                custData: "客户数据移除：",
-                custDataDesc: "删除或转移客户记录。",
-                dataScrub: "数据清洗：",
-                dataScrubDesc: "任何覆盖、屏蔽或不可逆地更改生产数据的操作。",
-                auditLogMod: "审计日志修改：",
-                auditLogModDesc: "编辑或截断审计日志。",
+                dbExport: "数据库导出：", dbExportDesc: "导出超过 10,000 条记录的生产数据。",
+                privEsc: "权限提升：", privEscDesc: "任何提升账户访问权限的操作。",
+                custData: "客户数据移除：", custDataDesc: "删除或转移客户记录。",
+                dataScrub: "数据清洗：", dataScrubDesc: "任何覆盖、屏蔽或不可逆地更改生产数据的操作。",
+                auditLogMod: "审计日志修改：", auditLogModDesc: "编辑或截断审计日志。",
+                chgTitle: "变更工单（CHG 登记册）",
+                chgDesc: "服务器日志中的每项特权变更都引用了一张 CHG 工单。按照 ISS-04，工单须在执行前获得 VP 级别批准。",
+                activity: "活动", requestedBy: "申请人",
                 infraMap: "基础设施映射",
                 infraDesc: "FTV-PROD-01 环境的访问管理系统摘要，显示当前常驻权限。",
-                employee: "员工",
-                system: "系统",
-                accessLevel: "访问级别",
+                employee: "员工", system: "系统", accessLevel: "访问级别",
                 infraNote: "注：所有财务签批及系统变更工单（CHG）均须与员工目录中的常驻职务权限一致。",
                 compWatchlist: "合规观察名单（EDD）",
                 compDesc: "凡路由至或途经增强尽职调查（EDD）管辖区的供应商付款，结账前均须获得合规部门签批。",
                 poTitle: "采购订单（2026 年第二季度）",
                 searchPO: "搜索采购订单",
                 poDesc: "每笔供应商付款都必须对应一份供应商名称完全一致的已批准采购订单。名称相似的供应商订单不算数。",
-                poNum: "订单编号",
-                project: "项目",
-                approver: "审批人",
+                poNum: "订单编号", project: "项目", approver: "审批人",
                 vmTitle: "供应商主数据库",
                 searchVendor: "搜索供应商",
-                legalName: "法定名称",
-                country: "国家/地区",
-                risk: "风险",
+                legalName: "法定名称", country: "国家/地区", risk: "风险",
                 emergencyDesc: "将可疑交易的金额、管辖区、结算渠道与异常类型，与下方的全球银行协议矩阵逐项比对。",
+                n3RuleTitle: "协议规则",
+                n3Rule1: "只有金额、管辖区、结算渠道、异常类型四项全部吻合，该行才适用。",
+                n3Rule2: "管辖区以资金流向为准：看资金实际汇往何处，而不是供应商的注册国家。",
+                n3Rule3: "若同时存在多种异常，只按最严重的一种处理：供应商不符 / 空壳公司 > 未授权签字人 > 缺少采购订单 > 交易频率异常。",
                 pTier1: "低", pTier2: "较高", pTier3: "高", pTier4: "严重", pTier5: "危急",
                 pJur1: "标准", pJur2: "EDD 观察名单", pJur3: "制裁名单",
                 pAnom1: "常规 / 无标记", pAnom2: "缺少采购订单", pAnom3: "未授权签字人",
@@ -485,6 +474,7 @@
                 memoFooter: "提示：本备忘录仅供娱乐，不含任何覆盖代码。",
                 closeMemo: "知悉并关闭",
                 close: "关闭",
+                cancel: "取消",
                 lockoutTitle: "安全防火墙已启动",
                 lockoutDesc: "无效尝试次数过多，输入已冻结：",
                 badgeEnumWarning: "请输入涉案员工的法定全名（例如 Ana Farah）。",
@@ -492,11 +482,12 @@
                 nextFreezeLabel: "下次冻结于",
                 groupNumLabel: "小组编号",
                 groupNumPlaceholder: "例如 第 12 组",
+                groupLabel: "小组",
                 timestampLabel: "官方锁定时间戳（UTC+8）",
                 exportProofBtn: "导出通关凭证（JPEG）",
                 exportingText: "正在生成凭证…",
-                groupNumRequired: "请先填写小组编号，再生成凭证。",
-                watermarkNotice: "凭证带有防伪水印与校验码，评委将按此时间戳排名。",
+                groupNumRequired: "请先填写小组编号。",
+                watermarkNotice: "凭证带有防伪水印与校验码。按拦截用时排名，发现的彩蛋数用于决胜。",
                 certCardTitle: "官方通关记录与排名凭证",
                 rankingMetricNotice: "官方计时依据",
                 downloadSuccess: "凭证已生成，请向评委出示该 JPEG 图片。",
@@ -509,8 +500,55 @@
                 bootErrorDesc: "无法读取 info.txt。请确认它与 index.html 位于同一目录，并通过 http(s) 访问页面，而不是直接打开本地文件。",
                 retry: "重试",
                 loading: "正在加载 info.txt 与 Supabase 节点…",
-                n1EasterHint: "02:26 ROOT_LOGIN（连点 3 次）",
-                n2EasterHint: "TXN8892（连点 3 次）：备忘录",
+
+                briefingKicker: "事件简报 // 06:00",
+                briefingTitle: "一笔汇款即将到账，拦住它。",
+                briefingBody: "你们是 Summit & Co. 审计 FitVision 项目组的新成员。昨夜，一笔大额付款被汇出，有人还试图抹掉痕迹。这笔钱将在 {min} 分钟后到账。找出是谁掩盖了痕迹、是哪一笔付款，以及拦截它的代码。",
+                chooseRole: "选择你的角色",
+                roleHint: "每位队员选择不同角色，看到的证据也不同。没有人能独自破案，请多沟通。",
+                roleIt: "取证 IT", roleItDesc: "服务器日志与访问权限映射",
+                roleFinance: "财务", roleFinanceDesc: "账本、采购订单与供应商主数据",
+                roleCompliance: "合规", roleComplianceDesc: "政策、变更工单、EDD 观察名单与行动协议",
+                startMission: "开始任务",
+                roleRequired: "请选择一个角色。",
+                yourRole: "你的角色",
+                switchRole: "切换角色",
+                switchRoleWarn: "切换角色后，本机所有证据将锁定 {s} 秒，等待重新授权。",
+                confirmSwitch: "切换",
+                restrictedTitle: "受限证据",
+                restrictedHeld: "由你的{role}队友掌握，去问问他们。",
+                reclearing: "重新授权中：{s} 秒",
+
+                clockLabel: "汇款到账倒计时",
+                clockSettled: "已到账",
+                clockOvertime: "超时",
+                clockHalted: "已拦截",
+                timeToHalt: "拦截用时",
+
+                secretsLabel: "彩蛋",
+                secretsTitle: "已发现彩蛋",
+                secretsNote: "彩蛋数量用于排行榜决胜。已发现的会显示名称，其余显示提示。",
+                secretFound: "发现彩蛋",
+                secrets: {
+                    shell: ["复古终端", "标志里藏着一个老游戏，坚持就有回报。"],
+                    ghost: ["幽灵审计师", "有些员工只存在于错误页面里。"],
+                    coffee: ["内核崩溃", "服务器靠咖啡续命，去日志里问问。"],
+                    pizza: ["午夜辛迪加", "不是每笔深夜订单都获批了，去账本里问问晚饭。"],
+                    oven: ["烤箱摄像头", "有人在 02:26 想要 root 权限，多问几次为什么。"],
+                    memo: ["纪律备忘录", "汇往英属维尔京群岛的最大一笔付款藏着备忘录，敲三下。"],
+                    tier: ["第六级", "协议还有比“危急”更高的一级，标题知道答案。"]
+                },
+
+                beatContinue: "继续",
+                beatGoTerminal: "前往终端",
+                beatNotYours: "此节点的证据由你的{role}队友查看。",
+                beats: {
+                    logs: ["节点 1 已解密", "凌晨 3 点前后，有人在服务器上非常忙碌，还试图清理自己的痕迹。"],
+                    ledger: ["节点 2 已解密", "有一笔付款恰好在最不该出现的那一分钟汇出。它还没到账，还来得及。"],
+                    banking: ["节点 3 已解密", "紧急协议已开放。只有一行能拦下这笔汇款，先读规则。"],
+                    all: ["全部节点已解密", "覆盖终端已上线。在倒计时归零前拦下这笔汇款。"]
+                },
+
                 n1RootModalTitle: "IT 取证拦截报告 // EMP042（DANIEL PATEL）",
                 n1RootModalSub: "端口 22（SSH）自动抓包分析",
                 n1RootModalBody: "EMP042 于 02:26 发起的 ROOT_LOGIN_ATTEMPT 并无财务恶意。Daniel Patel 只是想 SSH 登录 DU 谷仓后厨的智能烤箱摄像头，看看新鲜的双倍巧克力曲奇出炉了没有。",
@@ -519,7 +557,6 @@
                 n2PizzaVendor: "The DU Barn Midnight Cookie Syndicate",
                 n2PizzaApprover: "饥肠辘辘的高级审计师",
                 n2PizzaStatus: "已驳回（想得美）",
-                n3EasterHint: "连点标题 3 次：隐藏等级",
                 n3Tier6: "末日级（Tier 6）",
                 n3Tier6Jur: "DU 谷仓曲奇罐",
                 n3Tier6Anom: "合伙人周五 16:55 突然约“5 分钟快速对齐”",
@@ -535,29 +572,29 @@
             }
         };
 
+        const fmt = (s, vars) => String(s).replace(/\{(\w+)\}/g, (_, k) => (vars && vars[k] !== undefined ? vars[k] : `{${k}}`));
+        const roleName = (t, r) => ({ it: t.roleIt, finance: t.roleFinance, compliance: t.roleCompliance }[r] || r);
+
         // ─────────────────────────────────────────────────────────────
-        // info.txt PARSER (unchanged format)
+        // info.txt PARSER
         // ─────────────────────────────────────────────────────────────
         function parseInfoTxt(text) {
             const result = {
-                supabase: {}, directory: [], securityInfra: [], eddWatchlist: [],
+                supabase: {}, game: {}, directory: [], securityInfra: [], changeTickets: [], eddWatchlist: [],
                 purchaseOrders: [], vendors: [], logs: [], ledger: [], protocol: [], overrideAnswers: {}
             };
             let currentSection = '';
             const lines = (text || '').split(/\r?\n/);
-
             for (let rawLine of lines) {
                 const line = rawLine.trim();
                 if (!line || line.startsWith('#')) continue;
-                if (line.startsWith('[') && line.endsWith(']')) {
-                    currentSection = line.slice(1, -1).trim().toUpperCase();
-                    continue;
-                }
+                if (line.startsWith('[') && line.endsWith(']')) { currentSection = line.slice(1, -1).trim().toUpperCase(); continue; }
                 const parts = line.split('|').map(p => p.trim());
                 switch (currentSection) {
-                    case 'SUPABASE': {
+                    case 'SUPABASE':
+                    case 'GAME': {
                         const eqIdx = line.indexOf('=');
-                        if (eqIdx !== -1) result.supabase[line.slice(0, eqIdx).trim()] = line.slice(eqIdx + 1).trim();
+                        if (eqIdx !== -1) result[currentSection === 'GAME' ? 'game' : 'supabase'][line.slice(0, eqIdx).trim()] = line.slice(eqIdx + 1).trim();
                         break;
                     }
                     case 'DIRECTORY':
@@ -565,6 +602,9 @@
                         break;
                     case 'SECURITY_INFRA':
                         if (parts.length >= 3) result.securityInfra.push({ emp: parts[0], sys: parts[1], level: parts[2], highlight: (parts[3] || '').toLowerCase() === 'true' });
+                        break;
+                    case 'CHANGE_TICKETS':
+                        if (parts.length >= 5) result.changeTickets.push({ id: parts[0], activity: parts[1], requester: parts[2], approver: parts[3], status: parts[4] });
                         break;
                     case 'EDD_WATCHLIST':
                         result.eddWatchlist.push(line);
@@ -594,6 +634,20 @@
             return result;
         }
 
+        function readGameConfig(game) {
+            const g = game || {};
+            const startMs = g.GAME_START ? Date.parse(g.GAME_START) : NaN;
+            const minutes = parseInt(g.SETTLEMENT_MINUTES, 10);
+            const cooldown = parseInt(g.ROLE_SWITCH_COOLDOWN, 10);
+            return {
+                session: (g.GAME_SESSION || 'default').slice(0, 40),
+                startMs: Number.isFinite(startMs) ? startMs : null,
+                limitSec: (Number.isFinite(minutes) && minutes > 0 ? minutes : 120) * 60,
+                roleMode: (g.ROLE_MODE || 'on').toLowerCase() !== 'off',
+                cooldownSec: Number.isFinite(cooldown) && cooldown >= 0 ? cooldown : 60
+            };
+        }
+
         function formatUTC8Time(date = new Date()) {
             try {
                 const d = new Date(date);
@@ -606,15 +660,24 @@
             }
         }
 
+        const formatClock = (sec) => {
+            const s = Math.max(0, Math.floor(Math.abs(sec)));
+            return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+        };
+
         function generateSecurityToken(group, timeStr) {
             const raw = `${group || 'UNKNOWN'}_${timeStr}_SUNRISE_VOIDWIRE_2026`;
             let hash = 0;
-            for (let i = 0; i < raw.length; i++) {
-                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
-                hash |= 0;
-            }
+            for (let i = 0; i < raw.length; i++) { hash = ((hash << 5) - hash) + raw.charCodeAt(i); hash |= 0; }
             return `SEC-${Math.abs(hash).toString(16).toUpperCase().padStart(8, '0')}-DU26`;
         }
+
+        // "Group 7", "7", "第7组" → "GROUP 7" so teammates on different phones match on the leaderboard
+        const normalizeGroup = (s) => {
+            const raw = (s || '').trim();
+            const m = raw.match(/\d+/);
+            return m ? `GROUP ${parseInt(m[0], 10)}` : raw.toUpperCase().slice(0, 30);
+        };
 
         const norm = (s) => (s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 
@@ -630,7 +693,14 @@
 
         const isIOSDevice = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-        // Media query hook (with Safari < 14 addListener fallback)
+        function getClientId() {
+            try {
+                let id = localStorage.getItem('PROJECT_SUNRISE_CLIENT');
+                if (!id) { id = Math.random().toString(36).slice(2, 10); localStorage.setItem('PROJECT_SUNRISE_CLIENT', id); }
+                return id;
+            } catch (e) { return 'anon'; }
+        }
+
         function useMediaQuery(query) {
             const get = () => (typeof window !== 'undefined' && window.matchMedia) ? window.matchMedia(query).matches : false;
             const [matches, setMatches] = useState(get);
@@ -699,7 +769,8 @@
         }
 
         function NeutralTag({ children }) {
-            return <span className="inline-flex items-center rounded-md border border-slate-800 bg-slate-900 px-1.5 py-0.5 font-mono text-[10px] leading-none text-slate-300 whitespace-nowrap">{children}</span>;
+            const pending = /PENDING/i.test(String(children));
+            return <span className={`inline-flex items-center rounded-md border px-1.5 py-0.5 font-mono text-[10px] leading-none whitespace-nowrap ${pending ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' : 'border-slate-800 bg-slate-900 text-slate-300'}`}>{children}</span>;
         }
 
         function EmptyState({ t }) {
@@ -723,6 +794,56 @@
             );
         }
 
+        // Placeholder shown where another role's evidence would be
+        function Restricted({ t, section, title, cooldownLeft, compact = false }) {
+            const owner = SECTION_OWNER[section];
+            const meta = ROLE_META[owner] || {};
+            return (
+                <div className={`rounded-2xl border border-dashed border-slate-700 bg-slate-950/50 ${compact ? 'p-3.5' : 'p-6 text-center'}`}>
+                    <div className={`flex ${compact ? 'items-center gap-3' : 'flex-col items-center gap-3'}`}>
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${meta.ring || 'border-slate-700'}`}>
+                            <i className={`fa-solid ${cooldownLeft > 0 ? 'fa-hourglass-half' : 'fa-lock'} ${meta.color || 'text-slate-400'}`}></i>
+                        </div>
+                        <div className="min-w-0">
+                            <p className="caps font-mono text-[10px] text-slate-500">{t.restrictedTitle}</p>
+                            <p className="text-sm font-semibold text-slate-200">{title}</p>
+                            <p className="mt-0.5 text-xs leading-relaxed text-slate-400">
+                                {cooldownLeft > 0 ? fmt(t.reclearing, { s: cooldownLeft }) : (
+                                    <React.Fragment><i className={`fa-solid ${meta.icon} mr-1 ${meta.color}`}></i>{fmt(t.restrictedHeld, { role: roleName(t, owner) })}</React.Fragment>
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function ClockChip({ t, clock, size = 'sm' }) {
+            const { remaining, finished, elapsed } = clock;
+            let tone = 'border-slate-800 bg-slate-950 text-deloitte-green';
+            let label = t.clockLabel;
+            let value = formatClock(remaining);
+            let icon = 'fa-hourglass-half';
+            if (finished) { tone = 'border-deloitte-green/50 bg-deloitte-green/15 text-deloitte-green'; label = t.clockHalted; value = formatClock(elapsed); icon = 'fa-shield-halved'; }
+            else if (remaining <= 0) { tone = 'border-red-500 bg-red-950 text-red-300'; label = `${t.clockSettled} · ${t.clockOvertime}`; value = `+${formatClock(-remaining)}`; icon = 'fa-triangle-exclamation'; }
+            else if (remaining <= 600) { tone = 'border-red-500/70 bg-red-950/70 text-red-300 animate-pulse'; }
+            else if (remaining <= 1800) { tone = 'border-amber-500/60 bg-amber-950/50 text-amber-300'; }
+            if (size === 'lg') {
+                return (
+                    <div className={`flex items-center gap-2.5 rounded-xl border px-3 py-1.5 ${tone}`} role="timer" aria-label={`${label} ${value}`}>
+                        <i className={`fa-solid ${icon} text-xs`}></i>
+                        <span className="caps hidden font-mono text-[10px] opacity-80 lg:inline">{label}</span>
+                        <span className="font-mono text-base font-bold tabular-nums">{value}</span>
+                    </div>
+                );
+            }
+            return (
+                <span className={`flex h-8 items-center gap-1.5 rounded-lg border px-2 font-mono text-[13px] font-bold tabular-nums ${tone}`} role="timer" aria-label={`${label} ${value}`}>
+                    <i className={`fa-solid ${icon} text-[10px]`}></i>{value}
+                </span>
+            );
+        }
+
         // ─────────────────────────────────────────────────────────────
         // OFFLINE SVG AVATAR
         // ─────────────────────────────────────────────────────────────
@@ -739,7 +860,6 @@
             ];
             const p = palettes[num % palettes.length];
             const type = num % 4;
-
             if (rawId === "EMP001") {
                 return (
                     <svg aria-hidden="true" className={`${className} rounded-xl border border-deloitte-green/60 bg-slate-900 shrink-0`} viewBox="0 0 100 100">
@@ -809,7 +929,7 @@
         }
 
         // ─────────────────────────────────────────────────────────────
-        // EASTER EGG MODALS
+        // MODALS
         // ─────────────────────────────────────────────────────────────
         function SnakeGame({ onClose }) {
             const [snake, setSnake] = useState([[10, 10]]);
@@ -817,7 +937,7 @@
             const [dir, setDir] = useState([0, -1]);
             const [gameOver, setGameOver] = useState(false);
             const [score, setScore] = useState(0);
-            const lastDirRef = useRef([0, -1]); // direction actually moved last tick (blocks instant 180° turns)
+            const lastDirRef = useRef([0, -1]);
             const touchRef = useRef(null);
 
             const turn = useCallback((nd) => {
@@ -917,9 +1037,7 @@
             return (
                 <Modal onClose={onClose}>
                     <div className="relative max-h-full w-full max-w-2xl overflow-y-auto rounded-2xl border-4 border-dashed border-red-700 bg-amber-50 p-5 font-typewriter text-slate-900 shadow-2xl md:p-8">
-                        <div className="mb-3 inline-block rotate-2 border border-red-700 px-2 py-0.5 text-[10px] font-bold tracking-widest text-red-700 md:absolute md:right-4 md:top-3 md:mb-0 md:text-xs">
-                            CLASSIFIED // DU INTERNAL
-                        </div>
+                        <div className="mb-3 inline-block rotate-2 border border-red-700 px-2 py-0.5 text-[10px] font-bold tracking-widest text-red-700 md:absolute md:right-4 md:top-3 md:mb-0 md:text-xs">CLASSIFIED // DU INTERNAL</div>
                         <div className="mb-4 border-b-2 border-slate-900 pb-3">
                             <h2 className="mb-1 text-lg font-bold tracking-wide text-red-800 md:text-2xl">{t.memoHeader}</h2>
                             <p className="font-sans text-xs font-bold uppercase text-slate-700">{t.memoSub}</p>
@@ -966,9 +1084,7 @@
             return (
                 <Modal onClose={onClose} tone="danger">
                     <div className="max-h-full w-full max-w-lg overflow-y-auto rounded-2xl border-2 border-red-500 bg-slate-950 p-6 text-center shadow-[0_0_50px_rgba(239,68,68,0.5)]">
-                        <div className="mx-auto mb-4 flex h-16 w-16 animate-pulse items-center justify-center rounded-full border-2 border-red-500 bg-red-900/40 text-3xl text-red-400">
-                            <i className="fa-solid fa-radiation"></i>
-                        </div>
+                        <div className="mx-auto mb-4 flex h-16 w-16 animate-pulse items-center justify-center rounded-full border-2 border-red-500 bg-red-900/40 text-3xl text-red-400"><i className="fa-solid fa-radiation"></i></div>
                         <h3 className="caps mb-3 font-mono text-lg font-bold text-red-400 md:text-xl">{t.n3DefconTitle}</h3>
                         <p className="mb-6 text-sm leading-relaxed text-slate-300">{t.n3DefconBody}</p>
                         <button onClick={onClose} className="w-full rounded-xl bg-deloitte-green py-3 text-xs font-bold uppercase tracking-widest text-slate-950 shadow-lg transition-colors hover:bg-lime-400 md:text-sm">
@@ -976,6 +1092,111 @@
                         </button>
                     </div>
                 </Modal>
+            );
+        }
+
+        function BeatModal({ beat, t, role, roleMode, onContinue }) {
+            const [title, body] = t.beats[beat] || ['', ''];
+            const section = NODE_SECTION[beat];
+            const notYours = roleMode && section && role && SECTION_OWNER[section] !== role;
+            const isAll = beat === 'all';
+            const icons = { logs: 'fa-terminal', ledger: 'fa-database', banking: 'fa-network-wired', all: 'fa-bolt' };
+            return (
+                <Modal onClose={() => onContinue(false)}>
+                    <div className={`pop-in panel relative w-full max-w-sm overflow-hidden rounded-2xl p-6 text-center shadow-2xl ${isAll ? '!border-red-500/60' : 'neon-border-green'}`}>
+                        <div className={`absolute left-0 top-0 h-1 w-full ${isAll ? 'bg-gradient-to-r from-red-500 via-amber-400 to-red-500' : 'bg-gradient-to-r from-deloitte-green via-cyan-400 to-deloitte-green'}`}></div>
+                        <div className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border text-2xl ${isAll ? 'border-red-500 bg-red-950/50 text-red-400' : 'border-deloitte-green bg-deloitte-green/15 text-deloitte-green'}`}>
+                            <i className={`fa-solid ${icons[beat] || 'fa-unlock'}`}></i>
+                        </div>
+                        <p className="caps mb-1 font-mono text-[11px] text-slate-500"><i className="fa-solid fa-unlock-keyhole mr-1"></i>{title}</p>
+                        <p className="mb-4 text-[15px] leading-relaxed text-slate-100">{body}</p>
+                        {notYours && (
+                            <p className="mb-4 rounded-xl border border-slate-800 bg-slate-950/70 p-2.5 text-xs text-slate-400">
+                                <i className={`fa-solid ${ROLE_META[SECTION_OWNER[section]].icon} mr-1.5 ${ROLE_META[SECTION_OWNER[section]].color}`}></i>
+                                {fmt(t.beatNotYours, { role: roleName(t, SECTION_OWNER[section]) })}
+                            </p>
+                        )}
+                        <button onClick={() => onContinue(isAll)} className={`w-full rounded-xl py-3 font-mono text-xs font-bold uppercase tracking-wider ${isAll ? 'bg-red-600 text-white hover:bg-red-500' : 'bg-deloitte-green text-slate-950 hover:bg-lime-400'}`}>
+                            {isAll ? t.beatGoTerminal : t.beatContinue}
+                        </button>
+                    </div>
+                </Modal>
+            );
+        }
+
+        function SecretsModal({ t, found, onClose }) {
+            return (
+                <Modal onClose={onClose}>
+                    <div className="glass max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-amber-400/50 p-5">
+                        <div className="mb-1 flex items-center justify-between gap-3">
+                            <h3 className="caps font-mono text-xs font-bold text-amber-300"><i className="fa-solid fa-star mr-1.5"></i>{t.secretsTitle} · {found.length}/{SECRET_IDS.length}</h3>
+                            <button onClick={onClose} aria-label={t.close} className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white"><i className="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <p className="mb-4 text-xs leading-relaxed text-slate-400">{t.secretsNote}</p>
+                        <ul className="space-y-2">
+                            {SECRET_IDS.map((id, i) => {
+                                const ok = found.includes(id);
+                                const [name, clue] = t.secrets[id];
+                                return (
+                                    <li key={id} className={`flex items-start gap-3 rounded-xl border p-3 ${ok ? 'border-amber-400/50 bg-amber-500/10' : 'border-slate-800 bg-slate-950/60'}`}>
+                                        <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-bold ${ok ? 'bg-amber-400 text-slate-950' : 'border border-slate-700 text-slate-500'}`}>
+                                            {ok ? <i className="fa-solid fa-check text-[10px]"></i> : i + 1}
+                                        </span>
+                                        <div className="min-w-0">
+                                            {ok ? <p className="text-sm font-semibold text-amber-200">{name}</p> : <p className="text-sm italic text-slate-400">{clue}</p>}
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                </Modal>
+            );
+        }
+
+        function RoleSwitchModal({ t, role, cooldownSec, onPick, onClose }) {
+            const [pick, setPick] = useState(role);
+            return (
+                <Modal onClose={onClose}>
+                    <div className="glass max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-slate-700 p-5">
+                        <h3 className="caps mb-1 font-mono text-xs font-bold text-deloitte-green">{t.switchRole}</h3>
+                        <p className="mb-4 text-xs leading-relaxed text-amber-300"><i className="fa-solid fa-triangle-exclamation mr-1.5"></i>{fmt(t.switchRoleWarn, { s: cooldownSec })}</p>
+                        <RolePicker t={t} value={pick} onChange={setPick} />
+                        <div className="mt-4 flex gap-2">
+                            <button onClick={onClose} className="flex-1 rounded-xl border border-slate-700 bg-slate-900 py-3 font-mono text-xs font-bold uppercase text-slate-300">{t.cancel}</button>
+                            <button disabled={!pick || pick === role} onClick={() => onPick(pick)} className="flex-1 rounded-xl bg-deloitte-green py-3 font-mono text-xs font-bold uppercase text-slate-950 disabled:opacity-40">{t.confirmSwitch}</button>
+                        </div>
+                    </div>
+                </Modal>
+            );
+        }
+
+        function RolePicker({ t, value, onChange }) {
+            const roles = [
+                { k: 'it', name: t.roleIt, desc: t.roleItDesc },
+                { k: 'finance', name: t.roleFinance, desc: t.roleFinanceDesc },
+                { k: 'compliance', name: t.roleCompliance, desc: t.roleComplianceDesc }
+            ];
+            return (
+                <div className="grid grid-cols-1 gap-2" role="radiogroup">
+                    {roles.map(r => {
+                        const meta = ROLE_META[r.k];
+                        const active = value === r.k;
+                        return (
+                            <button key={r.k} type="button" role="radio" aria-checked={active} onClick={() => onChange(r.k)}
+                                className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-colors ${active ? meta.ring : 'border-slate-800 bg-slate-950/60 hover:border-slate-600'}`}>
+                                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${active ? meta.ring : 'border-slate-800 bg-slate-900'}`}>
+                                    <i className={`fa-solid ${meta.icon} ${meta.color}`}></i>
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                    <span className="block text-sm font-bold text-white">{r.name}</span>
+                                    <span className="block text-xs leading-snug text-slate-400">{r.desc}</span>
+                                </span>
+                                <i className={`fa-solid ${active ? 'fa-circle-check text-deloitte-green' : 'fa-circle text-slate-700'} text-sm`}></i>
+                            </button>
+                        );
+                    })}
+                </div>
             );
         }
 
@@ -989,14 +1210,12 @@
                     }
                 } catch (e) { setCanShare(false); }
             }, [proof]);
-
             const share = async () => {
                 try {
                     const f = new File([proof.blob], proof.fileName, { type: 'image/jpeg' });
                     await navigator.share({ files: [f], title: 'Project Sunrise' });
-                } catch (e) { /* user cancelled */ }
+                } catch (e) { }
             };
-
             return (
                 <Modal onClose={onClose}>
                     <div className="glass flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-deloitte-green/50">
@@ -1027,18 +1246,18 @@
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
                 return raw ? JSON.parse(raw) : null;
-            } catch (e) {
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         // ─────────────────────────────────────────────────────────────
         // MAIN APP
         // ─────────────────────────────────────────────────────────────
         function QuestView() {
-            const [saved] = useState(loadSavedState); // read once, not on every render
+            const [saved] = useState(() => loadSavedState() || {});
             const isDesktop = useMediaQuery('(min-width: 768px)');
             const scrollRef = useRef(null);
+            const tapRef = useRef({});
+            const clientId = useRef(getClientId()).current;
 
             const [appData, setAppData] = useState(null);
             const [loadingInfo, setLoadingInfo] = useState(true);
@@ -1046,51 +1265,48 @@
             const [sbClient, setSbClient] = useState(null);
             const [sbConnected, setSbConnected] = useState(false);
             const [nodePasswords, setNodePasswords] = useState({ logs: [], ledger: [], banking: [] });
-            const [overrideCodes, setOverrideCodes] = useState({ puzzle1: [], puzzle2: [], puzzle3: [], puzzle4: [] });
+            const [overrideCodes, setOverrideCodes] = useState({ puzzle1: [], puzzle2: [], puzzle3: [] });
             const [verifyingPuzzleKey, setVerifyingPuzzleKey] = useState(null);
 
-            const initialRawTab = (saved && saved.activeTab) || 'hub';
-            const isLegacyHubTab = ['org', 'security', 'vendor'].includes(initialRawTab);
+            const [lang, setLang] = useState(saved.lang || 'en');
+            const [registered, setRegistered] = useState(!!saved.registered);
+            const [groupNumber, setGroupNumber] = useState(saved.groupNumber || '');
+            const [role, setRole] = useState(saved.role || '');
+            const [startedAt, setStartedAt] = useState(saved.startedAt || null);
+            const [finishedAt, setFinishedAt] = useState(saved.finishedAt || null);
+            const [roleCooldownUntil, setRoleCooldownUntil] = useState(saved.roleCooldownUntil || 0);
+            const [secrets, setSecrets] = useState(Array.isArray(saved.secrets) ? saved.secrets : []);
+            const secretsRef = useRef(secrets);
+            const [regError, setRegError] = useState('');
 
-            const [activeTab, setActiveTab] = useState(() => isLegacyHubTab ? 'hub' : initialRawTab);
-            const [hubSubTab, setHubSubTab] = useState(() => {
-                if (saved && saved.hubSubTab) return saved.hubSubTab;
-                if (isLegacyHubTab) return initialRawTab;
-                return 'org';
-            });
+            const [activeTab, setActiveTab] = useState(saved.activeTab || 'hub');
+            const [hubSubTab, setHubSubTab] = useState(saved.hubSubTab || 'org');
+            const [unlockedNodes, setUnlockedNodes] = useState(saved.unlockedNodes || { logs: false, ledger: false, banking: false });
+            const [solvedPuzzles, setSolvedPuzzles] = useState(saved.solvedPuzzles || { puzzle1: false, puzzle2: false, puzzle3: false });
+            const [puzzleInputs, setPuzzleInputs] = useState(saved.puzzleInputs || { puzzle1: '', puzzle2: '', puzzle3: '' });
+            const [puzzleErrors, setPuzzleErrors] = useState({ puzzle1: false, puzzle2: false, puzzle3: false });
 
-            const [unlockedNodes, setUnlockedNodes] = useState(() => (saved && saved.unlockedNodes) || { logs: false, ledger: false, banking: false });
-            const [solvedPuzzles, setSolvedPuzzles] = useState(() => (saved && saved.solvedPuzzles) || { puzzle1: false, puzzle2: false, puzzle3: false, puzzle4: false });
-            const [puzzleInputs, setPuzzleInputs] = useState(() => (saved && saved.puzzleInputs) || { puzzle1: '', puzzle2: '', puzzle3: '', puzzle4: '' });
-            const [puzzleErrors, setPuzzleErrors] = useState({ puzzle1: false, puzzle2: false, puzzle3: false, puzzle4: false });
-            const [lang, setLang] = useState(() => (saved && saved.lang) || 'en');
-
-            const [nodeStrikeCount, setNodeStrikeCount] = useState(() => (saved && typeof saved.nodeStrikeCount === 'number') ? saved.nodeStrikeCount : 0);
-            const [nodeLockoutUntil, setNodeLockoutUntil] = useState(() => (saved && typeof saved.nodeLockoutUntil === 'number') ? saved.nodeLockoutUntil : 0);
-            const [nodeLockoutTimer, setNodeLockoutTimer] = useState(() => Math.max(0, Math.ceil((((saved && saved.nodeLockoutUntil) || 0) - Date.now()) / 1000)));
-
-            const [haltStrikes, setHaltStrikes] = useState(() => (saved && typeof saved.haltStrikes === 'number') ? saved.haltStrikes : 0);
-            const [haltLockoutUntil, setHaltLockoutUntil] = useState(() => (saved && typeof saved.haltLockoutUntil === 'number') ? saved.haltLockoutUntil : 0);
-            const [haltLockoutTimer, setHaltLockoutTimer] = useState(() => Math.max(0, Math.ceil((((saved && saved.haltLockoutUntil) || 0) - Date.now()) / 1000)));
+            const [nodeStrikeCount, setNodeStrikeCount] = useState(typeof saved.nodeStrikeCount === 'number' ? saved.nodeStrikeCount : 0);
+            const [nodeLockoutUntil, setNodeLockoutUntil] = useState(typeof saved.nodeLockoutUntil === 'number' ? saved.nodeLockoutUntil : 0);
+            const [haltStrikes, setHaltStrikes] = useState(typeof saved.haltStrikes === 'number' ? saved.haltStrikes : 0);
+            const [haltLockoutUntil, setHaltLockoutUntil] = useState(typeof saved.haltLockoutUntil === 'number' ? saved.haltLockoutUntil : 0);
+            const [now, setNow] = useState(Date.now());
 
             const [warningToast, setWarningToast] = useState('');
             const [easterEggToast, setEasterEggToast] = useState('');
+            const [secretToast, setSecretToast] = useState(null);
+            const [beatQueue, setBeatQueue] = useState([]);
+            const [showSecrets, setShowSecrets] = useState(false);
+            const [showRoleSwitch, setShowRoleSwitch] = useState(false);
 
             const [showMinigame, setShowMinigame] = useState(false);
-            const [, setClickCount] = useState(0);
             const [showMemo, setShowMemo] = useState(false);
-            const [, setRowClickCount] = useState(0);
-            const [, setRootLogClickCount] = useState(0);
             const [showRootModal, setShowRootModal] = useState(false);
-            const [, setN3TitleClicks] = useState(0);
             const [showSecretProtocol, setShowSecretProtocol] = useState(false);
             const [showDefconModal, setShowDefconModal] = useState(false);
-            const [, setShieldClicks] = useState(0);
             const [showVictoryBlessing, setShowVictoryBlessing] = useState(false);
 
-            const [completionTime, setCompletionTime] = useState(() => (saved && saved.completionTime) || '');
-            const [groupNumber, setGroupNumber] = useState(() => (saved && saved.groupNumber) || '');
-            const [groupError, setGroupError] = useState(false);
+            const [completionTime, setCompletionTime] = useState(saved.completionTime || '');
             const [isExporting, setIsExporting] = useState(false);
             const [exportSuccessMsg, setExportSuccessMsg] = useState(false);
             const [proof, setProof] = useState(null);
@@ -1106,23 +1322,64 @@
             const [verifyingNode, setVerifyingNode] = useState(false);
 
             const t = dict[lang] || dict.en;
+            const config = readGameConfig(appData && appData.game);
+            const group = normalizeGroup(groupNumber);
+
+            const nodeLockoutTimer = Math.max(0, Math.ceil((nodeLockoutUntil - now) / 1000));
+            const haltLockoutTimer = Math.max(0, Math.ceil((haltLockoutUntil - now) / 1000));
+            const cooldownLeft = Math.max(0, Math.ceil((roleCooldownUntil - now) / 1000));
+
             const isGhost = ['404', '999', 'GHOST', 'EMP404'].includes((search || '').trim().toUpperCase());
             const isCoffeeLogSearch = ['COFFEE', 'ESPRESSO', 'COOKIE', '418', 'TEA', 'SNACK', '咖啡', '饼干'].includes((logSearch || '').trim().toUpperCase());
-            const isPizzaLedgerSearch = ['PIZZA', 'COFFEE', 'STARBUCKS', 'COOKIE', 'SNACK', 'LUNCH', '披萨', '咖啡', '饼干'].includes((ledgerSearch || '').trim().toUpperCase());
+            const isPizzaLedgerSearch = ['PIZZA', 'COFFEE', 'STARBUCKS', 'COOKIE', 'SNACK', 'LUNCH', 'DINNER', '披萨', '咖啡', '饼干', '晚饭'].includes((ledgerSearch || '').trim().toUpperCase());
 
-            const allNodesUnlocked = unlockedNodes.logs && unlockedNodes.ledger && unlockedNodes.banking;
-            const allPuzzlesSolved = solvedPuzzles.puzzle1 && solvedPuzzles.puzzle2 && solvedPuzzles.puzzle3 && solvedPuzzles.puzzle4;
-            const nodesDone = ['logs', 'ledger', 'banking'].filter(k => unlockedNodes[k]).length;
+            const allNodesUnlocked = NODE_KEYS.every(k => unlockedNodes[k]);
+            const allPuzzlesSolved = PUZZLE_KEYS.every(k => solvedPuzzles[k]);
+            const nodesDone = NODE_KEYS.filter(k => unlockedNodes[k]).length;
 
-            // Keep <html lang> in sync so CJK fonts / line-height / screen readers behave
-            useEffect(() => {
-                document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-            }, [lang]);
+            const canSee = (section) => !config.roleMode || (cooldownLeft === 0 && !!role && (ROLE_ACCESS[role] || []).includes(section));
 
-            // Reset scroll to top when switching views
-            useEffect(() => {
-                if (scrollRef.current) scrollRef.current.scrollTop = 0;
-            }, [activeTab, hubSubTab]);
+            // Clock: shared start (GAME_START) or this team's first join
+            const getStartMs = () => config.startMs || startedAt || now;
+            const elapsedSecAt = (ts) => Math.max(0, Math.floor((ts - getStartMs()) / 1000));
+            const clock = {
+                finished: !!finishedAt,
+                elapsed: elapsedSecAt(finishedAt || now),
+                remaining: config.limitSec - elapsedSecAt(finishedAt || now)
+            };
+
+            // ─── Live event feed (Supabase 'sunrise_events') ───
+            const logEvent = (type, detail = '', extra = {}) => {
+                if (!sbClient || !group) return;
+                try {
+                    sbClient.from('sunrise_events').insert({
+                        session: config.session, group_name: group, role: role || null,
+                        event_type: type, detail: String(detail || '').slice(0, 60),
+                        elapsed_seconds: extra.elapsed !== undefined ? extra.elapsed : elapsedSecAt(Date.now()),
+                        secrets: extra.secrets !== undefined ? extra.secrets : secretsRef.current.length,
+                        client_id: clientId
+                    }).then(() => {}, () => {});
+                } catch (e) {}
+            };
+
+            const foundSecret = (id) => {
+                if (secretsRef.current.includes(id)) return;
+                const next = [...secretsRef.current, id];
+                secretsRef.current = next;
+                setSecrets(next);
+                setSecretToast({ id, count: next.length });
+                setTimeout(() => setSecretToast(null), 3500);
+                logEvent('secret', id, { secrets: next.length });
+            };
+
+            useEffect(() => { document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en'; }, [lang]);
+            useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = 0; }, [activeTab, hubSubTab]);
+            useEffect(() => { const i = setInterval(() => setNow(Date.now()), 500); return () => clearInterval(i); }, []);
+
+            // Secret triggers that come from searches
+            useEffect(() => { if (isGhost) foundSecret('ghost'); }, [isGhost]);
+            useEffect(() => { if (isCoffeeLogSearch) foundSecret('coffee'); }, [isCoffeeLogSearch]);
+            useEffect(() => { if (isPizzaLedgerSearch) foundSecret('pizza'); }, [isPizzaLedgerSearch]);
 
             // Boot: info.txt + Supabase
             useEffect(() => {
@@ -1138,12 +1395,7 @@
                         const fb1 = parsed.supabase.FALLBACK_NODE1_KEY || '';
                         const fb2 = parsed.supabase.FALLBACK_NODE2_KEY || '';
                         const fb3 = parsed.supabase.FALLBACK_NODE3_KEY || '';
-                        setNodePasswords({
-                            logs: fb1 ? [fb1] : [],
-                            ledger: fb2 ? [fb2] : [],
-                            banking: fb3 ? [fb3, fb3.replace(/\s+/g, '')] : []
-                        });
-
+                        setNodePasswords({ logs: fb1 ? [fb1] : [], ledger: fb2 ? [fb2] : [], banking: fb3 ? [fb3, fb3.replace(/\s+/g, '')] : [] });
                         if (parsed.overrideAnswers && Object.keys(parsed.overrideAnswers).length > 0) {
                             setOverrideCodes(prev => ({ ...prev, ...parsed.overrideAnswers }));
                         }
@@ -1153,30 +1405,24 @@
                         if (sbUrl && sbKey && !sbUrl.includes('your-project-id') && window.supabase) {
                             const client = window.supabase.createClient(sbUrl, sbKey);
                             setSbClient(client);
-
                             const { data: nodeData, error: nodeErr } = await client.from('sunrise_nodes').select('node_key, password');
                             if (!nodeErr && nodeData && nodeData.length > 0) {
                                 const supaNodes = {};
-                                nodeData.forEach(row => {
-                                    if (row.node_key && row.password) supaNodes[row.node_key] = [row.password, row.password.replace(/\s+/g, '')];
-                                });
+                                nodeData.forEach(row => { if (row.node_key && row.password) supaNodes[row.node_key] = [row.password, row.password.replace(/\s+/g, '')]; });
                                 setNodePasswords(prev => ({ ...prev, ...supaNodes }));
                                 setSbConnected(true);
                             }
-
                             const { data: haltData, error: haltErr } = await client.from('sunrise_override_codes').select('puzzle_key, accepted_answers');
                             if (!haltErr && haltData && haltData.length > 0) {
                                 const supaHalt = {};
-                                haltData.forEach(row => {
-                                    if (row.puzzle_key && row.accepted_answers) supaHalt[row.puzzle_key] = row.accepted_answers.split('|').map(s => s.trim()).filter(Boolean);
-                                });
+                                haltData.forEach(row => { if (row.puzzle_key && row.accepted_answers) supaHalt[row.puzzle_key] = row.accepted_answers.split('|').map(s => s.trim()).filter(Boolean); });
                                 setOverrideCodes(prev => ({ ...prev, ...supaHalt }));
                                 setSbConnected(true);
                             }
                         }
                     } catch (err) {
                         console.error("Error loading info.txt or Supabase:", err);
-                        if (!dataLoaded) setBootError(true); // Supabase failure alone is non-fatal (falls back to info.txt)
+                        if (!dataLoaded) setBootError(true);
                     } finally {
                         setLoadingInfo(false);
                     }
@@ -1184,32 +1430,43 @@
                 bootSystem();
             }, []);
 
+            // Without GAME_START, share the team's clock: earliest 'join' event for this group wins
+            useEffect(() => {
+                if (!registered || !sbClient || !group || !appData || config.startMs) return;
+                (async () => {
+                    try {
+                        const { data, error } = await sbClient.from('sunrise_events').select('created_at')
+                            .eq('session', config.session).eq('group_name', group).eq('event_type', 'join')
+                            .order('created_at', { ascending: true }).limit(1);
+                        if (!error && data && data[0]) {
+                            const first = Date.parse(data[0].created_at);
+                            if (Number.isFinite(first)) setStartedAt(prev => (prev ? Math.min(prev, first) : first));
+                        }
+                    } catch (e) {}
+                })();
+            }, [registered, sbClient, group, appData]);
+
             // Persist progress
             useEffect(() => {
                 try {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        activeTab, hubSubTab, unlockedNodes, solvedPuzzles, puzzleInputs, lang,
-                        nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil,
-                        completionTime, groupNumber
+                        lang, registered, groupNumber, role, startedAt, finishedAt, roleCooldownUntil, secrets,
+                        activeTab, hubSubTab, unlockedNodes, solvedPuzzles, puzzleInputs,
+                        nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil, completionTime
                     }));
                 } catch (e) {}
-            }, [activeTab, hubSubTab, unlockedNodes, solvedPuzzles, puzzleInputs, lang, nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil, completionTime, groupNumber]);
+            }, [lang, registered, groupNumber, role, startedAt, finishedAt, roleCooldownUntil, secrets, activeTab, hubSubTab, unlockedNodes, solvedPuzzles, puzzleInputs, nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil, completionTime]);
 
-            // Countdown timers
+            // Finish: freeze the clock, stamp the time, tell the leaderboard
             useEffect(() => {
-                const interval = setInterval(() => {
-                    const now = Date.now();
-                    setNodeLockoutTimer(nodeLockoutUntil > now ? Math.ceil((nodeLockoutUntil - now) / 1000) : 0);
-                    setHaltLockoutTimer(haltLockoutUntil > now ? Math.ceil((haltLockoutUntil - now) / 1000) : 0);
-                }, 250);
-                return () => clearInterval(interval);
-            }, [nodeLockoutUntil, haltLockoutUntil]);
+                if (allPuzzlesSolved && !finishedAt && appData) {
+                    const ts = Date.now();
+                    setFinishedAt(ts);
+                    if (!completionTime) setCompletionTime(formatUTC8Time(new Date(ts)));
+                    logEvent('finish', '', { elapsed: elapsedSecAt(ts) });
+                }
+            }, [allPuzzlesSolved, finishedAt, appData]);
 
-            useEffect(() => {
-                if (allPuzzlesSolved && !completionTime) setCompletionTime(formatUTC8Time(new Date()));
-            }, [allPuzzlesSolved, completionTime]);
-
-            // Free blob URL when the proof preview closes
             useEffect(() => () => { if (proof && proof.revoke) URL.revokeObjectURL(proof.url); }, [proof]);
 
             const getNextFreezeThreshold = (strikes) => {
@@ -1228,36 +1485,59 @@
                 else if (newStrikes === 8) freezeSecs = 60;
                 else if (newStrikes === 10) freezeSecs = 120;
                 else if (newStrikes === 15 || (newStrikes > 15 && newStrikes % 5 === 0)) freezeSecs = 300;
-                if (freezeSecs > 0) {
-                    setHaltLockoutUntil(Date.now() + freezeSecs * 1000);
-                    setHaltLockoutTimer(freezeSecs);
-                }
+                if (freezeSecs > 0) setHaltLockoutUntil(Date.now() + freezeSecs * 1000);
             };
 
             const go = (tab) => { setActiveTab(tab); setUnlockInput(''); };
             const toggleLang = () => setLang(lang === 'en' ? 'zh' : 'en');
 
-            // Easter egg tap counters
-            const handleSecretClick = () => setClickCount(prev => (prev + 1 >= 5 ? (setShowMinigame(true), 0) : prev + 1));
-            const handleDummyRowClick = () => setRowClickCount(prev => (prev + 1 >= 3 ? (setShowMemo(true), 0) : prev + 1));
-            const handleRootLogClick = () => setRootLogClickCount(prev => (prev + 1 >= 3 ? (setShowRootModal(true), 0) : prev + 1));
-            const handleN3TitleClick = () => setN3TitleClicks(prev => (prev + 1 >= 3 ? (setShowSecretProtocol(s => !s), 0) : prev + 1));
-            const handleShieldClick = () => setShieldClicks(prev => (prev + 1 >= 5 ? (setShowVictoryBlessing(true), 0) : prev + 1));
+            // Hidden multi-tap counters
+            const tap = (key, needed, fn) => {
+                const c = (tapRef.current[key] || 0) + 1;
+                if (c >= needed) { tapRef.current[key] = 0; fn(); } else { tapRef.current[key] = c; }
+            };
+            const handleSecretClick = () => tap('logo', 5, () => { setShowMinigame(true); foundSecret('shell'); });
+            const handleDummyRowClick = () => tap('memo', 3, () => { setShowMemo(true); foundSecret('memo'); });
+            const handleRootLogClick = () => tap('root', 3, () => { setShowRootModal(true); foundSecret('oven'); });
+            const handleN3TitleClick = () => tap('tier', 3, () => { setShowSecretProtocol(s => !s); foundSecret('tier'); });
+            const handleShieldClick = () => tap('shield', 5, () => setShowVictoryBlessing(true));
 
-            // Node unlock
+            // ─── Registration ───
+            const startMission = (e) => {
+                e.preventDefault();
+                if (!groupNumber.trim()) { setRegError(t.groupNumRequired); return; }
+                if (config.roleMode && !role) { setRegError(t.roleRequired); return; }
+                setRegError('');
+                const ts = Date.now();
+                if (!startedAt) setStartedAt(ts);
+                setRegistered(true);
+                if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+                if (sbClient) {
+                    try {
+                        sbClient.from('sunrise_events').insert({
+                            session: config.session, group_name: normalizeGroup(groupNumber), role: role || null,
+                            event_type: 'join', detail: '', elapsed_seconds: 0, secrets: secretsRef.current.length, client_id: clientId
+                        }).then(() => {}, () => {});
+                    } catch (err) {}
+                }
+            };
+
+            const switchRole = (r) => {
+                setRole(r);
+                setRoleCooldownUntil(Date.now() + config.cooldownSec * 1000);
+                setShowRoleSwitch(false);
+            };
+
+            // ─── Node unlock ───
             const handleUnlock = async (e, nodeKey) => {
                 e.preventDefault();
                 if (nodeLockoutTimer > 0 || verifyingNode) return;
-
                 setVerifyingNode(true);
                 let expectedList = nodePasswords[nodeKey] || [];
                 if (sbClient) {
                     try {
                         const { data, error } = await sbClient.from('sunrise_nodes').select('password').eq('node_key', nodeKey).maybeSingle();
-                        if (!error && data && data.password) {
-                            expectedList = [data.password, data.password.replace(/\s+/g, '')];
-                            setSbConnected(true);
-                        }
+                        if (!error && data && data.password) { expectedList = [data.password, data.password.replace(/\s+/g, '')]; setSbConnected(true); }
                     } catch (err) {}
                 }
                 setVerifyingNode(false);
@@ -1272,32 +1552,31 @@
                 if (isMatch) {
                     setUnlockError(false);
                     setUnlockInput('');
-                    setNodeStrikeCount(0); // a correct key clears earlier typos
-                    setUnlockedNodes(prev => ({ ...prev, [nodeKey]: true }));
-                    if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); // dismiss mobile keyboard
+                    setNodeStrikeCount(0);
+                    const next = { ...unlockedNodes, [nodeKey]: true };
+                    setUnlockedNodes(next);
+                    setBeatQueue(q => [...q, nodeKey, ...(NODE_KEYS.every(k => next[k]) ? ['all'] : [])]);
+                    logEvent('node', nodeKey);
+                    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
                 } else {
                     setUnlockError(true);
                     setTimeout(() => setUnlockError(false), 2000);
                     const newStrikes = nodeStrikeCount + 1;
-                    if (newStrikes >= 3) {
-                        setNodeLockoutUntil(Date.now() + 20 * 1000);
-                        setNodeLockoutTimer(20);
-                        setNodeStrikeCount(0);
-                    } else {
-                        setNodeStrikeCount(newStrikes);
-                    }
+                    if (newStrikes >= 3) { setNodeLockoutUntil(Date.now() + 20 * 1000); setNodeStrikeCount(0); }
+                    else setNodeStrikeCount(newStrikes);
                 }
             };
 
-            const triggerEasterEggToast = (msg) => {
-                setEasterEggToast(msg);
-                setTimeout(() => setEasterEggToast(''), 6500);
+            const closeBeat = (goTerminal) => {
+                setBeatQueue(q => q.slice(1));
+                if (goTerminal) go('mystery');
             };
 
-            // Halt TXN puzzle verification
+            const triggerEasterEggToast = (msg) => { setEasterEggToast(msg); setTimeout(() => setEasterEggToast(''), 6500); };
+
+            // ─── Halt puzzles ───
             const handleVerifyPuzzle = async (key) => {
                 if (haltLockoutTimer > 0 || verifyingPuzzleKey) return;
-
                 const rawVal = (puzzleInputs[key] || '').trim();
                 const userVal = rawVal.toUpperCase().replace(/[#\-_/]/g, '').replace(/\s+/g, '');
 
@@ -1334,6 +1613,7 @@
                 if (isMatch) {
                     setSolvedPuzzles(prev => ({ ...prev, [key]: true }));
                     setPuzzleErrors(prev => ({ ...prev, [key]: false }));
+                    logEvent('puzzle', key);
                 } else {
                     setPuzzleErrors(prev => ({ ...prev, [key]: true }));
                     setTimeout(() => setPuzzleErrors(prev => ({ ...prev, [key]: false })), 1500);
@@ -1341,17 +1621,9 @@
                 }
             };
 
-            // Proof export — data-driven (no answers hard-coded in source), fonts awaited, iOS-safe
+            // ─── Proof export (data-driven, fonts awaited, iOS-safe) ───
             const downloadProofJPEG = async () => {
-                const cleanGroup = (groupNumber || '').trim();
-                if (!cleanGroup) {
-                    setGroupError(true);
-                    setTimeout(() => setGroupError(false), 3500);
-                    return;
-                }
-                setGroupError(false);
                 setIsExporting(true);
-
                 try {
                     try {
                         if (document.fonts && document.fonts.load) {
@@ -1370,8 +1642,10 @@
                     const p3 = norm(puzzleInputs.puzzle3);
                     const proto = p3 ? (appData.protocol.find(p => norm(p.code) === p3) || appData.protocol.find(p => norm(p.code).startsWith(p3))) : null;
                     const code = proto ? proto.code : (puzzleInputs.puzzle3 || '—').toUpperCase();
-                    const gateway = proto ? proto.gateway : (puzzleInputs.puzzle4 || '—').toUpperCase();
+                    const gateway = proto ? proto.gateway : '—';
                     const jurLabel = proto ? (en[proto.jurKey] || proto.jurKey) : '';
+                    const haltElapsed = clock.elapsed;
+                    const remaining = clock.remaining;
 
                     const W = 1400, H = 960;
                     const canvas = document.createElement('canvas');
@@ -1390,7 +1664,6 @@
                     const bgGrad = ctx.createLinearGradient(0, 0, W, H);
                     bgGrad.addColorStop(0, '#020617'); bgGrad.addColorStop(0.5, '#091124'); bgGrad.addColorStop(1, '#020617');
                     ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
-
                     ctx.strokeStyle = 'rgba(6, 182, 212, 0.08)'; ctx.lineWidth = 1;
                     for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
                     for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
@@ -1415,19 +1688,22 @@
                     ctx.strokeStyle = '#86BC25'; ctx.lineWidth = 1.5; ctx.strokeRect(1040, 60, 270, 48);
                     ctx.fillStyle = '#86BC25'; ctx.font = `bold 14px ${MONO}`;
                     ctx.fillText("STATUS: SAFELOCKED [OK]", 1060, 90);
+                    const token = generateSecurityToken(group, timeToPrint);
+                    ctx.fillStyle = '#38bdf8'; ctx.font = `bold 13px ${MONO}`;
+                    ctx.fillText(token, 1060, 132);
 
                     ctx.fillStyle = 'rgba(15, 23, 42, 0.9)'; ctx.fillRect(70, 160, 1260, 150);
                     ctx.strokeStyle = 'rgba(134, 188, 37, 0.85)'; ctx.lineWidth = 2; ctx.strokeRect(70, 160, 1260, 150);
-
                     ctx.fillStyle = '#38bdf8'; ctx.font = `bold 12px ${MONO}`;
                     ctx.fillText("OFFICIAL RANKING METRIC // CONFIRMED LOCKDOWN TIMESTAMP:", 95, 195);
                     ctx.fillStyle = '#86BC25'; ctx.font = `bold 42px ${MONO}`;
                     ctx.fillText(fit(timeToPrint, 660), 95, 250);
-
+                    ctx.fillStyle = '#94a3b8'; ctx.font = `bold 12px ${MONO}`;
+                    ctx.fillText(`TIME TO HALT ${formatClock(haltElapsed)}  ·  ${remaining >= 0 ? `${formatClock(remaining)} BEFORE SETTLEMENT` : `${formatClock(-remaining)} OVERTIME`}`, 95, 285);
                     ctx.fillStyle = '#94a3b8'; ctx.font = `bold 13px ${MONO}`;
                     ctx.fillText("AUTHENTICATED GROUP:", 780, 195);
                     ctx.fillStyle = '#FFFFFF'; ctx.font = `bold 36px ${SANS}`;
-                    ctx.fillText(fit(cleanGroup.toUpperCase(), 520), 780, 245);
+                    ctx.fillText(fit(group, 520), 780, 245);
 
                     const drawBox = (x, y, w, h, title, rows, accentIdx) => {
                         ctx.fillStyle = 'rgba(15, 23, 42, 0.65)'; ctx.fillRect(x, y, w, h);
@@ -1444,7 +1720,7 @@
                     drawBox(70, 335, 590, 375, "INCIDENT SPECIFICATIONS", [
                         ["Target Environment", "FTV-PROD-01 (FitVision, Inc.)"],
                         ["Executed Action Code", `${code} (Override Active)`],
-                        ["Routing Gateway Target", `${gateway}${jurLabel ? ` (${jurLabel} Intercept)` : ''}`],
+                        ["Routing Gateway", `${gateway}${jurLabel ? ` (${jurLabel} Intercept)` : ''}`],
                         ["Frozen Transfer ID", txn.id ? `${txn.id} (${txn.date} ${txn.time})` : (puzzleInputs.puzzle2 || '—').toUpperCase()],
                         ["Intercepted Amount", `${txn.amount || '—'}${proto ? ` (Channel: ${proto.channel})` : ''}`],
                         ["Beneficiary Entity", txn.vendor ? `${txn.vendor} (${txn.vendor_id})` : '—']
@@ -1453,32 +1729,27 @@
                     drawBox(690, 335, 640, 375, "AUDIT FORENSIC ATTRIBUTION", [
                         ["Rogue Technical Actor", emp ? `${emp.name.toUpperCase()} (${emp.id})` : (puzzleInputs.puzzle1 || '—').toUpperCase()],
                         ["Transaction Approver", txn.approved || '—'],
-                        ["Policy Violation", `ISS-04 High Control Breach${scrubLog ? ` (${scrubLog.ticket})` : ''}`],
-                        ["Protocol Match", proto ? `${en[proto.tierKey] || proto.tierKey} · ${en[proto.anomalyKey] || proto.anomalyKey}` : '—']
-                    ], []);
-
-                    const token = generateSecurityToken(cleanGroup, timeToPrint);
-                    ctx.fillStyle = '#94a3b8'; ctx.font = `12px ${SANS}`; ctx.fillText("DIGITAL VERIFICATION CHECKSUM", 715, 620);
-                    ctx.fillStyle = '#38bdf8'; ctx.font = `bold 16px ${MONO}`; ctx.fillText(token, 715, 645);
+                        ["Policy Violation", `ISS-04 High Control Breach${scrubLog ? ` (${scrubLog.ticket} unapproved)` : ''}`],
+                        ["Protocol Match", proto ? `${en[proto.tierKey] || proto.tierKey} · ${en[proto.anomalyKey] || proto.anomalyKey}` : '—'],
+                        ["Time to Halt", formatClock(haltElapsed)],
+                        ["Secrets Found", `${secrets.length} / ${SECRET_IDS.length}`]
+                    ], [4]);
 
                     ctx.fillStyle = 'rgba(239, 68, 68, 0.08)'; ctx.fillRect(70, 730, 1260, 95);
                     ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)'; ctx.strokeRect(70, 730, 1260, 95);
                     ctx.fillStyle = '#ef4444'; ctx.font = `bold 12px ${MONO}`;
                     ctx.fillText("JUDICIAL EVALUATION & RANKING DIRECTIVE // ANTI-FRAUD SPECIFICATION:", 95, 760);
                     ctx.fillStyle = '#cbd5e1'; ctx.font = `12px ${SANS}`;
-                    ctx.fillText("1. The primary scoring metric for Day 2 Geo-Quest leaderboard placement is the chronological UTC+8 timestamp printed in Box 1.", 95, 783);
+                    ctx.fillText("1. Squads are ranked by time to halt (settlement clock). Secrets found break ties.", 95, 783);
                     ctx.fillText("2. Cryptographic background watermarks and checksums are mathematically bound to this timestamp and squad identification.", 95, 801);
 
                     const cleanTimestamp = timeToPrint.replace(/[^0-9]/g, '_').substring(0, 19);
-                    const cleanGroupName = cleanGroup.replace(/[^a-zA-Z0-9_-]/g, '_') || 'Group';
+                    const cleanGroupName = group.replace(/[^a-zA-Z0-9_-]/g, '_') || 'Group';
                     const fileName = `Project_Sunrise_Proof_${cleanGroupName}_${cleanTimestamp}.jpg`;
-
                     const blob = await new Promise(resolve => {
                         try { canvas.toBlob ? canvas.toBlob(b => resolve(b), 'image/jpeg', 0.95) : resolve(null); } catch (e) { resolve(null); }
                     });
                     const url = blob ? URL.createObjectURL(blob) : canvas.toDataURL('image/jpeg', 0.95);
-
-                    // Desktop & Android: auto-download. iOS: rely on preview (long-press / share sheet).
                     if (!isIOSDevice()) {
                         const a = document.createElement('a');
                         a.download = fileName; a.href = url; a.rel = 'noopener';
@@ -1494,7 +1765,7 @@
                 }
             };
 
-            // ─── Loading / error screens ───
+            // ─── Loading / error ───
             if (loadingInfo) {
                 return (
                     <div className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center font-mono text-xs text-deloitte-green">
@@ -1519,28 +1790,62 @@
                 );
             }
 
+            // ─── Briefing & registration ───
+            if (!registered) {
+                return (
+                    <div className="safe-pad scroll-area relative z-10 h-full w-full overflow-y-auto">
+                        <form onSubmit={startMission} className="pop-in mx-auto w-full max-w-md py-2">
+                            <div className="mb-5 flex items-center justify-between">
+                                <span className="flex items-center gap-2 font-mono text-xs font-bold text-white">
+                                    <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-deloitte-green/50 bg-deloitte-green/15 text-deloitte-green"><i className="fa-solid fa-terminal text-[11px]"></i></span>
+                                    <span className="caps">{t.projectSunrise}</span>
+                                </span>
+                                <button type="button" onClick={toggleLang} className="h-8 rounded-lg border border-slate-700 bg-slate-900 px-3 font-mono text-[11px] font-bold text-white">{lang === 'en' ? '中文' : 'EN'}</button>
+                            </div>
+
+                            <div className="panel relative mb-4 overflow-hidden rounded-2xl p-5">
+                                <div className="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-red-500 via-amber-400 to-red-500"></div>
+                                <p className="caps mb-2 font-mono text-[11px] text-red-400"><i className="fa-solid fa-circle-exclamation mr-1.5"></i>{t.briefingKicker}</p>
+                                <h1 className="mb-2 text-xl font-bold leading-snug text-white">{t.briefingTitle}</h1>
+                                <p className="text-sm leading-relaxed text-slate-300">{fmt(t.briefingBody, { min: Math.round(config.limitSec / 60) })}</p>
+                                <div className="mt-4 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/70 px-3 py-2">
+                                    <i className="fa-solid fa-hourglass-half text-xs text-deloitte-green"></i>
+                                    <span className="caps font-mono text-[10px] text-slate-400">{t.clockLabel}</span>
+                                    <span className="ml-auto font-mono text-base font-bold tabular-nums text-deloitte-green">{formatClock(config.startMs ? config.limitSec - elapsedSecAt(now) : config.limitSec)}</span>
+                                </div>
+                            </div>
+
+                            <div className="panel mb-4 rounded-2xl p-5">
+                                <label htmlFor="group-number" className="mb-1.5 block font-mono text-[11px] text-slate-400"><i className="fa-solid fa-users mr-1.5 text-deloitte-green"></i>{t.groupNumLabel}</label>
+                                <input id="group-number" type="text" inputMode="text" value={groupNumber} onChange={(e) => { setGroupNumber(e.target.value); setRegError(''); }}
+                                    placeholder={t.groupNumPlaceholder} autoComplete="off" autoCorrect="off" spellCheck={false}
+                                    className="field w-full rounded-xl p-3 font-mono text-sm" />
+
+                                {config.roleMode && (
+                                    <div className="mt-5">
+                                        <p className="mb-1 font-mono text-[11px] text-slate-400"><i className="fa-solid fa-id-card mr-1.5 text-deloitte-green"></i>{t.chooseRole}</p>
+                                        <p className="mb-3 text-xs leading-relaxed text-slate-500">{t.roleHint}</p>
+                                        <RolePicker t={t} value={role} onChange={(r) => { setRole(r); setRegError(''); }} />
+                                    </div>
+                                )}
+
+                                {regError && <p className="mt-3 font-mono text-xs text-red-400" role="alert"><i className="fa-solid fa-triangle-exclamation mr-1"></i>{regError}</p>}
+                                <button type="submit" className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-deloitte-green py-3.5 font-mono text-sm font-bold uppercase tracking-wider text-slate-950 hover:bg-lime-400">
+                                    <i className="fa-solid fa-play"></i>{t.startMission}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                );
+            }
+
             // ─── Derived lists ───
             const q = (s) => (s || '').trim().toLowerCase();
-            const filteredDirectory = appData.directory.filter(m => {
-                const s = q(search);
-                return !s || [m.name, m.id, m.role, m.dept, m.ip].some(v => v.toLowerCase().includes(s));
-            });
-            const filteredLogs = appData.logs.filter(l => {
-                const s = q(logSearch);
-                return !s || [l.date, l.time, l.user, l.event, l.status, l.ticket].some(v => v.toLowerCase().includes(s));
-            });
-            const filteredLedger = appData.ledger.filter(r => {
-                const s = q(ledgerSearch);
-                return !s || [r.id, r.date, r.time, r.vendor, r.vendor_id, r.approved, r.amount, r.status].some(v => v.toLowerCase().includes(s));
-            });
-            const filteredPOs = appData.purchaseOrders.filter(p => {
-                const s = q(poSearch);
-                return !s || [p.vendor, p.po, p.approver].some(v => v.toLowerCase().includes(s));
-            });
-            const filteredVendors = appData.vendors.filter(v => {
-                const s = q(vendorSearch);
-                return !s || [v.name, v.id, v.country].some(x => x.toLowerCase().includes(s));
-            });
+            const filteredDirectory = appData.directory.filter(m => { const s = q(search); return !s || [m.name, m.id, m.role, m.dept, m.ip].some(v => v.toLowerCase().includes(s)); });
+            const filteredLogs = appData.logs.filter(l => { const s = q(logSearch); return !s || [l.date, l.time, l.user, l.event, l.status, l.ticket].some(v => v.toLowerCase().includes(s)); });
+            const filteredLedger = appData.ledger.filter(r => { const s = q(ledgerSearch); return !s || [r.id, r.date, r.time, r.vendor, r.vendor_id, r.approved, r.amount, r.status].some(v => v.toLowerCase().includes(s)); });
+            const filteredPOs = appData.purchaseOrders.filter(p => { const s = q(poSearch); return !s || [p.vendor, p.po, p.approver].some(v => v.toLowerCase().includes(s)); });
+            const filteredVendors = appData.vendors.filter(v => { const s = q(vendorSearch); return !s || [v.name, v.id, v.country].some(x => x.toLowerCase().includes(s)); });
 
             const navItems = [
                 { k: 'hub', icon: 'fa-compass', label: t.investigationHub, short: t.hubShort },
@@ -1555,22 +1860,20 @@
                 { k: 'vendor', icon: 'fa-building-columns', l: t.vendors }
             ];
             const nodeChips = [{ k: 'logs', l: t.n1Logs }, { k: 'ledger', l: t.n2Ledger }, { k: 'banking', l: t.n3Protocol }];
+            const roleMeta = ROLE_META[role] || { icon: 'fa-user', color: 'text-slate-300', ring: 'border-slate-700' };
 
             // ─── Unlock screen ───
             const renderUnlock = (title, hint, nodeKey) => (
                 <div className="fade-in flex min-h-full items-center justify-center py-4">
                     <div className="panel relative w-full max-w-md overflow-hidden rounded-2xl p-6 text-center shadow-2xl md:p-8">
                         <div className="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-deloitte-green via-cyan-400 to-deloitte-green"></div>
-                        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-700/80 bg-slate-900 text-2xl text-deloitte-green">
-                            <i className="fa-solid fa-fingerprint"></i>
-                        </div>
+                        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-700/80 bg-slate-900 text-2xl text-deloitte-green"><i className="fa-solid fa-fingerprint"></i></div>
                         <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-slate-800 bg-slate-900 px-2.5 py-1 font-mono text-[10px] text-slate-400">
                             <span className={`h-1.5 w-1.5 rounded-full ${sbConnected ? 'bg-deloitte-green' : 'bg-cyan-400'}`}></span>
                             {sbConnected ? 'SUPABASE AUTH GATEWAY' : 'ENCRYPTED NODE GATEWAY'}
                         </div>
                         <h2 className="mb-1.5 text-lg font-bold text-white md:text-xl">{title}</h2>
                         <p className="mb-6 text-sm leading-relaxed text-slate-400">{hint}</p>
-
                         {nodeLockoutTimer > 0 ? (
                             <div className="rounded-xl border border-red-500/80 bg-red-950/80 p-4" role="alert">
                                 <p className="caps mb-1 font-mono text-xs font-bold text-red-400">{t.lockoutTitle}</p>
@@ -1579,16 +1882,10 @@
                             </div>
                         ) : (
                             <form onSubmit={(e) => handleUnlock(e, nodeKey)}>
-                                <input
-                                    type="text" value={unlockInput} onChange={(e) => setUnlockInput(e.target.value)}
-                                    aria-label={t.enterKey} placeholder={t.enterKey}
-                                    autoComplete="off" autoCorrect="off" autoCapitalize="characters" spellCheck={false}
-                                    autoFocus={isDesktop}
-                                    className={`field mb-4 w-full rounded-xl p-3.5 text-center font-mono text-base uppercase tracking-widest ${unlockError ? '!border-red-500 text-red-400' : 'text-deloitte-green'}`}
-                                />
-                                {nodeStrikeCount > 0 && (
-                                    <div className="mb-3 font-mono text-[11px] text-amber-400"><i className="fa-solid fa-triangle-exclamation mr-1"></i>{t.strikeCountLabel}: {nodeStrikeCount}/3</div>
-                                )}
+                                <input type="text" value={unlockInput} onChange={(e) => setUnlockInput(e.target.value)} aria-label={t.enterKey} placeholder={t.enterKey}
+                                    autoComplete="off" autoCorrect="off" autoCapitalize="characters" spellCheck={false} autoFocus={isDesktop}
+                                    className={`field mb-4 w-full rounded-xl p-3.5 text-center font-mono text-base uppercase tracking-widest ${unlockError ? '!border-red-500 text-red-400' : 'text-deloitte-green'}`} />
+                                {nodeStrikeCount > 0 && <div className="mb-3 font-mono text-[11px] text-amber-400"><i className="fa-solid fa-triangle-exclamation mr-1"></i>{t.strikeCountLabel}: {nodeStrikeCount}/3</div>}
                                 <button type="submit" disabled={verifyingNode} className="flex w-full items-center justify-center gap-2 rounded-xl bg-deloitte-green px-4 py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-slate-950 transition-colors hover:bg-lime-400 active:bg-lime-500 disabled:opacity-70 md:text-sm">
                                     <i className={`fa-solid ${verifyingNode ? 'fa-circle-notch fa-spin' : 'fa-key'}`}></i>{t.decryptBtn}
                                 </button>
@@ -1598,13 +1895,14 @@
                 </div>
             );
 
-            // ─── Views ───
+            const restricted = (section, title, compact = true) => <Restricted key={section} t={t} section={section} title={title} cooldownLeft={cooldownLeft} compact={compact} />;
+
+            // ─── Directory (shared) ───
             const renderDirectory = () => (
                 <div className="fade-in">
                     <PageHeader icon="fa-id-badge" title={t.directory}>
                         <SearchInput value={search} onChange={setSearch} placeholder={t.searchPlaceholderOrg} className="sm:w-72" />
                     </PageHeader>
-
                     {isGhost && (
                         <div className="mb-4 rounded-2xl border-2 border-dashed border-cyan-400 bg-cyan-950/30 p-4 shadow-[0_0_25px_rgba(6,182,212,0.2)]">
                             <p className="caps mb-2 font-mono text-[10px] text-cyan-400">{t.ghostTitle}</p>
@@ -1622,7 +1920,6 @@
                             </div>
                         </div>
                     )}
-
                     {filteredDirectory.length === 0 && !isGhost ? <EmptyState t={t} /> : (
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                             {filteredDirectory.map(member => (
@@ -1647,146 +1944,203 @@
                 </div>
             );
 
+            // ─── Security tab: policy + CHG (Compliance), access map (IT) ───
             const privItems = [[t.dbExport, t.dbExportDesc], [t.privEsc, t.privEscDesc], [t.custData, t.custDataDesc], [t.dataScrub, t.dataScrubDesc], [t.auditLogMod, t.auditLogModDesc]];
+
+            const renderPolicy = () => canSee('policy') ? (
+                <Panel key="policy" title={t.privActivities}>
+                    <p className="mb-4 text-sm leading-relaxed text-slate-300">{t.privDesc}</p>
+                    <ul className="space-y-2.5 text-sm text-slate-400">
+                        {privItems.map(([k, v]) => (
+                            <li key={k} className="flex gap-2.5"><span className="mt-0.5 font-mono text-deloitte-green">›</span><span><strong className="font-semibold text-slate-200">{k}</strong> {v}</span></li>
+                        ))}
+                    </ul>
+                </Panel>
+            ) : restricted('policy', t.privActivities);
+
+            const isApproved = (s) => /^approved/i.test(s || '');
+            const renderChg = () => canSee('chg') ? (
+                <Panel key="chg" title={t.chgTitle}>
+                    <p className="mb-4 text-sm leading-relaxed text-slate-300">{t.chgDesc}</p>
+                    {isDesktop ? (
+                        <div className="overflow-x-auto rounded-xl border border-slate-800">
+                            <table className="w-full text-left text-sm">
+                                <thead className="border-b border-slate-800 bg-slate-950 font-mono text-xs text-slate-400">
+                                    <tr><th className="p-3 font-medium">{t.ticket}</th><th className="p-3 font-medium">{t.activity}</th><th className="p-3 font-medium">{t.requestedBy}</th><th className="p-3 font-medium">{t.approvedBy}</th><th className="p-3 font-medium">{t.status}</th></tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-800/70 text-slate-300">
+                                    {appData.changeTickets.map(c => (
+                                        <tr key={c.id} className="hover:bg-slate-900/50">
+                                            <td className="whitespace-nowrap p-3 font-mono text-xs text-cyan-400">{c.id}</td>
+                                            <td className="p-3 text-[13px]">{c.activity}</td>
+                                            <td className="p-3 text-xs">{c.requester}</td>
+                                            <td className="p-3 text-xs">{c.approver}</td>
+                                            <td className="p-3"><span className={`inline-block rounded-md border px-1.5 py-0.5 font-mono text-[10px] leading-snug ${isApproved(c.status) ? 'border-slate-700 bg-slate-900 text-slate-300' : 'border-amber-500/40 bg-amber-500/10 text-amber-300'}`}>{c.status}</span></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <ul className="divide-y divide-slate-800/70 overflow-hidden rounded-xl border border-slate-800">
+                            {appData.changeTickets.map(c => (
+                                <li key={c.id} className="bg-slate-950/40 px-3 py-2.5">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <span className="font-mono text-xs text-cyan-400">{c.id}</span>
+                                        <span className={`rounded-md border px-1.5 py-0.5 text-right font-mono text-[10px] leading-snug ${isApproved(c.status) ? 'border-slate-700 bg-slate-900 text-slate-300' : 'border-amber-500/40 bg-amber-500/10 text-amber-300'}`}>{c.status}</span>
+                                    </div>
+                                    <div className="mt-1 text-sm text-slate-200">{c.activity}</div>
+                                    <dl className="mt-1 space-y-0.5 text-[11px] text-slate-400">
+                                        <div><dt className="inline text-slate-500">{t.requestedBy}: </dt><dd className="inline">{c.requester}</dd></div>
+                                        <div><dt className="inline text-slate-500">{t.approvedBy}: </dt><dd className="inline">{c.approver}</dd></div>
+                                    </dl>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </Panel>
+            ) : restricted('chg', t.chgTitle);
+
+            const renderInfra = () => canSee('infra') ? (
+                <Panel key="infra" title={t.infraMap}>
+                    <p className="mb-4 text-sm leading-relaxed text-slate-300">{t.infraDesc}</p>
+                    {isDesktop ? (
+                        <div className="overflow-x-auto rounded-xl border border-slate-800">
+                            <table className="w-full text-left text-sm">
+                                <thead className="border-b border-slate-800 bg-slate-950 font-mono text-xs text-slate-400">
+                                    <tr><th className="p-3 font-medium">{t.employee}</th><th className="p-3 font-medium">{t.system}</th><th className="p-3 font-medium">{t.accessLevel}</th></tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-800/70 text-slate-300">
+                                    {appData.securityInfra.map((item, idx) => (
+                                        <tr key={idx} className="hover:bg-slate-900/50">
+                                            <td className="p-3 font-medium">{item.emp}</td>
+                                            <td className="p-3 font-mono text-xs text-cyan-400">{item.sys}</td>
+                                            <td className={`p-3 font-mono text-xs ${item.highlight ? 'font-bold text-deloitte-green' : ''}`}>{item.level}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <ul className="divide-y divide-slate-800/70 overflow-hidden rounded-xl border border-slate-800">
+                            {appData.securityInfra.map((item, idx) => (
+                                <li key={idx} className="bg-slate-950/40 px-3 py-2.5">
+                                    <div className="text-sm font-medium text-slate-200">{item.emp}</div>
+                                    <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 font-mono text-xs">
+                                        <span className="text-cyan-400">{item.sys}</span>
+                                        <span className={item.highlight ? 'font-bold text-deloitte-green' : 'text-slate-400'}>{item.level}</span>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                    <p className="mt-4 text-xs italic leading-relaxed text-slate-400">{t.infraNote}</p>
+                </Panel>
+            ) : restricted('infra', t.infraMap);
+
+            // Visible panels first, other roles' evidence after
+            const orderPanels = (list) => [...list.filter(p => canSee(p.sec)), ...list.filter(p => !canSee(p.sec))].map(p => p.render());
 
             const renderSecurity = () => (
                 <div className="fade-in flex flex-col gap-4">
                     <PageHeader icon="fa-shield-halved" title={t.security} />
-                    <Panel title={t.privActivities}>
-                        <p className="mb-4 text-sm leading-relaxed text-slate-300">{t.privDesc}</p>
-                        <ul className="space-y-2.5 text-sm text-slate-400">
-                            {privItems.map(([k, v]) => (
-                                <li key={k} className="flex gap-2.5"><span className="mt-0.5 font-mono text-deloitte-green">›</span><span><strong className="font-semibold text-slate-200">{k}</strong> {v}</span></li>
-                            ))}
-                        </ul>
-                    </Panel>
-
-                    <Panel title={t.infraMap}>
-                        <p className="mb-4 text-sm leading-relaxed text-slate-300">{t.infraDesc}</p>
-                        {isDesktop ? (
-                            <div className="overflow-x-auto rounded-xl border border-slate-800">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="border-b border-slate-800 bg-slate-950 font-mono text-xs text-slate-400">
-                                        <tr><th className="p-3 font-medium">{t.employee}</th><th className="p-3 font-medium">{t.system}</th><th className="p-3 font-medium">{t.accessLevel}</th></tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-800/70 text-slate-300">
-                                        {appData.securityInfra.map((item, idx) => (
-                                            <tr key={idx} className="hover:bg-slate-900/50">
-                                                <td className="p-3 font-medium">{item.emp}</td>
-                                                <td className="p-3 font-mono text-xs text-cyan-400">{item.sys}</td>
-                                                <td className={`p-3 font-mono text-xs ${item.highlight ? 'font-bold text-deloitte-green' : ''}`}>{item.level}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ) : (
-                            <ul className="divide-y divide-slate-800/70 overflow-hidden rounded-xl border border-slate-800">
-                                {appData.securityInfra.map((item, idx) => (
-                                    <li key={idx} className="bg-slate-950/40 px-3 py-2.5">
-                                        <div className="text-sm font-medium text-slate-200">{item.emp}</div>
-                                        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 font-mono text-xs">
-                                            <span className="text-cyan-400">{item.sys}</span>
-                                            <span className={item.highlight ? 'font-bold text-deloitte-green' : 'text-slate-400'}>{item.level}</span>
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                        <p className="mt-4 text-xs italic leading-relaxed text-slate-400">{t.infraNote}</p>
-                    </Panel>
+                    {orderPanels([{ sec: 'policy', render: renderPolicy }, { sec: 'chg', render: renderChg }, { sec: 'infra', render: renderInfra }])}
                 </div>
             );
+
+            // ─── Vendors tab: EDD (Compliance), POs + vendor master (Finance) ───
+            const renderEdd = () => canSee('edd') ? (
+                <Panel key="edd" title={t.compWatchlist}>
+                    <p className="mb-4 text-sm leading-relaxed text-slate-300">{t.compDesc}</p>
+                    <div className="flex flex-wrap gap-2">
+                        {appData.eddWatchlist.map(j => <span key={j} className="rounded-lg border border-red-500/40 bg-red-950/50 px-2.5 py-1 font-mono text-xs font-bold text-red-400">{j}</span>)}
+                    </div>
+                </Panel>
+            ) : restricted('edd', t.compWatchlist);
+
+            const renderPOs = () => canSee('po') ? (
+                <Panel key="po" title={t.poTitle} right={<SearchInput value={poSearch} onChange={setPoSearch} placeholder={t.searchPO} className="sm:w-60" />}>
+                    <p className="mb-3 rounded-xl border border-slate-800 bg-slate-950/70 p-3 text-xs leading-relaxed text-slate-400"><i className="fa-solid fa-circle-info mr-1.5 text-deloitte-green"></i>{t.poDesc}</p>
+                    {filteredPOs.length === 0 ? <EmptyState t={t} /> : isDesktop ? (
+                        <div className="max-h-80 overflow-auto rounded-xl border border-slate-800">
+                            <table className="w-full text-left text-sm">
+                                <thead className="sticky top-0 bg-slate-950 font-mono text-xs text-slate-400">
+                                    <tr><th className="p-2.5 font-medium">{t.poNum}</th><th className="p-2.5 font-medium">{t.vendorName}</th><th className="p-2.5 font-medium">{t.project}</th><th className="p-2.5 font-medium">{t.approver}</th></tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-800/70 text-slate-300">
+                                    {filteredPOs.map(p => (
+                                        <tr key={p.po} className="hover:bg-slate-900/50">
+                                            <td className="p-2.5 font-mono text-cyan-400">{p.po}</td>
+                                            <td className="p-2.5 font-medium text-slate-200">{p.vendor}</td>
+                                            <td className="p-2.5 text-xs">{p.project}</td>
+                                            <td className="p-2.5 font-mono text-xs">{p.approver}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <ul className="divide-y divide-slate-800/70 overflow-hidden rounded-xl border border-slate-800">
+                            {filteredPOs.map(p => (
+                                <li key={p.po} className="bg-slate-950/40 px-3 py-2.5">
+                                    <div className="flex items-center justify-between gap-3 font-mono text-xs"><span className="text-cyan-400">{p.po}</span><span className="truncate text-slate-400">{p.approver}</span></div>
+                                    <div className="mt-1 text-sm font-medium text-slate-200">{p.vendor}</div>
+                                    <div className="mt-0.5 text-xs text-slate-400">{p.project}</div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </Panel>
+            ) : restricted('po', t.poTitle);
+
+            const renderVendorMaster = () => canSee('vendors') ? (
+                <Panel key="vendors" title={t.vmTitle} right={<SearchInput value={vendorSearch} onChange={setVendorSearch} placeholder={t.searchVendor} className="sm:w-60" />}>
+                    {filteredVendors.length === 0 ? <EmptyState t={t} /> : isDesktop ? (
+                        <div className="max-h-80 overflow-auto rounded-xl border border-slate-800">
+                            <table className="w-full text-left text-sm">
+                                <thead className="sticky top-0 bg-slate-950 font-mono text-xs text-slate-400">
+                                    <tr><th className="p-2.5 font-medium">{t.id}</th><th className="p-2.5 font-medium">{t.legalName}</th><th className="p-2.5 font-medium">{t.country}</th><th className="p-2.5 font-medium">{t.risk}</th></tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-800/70 text-slate-300">
+                                    {filteredVendors.map(v => (
+                                        <tr key={v.id} className="hover:bg-slate-900/50">
+                                            <td className="p-2.5 font-mono text-deloitte-green">{v.id}</td>
+                                            <td className="p-2.5 font-medium text-slate-200">{v.name}</td>
+                                            <td className="p-2.5 text-xs">{v.country}</td>
+                                            <td className="p-2.5 font-mono text-xs text-slate-400">{v.risk}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <ul className="divide-y divide-slate-800/70 overflow-hidden rounded-xl border border-slate-800">
+                            {filteredVendors.map(v => (
+                                <li key={v.id} className="flex items-center justify-between gap-3 bg-slate-950/40 px-3 py-2.5">
+                                    <div className="min-w-0">
+                                        <div className="text-sm font-medium text-slate-200">{v.name}</div>
+                                        <div className="mt-0.5 text-xs text-slate-400"><span className="font-mono text-deloitte-green">{v.id}</span> · {v.country}</div>
+                                    </div>
+                                    <NeutralTag>{v.risk}</NeutralTag>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </Panel>
+            ) : restricted('vendors', t.vmTitle);
 
             const renderVendors = () => (
                 <div className="fade-in flex flex-col gap-4">
                     <PageHeader icon="fa-building-columns" title={t.vendors} />
-                    <Panel title={t.compWatchlist}>
-                        <p className="mb-4 text-sm leading-relaxed text-slate-300">{t.compDesc}</p>
-                        <div className="flex flex-wrap gap-2">
-                            {appData.eddWatchlist.map(j => (
-                                <span key={j} className="rounded-lg border border-red-500/40 bg-red-950/50 px-2.5 py-1 font-mono text-xs font-bold text-red-400">{j}</span>
-                            ))}
-                        </div>
-                    </Panel>
-
-                    <Panel title={t.poTitle} right={<SearchInput value={poSearch} onChange={setPoSearch} placeholder={t.searchPO} className="sm:w-60" />}>
-                        <p className="mb-3 rounded-xl border border-slate-800 bg-slate-950/70 p-3 text-xs leading-relaxed text-slate-400"><i className="fa-solid fa-circle-info mr-1.5 text-deloitte-green"></i>{t.poDesc}</p>
-                        {filteredPOs.length === 0 ? <EmptyState t={t} /> : isDesktop ? (
-                            <div className="max-h-80 overflow-auto rounded-xl border border-slate-800">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="sticky top-0 bg-slate-950 font-mono text-xs text-slate-400">
-                                        <tr><th className="p-2.5 font-medium">{t.poNum}</th><th className="p-2.5 font-medium">{t.vendorName}</th><th className="p-2.5 font-medium">{t.project}</th><th className="p-2.5 font-medium">{t.approver}</th></tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-800/70 text-slate-300">
-                                        {filteredPOs.map(p => (
-                                            <tr key={p.po} className="hover:bg-slate-900/50">
-                                                <td className="p-2.5 font-mono text-cyan-400">{p.po}</td>
-                                                <td className="p-2.5 font-medium text-slate-200">{p.vendor}</td>
-                                                <td className="p-2.5 text-xs">{p.project}</td>
-                                                <td className="p-2.5 font-mono text-xs">{p.approver}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ) : (
-                            <ul className="divide-y divide-slate-800/70 overflow-hidden rounded-xl border border-slate-800">
-                                {filteredPOs.map(p => (
-                                    <li key={p.po} className="bg-slate-950/40 px-3 py-2.5">
-                                        <div className="flex items-center justify-between gap-3 font-mono text-xs">
-                                            <span className="text-cyan-400">{p.po}</span>
-                                            <span className="truncate text-slate-400">{p.approver}</span>
-                                        </div>
-                                        <div className="mt-1 text-sm font-medium text-slate-200">{p.vendor}</div>
-                                        <div className="mt-0.5 text-xs text-slate-400">{p.project}</div>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </Panel>
-
-                    <Panel title={t.vmTitle} right={<SearchInput value={vendorSearch} onChange={setVendorSearch} placeholder={t.searchVendor} className="sm:w-60" />}>
-                        {filteredVendors.length === 0 ? <EmptyState t={t} /> : isDesktop ? (
-                            <div className="max-h-80 overflow-auto rounded-xl border border-slate-800">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="sticky top-0 bg-slate-950 font-mono text-xs text-slate-400">
-                                        <tr><th className="p-2.5 font-medium">{t.id}</th><th className="p-2.5 font-medium">{t.legalName}</th><th className="p-2.5 font-medium">{t.country}</th><th className="p-2.5 font-medium">{t.risk}</th></tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-800/70 text-slate-300">
-                                        {filteredVendors.map(v => (
-                                            <tr key={v.id} className="hover:bg-slate-900/50">
-                                                <td className="p-2.5 font-mono text-deloitte-green">{v.id}</td>
-                                                <td className="p-2.5 font-medium text-slate-200">{v.name}</td>
-                                                <td className="p-2.5 text-xs">{v.country}</td>
-                                                <td className="p-2.5 font-mono text-xs text-slate-400">{v.risk}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ) : (
-                            <ul className="divide-y divide-slate-800/70 overflow-hidden rounded-xl border border-slate-800">
-                                {filteredVendors.map(v => (
-                                    <li key={v.id} className="flex items-center justify-between gap-3 bg-slate-950/40 px-3 py-2.5">
-                                        <div className="min-w-0">
-                                            <div className="text-sm font-medium text-slate-200">{v.name}</div>
-                                            <div className="mt-0.5 text-xs text-slate-400"><span className="font-mono text-deloitte-green">{v.id}</span> · {v.country}</div>
-                                        </div>
-                                        <NeutralTag>{v.risk}</NeutralTag>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </Panel>
+                    {orderPanels([{ sec: 'edd', render: renderEdd }, { sec: 'po', render: renderPOs }, { sec: 'vendors', render: renderVendorMaster }])}
                 </div>
             );
 
+            // ─── Node 1: logs (IT) ───
             const coffeeLog = { date: '2026-06-15', time: '02:59:59', user: 'EMP404', event: t.n1CoffeeLogEvent, status: 'HTTP 418: TEAPOT', ticket: 'CHG-LATTE' };
-
             const renderLogs = () => (
                 <div className={`fade-in flex flex-col ${isDesktop ? 'h-full' : ''}`}>
-                    <PageHeader icon="fa-terminal" title={t.n1Title} hint={t.n1EasterHint}>
+                    <PageHeader icon="fa-terminal" title={t.n1Title}>
                         <SearchInput value={logSearch} onChange={setLogSearch} placeholder={t.searchLogsPlaceholder} />
                     </PageHeader>
                     {isDesktop ? (
@@ -1794,33 +2148,25 @@
                             <table className="w-full min-w-[640px] text-left">
                                 <thead className="sticky top-0 z-10 border-b border-slate-800 bg-slate-950 text-slate-400">
                                     <tr>
-                                        <th className="whitespace-nowrap p-3 font-medium">{t.date}</th>
-                                        <th className="whitespace-nowrap p-3 font-medium">{t.time}</th>
-                                        <th className="whitespace-nowrap p-3 font-medium">{t.user}</th>
-                                        <th className="p-3 font-medium">{t.event}</th>
-                                        <th className="whitespace-nowrap p-3 font-medium">{t.status}</th>
-                                        <th className="whitespace-nowrap p-3 font-medium">{t.ticket}</th>
+                                        <th className="whitespace-nowrap p-3 font-medium">{t.date}</th><th className="whitespace-nowrap p-3 font-medium">{t.time}</th>
+                                        <th className="whitespace-nowrap p-3 font-medium">{t.user}</th><th className="p-3 font-medium">{t.event}</th>
+                                        <th className="whitespace-nowrap p-3 font-medium">{t.status}</th><th className="whitespace-nowrap p-3 font-medium">{t.ticket}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
                                     {isCoffeeLogSearch && (
                                         <tr className="border-l-4 border-amber-400 bg-amber-950/40 text-amber-300">
-                                            <td className="whitespace-nowrap p-3">{coffeeLog.date}</td>
-                                            <td className="whitespace-nowrap p-3">{coffeeLog.time}</td>
+                                            <td className="whitespace-nowrap p-3">{coffeeLog.date}</td><td className="whitespace-nowrap p-3">{coffeeLog.time}</td>
                                             <td className="whitespace-nowrap p-3 font-bold">{coffeeLog.user}</td>
                                             <td className="p-3"><i className="fa-solid fa-mug-hot mr-1.5"></i>{coffeeLog.event}</td>
-                                            <td className="whitespace-nowrap p-3 text-[10px] font-bold">[{coffeeLog.status}]</td>
-                                            <td className="whitespace-nowrap p-3 text-[10px]">{coffeeLog.ticket}</td>
+                                            <td className="whitespace-nowrap p-3 text-[10px] font-bold">[{coffeeLog.status}]</td><td className="whitespace-nowrap p-3 text-[10px]">{coffeeLog.ticket}</td>
                                         </tr>
                                     )}
                                     {filteredLogs.map((l, i) => (
                                         <tr key={i} className={`hover:bg-slate-900/60 ${l.event === 'ROOT_LOGIN_ATTEMPT' ? 'cursor-pointer' : ''}`} onClick={l.event === 'ROOT_LOGIN_ATTEMPT' ? handleRootLogClick : undefined}>
-                                            <td className="whitespace-nowrap p-3 text-slate-500">{l.date}</td>
-                                            <td className="whitespace-nowrap p-3 text-cyan-400">{l.time}</td>
-                                            <td className="whitespace-nowrap p-3 font-semibold">{l.user}</td>
-                                            <td className="p-3">{l.event}</td>
-                                            <td className="whitespace-nowrap p-3"><StatusTag status={l.status} /></td>
-                                            <td className="whitespace-nowrap p-3 text-[11px] text-slate-500">{l.ticket}</td>
+                                            <td className="whitespace-nowrap p-3 text-slate-500">{l.date}</td><td className="whitespace-nowrap p-3 text-cyan-400">{l.time}</td>
+                                            <td className="whitespace-nowrap p-3 font-semibold">{l.user}</td><td className="p-3">{l.event}</td>
+                                            <td className="whitespace-nowrap p-3"><StatusTag status={l.status} /></td><td className="whitespace-nowrap p-3 text-[11px] text-slate-500">{l.ticket}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -1829,9 +2175,7 @@
                         </div>
                     ) : (
                         <div className="panel overflow-hidden rounded-2xl">
-                            <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950/80 px-3 py-2 font-mono text-[11px] text-slate-500">
-                                <span>{t.logDate}</span><span className="text-slate-300">2026-06-15</span>
-                            </div>
+                            <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950/80 px-3 py-2 font-mono text-[11px] text-slate-500"><span>{t.logDate}</span><span className="text-slate-300">2026-06-15</span></div>
                             <ul className="divide-y divide-slate-800/60 font-mono">
                                 {isCoffeeLogSearch && (
                                     <li className="flex gap-3 border-l-4 border-amber-400 bg-amber-950/40 px-3 py-2.5 text-amber-300">
@@ -1862,43 +2206,37 @@
                 </div>
             );
 
+            // ─── Node 2: ledger (Finance) ───
             const pizzaRow = { id: 'TXN0404', date: '2026-06-15', time: '02:00', vendor: t.n2PizzaVendor, vendor_id: 'V0404', approved: t.n2PizzaApprover, amount: '420.69 USD', status: t.n2PizzaStatus };
-
             const renderLedger = () => (
                 <div className={`fade-in flex flex-col ${isDesktop ? 'h-full' : ''}`}>
-                    <PageHeader icon="fa-database" title={t.n2Title} hint={t.n2EasterHint}>
+                    <PageHeader icon="fa-database" title={t.n2Title}>
                         <SearchInput value={ledgerSearch} onChange={setLedgerSearch} placeholder={t.searchLedgerPlaceholder} />
                     </PageHeader>
                     {isDesktop ? (
                         <div className="panel min-h-0 flex-grow overflow-auto rounded-2xl">
-                            <table className="w-full min-w-[760px] text-left text-sm">
+                            <table className="w-full min-w-[780px] text-left text-sm">
                                 <thead className="sticky top-0 z-10 border-b border-slate-800 bg-slate-950 font-mono text-xs text-slate-400">
                                     <tr>
-                                        <th className="whitespace-nowrap p-3 font-medium">{t.date}</th>
-                                        <th className="whitespace-nowrap p-3 font-medium">{t.time}</th>
-                                        <th className="whitespace-nowrap p-3 font-medium">{t.txnId}</th>
-                                        <th className="p-3 font-medium">{t.vendorName}</th>
-                                        <th className="whitespace-nowrap p-3 font-medium">{t.approvedBy}</th>
-                                        <th className="whitespace-nowrap p-3 text-right font-medium">{t.amount}</th>
+                                        <th className="whitespace-nowrap p-3 font-medium">{t.date}</th><th className="whitespace-nowrap p-3 font-medium">{t.time}</th>
+                                        <th className="whitespace-nowrap p-3 font-medium">{t.txnId}</th><th className="p-3 font-medium">{t.vendorName}</th>
+                                        <th className="whitespace-nowrap p-3 font-medium">{t.approvedBy}</th><th className="whitespace-nowrap p-3 text-right font-medium">{t.amount}</th>
                                         <th className="whitespace-nowrap p-3 text-right font-medium">{t.status}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/60">
                                     {isPizzaLedgerSearch && (
                                         <tr className="border-l-4 border-amber-400 bg-amber-950/30 text-amber-300">
-                                            <td className="whitespace-nowrap p-3 font-mono">{pizzaRow.date}</td>
-                                            <td className="whitespace-nowrap p-3 font-mono">{pizzaRow.time}</td>
+                                            <td className="whitespace-nowrap p-3 font-mono">{pizzaRow.date}</td><td className="whitespace-nowrap p-3 font-mono">{pizzaRow.time}</td>
                                             <td className="whitespace-nowrap p-3 font-mono font-bold">{pizzaRow.id}</td>
                                             <td className="p-3"><i className="fa-solid fa-pizza-slice mr-1.5"></i>{pizzaRow.vendor} <span className="font-mono text-[10px] text-amber-500">({pizzaRow.vendor_id})</span></td>
-                                            <td className="whitespace-nowrap p-3">{pizzaRow.approved}</td>
-                                            <td className="whitespace-nowrap p-3 text-right font-mono font-bold">{pizzaRow.amount}</td>
+                                            <td className="whitespace-nowrap p-3">{pizzaRow.approved}</td><td className="whitespace-nowrap p-3 text-right font-mono font-bold">{pizzaRow.amount}</td>
                                             <td className="whitespace-nowrap p-3 text-right"><span className="rounded border border-red-500 bg-red-900/60 px-2 py-1 font-mono text-[10px] font-bold text-red-200">{pizzaRow.status}</span></td>
                                         </tr>
                                     )}
                                     {filteredLedger.map((r, i) => (
                                         <tr key={i} className={`transition-colors hover:bg-slate-900/60 ${r.id === 'TXN8892' ? 'cursor-pointer' : ''}`} onClick={r.id === 'TXN8892' ? handleDummyRowClick : undefined}>
-                                            <td className="whitespace-nowrap p-3 font-mono text-slate-500">{r.date}</td>
-                                            <td className="whitespace-nowrap p-3 font-mono text-cyan-400">{r.time}</td>
+                                            <td className="whitespace-nowrap p-3 font-mono text-slate-500">{r.date}</td><td className="whitespace-nowrap p-3 font-mono text-cyan-400">{r.time}</td>
                                             <td className="whitespace-nowrap p-3 font-mono font-semibold text-deloitte-green">{r.id}</td>
                                             <td className="p-3 text-slate-200">{r.vendor} <span className="font-mono text-[10px] text-slate-500">({r.vendor_id})</span></td>
                                             <td className="whitespace-nowrap p-3 text-slate-400">{r.approved}</td>
@@ -1940,11 +2278,22 @@
                 </div>
             );
 
+            // ─── Node 3: protocol (Compliance) ───
             const secretRow = { tier: t.n3Tier6, cap: '> $3.50', jur: t.n3Tier6Jur, channel: 'PIGEON-CARRIER', anom: t.n3Tier6Anom, code: 'DEPLOY-EMERGENCY-PIZZA', gateway: 'GW-BARN-ESPRESSO', hash: 'HASH-PLS-FIX-THX' };
-
             const renderProtocol = () => (
                 <div className="fade-in flex flex-col gap-4">
-                    <PageHeader icon="fa-network-wired" title={t.n3Title} hint={t.n3EasterHint} onTitleClick={handleN3TitleClick} />
+                    <PageHeader icon="fa-network-wired" title={t.n3Title} onTitleClick={handleN3TitleClick} />
+                    <section className="rounded-2xl border border-amber-500/40 bg-amber-950/20 p-4 md:p-5">
+                        <h3 className="caps mb-3 font-mono text-xs font-bold text-amber-300"><i className="fa-solid fa-scale-balanced mr-1.5"></i>{t.n3RuleTitle}</h3>
+                        <ol className="space-y-2.5 text-sm leading-relaxed text-slate-200">
+                            {[t.n3Rule1, t.n3Rule2, t.n3Rule3].map((r, i) => (
+                                <li key={i} className="flex gap-2.5">
+                                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-500/50 font-mono text-[10px] font-bold text-amber-300">{i + 1}</span>
+                                    <span>{r}</span>
+                                </li>
+                            ))}
+                        </ol>
+                    </section>
                     <Panel>
                         <p className="mb-4 text-sm leading-relaxed text-slate-300">{t.emergencyDesc}</p>
                         {isDesktop ? (
@@ -1952,14 +2301,10 @@
                                 <table className="w-full min-w-[880px] text-left text-sm">
                                     <thead className="border-b border-slate-800 bg-slate-950 font-mono text-xs text-slate-400">
                                         <tr>
-                                            <th className="p-3 font-medium">{t.riskTier}</th>
-                                            <th className="p-3 font-medium">{t.capThreshold}</th>
-                                            <th className="p-3 font-medium">{t.jurisdiction}</th>
-                                            <th className="p-3 font-medium">{t.channel}</th>
-                                            <th className="p-3 font-medium">{t.anomalyFlag}</th>
-                                            <th className="p-3 text-right font-medium">{t.actionCode}</th>
-                                            <th className="p-3 text-right font-medium">{t.routingGw}</th>
-                                            <th className="p-3 text-right font-medium">{t.authHash}</th>
+                                            <th className="p-3 font-medium">{t.riskTier}</th><th className="p-3 font-medium">{t.capThreshold}</th>
+                                            <th className="p-3 font-medium">{t.jurisdiction}</th><th className="p-3 font-medium">{t.channel}</th>
+                                            <th className="p-3 font-medium">{t.anomalyFlag}</th><th className="p-3 text-right font-medium">{t.actionCode}</th>
+                                            <th className="p-3 text-right font-medium">{t.routingGw}</th><th className="p-3 text-right font-medium">{t.authHash}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-800/70 text-slate-300">
@@ -1977,11 +2322,8 @@
                                         ))}
                                         {showSecretProtocol && (
                                             <tr className="border-l-4 border-amber-400 bg-amber-950/30 text-amber-300">
-                                                <td className="p-3 font-bold text-amber-400">{secretRow.tier}</td>
-                                                <td className="whitespace-nowrap p-3 font-mono">{secretRow.cap}</td>
-                                                <td className="p-3">{secretRow.jur}</td>
-                                                <td className="whitespace-nowrap p-3 font-mono text-xs">{secretRow.channel}</td>
-                                                <td className="p-3">{secretRow.anom}</td>
+                                                <td className="p-3 font-bold text-amber-400">{secretRow.tier}</td><td className="whitespace-nowrap p-3 font-mono">{secretRow.cap}</td>
+                                                <td className="p-3">{secretRow.jur}</td><td className="whitespace-nowrap p-3 font-mono text-xs">{secretRow.channel}</td><td className="p-3">{secretRow.anom}</td>
                                                 <td className="whitespace-nowrap p-3 text-right"><span className="rounded border border-amber-500 bg-slate-950 px-2 py-1 font-mono text-xs">{secretRow.code}</span></td>
                                                 <td className="whitespace-nowrap p-3 text-right"><span className="rounded border border-amber-500 bg-slate-950 px-2 py-1 font-mono text-xs text-cyan-300">{secretRow.gateway}</span></td>
                                                 <td className="whitespace-nowrap p-3 text-right font-mono text-xs text-amber-400">{secretRow.hash}</td>
@@ -2001,9 +2343,7 @@
                                             </div>
                                             <span className="shrink-0 font-mono text-[10px] text-slate-500">{row.hash}</span>
                                         </div>
-                                        <div className="mt-1.5 text-xs text-slate-300">
-                                            {t[row.jurKey] || row.jurKey} · <span className="font-mono text-deloitte-green">{row.channel}</span>
-                                        </div>
+                                        <div className="mt-1.5 text-xs text-slate-300">{t[row.jurKey] || row.jurKey} · <span className="font-mono text-deloitte-green">{row.channel}</span></div>
                                         <div className="mt-0.5 text-xs text-slate-400">{t[row.anomalyKey] || row.anomalyKey}</div>
                                         <dl className="mt-2.5 grid grid-cols-1 gap-1.5 border-t border-slate-800/80 pt-2.5 font-mono text-[11px] min-[380px]:grid-cols-2">
                                             <div className="min-w-0"><dt className="text-[10px] text-slate-500">{t.actionCode}</dt><dd className="break-all text-slate-100">{row.code}</dd></div>
@@ -2028,12 +2368,17 @@
                 </div>
             );
 
+            const renderRestrictedNode = (nodeKey, title) => (
+                <div className="fade-in flex min-h-full items-center justify-center py-4">
+                    <div className="w-full max-w-md">{restricted(NODE_SECTION[nodeKey], title, false)}</div>
+                </div>
+            );
+
+            // ─── Halt terminal ───
             const renderHaltLocked = () => (
                 <div className="fade-in flex min-h-full items-center justify-center py-4">
                     <div className="panel w-full max-w-md rounded-2xl border-red-500/40 p-6 text-center shadow-2xl md:p-8">
-                        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-red-500 bg-red-950/50 text-2xl text-red-400">
-                            <i className="fa-solid fa-lock"></i>
-                        </div>
+                        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-red-500 bg-red-950/50 text-2xl text-red-400"><i className="fa-solid fa-lock"></i></div>
                         <h2 className="caps mb-2 font-mono text-lg font-bold text-white md:text-xl">{t.terminalLockedTitle}</h2>
                         <p className="mb-6 text-sm leading-relaxed text-slate-400">{t.terminalLockedDesc}</p>
                         <div className="rounded-xl border border-slate-800 bg-slate-950 p-3.5">
@@ -2063,14 +2408,24 @@
                             </button>
                             <h1 className="caps mb-2 font-mono text-xl font-bold text-white md:text-2xl">{t.haltTxn}</h1>
                             <p className="mx-auto max-w-prose text-sm leading-relaxed text-slate-300">{t.missionAccomplished}</p>
-                            {showVictoryBlessing && (
-                                <div className="fade-in mt-3 rounded-xl border border-cyan-400 bg-cyan-950/70 p-3 font-mono text-xs leading-relaxed text-cyan-200">{t.victoryBlessing}</div>
-                            )}
+                            {showVictoryBlessing && <div className="fade-in mt-3 rounded-xl border border-cyan-400 bg-cyan-950/70 p-3 font-mono text-xs leading-relaxed text-cyan-200">{t.victoryBlessing}</div>}
                         </div>
 
                         <div className="mb-5 space-y-4 rounded-xl border border-slate-800 bg-slate-950/90 p-4 md:p-5">
                             <div className="border-b border-slate-800 pb-2">
                                 <span className="caps block font-mono text-[10px] text-deloitte-green"><i className="fa-solid fa-certificate mr-1.5"></i>{t.certCardTitle}</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 text-center">
+                                {[
+                                    [t.groupLabel, group, 'text-white'],
+                                    [t.timeToHalt, formatClock(clock.elapsed), 'text-deloitte-green'],
+                                    [t.secretsLabel, `${secrets.length}/${SECRET_IDS.length}`, 'text-amber-300']
+                                ].map(([l, v, c]) => (
+                                    <div key={l} className="rounded-xl border border-slate-800 bg-slate-900 px-2 py-2.5">
+                                        <div className="caps truncate font-mono text-[10px] text-slate-500">{l}</div>
+                                        <div className={`mt-0.5 truncate font-mono text-base font-bold tabular-nums ${c}`}>{v}</div>
+                                    </div>
+                                ))}
                             </div>
                             <div>
                                 <label className="mb-1.5 block font-mono text-[11px] text-slate-400"><i className="fa-solid fa-clock mr-1.5 text-deloitte-green"></i>{t.timestampLabel}</label>
@@ -2078,16 +2433,6 @@
                                     <span className="break-all font-mono text-sm font-bold tabular-nums tracking-wide text-deloitte-green md:text-base">{completionTime || formatUTC8Time(new Date())}</span>
                                     <span className="caps shrink-0 self-start rounded border border-slate-800 bg-slate-950 px-2 py-1 font-mono text-[10px] text-cyan-400 sm:self-auto">{t.rankingMetricNotice}</span>
                                 </div>
-                            </div>
-                            <div>
-                                <label htmlFor="group-number" className="mb-1.5 block font-mono text-[11px] text-slate-400"><i className="fa-solid fa-users mr-1.5 text-deloitte-green"></i>{t.groupNumLabel} <span className="text-red-400">*</span></label>
-                                <input
-                                    id="group-number" type="text" value={groupNumber}
-                                    onChange={(e) => { setGroupNumber(e.target.value); setGroupError(false); }}
-                                    placeholder={t.groupNumPlaceholder} autoComplete="off" autoCorrect="off" spellCheck={false}
-                                    className={`field w-full rounded-xl p-3 font-mono text-sm ${groupError ? '!border-red-500 text-red-400' : ''}`}
-                                />
-                                {groupError && <p className="mt-1.5 font-mono text-xs text-red-400" role="alert"><i className="fa-solid fa-triangle-exclamation mr-1"></i>{t.groupNumRequired}</p>}
                             </div>
                             <p className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-3 text-xs leading-relaxed text-slate-400"><i className="fa-solid fa-shield-cat mr-1.5 text-deloitte-green"></i>{t.watermarkNotice}</p>
                         </div>
@@ -2097,7 +2442,6 @@
                                 <i className="fa-solid fa-circle-check mr-1.5 text-emerald-400"></i>{t.downloadSuccess}
                             </div>
                         )}
-
                         <button type="button" onClick={downloadProofJPEG} disabled={isExporting} className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-deloitte-green px-6 py-3.5 font-mono text-xs font-bold uppercase tracking-wider text-slate-950 shadow-[0_0_25px_rgba(134,188,37,0.3)] transition-colors hover:bg-lime-400 disabled:opacity-70 md:text-sm">
                             <i className={`fa-solid ${isExporting ? 'fa-circle-notch fa-spin' : 'fa-file-arrow-down'}`}></i>
                             <span>{isExporting ? t.exportingText : t.exportProofBtn}</span>
@@ -2109,8 +2453,7 @@
             const puzzles = [
                 { k: 'puzzle1', title: t.identityMatch, hint: t.empNameHint, cap: 'words' },
                 { k: 'puzzle2', title: t.auditFlag, hint: t.suspiciousTxn, cap: 'characters' },
-                { k: 'puzzle3', title: t.executeAction, hint: t.haltActionCode, cap: 'characters' },
-                { k: 'puzzle4', title: t.routingGateway, hint: t.routingGatewayHint, cap: 'characters' }
+                { k: 'puzzle3', title: t.executeAction, hint: t.haltActionCode, cap: 'characters' }
             ];
 
             const renderHaltPuzzles = () => (
@@ -2124,7 +2467,6 @@
                         )}
                     </div>
                     <p className="mb-5 max-w-3xl text-sm leading-relaxed text-slate-400">{t.sysOverrideDesc}</p>
-
                     <div aria-live="polite">
                         {easterEggToast && (
                             <div className="fade-in mb-4 flex items-start gap-3 rounded-xl border border-cyan-400 bg-cyan-950/90 p-3.5 text-sm leading-relaxed text-cyan-200">
@@ -2137,7 +2479,6 @@
                             </div>
                         )}
                     </div>
-
                     {haltLockoutTimer > 0 && (
                         <div className="mb-5 rounded-2xl border border-red-500 bg-red-950/90 p-5 text-center" role="alert">
                             <div className="caps mb-1 font-mono text-sm font-bold text-red-400"><i className="fa-solid fa-fire mr-1.5"></i>{t.lockoutTitle} · {t.strikeCountLabel} {haltStrikes}</div>
@@ -2145,8 +2486,7 @@
                             <div className="font-mono text-3xl font-bold tabular-nums text-red-400">{haltLockoutTimer}s</div>
                         </div>
                     )}
-
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                         {puzzles.map((puz, idx) => {
                             const isSolved = solvedPuzzles[puz.k];
                             const hasError = puzzleErrors[puz.k];
@@ -2166,13 +2506,10 @@
                                         <div className="rounded-xl border border-deloitte-green/40 bg-slate-950 py-2.5 text-center font-mono text-xs font-bold tracking-widest text-deloitte-green">{t.verified}</div>
                                     ) : (
                                         <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); handleVerifyPuzzle(puz.k); }}>
-                                            <input
-                                                type="text" aria-label={puz.title} placeholder={t.enter}
-                                                value={puzzleInputs[puz.k] || ''} disabled={disabled}
+                                            <input type="text" aria-label={puz.title} placeholder={t.enter} value={puzzleInputs[puz.k] || ''} disabled={disabled}
                                                 onChange={(e) => setPuzzleInputs(prev => ({ ...prev, [puz.k]: e.target.value }))}
                                                 autoComplete="off" autoCorrect="off" autoCapitalize={puz.cap} spellCheck={false}
-                                                className={`field min-w-0 flex-1 rounded-xl p-2.5 text-center font-mono text-sm uppercase ${hasError ? '!border-red-500 text-red-400' : ''}`}
-                                            />
+                                                className={`field min-w-0 flex-1 rounded-xl p-2.5 text-center font-mono text-sm uppercase ${hasError ? '!border-red-500 text-red-400' : ''}`} />
                                             <button type="submit" disabled={disabled} className="shrink-0 rounded-xl bg-red-600 px-4 font-mono text-xs font-bold uppercase text-white transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-40">
                                                 {isVerifyingThis ? <i className="fa-solid fa-circle-notch fa-spin"></i> : t.verifyBtn}
                                             </button>
@@ -2185,15 +2522,21 @@
                 </div>
             );
 
+            const renderNode = (nodeKey, title, hint, renderFn) => {
+                if (!unlockedNodes[nodeKey]) return renderUnlock(title, hint, nodeKey);
+                if (!canSee(NODE_SECTION[nodeKey])) return renderRestrictedNode(nodeKey, title);
+                return renderFn();
+            };
+
             const renderContent = () => {
                 if (activeTab === 'hub') {
                     if (hubSubTab === 'security') return renderSecurity();
                     if (hubSubTab === 'vendor') return renderVendors();
                     return renderDirectory();
                 }
-                if (activeTab === 'logs') return unlockedNodes.logs ? renderLogs() : renderUnlock(t.n1Title, t.n1Hint, 'logs');
-                if (activeTab === 'ledger') return unlockedNodes.ledger ? renderLedger() : renderUnlock(t.n2Title, t.n2Hint, 'ledger');
-                if (activeTab === 'banking') return unlockedNodes.banking ? renderProtocol() : renderUnlock(t.n3Title, t.n3Hint, 'banking');
+                if (activeTab === 'logs') return renderNode('logs', t.n1Title, t.n1Hint, renderLogs);
+                if (activeTab === 'ledger') return renderNode('ledger', t.n2Title, t.n2Hint, renderLedger);
+                if (activeTab === 'banking') return renderNode('banking', t.n3Title, t.n3Hint, renderProtocol);
                 if (activeTab === 'mystery') {
                     if (!allNodesUnlocked) return renderHaltLocked();
                     return allPuzzlesSolved ? renderHaltSolved() : renderHaltPuzzles();
@@ -2201,8 +2544,10 @@
                 return null;
             };
 
-            // Desktop logs/ledger use an inner scrolling table → outer area should not scroll
-            const innerScrollView = isDesktop && ((activeTab === 'logs' && unlockedNodes.logs) || (activeTab === 'ledger' && unlockedNodes.ledger));
+            const innerScrollView = isDesktop && (
+                (activeTab === 'logs' && unlockedNodes.logs && canSee('logs')) ||
+                (activeTab === 'ledger' && unlockedNodes.ledger && canSee('ledger'))
+            );
 
             const sideItemCls = (item, active) => {
                 if (item.critical) {
@@ -2212,13 +2557,34 @@
                 return active ? 'bg-deloitte-green/15 text-deloitte-green border-deloitte-green/40' : 'text-slate-400 border-transparent hover:bg-slate-800/60 hover:text-slate-200';
             };
 
+            const roleButton = (cls) => config.roleMode && (
+                <button type="button" onClick={() => setShowRoleSwitch(true)} aria-label={`${t.yourRole}: ${roleName(t, role)}`} className={`flex items-center gap-1.5 rounded-lg border font-mono font-bold ${roleMeta.ring} ${cls}`}>
+                    <i className={`fa-solid ${cooldownLeft > 0 ? 'fa-hourglass-half' : roleMeta.icon} ${roleMeta.color}`}></i>
+                    <span className="hidden sm:inline">{cooldownLeft > 0 ? `${cooldownLeft}s` : roleName(t, role)}</span>
+                </button>
+            );
+            const secretsButton = (cls) => (
+                <button type="button" onClick={() => setShowSecrets(true)} aria-label={`${t.secretsLabel} ${secrets.length}/${SECRET_IDS.length}`} className={`flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 font-mono font-bold text-amber-300 ${cls}`}>
+                    <i className="fa-solid fa-star text-[10px]"></i>{secrets.length}/{SECRET_IDS.length}
+                </button>
+            );
+
             return (
                 <div className="shell relative z-10 mx-auto flex h-full w-full max-w-[1600px] flex-col md:flex-row md:gap-4">
                     {showMinigame && <SnakeGame onClose={() => setShowMinigame(false)} />}
                     {showMemo && <CorruptedMemoModal onClose={() => setShowMemo(false)} t={t} />}
                     {showRootModal && <RootInterceptModal onClose={() => setShowRootModal(false)} t={t} />}
                     {showDefconModal && <DefconModal onClose={() => setShowDefconModal(false)} t={t} />}
+                    {showSecrets && <SecretsModal t={t} found={secrets} onClose={() => setShowSecrets(false)} />}
+                    {showRoleSwitch && <RoleSwitchModal t={t} role={role} cooldownSec={config.cooldownSec} onPick={switchRole} onClose={() => setShowRoleSwitch(false)} />}
+                    {beatQueue.length > 0 && <BeatModal key={beatQueue[0] + beatQueue.length} beat={beatQueue[0]} t={t} role={role} roleMode={config.roleMode} onContinue={closeBeat} />}
                     {proof && <ProofModal proof={proof} t={t} onClose={() => setProof(null)} />}
+
+                    {secretToast && (
+                        <div className="toast-in fixed left-1/2 z-[60] flex items-center gap-2 rounded-full border border-amber-400 bg-slate-950/95 px-4 py-2 font-mono text-xs font-bold text-amber-300 shadow-[0_0_25px_rgba(251,191,36,0.3)]" style={{ top: 'calc(var(--safe-t) + 12px)' }} role="status">
+                            <i className="fa-solid fa-star"></i>{t.secretFound} · {secretToast.count}/{SECRET_IDS.length}
+                        </div>
+                    )}
 
                     {/* ── Desktop sidebar ── */}
                     <aside className="glass hidden w-64 shrink-0 flex-col gap-1.5 rounded-2xl p-4 shadow-2xl md:flex">
@@ -2227,13 +2593,12 @@
                                 <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-deloitte-green/50 bg-deloitte-green/15 text-deloitte-green"><i className="fa-solid fa-terminal text-sm"></i></div>
                                 <div>
                                     <h1 className="caps text-sm font-bold leading-none text-white">{t.projectSunrise}</h1>
-                                    <span className="font-mono text-[10px] text-deloitte-green">OS // v2.6</span>
+                                    <span className="font-mono text-[10px] text-deloitte-green">{group}</span>
                                 </div>
                             </div>
                             <button onClick={toggleLang} className="rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 font-mono text-[11px] font-bold text-slate-200 transition-colors hover:bg-slate-800">{lang === 'en' ? '中文' : 'EN'}</button>
                         </div>
-
-                        {navItems.map((item, i) => {
+                        {navItems.map((item) => {
                             const active = activeTab === item.k;
                             return (
                                 <React.Fragment key={item.k}>
@@ -2266,40 +2631,37 @@
 
                     {/* ── Main column ── */}
                     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-                        {/* Mobile app bar */}
-                        <header className="glass mx-2 mt-2 flex shrink-0 items-center justify-between gap-2 rounded-2xl px-3.5 py-2 md:hidden">
-                            <button type="button" onClick={handleSecretClick} className="flex min-w-0 items-center gap-2">
-                                <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-deloitte-green"></span>
-                                <span className="caps truncate font-mono text-xs font-bold text-white">{t.projectSunrise}</span>
-                            </button>
+                        {/* Mobile app bar: logo (hidden game) · clock · role · secrets · language */}
+                        <header className="glass mx-2 mt-2 flex shrink-0 items-center justify-between gap-1.5 rounded-2xl px-2.5 py-2 md:hidden">
+                            <div className="flex min-w-0 items-center gap-1.5">
+                                <button type="button" onClick={handleSecretClick} aria-label={t.projectSunrise} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-deloitte-green/50 bg-deloitte-green/15 text-deloitte-green">
+                                    <i className="fa-solid fa-terminal text-[11px]"></i>
+                                </button>
+                                <ClockChip t={t} clock={clock} />
+                            </div>
                             <div className="flex shrink-0 items-center gap-1.5">
-                                <span className={`flex h-8 items-center gap-1.5 rounded-lg border px-2.5 font-mono text-[11px] font-bold ${nodesDone === 3 ? 'border-deloitte-green/50 bg-deloitte-green/15 text-deloitte-green' : 'border-slate-800 bg-slate-950 text-slate-400'}`}>
-                                    <i className={`fa-solid ${nodesDone === 3 ? 'fa-unlock-keyhole' : 'fa-key'} text-[10px]`}></i>{t.nodesLabel} {nodesDone}/3
-                                </span>
-                                <button onClick={toggleLang} className="h-8 rounded-lg border border-slate-700 bg-slate-900 px-2.5 font-mono text-[11px] font-bold text-white">{lang === 'en' ? '中文' : 'EN'}</button>
+                                {roleButton('h-8 px-2 text-[11px]')}
+                                {secretsButton('h-8 px-2 text-[11px]')}
+                                <button onClick={toggleLang} className="h-8 rounded-lg border border-slate-700 bg-slate-900 px-2 font-mono text-[11px] font-bold text-white">{lang === 'en' ? '中文' : 'EN'}</button>
                             </div>
                         </header>
 
                         {/* Desktop telemetry bar */}
-                        <div className="glass mb-3 hidden shrink-0 items-center justify-between gap-4 rounded-2xl px-4 py-2.5 md:flex">
-                            <div className="flex min-w-0 items-center gap-3">
-                                <span className="caps flex shrink-0 items-center gap-2 font-mono text-[11px] font-bold text-slate-400">
-                                    <span className="h-2 w-2 rounded-full bg-deloitte-green"></span>{t.decryptionStatus}
-                                </span>
-                                <div className="flex flex-wrap gap-2">
-                                    {nodeChips.map(obj => {
-                                        const ok = unlockedNodes[obj.k];
-                                        return (
-                                            <button key={obj.k} onClick={() => go(obj.k)} className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold transition-colors ${ok ? 'border-deloitte-green/50 bg-deloitte-green/15 text-deloitte-green' : 'border-slate-800 bg-slate-950/90 text-slate-500 hover:border-slate-700'}`}>
-                                                <i className={`fa-solid ${ok ? 'fa-unlock-keyhole' : 'fa-lock'} text-[10px]`}></i>{obj.l}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                        <div className="glass mb-3 hidden shrink-0 items-center justify-between gap-3 rounded-2xl px-4 py-2 md:flex">
+                            <div className="flex min-w-0 items-center gap-2">
+                                {nodeChips.map(obj => {
+                                    const ok = unlockedNodes[obj.k];
+                                    return (
+                                        <button key={obj.k} onClick={() => go(obj.k)} className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold transition-colors ${ok ? 'border-deloitte-green/50 bg-deloitte-green/15 text-deloitte-green' : 'border-slate-800 bg-slate-950/90 text-slate-500 hover:border-slate-700'}`}>
+                                            <i className={`fa-solid ${ok ? 'fa-unlock-keyhole' : 'fa-lock'} text-[10px]`}></i>{obj.l}
+                                        </button>
+                                    );
+                                })}
                             </div>
-                            <div className="flex shrink-0 items-center gap-2 font-mono text-[11px] text-slate-400">
-                                <i className="fa-solid fa-database text-cyan-400"></i>
-                                <span>{sbConnected ? 'SUPABASE: SYNCED' : 'SOURCE: INFO.TXT'}</span>
+                            <div className="flex shrink-0 items-center gap-2">
+                                {roleButton('h-9 px-3 text-xs')}
+                                {secretsButton('h-9 px-3 text-xs')}
+                                <ClockChip t={t} clock={clock} size="lg" />
                             </div>
                         </div>
 
@@ -2317,7 +2679,6 @@
                             </div>
                         )}
 
-                        {/* Scroll viewport */}
                         <main ref={scrollRef} className={`scroll-area relative min-h-0 flex-1 px-3 pb-4 pt-3 md:px-0 md:pb-0 md:pt-0 ${innerScrollView ? 'overflow-hidden' : 'overflow-y-auto md:pr-1'}`}>
                             {renderContent()}
                         </main>
@@ -2329,9 +2690,7 @@
                             const active = activeTab === item.k;
                             let cls = active ? 'bg-deloitte-green/15 text-deloitte-green' : 'text-slate-400 active:bg-slate-800/60';
                             if (item.critical) {
-                                cls = item.locked
-                                    ? (active ? 'bg-red-950/80 text-red-300' : 'text-red-400/70')
-                                    : (active ? 'bg-red-600 text-white' : 'bg-red-950/60 text-red-300');
+                                cls = item.locked ? (active ? 'bg-red-950/80 text-red-300' : 'text-red-400/70') : (active ? 'bg-red-600 text-white' : 'bg-red-950/60 text-red-300');
                             }
                             return (
                                 <button key={item.k} type="button" onClick={() => go(item.k)} aria-current={active ? 'page' : undefined} aria-label={item.label} className={`relative flex min-h-[50px] min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-0.5 transition-colors ${cls}`}>
@@ -2350,9 +2709,7 @@
         }
 
         const rootContainer = document.getElementById('root');
-        if (rootContainer) {
-            ReactDOM.createRoot(rootContainer).render(<QuestView />);
-        }
+        if (rootContainer) ReactDOM.createRoot(rootContainer).render(<QuestView />);
     </script>
 </body>
 </html>
