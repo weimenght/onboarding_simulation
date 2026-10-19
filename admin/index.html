@@ -3,11 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>DeloitteLand | Admin Console</title>
-  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DL Admin">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#080b11">
+  <title>DeloitteLand | Operations Admin</title>
+
+  <!-- Web App Icon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23080b11'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2386BC25' stroke-width='18' stroke-opacity='0.4'/%3E%3Ctext x='215' y='330' font-family='sans-serif' font-weight='900' font-size='240' fill='%23ffffff' text-anchor='middle'%3EA%3C/text%3E%3Ccircle cx='355' cy='305' r='36' fill='%2386BC25'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23080b11'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2386BC25' stroke-width='18' stroke-opacity='0.4'/%3E%3Ctext x='215' y='330' font-family='sans-serif' font-weight='900' font-size='240' fill='%23ffffff' text-anchor='middle'%3EA%3C/text%3E%3Ccircle cx='355' cy='305' r='36' fill='%2386BC25'/%3E%3C/svg%3E">
+
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -30,6 +38,7 @@
               black: '#080b11',
               cardbg: '#121620',
               cardborder: '#1f2637',
+              slate: '#1b2230',
               gray: '#868D96',
               lightgray: '#DCE0E5'
             }
@@ -44,6 +53,10 @@
   </script>
 
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
       background-color: #080b11;
       background-image:
@@ -51,29 +64,77 @@
         radial-gradient(circle at 90% 85%, rgba(0, 79, 89, 0.16) 0%, transparent 50%),
         radial-gradient(circle at 50% 50%, rgba(0, 39, 118, 0.06) 0%, transparent 60%);
       min-height: 100vh;
+      min-height: 100dvh;
       -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: none;
+    }
+
+    /* Device Mode Visibility Rules */
+    body.is-mobile .desktop-only { display: none !important; }
+    body.is-desktop .mobile-only { display: none !important; }
+
+    /* Remove native browser number input spinners across Chrome, Safari, Edge, Firefox */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    /* Prevent iOS Safari auto-zoom on input focus */
+    @media screen and (max-width: 767px) {
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input[type="number"],
+      textarea {
+        font-size: 16px !important;
+      }
     }
 
     .deloitte-dot {
       display: inline-block;
-      width: 0.58em;
-      height: 0.58em;
+      width: 0.52em;
+      height: 0.52em;
       background-color: #86BC25;
       border-radius: 50%;
-      margin-left: 0.12em;
+      margin-left: 0.1em;
       vertical-align: baseline;
-      box-shadow: 0 0 14px rgba(134, 188, 37, 0.85);
+      box-shadow: 0 0 12px rgba(134, 188, 37, 0.85);
     }
 
     .card-shadow {
       box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
-    .button-press { 
-      transition: all 0.16s cubic-bezier(0.4, 0, 0.2, 1);
+    .button-press {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
       touch-action: manipulation;
     }
     .button-press:active { transform: scale(0.96) translateY(1px); }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(134,188,37,0.3); border-radius: 4px; }
+
+    .safe-top { padding-top: env(safe-area-inset-top, 0px); }
+    .safe-bottom-nav { padding-bottom: calc(env(safe-area-inset-bottom, 8px) + 4px); }
+
+    .app-drawer {
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+    }
+
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(1) brightness(0.85);
+      cursor: pointer;
+    }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -87,56 +148,41 @@
       100% { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in { animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-    input[type="time"]::-webkit-calendar-picker-indicator {
-      filter: invert(1) brightness(0.85);
-      cursor: pointer;
-    }
-
-    .safe-top { padding-top: env(safe-area-inset-top, 0px); }
-    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
-
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-    ::-webkit-scrollbar-thumb { background: rgba(134,188,37,0.3); border-radius: 4px; }
   </style>
 </head>
 
-<body class="text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
+<body class="is-desktop text-white font-sans flex flex-col justify-between min-h-screen selection:bg-deloitte-green selection:text-black">
 
-  <!-- Top Floating Utility Bar for Login Gate -->
+  <!-- ==========================================================
+       LOGIN GATE OVERLAY
+       ========================================================== -->
   <div id="gateUtilityBar" class="fixed top-3 right-3 z-50 flex items-center gap-2">
-    <button type="button" onclick="toggleLanguage()" class="button-press px-3 py-1.5 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-md flex items-center gap-1.5 shadow-lg">
+    <button type="button" onclick="toggleLanguage()" class="button-press h-8 px-3 rounded-full text-xs font-bold bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-md flex items-center gap-1.5 shadow-lg">
       <i class="fa-solid fa-language text-deloitte-green"></i>
-      <span class="lang-toggle-text">EN</span>
+      <span class="lang-toggle-text font-mono">EN</span>
     </button>
   </div>
 
-  <!-- Gate / Login Overlay -->
-  <div id="passwordGate" class="fixed inset-0 z-40 flex items-center justify-center bg-[#080b11] p-4 safe-top safe-bottom">
+  <div id="passwordGate" class="fixed inset-0 z-40 flex items-center justify-center bg-[#080b11] p-4 safe-top">
     <div id="gateCard" class="bg-deloitte-cardbg border-2 border-white/10 rounded-3xl p-6 sm:p-10 max-w-md w-full card-shadow space-y-6 text-center animate-fade-in relative overflow-hidden">
       <div class="absolute -right-12 -top-12 w-32 h-32 bg-deloitte-green/15 rounded-full blur-2xl pointer-events-none"></div>
 
       <div class="space-y-3 relative z-10">
         <div class="w-16 h-16 rounded-2xl bg-deloitte-green/15 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-2xl mx-auto shadow-lg shadow-deloitte-green/20">
-          <i class="fa-solid fa-shield-halved"></i>
+          <i id="gateDeviceIcon" class="fa-solid fa-shield-halved"></i>
         </div>
         <div>
           <h1 class="text-2xl sm:text-3xl font-black text-white">DeloitteLand<span class="deloitte-dot"></span> Admin</h1>
-          <p class="text-xs text-gray-400 mt-1" data-i18n="gateSubtitle">请使用管理员账号登录控制台</p>
+          <p class="text-xs text-gray-400 mt-1" data-i18n="gateSubtitle">请使用管理员或站点导师账号登录</p>
         </div>
       </div>
 
-      <!-- Login Form -->
       <form onsubmit="handleLoginSubmit(event)" class="space-y-4 relative z-10 text-left">
         <div>
-          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider" data-i18n="labelEmail">管理员邮箱</label>
+          <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider" data-i18n="labelEmail">登录邮箱</label>
           <div class="relative">
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"><i class="fa-solid fa-envelope"></i></span>
-            <input id="emailInput" type="email" placeholder="admin@deloitte.com.cn" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <input id="emailInput" type="email" placeholder="admin@deloitte.com.cn" autocomplete="username" class="w-full h-11 bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
           </div>
         </div>
 
@@ -144,8 +190,8 @@
           <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider" data-i18n="labelPassword">密码</label>
           <div class="relative">
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"><i class="fa-solid fa-lock"></i></span>
-            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-10 text-sm text-white placeholder-gray-600 transition-colors" required>
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs p-1" title="Toggle visibility">
+            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full h-11 bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-10 pr-10 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs p-1">
               <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
             </button>
           </div>
@@ -156,7 +202,7 @@
           <span id="errorText">账号或密码错误</span>
         </p>
 
-        <button id="submitBtn" type="submit" class="button-press w-full mt-2 py-3.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
+        <button id="submitBtn" type="submit" class="button-press w-full h-11 mt-2 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-sm transition-all shadow-lg shadow-deloitte-green/25 flex items-center justify-center gap-2">
           <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
           <span id="btnText" data-i18n="btnSignIn">登录控制台</span>
         </button>
@@ -164,83 +210,249 @@
     </div>
   </div>
 
-  <!-- Authenticated Admin Portal Content -->
-  <div id="mainAdminContent" class="hidden flex-col justify-between min-h-screen pb-16">
+  <!-- ==========================================================
+       AUTHENTICATED ADAPTIVE SHELL (DESKTOP CONSOLE + MOBILE APP)
+       ========================================================== -->
+  <div id="mainAdminContent" class="hidden flex-col min-h-screen pb-24">
     
-    <!-- Sticky Responsive Header -->
+    <!-- Top Sticky Header -->
     <header class="w-full border-b border-white/10 bg-deloitte-black/95 backdrop-blur-md sticky top-0 z-40 safe-top">
-      <div class="max-w-5xl mx-auto px-3 sm:px-6 h-14 flex items-center justify-between gap-2">
-        <div class="flex items-center space-x-2">
-          <div class="w-7 h-7 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-xs shrink-0">
+      <div id="headerInnerContainer" class="max-w-5xl mx-auto px-3.5 sm:px-6 h-14 flex items-center justify-between gap-2">
+        <div class="flex items-center space-x-2 min-w-0">
+          <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green font-black text-xs shrink-0">
             <i class="fa-solid fa-sliders"></i>
           </div>
-          <div class="min-w-0 flex items-center gap-2">
+          <div class="min-w-0 flex items-center gap-1.5">
             <span class="font-black text-base sm:text-lg text-white truncate">DeloitteLand<span class="deloitte-dot"></span></span>
-            <span id="headerCohortPill" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-400/15 text-lime-300 border border-lime-400/30">36 Teams</span>
+            <span id="headerRoleBadge" class="text-[9px] font-mono font-extrabold px-2 py-0.5 rounded-full bg-deloitte-green/20 text-deloitte-green border border-deloitte-green/40 shrink-0">ADMIN</span>
+            <span id="headerCohortPill" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-400/15 text-lime-300 border border-lime-400/30 shrink-0">FP-36</span>
           </div>
         </div>
         
         <div class="flex items-center gap-1.5 shrink-0">
-          <a href="https://projectsunrise.win/A1" target="_blank" class="button-press px-2.5 py-1.5 rounded-full text-[11px] font-bold bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30 flex items-center gap-1 shadow-sm">
-            <i class="fa-solid fa-mobile-screen text-xs"></i>
-            <span class="hidden xs:inline" data-i18n="btnOpenParticipant">学员端</span>
-          </a>
-          <button type="button" onclick="toggleLanguage()" class="button-press px-2.5 py-1.5 rounded-full text-[11px] font-bold bg-white/10 hover:bg-white/20 border border-white/15 text-white flex items-center gap-1">
-            <i class="fa-solid fa-language text-deloitte-green text-xs"></i>
-            <span class="lang-toggle-text">EN</span>
+          <!-- Manual Desktop/Mobile View Toggle Button -->
+          <button type="button" onclick="toggleManualDeviceMode()" class="button-press w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 flex items-center justify-center text-xs" title="Switch Desktop / Mobile View">
+            <i id="deviceModeToggleIcon" class="fa-solid fa-desktop"></i>
           </button>
-          <button type="button" onclick="handleLogout()" class="button-press w-7 h-7 sm:w-8 sm:h-8 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 border border-white/10 text-gray-300 hover:text-rose-300 flex items-center justify-center" title="Sign Out">
+
+          <a href="https://projectsunrise.win/A1" target="_blank" class="button-press h-8 px-2.5 rounded-full text-[11px] font-bold bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30 flex items-center gap-1 shadow-sm whitespace-nowrap">
+            <i class="fa-solid fa-mobile-screen text-xs"></i>
+            <span class="hidden sm:inline" data-i18n="btnOpenParticipant">学员端</span>
+          </a>
+
+          <button type="button" onclick="toggleLanguage()" class="button-press h-8 px-2.5 rounded-full text-[11px] font-bold bg-white/10 hover:bg-white/20 border border-white/15 text-white flex items-center gap-1 whitespace-nowrap">
+            <i class="fa-solid fa-language text-deloitte-green text-xs"></i>
+            <span class="lang-toggle-text font-mono">EN</span>
+          </button>
+
+          <button type="button" onclick="handleLogout()" class="button-press w-8 h-8 rounded-full text-xs font-semibold bg-white/5 hover:bg-rose-500/20 border border-white/10 text-gray-300 hover:text-rose-300 flex items-center justify-center" title="Sign Out">
             <i class="fa-solid fa-power-off text-xs"></i>
           </button>
         </div>
       </div>
     </header>
 
-    <!-- 5-Tab Navigation Bar -->
-    <nav class="w-full border-b border-white/10 bg-deloitte-black/95 backdrop-blur-md sticky top-14 z-30">
-      <div class="max-w-5xl mx-auto px-2 sm:px-6 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2">
-        <button type="button" onclick="switchAdminMainTab('hub')" id="tabBtn-hub"
-          class="button-press flex-1 min-w-[75px] sm:min-w-[90px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-deloitte-green text-black shadow-lg shadow-deloitte-green/20">
+    <!-- DESKTOP-ONLY TOP NAVIGATION BAR (6 TABS) -->
+    <nav class="desktop-only w-full border-b border-white/10 bg-deloitte-black/95 backdrop-blur-md sticky top-14 z-30">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
+        <button type="button" onclick="switchUnifiedTab('scores')" id="tabBtn-scores"
+          class="button-press flex-1 min-w-[90px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-deloitte-green text-black shadow-lg shadow-deloitte-green/20">
+          <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+          <span data-i18n="tabScores">站点计分</span>
+        </button>
+
+        <button type="button" onclick="switchUnifiedTab('sunrise')" id="tabBtn-sunrise"
+          class="button-press flex-1 min-w-[90px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
+          <i class="fa-solid fa-sun text-[11px] text-amber-400"></i>
+          <span data-i18n="tabSunrise">日出计分</span>
+        </button>
+
+        <button type="button" onclick="switchUnifiedTab('hub')" id="tabBtn-hub"
+          class="button-press flex-1 min-w-[90px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
           <i class="fa-solid fa-cubes text-[11px]"></i>
           <span data-i18n="tabHub">系统配置</span>
         </button>
 
-        <button type="button" onclick="switchAdminMainTab('scores')" id="tabBtn-scores"
-          class="button-press flex-1 min-w-[75px] sm:min-w-[90px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
-          <i class="fa-solid fa-pen-to-square text-[11px]"></i>
-          <span data-i18n="tabScores">录入分数</span>
-        </button>
-
-        <button type="button" onclick="switchAdminMainTab('leaderboard')" id="tabBtn-leaderboard"
-          class="button-press flex-1 min-w-[75px] sm:min-w-[90px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
+        <button type="button" onclick="switchUnifiedTab('leaderboard')" id="tabBtn-leaderboard"
+          class="admin-only-tab button-press flex-1 min-w-[90px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
           <i class="fa-solid fa-ranking-star text-[11px]"></i>
           <span data-i18n="tabLeaderboard">排行榜</span>
         </button>
 
-        <button type="button" onclick="switchAdminMainTab('broadcast')" id="tabBtn-broadcast"
-          class="button-press flex-1 min-w-[85px] sm:min-w-[100px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
+        <button type="button" onclick="switchUnifiedTab('broadcast')" id="tabBtn-broadcast"
+          class="admin-only-tab button-press flex-1 min-w-[90px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white">
           <i class="fa-solid fa-bullhorn text-[11px]"></i>
           <span data-i18n="tabBroadcast">广播与留言</span>
         </button>
 
-        <button type="button" onclick="switchAdminMainTab('reset')" id="tabBtn-reset"
-          class="button-press flex-1 min-w-[75px] sm:min-w-[90px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-rose-500/10 hover:text-rose-300">
-          <i class="fa-solid fa-Sliders text-[11px] text-rose-400"></i>
+        <button type="button" onclick="switchUnifiedTab('reset')" id="tabBtn-reset"
+          class="admin-only-tab button-press flex-1 min-w-[90px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-rose-500/10 hover:text-rose-300">
+          <i class="fa-solid fa-sliders text-[11px] text-rose-400"></i>
           <span data-i18n="tabReset">规模与重置</span>
         </button>
       </div>
     </nav>
 
     <!-- Main Container -->
-    <main class="flex-grow max-w-5xl mx-auto w-full px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+    <main id="mainViewportContainer" class="flex-grow max-w-5xl mx-auto w-full px-3.5 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
       <!-- ==========================================================
-           TAB 1: CORE LINKS & STATION CONFIGURATIONS
+           TAB 1: 6-STATION SCORING MATRIX (ADMIN & FACULTY/HR/RRG)
            ========================================================== -->
-      <section id="panel-hub" class="space-y-3 sm:space-y-4 animate-fade-in">
+      <section id="panel-scores" class="space-y-4 animate-fade-in">
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
+            <div class="min-w-0">
+              <h2 class="text-base sm:text-xl font-black text-white truncate" data-i18n="scoreEntryTitle">站点计分录入</h2>
+              <p class="text-xs text-gray-400 mt-0.5" id="matrixSubtitleHint">选站点 ➔ 选轮次 ➔ 输入本轮各组得分并保存</p>
+            </div>
+            
+            <div class="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+              <button type="button" onclick="togglePinCurrentStation()" id="btnPinStation"
+                class="button-press h-8 px-3 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all bg-white/5 border-white/15 text-gray-300 whitespace-nowrap">
+                <i class="fa-solid fa-thumbtack text-[10px]"></i>
+                <span id="pinStationLabel" data-i18n="btnPinStation">锁定此站</span>
+              </button>
+              <span id="scoresActiveScaleBadge" class="h-8 px-3 rounded-xl bg-black/50 border border-white/10 text-xs font-mono font-bold text-amber-400 flex items-center whitespace-nowrap">36 Teams</span>
+            </div>
+          </div>
+
+          <!-- LAYER 1: 6 STATIONS -->
+          <div class="space-y-2">
+            <label class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px] shrink-0">1</span>
+              <span class="truncate" data-i18n="layer1Title">选择执裁站点 (显示已录轮数)</span>
+            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="stationButtonsGrid"></div>
+          </div>
+
+          <!-- LAYER 2: 6 ROUNDS -->
+          <div class="space-y-2 pt-1">
+            <div class="flex items-center justify-between gap-2">
+              <label class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5 min-w-0">
+                <span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px] shrink-0">2</span>
+                <span class="truncate" data-i18n="layer2Title">选择轮次 (绿点代表本轮已录入)</span>
+              </label>
+              <span id="activeStationRoundBadge" class="text-xs font-mono text-deloitte-green font-bold shrink-0"></span>
+            </div>
+            <div class="grid grid-cols-6 gap-1.5 sm:gap-2" id="roundButtonsGrid"></div>
+          </div>
+
+          <!-- LAYER 3: DYNAMIC SCORE INPUTS -->
+          <div class="space-y-3 pt-2 bg-black/50 p-3.5 sm:p-4 rounded-2xl border border-white/10">
+            <div class="flex items-center justify-between gap-2">
+              <label class="text-xs font-black text-white flex items-center gap-1.5 min-w-0">
+                <span class="w-4 h-4 rounded-full bg-deloitte-green text-black flex items-center justify-center text-[10px] shrink-0">3</span>
+                <span id="layer3TitleText" class="truncate">录入本轮小组得分</span>
+              </label>
+              <div class="flex items-center gap-3 shrink-0">
+                <button type="button" onclick="pullLatestCloudScores()" class="text-[11px] text-deloitte-green hover:underline font-bold flex items-center gap-1 whitespace-nowrap">
+                  <i class="fa-solid fa-rotate text-[10px]"></i>
+                  <span data-i18n="btnPullCloud">同步云端</span>
+                </button>
+                <button type="button" onclick="clearActiveRoundInputs()" class="text-[11px] text-gray-400 hover:text-rose-400 font-bold flex items-center gap-1 whitespace-nowrap">
+                  <i class="fa-solid fa-eraser text-[10px]"></i>
+                  <span data-i18n="btnClearRound">清空本轮</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Validation Warning Banner -->
+            <div id="scoreValidationAlert" class="hidden p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-xs text-rose-300 font-bold flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-rose-400 shrink-0"></i>
+              <span id="scoreValidationAlertText"></span>
+            </div>
+
+            <!-- Mobile-Only Column Header -->
+            <div class="mobile-only grid grid-cols-12 gap-2 px-2 pt-1 text-[10px] font-mono font-bold text-gray-400 uppercase">
+              <div class="col-span-2 text-center">SLOT</div>
+              <div class="col-span-5 text-center" data-i18n="colTeamNum">组号 (Team #)</div>
+              <div class="col-span-5 text-center" data-i18n="colScoreVal">得分 (0-100)</div>
+            </div>
+
+            <!-- Adaptive Score Slots Container -->
+            <div id="adaptiveScoreSlotsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1"></div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
+              <div id="scoresSaveStatusBadge" class="text-xs text-gray-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-deloitte-green shrink-0"></i>
+                <span data-i18n="safeMergeNote">多裁判安全模式：仅合并保存当前站点本轮分数</span>
+              </div>
+              <button type="button" onclick="saveActiveRoundSafeMerge()" id="btnSaveScoresMain"
+                class="button-press w-full sm:w-auto h-11 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20 shrink-0 whitespace-nowrap">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span data-i18n="btnSaveRound">保存并同步本轮得分</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           TAB 2: PROJECT SUNRISE TEAM SCORES (ADMIN & FACULTY/HR/RRG)
+           ========================================================== -->
+      <section id="panel-sunrise" class="hidden space-y-4 animate-fade-in">
+        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-amber-500/30 card-shadow space-y-4">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">SUNRISE</span>
+                <h2 class="text-base sm:text-xl font-black text-white truncate" data-i18n="sunriseScoreTitle">Project Sunrise 日出计划计分</h2>
+              </div>
+              <p class="text-xs text-gray-400 mt-1" data-i18n="sunriseScoreSub">按组号直接录入各队日出计划得分（自动计入全员总榜）</p>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+              <span id="sunriseRecordedCountBadge" class="h-8 px-3 rounded-xl bg-amber-400/15 border border-amber-400/30 text-xs font-mono font-bold text-amber-300 flex items-center whitespace-nowrap">0 / 36</span>
+              <button type="button" onclick="pullLatestCloudScores()" class="button-press h-8 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-gray-200 flex items-center gap-1.5 whitespace-nowrap">
+                <i class="fa-solid fa-rotate text-[10px] text-amber-400"></i>
+                <span data-i18n="btnPullCloud">同步云端</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search & Quick Action Bar -->
+          <div class="flex items-center justify-between gap-2">
+            <div class="relative flex-1 max-w-xs">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+              <input type="text" id="sunriseTeamSearchInput" oninput="filterSunriseTeamCards()" data-i18n-placeholder="searchTeamPlaceholder" placeholder="搜组号 (如 08)..."
+                class="w-full h-9 bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-xl pl-8 pr-3 text-xs text-white">
+            </div>
+
+            <button type="button" onclick="clearAllSunriseInputs()" class="text-xs text-gray-400 hover:text-rose-400 font-bold flex items-center gap-1 shrink-0 whitespace-nowrap">
+              <i class="fa-solid fa-eraser text-[11px]"></i>
+              <span data-i18n="btnClearSunrise">清空本页</span>
+            </button>
+          </div>
+
+          <!-- All Teams Grid (1 to 24 / 36 / 48) -->
+          <div id="sunriseTeamsGridContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-1"></div>
+
+          <!-- Save Footer -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
+            <div id="sunriseSaveStatusBadge" class="text-xs text-gray-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-shield-halved text-amber-400 shrink-0"></i>
+              <span data-i18n="sunriseSafeMergeNote">安全合并模式：仅更新日出计划得分，不影响 6 站成绩</span>
+            </div>
+            <button type="button" onclick="saveSunriseScoresSafeMerge()" id="btnSaveSunriseMain"
+              class="button-press w-full sm:w-auto h-11 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20 shrink-0 whitespace-nowrap">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span data-i18n="btnSaveSunrise">保存并同步日出计划得分</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           TAB 3: CORE CONFIG & TOOLS (ADMIN & FACULTY/HR/RRG)
+           ========================================================== -->
+      <section id="panel-hub" class="hidden space-y-3.5 sm:space-y-4 animate-fade-in">
         
         <!-- Mood Oracle Card -->
-        <div id="moodOracleCard" class="bg-gradient-to-r from-deloitte-green/10 via-deloitte-teal/15 to-transparent border border-deloitte-green/30 rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 shadow-lg">
+        <div class="bg-gradient-to-r from-deloitte-green/10 via-deloitte-teal/15 to-transparent border border-deloitte-green/30 rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 shadow-lg">
           <div class="flex items-center gap-3 min-w-0">
             <div class="w-9 h-9 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-base shrink-0">
               <i id="oracleIcon" class="fa-solid fa-bolt"></i>
@@ -250,373 +462,155 @@
               <div id="oracleQuote" class="text-xs font-semibold text-gray-200 mt-0.5 line-clamp-2">成就不凡，先从别点崩系统开始。</div>
             </div>
           </div>
-          <button type="button" onclick="nextOracleQuote(event)" class="button-press shrink-0 px-3 py-1.5 rounded-xl bg-deloitte-green/20 hover:bg-deloitte-green/30 border border-deloitte-green/40 text-deloitte-green text-xs font-bold flex items-center gap-1.5">
+          <button type="button" onclick="nextOracleQuote(event)" class="button-press shrink-0 h-8 px-3 rounded-xl bg-deloitte-green/20 hover:bg-deloitte-green/30 border border-deloitte-green/40 text-deloitte-green text-xs font-bold flex items-center gap-1.5 whitespace-nowrap">
             <i class="fa-solid fa-rotate"></i>
             <span class="hidden xs:inline" data-i18n="nextQuote">换一句</span>
           </button>
         </div>
 
-        <!-- 01: D.Signal -->
-        <div class="p-4 sm:p-5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">01</span>
-                <h2 class="text-base sm:text-lg font-black text-white" data-i18n="signalTitle">D.Signal 信号解密</h2>
-              </div>
-              <p class="text-xs text-gray-400" data-i18n="signalDesc">自定义 3 轮双语猜词词库</p>
-              <div class="flex flex-wrap items-center gap-2 pt-0.5">
-                <button type="button" onclick="togglePanel('signalConfigPanel', 'signalConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-deloitte-green bg-deloitte-green/10 hover:bg-deloitte-green/20 border border-deloitte-green/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
-                  <i class="fa-solid fa-pen text-[10px]"></i>
-                  <span data-i18n="signalConfigBtn">编辑词库</span>
-                  <i id="signalConfigChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
-                </button>
-                <span id="signalLastSavedBadge" class="text-[10px] font-mono text-gray-500"></span>
-              </div>
-            </div>
-            <a href="https://www.projectsunrise.win/signal" target="_blank" rel="noopener noreferrer" class="button-press w-full sm:w-auto px-4 py-2.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-md">
-              <span data-i18n="launchSignal">打开 D.Signal</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-            </a>
-          </div>
-
-          <div id="signalConfigPanel" class="hidden pt-3 border-t border-white/10 space-y-3 animate-fade-in">
-            <div class="bg-black/50 border border-deloitte-green/20 rounded-xl p-3 text-xs text-gray-300 flex items-center justify-between gap-2">
-              <span class="text-[11px] text-gray-400 font-mono" data-i18n="signalGuideText">格式：每行输入“中文 英文”（如：熊猫 Panda）</span>
-              <button type="button" onclick="insertSignalTemplate()" class="text-[11px] text-deloitte-green hover:underline font-bold shrink-0" data-i18n="btnInsertSample">填入示例</button>
-            </div>
-
-            <div class="flex items-center gap-1 p-1 bg-black/40 rounded-xl border border-white/10">
-              <button type="button" id="sigTabBtn1" onclick="switchSignalAdminTab(1)" class="flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black text-center">
-                Round 1 <span id="sigTabCount1" class="text-[10px]">(2)</span>
-              </button>
-              <button type="button" id="sigTabBtn2" onclick="switchSignalAdminTab(2)" class="flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white/5 text-gray-300 text-center">
-                Round 2 <span id="sigTabCount2" class="text-[10px]">(2)</span>
-              </button>
-              <button type="button" id="sigTabBtn3" onclick="switchSignalAdminTab(3)" class="flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white/5 text-gray-300 text-center">
-                Round 3 <span id="sigTabCount3" class="text-[10px]">(2)</span>
-              </button>
-            </div>
-
-            <div id="sigTabPanel1"><textarea id="sigInputRound1" rows="4" oninput="updateSignalLiveCounts()" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs font-mono text-gray-200"></textarea></div>
-            <div id="sigTabPanel2" class="hidden"><textarea id="sigInputRound2" rows="4" oninput="updateSignalLiveCounts()" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs font-mono text-gray-200"></textarea></div>
-            <div id="sigTabPanel3" class="hidden"><textarea id="sigInputRound3" rows="4" oninput="updateSignalLiveCounts()" class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs font-mono text-gray-200"></textarea></div>
-
-            <div class="flex items-center justify-between gap-2 bg-white/[0.02] border border-white/10 rounded-xl p-2.5">
-              <span id="signalSaveStatus" class="text-xs text-gray-400" data-i18n="statusReadyToSync">保存后立即同步至大屏</span>
-              <button id="signalSaveBtn" type="button" onclick="saveSignalConfig()" class="button-press px-4 py-2 rounded-xl bg-deloitte-green text-black font-extrabold text-xs flex items-center gap-1.5 shrink-0">
-                <i class="fa-solid fa-floppy-disk"></i>
-                <span id="signalSaveBtnText" data-i18n="saveWordsBtn">保存词库</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 02: Knowledge Clash -->
-        <div class="p-4 sm:p-5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">02</span>
-                <h2 class="text-base sm:text-lg font-black text-white" data-i18n="kcTitle">Knowledge Clash 勤业智库</h2>
-              </div>
-              <p class="text-xs text-gray-400" data-i18n="kcDesc">自定义双语四选一抢答题库</p>
-              <div class="flex flex-wrap items-center gap-2 pt-0.5">
-                <button type="button" onclick="togglePanel('kcConfigPanel', 'kcConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
-                  <i class="fa-solid fa-pen text-[10px]"></i>
-                  <span data-i18n="kcConfigBtn">编辑题库</span>
-                  <i id="kcConfigChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
-                </button>
-                <span id="kcLastSavedBadge" class="text-[10px] font-mono text-gray-500"></span>
-              </div>
-            </div>
-            <a href="https://www.projectsunrise.win/knowledge" target="_blank" rel="noopener noreferrer" class="button-press w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-md">
-              <span data-i18n="launchKC">打开 Knowledge Clash</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-            </a>
-          </div>
-
-          <div id="kcConfigPanel" class="hidden pt-3 border-t border-white/10 space-y-3 animate-fade-in">
-            <div class="bg-black/50 border border-emerald-500/20 rounded-xl p-3 text-xs text-gray-300 flex items-center justify-between gap-2">
-              <span class="text-[11px] text-gray-400 font-mono" data-i18n="kcGuideText">每行一题，用英文逗号分隔，正确答案加 [ ]：题目, 选项A, [正确B], 选项C, 选项D</span>
-              <button type="button" onclick="insertKcTemplate()" class="text-[11px] text-emerald-400 hover:underline font-bold shrink-0" data-i18n="btnInsertSample">填入示例</button>
-            </div>
-            <textarea id="kcQuestionTextarea" rows="5" oninput="updateKcParsedCount()" class="w-full bg-black/60 border border-white/15 focus:border-emerald-400 focus:outline-none rounded-xl p-2.5 text-xs font-mono text-gray-200"></textarea>
-            <div class="flex items-center justify-between gap-2 bg-white/[0.02] border border-white/10 rounded-xl p-2.5">
-              <span id="kcSaveStatus" class="text-xs text-gray-400" data-i18n="statusReadyToSync">保存后立即同步至大屏</span>
-              <button id="kcSaveBtn" type="button" onclick="saveKnowledgeConfig()" class="button-press px-4 py-2 rounded-xl bg-emerald-500 text-black font-extrabold text-xs flex items-center gap-1.5 shrink-0">
-                <i class="fa-solid fa-floppy-disk"></i>
-                <span id="kcSaveBtnText" data-i18n="saveQuestionsBtn">保存题库</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 03: FastPass Direct Portals -->
-        <div class="p-4 sm:p-5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">03</span>
-                <h2 class="text-base sm:text-lg font-black text-white" data-i18n="fpTitle">FastPass 快速通行证</h2>
-              </div>
-              <p class="text-xs text-gray-400" data-i18n="fpDesc">设置 6 大站点房间名与 6 轮活动时间（实时同步学员端）</p>
-              <div class="flex flex-wrap items-center gap-2 pt-0.5">
-                <button type="button" onclick="togglePanel('fastpassConfigPanel', 'fpConfigChevron')" class="button-press inline-flex items-center gap-1.5 text-xs text-lime-300 bg-lime-500/10 hover:bg-lime-500/20 border border-lime-500/30 rounded-lg px-2.5 py-1.5 font-bold transition-all">
-                  <i class="fa-solid fa-clock text-[10px] text-lime-400"></i>
-                  <span data-i18n="fpConfigBtn">编辑场地与时间</span>
-                  <i id="fpConfigChevron" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
-                </button>
-                <span id="fpLastSavedBadge" class="text-[10px] font-mono text-gray-500"></span>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2 w-full lg:w-auto">
-              <a href="https://projectsunrise.win/fastpass/24" target="_blank" rel="noopener noreferrer"
-                class="button-press py-2 px-3 rounded-xl bg-deloitte-cardbg border border-white/15 text-gray-300 hover:text-white hover:border-lime-400/50 font-bold text-xs flex items-center justify-center gap-1.5">
-                <span>FP-24</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-lime-400"></i>
-              </a>
-              <a href="https://projectsunrise.win/fastpass/36" target="_blank" rel="noopener noreferrer"
-                class="button-press py-2 px-3 rounded-xl bg-deloitte-cardbg border border-white/15 text-gray-300 hover:text-white hover:border-lime-400/50 font-bold text-xs flex items-center justify-center gap-1.5">
-                <span>FP-36</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-lime-400"></i>
-              </a>
-              <a href="https://projectsunrise.win/fastpass/48" target="_blank" rel="noopener noreferrer"
-                class="button-press py-2 px-3 rounded-xl bg-deloitte-cardbg border border-white/15 text-gray-300 hover:text-white hover:border-lime-400/50 font-bold text-xs flex items-center justify-center gap-1.5">
-                <span>FP-48</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-lime-400"></i>
-              </a>
-            </div>
-          </div>
-
-          <div id="fastpassConfigPanel" class="hidden pt-3 border-t border-white/10 space-y-3 animate-fade-in">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-              <div class="bg-black/40 border border-white/10 rounded-xl p-3 space-y-2">
-                <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
-                  <span class="text-xs font-extrabold text-white" data-i18n="fpVenueLabel">6 站房间名称</span>
-                  <span class="text-[10px] text-gray-400 font-mono">中文 / English</span>
+        <!-- Configuration Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          <!-- 01: FastPass Rooms & Times -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col justify-between gap-4">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-lime-500/15 text-lime-400 border border-lime-500/30">FASTPASS</span>
+                <div class="flex items-center gap-1">
+                  <a href="https://projectsunrise.win/fastpass/24" target="_blank" class="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 text-[10px] font-mono text-lime-300 border border-white/10">24</a>
+                  <a href="https://projectsunrise.win/fastpass/36" target="_blank" class="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 text-[10px] font-mono text-lime-300 border border-white/10">36</a>
+                  <a href="https://projectsunrise.win/fastpass/48" target="_blank" class="px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 text-[10px] font-mono text-lime-300 border border-white/10">48</a>
                 </div>
-                <div id="fpVenueInputsContainer" class="space-y-1.5"></div>
               </div>
-
-              <div class="bg-black/40 border border-white/10 rounded-xl p-3 space-y-2">
-                <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
-                  <span class="text-xs font-extrabold text-white" data-i18n="fpTimeLabel">6 轮起止时间</span>
-                  <button type="button" onclick="autoFillTimeSlots()" class="text-[11px] text-lime-400 hover:underline font-bold" data-i18n="btnAutoCalcTime">按首轮自动推算 (30m+10m)</button>
-                </div>
-                <div id="fpTimeInputsContainer" class="space-y-1.5"></div>
-              </div>
+              <h2 class="text-base font-black text-white" data-i18n="fpTitle">FastPass 快速通行证</h2>
+              <p class="text-xs text-gray-400 leading-relaxed" data-i18n="fpDescShort">修改 6 站房间名称与 6 轮活动起止时间</p>
             </div>
-
-            <div class="flex items-center justify-between gap-2 bg-white/[0.02] border border-white/10 rounded-xl p-2.5">
-              <span id="fpSaveStatus" class="text-xs text-gray-400" data-i18n="statusReadyToSync">保存后立即同步至学员端</span>
-              <button id="fpSaveBtn" type="button" onclick="saveFastPassConfig()" class="button-press px-4 py-2 rounded-xl bg-lime-400 text-black font-extrabold text-xs flex items-center gap-1.5 shrink-0">
-                <i class="fa-solid fa-floppy-disk"></i>
-                <span id="fpSaveBtnText" data-i18n="saveFastpassBtn">保存场地与时间</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 04 - 07 Compact Quick Launch Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <!-- 04: QR Code Stations -->
-          <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex items-center justify-between gap-3">
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-teal-500/15 text-teal-400 border border-teal-500/30">04</span>
-                <h3 class="text-sm font-black text-white truncate" data-i18n="qrTitle">QR 打卡码</h3>
-              </div>
-              <p class="text-[11px] text-gray-400 truncate mt-0.5" data-i18n="qrDesc">各站点签到二维码</p>
-            </div>
-            <a href="https://projectsunrise.win/qr" target="_blank" rel="noopener noreferrer" class="button-press px-3.5 py-2 rounded-xl bg-teal-400 hover:bg-teal-300 text-black font-extrabold text-xs shrink-0 flex items-center gap-1">
-              <span data-i18n="btnOpen">打开</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-            </a>
-          </div>
-
-          <!-- 05: Business Chemistry -->
-          <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex items-center justify-between gap-3">
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">05</span>
-                <h3 class="text-sm font-black text-white truncate" data-i18n="bcTitle">Business Chemistry</h3>
-              </div>
-              <p class="text-[11px] text-gray-400 truncate mt-0.5" data-i18n="bcDesc">四大商业化学风格指南</p>
-            </div>
-            <a href="https://www.projectsunrise.win/bc" target="_blank" rel="noopener noreferrer" class="button-press px-3.5 py-2 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-extrabold text-xs shrink-0 flex items-center gap-1">
-              <span data-i18n="btnOpen">打开</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-            </a>
-          </div>
-        </div>
-
-        <!-- 06 & 07: Project Sunrise & D-Rush -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div class="sm:col-span-2 p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">06</span>
-                <h3 class="text-sm font-black text-white truncate" data-i18n="sunriseTitle">Project Sunrise 日出计划</h3>
-              </div>
-              <p class="text-[11px] text-gray-400 truncate mt-0.5">Passcode: <span class="font-mono text-amber-300">esirnustcejorp</span></p>
-            </div>
-            <div class="grid grid-cols-4 gap-1.5 shrink-0">
-              <a href="https://www.projectsunrise.win/sunrise" target="_blank" class="button-press py-2 px-2.5 rounded-xl bg-amber-400 text-black font-extrabold text-[11px] text-center">Main</a>
-              <a href="https://www.projectsunrise.win/diyiguan" target="_blank" class="button-press py-2 px-2.5 rounded-xl bg-amber-400/80 text-black font-bold text-[11px] text-center">N1</a>
-              <a href="https://www.projectsunrise.win/niveldos" target="_blank" class="button-press py-2 px-2.5 rounded-xl bg-amber-400/80 text-black font-bold text-[11px] text-center">N2</a>
-              <a href="https://www.projectsunrise.win/sankyu" target="_blank" class="button-press py-2 px-2.5 rounded-xl bg-amber-400/80 text-black font-bold text-[11px] text-center">N3</a>
-            </div>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex items-center justify-between gap-3">
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">07</span>
-                <h3 class="text-sm font-black text-white truncate">D-Rush</h3>
-              </div>
-              <p class="text-[11px] text-gray-400 truncate mt-0.5" data-i18n="drushDesc">跑酷小游戏</p>
-            </div>
-            <a href="https://www.projectsunrise.win/game" target="_blank" rel="noopener noreferrer" class="button-press px-3.5 py-2 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs shrink-0 flex items-center gap-1">
-              <span data-i18n="btnOpen">打开</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-            </a>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- ==========================================================
-           TAB 2: FOOLPROOF SCORING MATRIX
-           ========================================================== -->
-      <section id="panel-scores" class="hidden space-y-4 animate-fade-in">
-        <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
-          
-          <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
-            <div>
-              <h2 class="text-base sm:text-xl font-black text-white" data-i18n="scoreEntryTitle">站点计分录入</h2>
-              <p class="text-xs text-gray-400" id="matrixSubtitleHint">选站点 ➔ 选轮次 ➔ 输入本轮各组得分并保存</p>
-            </div>
-            
-            <!-- Read-only Cohort Scale Badge (Click to jump to Reset tab) -->
-            <button type="button" onclick="switchAdminMainTab('reset')" class="flex items-center gap-2 bg-black/50 hover:bg-black/70 px-3 py-1.5 rounded-xl border border-white/10 self-start xs:self-auto transition-colors" title="Click to change cohort scale">
-              <span class="text-xs text-gray-400 font-bold" data-i18n="lblActiveScale">当前规模:</span>
-              <span id="scoresActiveScaleBadge" class="text-xs font-mono font-bold text-amber-400">36 Teams</span>
-              <i class="fa-solid fa-gear text-[10px] text-gray-500"></i>
+            <button type="button" onclick="openConfigDrawer('fastpass')" class="button-press w-full h-10 rounded-xl bg-lime-400 hover:bg-lime-300 text-black font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-clock text-[11px]"></i>
+              <span data-i18n="fpConfigBtn">编辑场地与时间</span>
             </button>
           </div>
 
-          <!-- LAYER 1: 6 STATIONS (Shows x/6 rounds completed) -->
-          <div class="space-y-1.5">
-            <label class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px]">1</span>
-              <span data-i18n="layer1Title">选择站点 (右上角显示已录轮数)</span>
-            </label>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="stationButtonsGrid"></div>
+          <!-- 02: D.Signal -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col justify-between gap-4">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30">STATION 03</span>
+                <a href="https://www.projectsunrise.win/signal" target="_blank" class="text-xs font-bold text-deloitte-green hover:underline flex items-center gap-1">
+                  <span data-i18n="btnOpen">打开</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                </a>
+              </div>
+              <h2 class="text-base font-black text-white" data-i18n="signalTitle">D.Signal 信号解密</h2>
+              <p class="text-xs text-gray-400 leading-relaxed" data-i18n="signalDesc">自定义 3 轮双语猜词词库</p>
+            </div>
+            <button type="button" onclick="openConfigDrawer('signal')" class="button-press w-full h-10 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-pen text-[11px]"></i>
+              <span data-i18n="signalConfigBtn">编辑 3 轮词库</span>
+            </button>
           </div>
 
-          <!-- LAYER 2: 6 ROUNDS (Shows green dot when round has scores) -->
-          <div class="space-y-1.5 pt-1">
-            <div class="flex items-center justify-between">
-              <label class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px]">2</span>
-                <span data-i18n="layer2Title">选择轮次 (绿点代表本轮已录入)</span>
-              </label>
-              <span id="activeStationRoundBadge" class="text-xs font-mono text-deloitte-green font-bold"></span>
-            </div>
-            <div class="grid grid-cols-6 gap-1.5 sm:gap-2" id="roundButtonsGrid"></div>
-          </div>
-
-          <!-- LAYER 3: DYNAMIC BOXES WITH FOOLPROOF VALIDATION -->
-          <div class="space-y-3 pt-2 bg-black/50 p-3.5 sm:p-4 rounded-2xl border border-white/10">
-            <div class="flex items-center justify-between gap-2">
-              <label class="text-xs font-black text-white flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-full bg-deloitte-green text-black flex items-center justify-center text-[10px]">3</span>
-                <span id="layer3TitleText">录入本轮小组得分</span>
-              </label>
-              <div class="flex items-center gap-3">
-                <button type="button" onclick="autoFillMockRoundScores()" class="text-[11px] text-amber-400 hover:underline font-bold flex items-center gap-1">
-                  <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
-                  <span data-i18n="btnSampleScores">填入测试分</span>
-                </button>
-                <button type="button" onclick="clearActiveRoundInputs()" class="text-[11px] text-gray-400 hover:text-rose-400 font-bold flex items-center gap-1">
-                  <i class="fa-solid fa-eraser text-[10px]"></i>
-                  <span data-i18n="btnClearRound">清空本轮</span>
-                </button>
+          <!-- 03: Knowledge Clash -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow flex flex-col justify-between gap-4">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">STATION 04</span>
+                <a href="https://www.projectsunrise.win/knowledge" target="_blank" class="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1">
+                  <span data-i18n="btnOpen">打开</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                </a>
               </div>
+              <h2 class="text-base font-black text-white" data-i18n="kcTitle">Knowledge Clash 勤业智库</h2>
+              <p class="text-xs text-gray-400 leading-relaxed" data-i18n="kcDesc">自定义双语四选一抢答题库</p>
             </div>
-
-            <!-- Foolproof Validation Warning Banner -->
-            <div id="scoreValidationAlert" class="hidden p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-xs text-rose-300 font-bold flex items-center gap-2">
-              <i class="fa-solid fa-triangle-exclamation text-rose-400 shrink-0"></i>
-              <span id="scoreValidationAlertText"></span>
-            </div>
-
-            <!-- Dynamic Container based on Scale -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1" id="twelveBoxesContainer"></div>
-
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
-              <div id="scoresSaveStatusBadge" class="text-xs text-gray-400 flex items-center gap-1.5">
-                <i class="fa-solid fa-circle-info text-amber-400"></i>
-                <span data-i18n="scoreReadyHint">输入完成后请点击右侧按钮保存至云端</span>
-              </div>
-              <button type="button" onclick="saveScoresToSupabase()" id="btnSaveScoresMain"
-                class="button-press w-full sm:w-auto px-6 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                <span data-i18n="btnSyncLeaderboard">保存并同步排行榜</span>
-              </button>
-            </div>
+            <button type="button" onclick="openConfigDrawer('kc')" class="button-press w-full h-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-pen text-[11px]"></i>
+              <span data-i18n="kcConfigBtn">编辑智库题库</span>
+            </button>
           </div>
         </div>
+
+        <!-- Shared Quick Launchers -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400" data-i18n="secQuickLaunch">站点大屏与工具直达</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <a href="https://projectsunrise.win/qr" target="_blank" class="button-press p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate" data-i18n="qrTitle">QR 打卡码</span>
+              <i class="fa-solid fa-qrcode text-teal-400 shrink-0 ml-1"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/bc" target="_blank" class="button-press p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate">Chemistry</span>
+              <i class="fa-solid fa-flask text-cyan-400 shrink-0 ml-1"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/sunrise" target="_blank" class="button-press p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate" data-i18n="portalHome">Sunrise 主站</span>
+              <i class="fa-solid fa-sun text-amber-400 shrink-0 ml-1"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/game" target="_blank" class="button-press p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate">D-Rush</span>
+              <i class="fa-solid fa-gamepad text-deloitte-green shrink-0 ml-1"></i>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 pt-1">
+            <a href="https://www.projectsunrise.win/diyiguan" target="_blank" class="button-press py-2 px-3 rounded-xl bg-amber-400/15 border border-amber-400/30 text-amber-300 font-bold text-xs text-center truncate">Node 1</a>
+            <a href="https://www.projectsunrise.win/niveldos" target="_blank" class="button-press py-2 px-3 rounded-xl bg-amber-400/15 border border-amber-400/30 text-amber-300 font-bold text-xs text-center truncate">Node 2</a>
+            <a href="https://www.projectsunrise.win/sankyu" target="_blank" class="button-press py-2 px-3 rounded-xl bg-amber-400/15 border border-amber-400/30 text-amber-300 font-bold text-xs text-center truncate">Node 3</a>
+          </div>
+        </div>
+
       </section>
 
       <!-- ==========================================================
-           TAB 3: FULL LEADERBOARD
+           TAB 4: LEADERBOARD (MASTER ADMIN ONLY)
            ========================================================== -->
       <section id="panel-leaderboard" class="hidden space-y-4 animate-fade-in">
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
             <div>
-              <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider" data-i18n="fullLeaderboardTitle">全员总榜</h2>
-              <p class="text-xs text-gray-400" data-i18n="fullLeaderboardSub">展示所有小组 6 站明细与总分（学员端仅展示前 10 名）</p>
+              <h2 class="text-base sm:text-xl font-black text-white uppercase tracking-wider" data-i18n="fullLeaderboardTitle">全员实时总榜</h2>
+              <p class="text-xs text-gray-400 mt-0.5" data-i18n="fullLeaderboardSub">所有小组 6 站明细、日出计划与总成绩（学员端仅展示前 10 名）</p>
             </div>
             <div class="flex items-center gap-2">
               <div class="relative flex-1 sm:flex-none">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
-                <input type="text" id="leaderboardSearchInput" oninput="renderAdminLeaderboardTable()" placeholder="搜组号 (如 08)..."
-                  class="w-full sm:w-44 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-8 pr-3 py-1.5 text-xs text-white">
+                <input type="text" id="leaderboardSearchInput" oninput="renderBothLeaderboards()" data-i18n-placeholder="searchTeamPlaceholder" placeholder="搜组号 (如 08)..."
+                  class="w-full sm:w-44 h-9 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-8 pr-3 text-xs text-white">
               </div>
-              <button type="button" onclick="renderAdminLeaderboardTable()" class="button-press px-3.5 py-1.5 rounded-xl bg-deloitte-green text-black font-bold text-xs flex items-center gap-1 shadow-sm shrink-0">
+              <button type="button" onclick="pullLatestCloudScores()" class="button-press h-9 px-3.5 rounded-xl bg-deloitte-green text-black font-bold text-xs flex items-center gap-1.5 shadow-sm shrink-0 whitespace-nowrap">
                 <i class="fa-solid fa-rotate-right"></i>
                 <span data-i18n="btnRefresh">刷新</span>
               </button>
             </div>
           </div>
 
-          <div class="overflow-x-auto rounded-xl border border-white/10">
-            <table class="w-full text-left text-xs border-collapse min-w-[540px]">
+          <!-- DESKTOP-ONLY: Full 10-Column Table (Includes Project Sunrise) -->
+          <div class="desktop-only overflow-x-auto rounded-xl border border-white/10">
+            <table class="w-full text-left text-xs border-collapse min-w-[640px]">
               <thead>
                 <tr class="bg-white/5 border-b border-white/10 text-gray-400 text-[11px] font-mono">
                   <th class="py-2.5 px-3">RANK</th>
                   <th class="py-2.5 px-3">TEAM</th>
-                  <th class="py-2.5 px-2 text-center" data-i18n="st0">一起拼未来</th>
-                  <th class="py-2.5 px-2 text-center" data-i18n="st1">职业道德之树</th>
-                  <th class="py-2.5 px-2 text-center" data-i18n="st2">信号解密</th>
-                  <th class="py-2.5 px-2 text-center" data-i18n="st3">勤业智库</th>
-                  <th class="py-2.5 px-2 text-center" data-i18n="st4">情商罗盘</th>
-                  <th class="py-2.5 px-2 text-center" data-i18n="st5">AI 纪元</th>
+                  <th class="py-2.5 px-2 text-center whitespace-nowrap" data-i18n="st0">一起拼未来</th>
+                  <th class="py-2.5 px-2 text-center whitespace-nowrap" data-i18n="st1">职业道德之树</th>
+                  <th class="py-2.5 px-2 text-center whitespace-nowrap" data-i18n="st2">信号解密</th>
+                  <th class="py-2.5 px-2 text-center whitespace-nowrap" data-i18n="st3">勤业智库</th>
+                  <th class="py-2.5 px-2 text-center whitespace-nowrap" data-i18n="st4">情商罗盘</th>
+                  <th class="py-2.5 px-2 text-center whitespace-nowrap" data-i18n="st5">AI 纪元</th>
+                  <th class="py-2.5 px-2 text-center whitespace-nowrap text-amber-400 font-bold" data-i18n="thSunrise">日出计划</th>
                   <th class="py-2.5 px-3 text-right text-deloitte-green font-bold">TOTAL</th>
                 </tr>
               </thead>
               <tbody id="adminLeaderboardTableBody" class="divide-y divide-white/5 font-mono"></tbody>
             </table>
           </div>
+
+          <!-- MOBILE-ONLY: Expandable Vertical Standings Cards -->
+          <div class="mobile-only space-y-2" id="mobileLeaderboardContainer"></div>
         </div>
       </section>
 
       <!-- ==========================================================
-           TAB 4: BROADCAST & LIVE COMMUNITY WALL MODERATION
+           TAB 5: BROADCAST & WALL MODERATION (MASTER ADMIN ONLY)
            ========================================================== -->
       <section id="panel-broadcast" class="hidden space-y-4 animate-fade-in">
         
@@ -630,19 +624,38 @@
               </div>
               <p class="text-xs text-gray-400 mt-0.5" data-i18n="broadcastDesc">向学员端顶部横幅实时发送中英文通知</p>
             </div>
-            <span id="announcementSyncBadge" class="text-[10px] font-mono text-gray-500"></span>
+            <span id="announcementSyncBadge" class="text-[10px] font-mono text-gray-500 shrink-0"></span>
+          </div>
+
+          <!-- 1-Tap Bilingual Broadcast Presets -->
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider" data-i18n="lblQuickPresets">一键填入常用双语通知：</span>
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+              <button type="button" onclick="applyBroadcastPreset(0)" class="button-press px-2.5 py-1.5 rounded-lg bg-deloitte-green/10 border border-deloitte-green/30 text-deloitte-green text-[11px] font-bold whitespace-nowrap">
+                <i class="fa-regular fa-clock mr-1"></i><span data-i18n="preset0Btn">倒计时 5 分钟</span>
+              </button>
+              <button type="button" onclick="applyBroadcastPreset(1)" class="button-press px-2.5 py-1.5 rounded-lg bg-lime-400/10 border border-lime-400/30 text-lime-300 text-[11px] font-bold whitespace-nowrap">
+                <i class="fa-solid fa-person-walking-arrow-right mr-1"></i><span data-i18n="preset1Btn">换场休息 (10m)</span>
+              </button>
+              <button type="button" onclick="applyBroadcastPreset(2)" class="button-press px-2.5 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-300 text-[11px] font-bold whitespace-nowrap">
+                <i class="fa-solid fa-play mr-1"></i><span data-i18n="preset2Btn">新一轮开始</span>
+              </button>
+              <button type="button" onclick="applyBroadcastPreset(3)" class="button-press px-2.5 py-1.5 rounded-lg bg-cyan-400/10 border border-cyan-400/30 text-cyan-300 text-[11px] font-bold whitespace-nowrap">
+                <i class="fa-solid fa-flag-checkered mr-1"></i><span data-i18n="preset3Btn">全员返回主会场</span>
+              </button>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             <div>
               <label class="block text-xs font-bold text-gray-300 mb-1" data-i18n="lblAnnouncementZH">中文广播内容</label>
-              <textarea id="adminAnnounceZH" rows="2" placeholder="例如：第 2 轮即将在 5 分钟后开始，请各组前往下一站。"
+              <textarea id="adminAnnounceZH" rows="2" data-i18n-placeholder="announceZhPlaceholder" placeholder="输入中文广播内容..."
                 class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs text-white leading-relaxed resize-none"></textarea>
             </div>
 
             <div>
               <label class="block text-xs font-bold text-gray-400 mb-1" data-i18n="lblAnnouncementEN">英文广播内容 (English)</label>
-              <textarea id="adminAnnounceEN" rows="2" placeholder="e.g. Round 2 starts in 5 minutes. Please head to your next station."
+              <textarea id="adminAnnounceEN" rows="2" data-i18n-placeholder="announceEnPlaceholder" placeholder="Enter English broadcast..."
                 class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs text-white leading-relaxed resize-none"></textarea>
             </div>
           </div>
@@ -651,11 +664,11 @@
             <span id="announceSaveStatus" class="text-xs text-gray-400" data-i18n="statusReadyToSync">保存后立即同步至学员端</span>
             <div class="flex items-center gap-2">
               <button type="button" onclick="confirmResetAction('announcement')"
-                class="button-press px-4 py-2.5 rounded-xl bg-white/5 hover:bg-rose-500/20 text-gray-300 hover:text-rose-300 border border-white/10 text-xs font-bold">
+                class="button-press h-10 px-4 rounded-xl bg-white/5 hover:bg-rose-500/20 text-gray-300 hover:text-rose-300 border border-white/10 text-xs font-bold whitespace-nowrap">
                 <span data-i18n="btnClearBroadcast">清空横幅</span>
               </button>
               <button type="button" onclick="savePortalAnnouncementConfig()"
-                class="button-press flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20">
+                class="button-press flex-1 sm:flex-none h-10 px-6 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-deloitte-green/20 whitespace-nowrap">
                 <i class="fa-solid fa-paper-plane"></i>
                 <span data-i18n="btnPublishAnnouncement">发布广播</span>
               </button>
@@ -663,7 +676,7 @@
           </div>
         </div>
 
-        <!-- Card 2: Live Community Wall Moderation (1-Tap Delete Single Comments) -->
+        <!-- Card 2: Live Community Wall Moderation -->
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-4">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-white/10 pb-3">
             <div>
@@ -678,26 +691,23 @@
             <div class="flex items-center gap-2">
               <div class="relative flex-1 sm:flex-none">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
-                <input type="text" id="adminMsgSearchInput" oninput="renderAdminMessagesList()" placeholder="搜索留言或花名..."
-                  class="w-full sm:w-44 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-xl pl-8 pr-3 py-1.5 text-xs text-white">
+                <input type="text" id="adminMsgSearchInput" oninput="renderAdminMessagesList()" data-i18n-placeholder="searchMsgPlaceholder" placeholder="搜索留言或花名..."
+                  class="w-full sm:w-44 h-9 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-xl pl-8 pr-3 text-xs text-white">
               </div>
-              <button type="button" onclick="loadAdminMessages()" class="button-press px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs flex items-center gap-1 shrink-0">
+              <button type="button" onclick="loadAdminMessages()" class="button-press h-9 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs flex items-center gap-1.5 shrink-0 whitespace-nowrap">
                 <i class="fa-solid fa-rotate-right text-teal-400"></i>
                 <span data-i18n="btnRefresh">刷新</span>
               </button>
             </div>
           </div>
 
-          <!-- Messages Moderation Stream -->
-          <div id="adminMessagesContainer" class="max-h-80 overflow-y-auto space-y-2 pr-1">
-            <!-- Populated via JS -->
-          </div>
+          <div id="adminMessagesContainer" class="max-h-80 overflow-y-auto space-y-2 pr-1"></div>
         </div>
 
       </section>
 
       <!-- ==========================================================
-           TAB 5: COHORT SCALE & GRANULAR RESET
+           TAB 6: COHORT SCALE & GRANULAR RESET (MASTER ADMIN ONLY)
            ========================================================== -->
       <section id="panel-reset" class="hidden space-y-4 animate-fade-in">
         <div class="p-4 sm:p-6 rounded-2xl bg-deloitte-cardbg border border-rose-500/30 card-shadow space-y-5">
@@ -710,44 +720,38 @@
             <p class="text-xs text-gray-400 mt-1" data-i18n="resetSubtitle">切换全场总组数（自动适配计分框数量与学员端路线），或按需重置数据。</p>
           </div>
 
-          <!-- Cohort Scale Setting -->
           <div class="p-4 rounded-xl bg-black/40 border border-white/10 space-y-3">
-            <div class="flex items-center justify-between">
-              <div>
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
                 <h3 class="text-xs sm:text-sm font-extrabold text-white flex items-center gap-2">
                   <i class="fa-solid fa-users-gear text-deloitte-green"></i>
                   <span data-i18n="resetCohortHeader">全场小组规模 (Cohort Scale)</span>
                 </h3>
                 <p class="text-[11px] text-gray-400 mt-0.5" data-i18n="resetCohortSub">点击立即生效，自动同步计分录入框数（4/6/8组）与学员端 FastPass 路线。</p>
               </div>
-              <span id="activeScaleIndicatorBadge" class="text-xs font-mono font-bold text-deloitte-green bg-deloitte-green/15 px-2.5 py-1 rounded-full border border-deloitte-green/30">36 Teams</span>
+              <span id="activeScaleIndicatorBadge" class="text-xs font-mono font-bold text-deloitte-green bg-deloitte-green/15 px-2.5 py-1 rounded-full border border-deloitte-green/30 shrink-0">36 Teams</span>
             </div>
 
             <div class="grid grid-cols-3 gap-2 pt-1">
-              <button type="button" onclick="setGlobalCohortScale(24)" id="resetScaleBtn-24"
-                class="button-press p-3 rounded-xl border text-center transition-all">
+              <button type="button" onclick="setGlobalCohortScale(24)" id="resetScaleBtn-24" class="button-press p-3 rounded-xl border text-center transition-all">
                 <div class="text-sm font-black">24 Teams</div>
-                <div class="text-[10px] opacity-75 mt-0.5 font-mono">4 Teams / Station</div>
+                <div class="text-[10px] opacity-75 mt-0.5 font-mono">4 / Station</div>
               </button>
-              <button type="button" onclick="setGlobalCohortScale(36)" id="resetScaleBtn-36"
-                class="button-press p-3 rounded-xl border text-center transition-all">
+              <button type="button" onclick="setGlobalCohortScale(36)" id="resetScaleBtn-36" class="button-press p-3 rounded-xl border text-center transition-all">
                 <div class="text-sm font-black">36 Teams</div>
-                <div class="text-[10px] opacity-75 mt-0.5 font-mono">6 Teams / Station</div>
+                <div class="text-[10px] opacity-75 mt-0.5 font-mono">6 / Station</div>
               </button>
-              <button type="button" onclick="setGlobalCohortScale(48)" id="resetScaleBtn-48"
-                class="button-press p-3 rounded-xl border text-center transition-all">
+              <button type="button" onclick="setGlobalCohortScale(48)" id="resetScaleBtn-48" class="button-press p-3 rounded-xl border text-center transition-all">
                 <div class="text-sm font-black">48 Teams</div>
-                <div class="text-[10px] opacity-75 mt-0.5 font-mono">8 Teams / Station</div>
+                <div class="text-[10px] opacity-75 mt-0.5 font-mono">8 / Station</div>
               </button>
             </div>
           </div>
 
-          <!-- Granular Reset Actions -->
           <div class="space-y-3">
             <h3 class="text-xs font-extrabold uppercase tracking-wider text-rose-400" data-i18n="granularResetTitle">单项数据重置 (均需二次确认)</h3>
             
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <!-- Clear Venues -->
               <div class="p-3.5 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between space-y-3">
                 <div class="space-y-1">
                   <div class="text-xs font-bold text-white flex items-center gap-1.5">
@@ -763,7 +767,6 @@
                 </button>
               </div>
 
-              <!-- Clear Time Slots -->
               <div class="p-3.5 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between space-y-3">
                 <div class="space-y-1">
                   <div class="text-xs font-bold text-white flex items-center gap-1.5">
@@ -779,14 +782,13 @@
                 </button>
               </div>
 
-              <!-- Clear Scores -->
               <div class="p-3.5 rounded-xl bg-black/40 border border-white/10 flex flex-col justify-between space-y-3">
                 <div class="space-y-1">
                   <div class="text-xs font-bold text-white flex items-center gap-1.5">
                     <i class="fa-solid fa-trophy text-amber-400"></i>
                     <span data-i18n="resetScoresTitle">清空所有得分</span>
                   </div>
-                  <p class="text-[11px] text-gray-400 leading-normal" data-i18n="resetScoresDesc">清空全部 6 站打分记录并归零排行榜。</p>
+                  <p class="text-[11px] text-gray-400 leading-normal" data-i18n="resetScoresDesc">清空全部 6 站与日出计划打分记录并归零排行榜。</p>
                 </div>
                 <button type="button" onclick="confirmResetAction('scores')"
                   class="button-press w-full py-2 rounded-lg bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-xs font-bold flex items-center justify-center gap-1.5">
@@ -797,7 +799,6 @@
             </div>
           </div>
 
-          <!-- Auxiliary Resets -->
           <div class="p-4 rounded-xl bg-black/30 border border-white/5 flex flex-wrap items-center justify-between gap-2">
             <div class="flex flex-wrap gap-2">
               <button type="button" onclick="confirmResetAction('messages')"
@@ -816,7 +817,7 @@
             <button type="button" onclick="confirmResetAction('master')"
               class="button-press px-3.5 py-2 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-xs text-rose-300 font-bold flex items-center gap-1.5">
               <i class="fa-solid fa-triangle-exclamation"></i>
-              <span data-i18n="btnMasterReset">一键重置全场数据 (需口令)</span>
+              <span data-i18n="btnMasterReset">一键重置全场数据 (需输入 RESET)</span>
             </button>
           </div>
 
@@ -824,11 +825,175 @@
       </section>
 
     </main>
+
+    <!-- ==========================================================
+         MOBILE-ONLY FIXED BOTTOM NAVIGATION BAR (6 TABS FOR ADMIN / 3 FOR FACULTY)
+         ========================================================== -->
+    <nav class="mobile-only fixed bottom-0 inset-x-0 z-30 bg-[#080b11]/95 backdrop-blur-md border-t border-white/10 safe-bottom-nav">
+      <div id="mobileBottomNavGrid" class="max-w-md mx-auto grid grid-cols-6 px-1.5 pt-1.5">
+        <button type="button" onclick="switchUnifiedTab('scores')" id="navBtn-scores" class="button-press py-1.5 flex flex-col items-center justify-center gap-1 text-deloitte-green">
+          <i class="fa-solid fa-pen-to-square text-sm"></i>
+          <span class="text-[10px] font-extrabold leading-none" data-i18n="navScores">站点分</span>
+        </button>
+
+        <button type="button" onclick="switchUnifiedTab('sunrise')" id="navBtn-sunrise" class="button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
+          <i class="fa-solid fa-sun text-sm text-amber-400"></i>
+          <span class="text-[10px] font-bold leading-none" data-i18n="navSunrise">日出分</span>
+        </button>
+
+        <button type="button" onclick="switchUnifiedTab('hub')" id="navBtn-hub" class="button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
+          <i class="fa-solid fa-cubes text-sm"></i>
+          <span class="text-[10px] font-bold leading-none" data-i18n="navTools">配置</span>
+        </button>
+
+        <button type="button" onclick="switchUnifiedTab('leaderboard')" id="navBtn-leaderboard" class="admin-only-tab button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
+          <i class="fa-solid fa-ranking-star text-sm"></i>
+          <span class="text-[10px] font-bold leading-none" data-i18n="navStandings">总榜</span>
+        </button>
+
+        <button type="button" onclick="switchUnifiedTab('broadcast')" id="navBtn-broadcast" class="admin-only-tab button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
+          <i class="fa-solid fa-bullhorn text-sm"></i>
+          <span class="text-[10px] font-bold leading-none" data-i18n="navBroadcast">广播</span>
+        </button>
+
+        <button type="button" onclick="switchUnifiedTab('reset')" id="navBtn-reset" class="admin-only-tab button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
+          <i class="fa-solid fa-sliders text-sm"></i>
+          <span class="text-[10px] font-bold leading-none" data-i18n="navReset">重置</span>
+        </button>
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- ==========================================================
+       SLIDE-OVER DRAWERS FOR CONFIGS (USED BY BOTH MOBILE & DESKTOP)
+       ========================================================== -->
+  <!-- Drawer 1: FastPass Venues & Time Slots -->
+  <div id="drawer-fastpass" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
+    <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
+      <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeConfigDrawer()" class="button-press h-8 px-3 rounded-xl bg-white/10 text-xs font-bold text-white flex items-center gap-1.5 shrink-0">
+          <i class="fa-solid fa-chevron-left text-lime-400"></i>
+          <span data-i18n="btnBack">返回</span>
+        </button>
+        <span class="font-black text-sm text-white truncate" data-i18n="fpConfigBtn">FastPass 场地与时间</span>
+        <button type="button" onclick="saveFastPassConfig()" class="button-press h-8 px-3 rounded-xl bg-lime-400 text-black font-extrabold text-xs shrink-0">
+          <span data-i18n="btnSaveShort">保存</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 space-y-4">
+      <div class="max-w-xl mx-auto space-y-4 pb-10">
+        <div id="fpSaveStatus" class="text-xs text-center text-gray-400"></div>
+
+        <div class="bg-deloitte-cardbg border border-white/10 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2">
+            <span class="text-xs font-extrabold text-lime-400" data-i18n="fpVenueLabel">6 站房间名称</span>
+            <span class="text-[10px] text-gray-400 font-mono">中文 / English</span>
+          </div>
+          <div id="fpVenueInputsContainer" class="space-y-2.5"></div>
+        </div>
+
+        <div class="bg-deloitte-cardbg border border-white/10 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2">
+            <span class="text-xs font-extrabold text-lime-400" data-i18n="fpTimeLabel">6 轮起止时间</span>
+            <button type="button" onclick="autoFillTimeSlots()" class="text-[11px] text-lime-300 underline font-bold" data-i18n="btnAutoCalcTime">按首轮推算 (30m+10m)</button>
+          </div>
+          <div id="fpTimeInputsContainer" class="space-y-2"></div>
+        </div>
+
+        <button type="button" onclick="saveFastPassConfig()" class="button-press w-full h-11 rounded-xl bg-lime-400 text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span data-i18n="saveFastpassBtn">保存场地与时间</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer 2: D.Signal Word List Editor -->
+  <div id="drawer-signal" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
+    <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
+      <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeConfigDrawer()" class="button-press h-8 px-3 rounded-xl bg-white/10 text-xs font-bold text-white flex items-center gap-1.5 shrink-0">
+          <i class="fa-solid fa-chevron-left text-deloitte-green"></i>
+          <span data-i18n="btnBack">返回</span>
+        </button>
+        <span class="font-black text-sm text-white truncate" data-i18n="signalTitle">D.Signal 信号解密</span>
+        <button type="button" onclick="saveSignalConfig()" class="button-press h-8 px-3 rounded-xl bg-deloitte-green text-black font-extrabold text-xs shrink-0">
+          <span data-i18n="btnSaveShort">保存</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4">
+      <div class="max-w-xl mx-auto space-y-3.5 pb-10">
+        <div class="bg-deloitte-cardbg border border-deloitte-green/20 rounded-xl p-3 flex items-center justify-between gap-2">
+          <span class="text-[11px] text-gray-300 font-mono" data-i18n="signalGuideText">每行输入“中文 英文”（如：熊猫 Panda）</span>
+          <button type="button" onclick="insertSignalTemplate()" class="text-[11px] text-deloitte-green underline font-bold shrink-0" data-i18n="btnInsertSample">填入示例</button>
+        </div>
+
+        <div class="flex items-center gap-1 p-1 bg-deloitte-cardbg rounded-xl border border-white/10">
+          <button type="button" id="sigTabBtn1" onclick="switchSignalAdminTab(1)" class="flex-1 py-2 rounded-lg text-xs font-bold bg-deloitte-green text-black text-center">
+            Round 1 <span id="sigTabCount1" class="text-[10px]">(2)</span>
+          </button>
+          <button type="button" id="sigTabBtn2" onclick="switchSignalAdminTab(2)" class="flex-1 py-2 rounded-lg text-xs font-bold bg-white/5 text-gray-300 text-center">
+            Round 2 <span id="sigTabCount2" class="text-[10px]">(2)</span>
+          </button>
+          <button type="button" id="sigTabBtn3" onclick="switchSignalAdminTab(3)" class="flex-1 py-2 rounded-lg text-xs font-bold bg-white/5 text-gray-300 text-center">
+            Round 3 <span id="sigTabCount3" class="text-[10px]">(2)</span>
+          </button>
+        </div>
+
+        <div id="sigTabPanel1"><textarea id="sigInputRound1" rows="10" oninput="updateSignalLiveCounts()" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs font-mono text-gray-200"></textarea></div>
+        <div id="sigTabPanel2" class="hidden"><textarea id="sigInputRound2" rows="10" oninput="updateSignalLiveCounts()" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs font-mono text-gray-200"></textarea></div>
+        <div id="sigTabPanel3" class="hidden"><textarea id="sigInputRound3" rows="10" oninput="updateSignalLiveCounts()" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs font-mono text-gray-200"></textarea></div>
+
+        <div id="signalSaveStatus" class="text-xs text-center text-gray-400"></div>
+        <button id="signalSaveBtn" type="button" onclick="saveSignalConfig()" class="button-press w-full h-11 rounded-xl bg-deloitte-green text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span id="signalSaveBtnText" data-i18n="saveWordsBtn">保存词库</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer 3: Knowledge Clash Trivia Editor -->
+  <div id="drawer-kc" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
+    <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
+      <div class="max-w-xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeConfigDrawer()" class="button-press h-8 px-3 rounded-xl bg-white/10 text-xs font-bold text-white flex items-center gap-1.5 shrink-0">
+          <i class="fa-solid fa-chevron-left text-emerald-400"></i>
+          <span data-i18n="btnBack">返回</span>
+        </button>
+        <span class="font-black text-sm text-white truncate" data-i18n="kcTitle">Knowledge Clash 勤业智库</span>
+        <button type="button" onclick="saveKnowledgeConfig()" class="button-press h-8 px-3 rounded-xl bg-emerald-500 text-black font-extrabold text-xs shrink-0">
+          <span data-i18n="btnSaveShort">保存</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4">
+      <div class="max-w-xl mx-auto space-y-3.5 pb-10">
+        <div class="bg-deloitte-cardbg border border-emerald-500/20 rounded-xl p-3 flex items-center justify-between gap-2">
+          <span class="text-[11px] text-gray-300 font-mono" data-i18n="kcGuideText">每行一题，正确答案加 [ ]：题目, A, [正确B], C, D</span>
+          <button type="button" onclick="insertKcTemplate()" class="text-[11px] text-emerald-400 underline font-bold shrink-0" data-i18n="btnInsertSample">填入示例</button>
+        </div>
+
+        <textarea id="kcQuestionTextarea" rows="12" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-emerald-400 focus:outline-none rounded-xl p-3 text-xs font-mono text-gray-200"></textarea>
+
+        <div id="kcSaveStatus" class="text-xs text-center text-gray-400"></div>
+        <button id="kcSaveBtn" type="button" onclick="saveKnowledgeConfig()" class="button-press w-full h-11 rounded-xl bg-emerald-500 text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span data-i18n="saveQuestionsBtn">保存题库</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
     /* ==========================================================
-       SUPABASE CONFIGURATION
+       SUPABASE & ROLE-BASED ACCESS CONTROL (RBAC)
        ========================================================== */
     const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
@@ -838,64 +1003,265 @@
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
+    // Full Master Admin Emails
+    const MASTER_ADMIN_EMAILS = [
+      'admin@deloitte.com.cn',
+      'weimeng@deloitte.com.cn',
+      'zhischen@deloitte.com.cn'
+    ];
+
+    // Config & Score Input Only Emails
+    const RESTRICTED_FACULTY_EMAILS = [
+      'faculty@deloitte.com.cn',
+      'station@deloitte.com.cn',
+      'hr@deloitte.com.cn',
+      'rrg@deloitte.com.cn'
+    ];
+
+    let currentUserRole = 'admin';
+    let isMobileDeviceMode = null;
+    let manualDeviceOverride = null;
+
     /* ==========================================================
-       CONCISE, FOOLPROOF BILINGUAL I18N (NO EMOJIS)
+       SMART DEVICE DETECTOR (GUARDED AGAINST KEYBOARD RESIZE)
+       ========================================================== */
+    function computeIsMobileDevice() {
+      if (manualDeviceOverride === 'mobile') return true;
+      if (manualDeviceOverride === 'desktop') return false;
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      const isPhoneUA = /android|iphone|ipod|mobile/i.test(ua);
+      return isPhoneUA || window.innerWidth < 768;
+    }
+
+    function applyDeviceLayoutMode(forceRender = false) {
+      const targetMobileMode = computeIsMobileDevice();
+      if (!forceRender && isMobileDeviceMode === targetMobileMode) {
+        return;
+      }
+
+      syncCurrentInputsToMemory();
+      syncSunriseInputsToMemory();
+      isMobileDeviceMode = targetMobileMode;
+
+      const body = document.body;
+      const headerInner = document.getElementById('headerInnerContainer');
+      const mainViewport = document.getElementById('mainViewportContainer');
+      const gateIcon = document.getElementById('gateDeviceIcon');
+      const toggleIcon = document.getElementById('deviceModeToggleIcon');
+
+      if (isMobileDeviceMode) {
+        body.classList.remove('is-desktop');
+        body.classList.add('is-mobile');
+        if (headerInner) {
+          headerInner.classList.remove('max-w-5xl');
+          headerInner.classList.add('max-w-md');
+        }
+        if (mainViewport) {
+          mainViewport.classList.remove('max-w-5xl');
+          mainViewport.classList.add('max-w-md');
+        }
+        if (gateIcon) gateIcon.className = "fa-solid fa-mobile-screen-button";
+        if (toggleIcon) toggleIcon.className = "fa-solid fa-desktop";
+      } else {
+        body.classList.remove('is-mobile');
+        body.classList.add('is-desktop');
+        if (headerInner) {
+          headerInner.classList.remove('max-w-md');
+          headerInner.classList.add('max-w-5xl');
+        }
+        if (mainViewport) {
+          mainViewport.classList.remove('max-w-md');
+          mainViewport.classList.add('max-w-5xl');
+        }
+        if (gateIcon) gateIcon.className = "fa-solid fa-shield-halved";
+        if (toggleIcon) toggleIcon.className = "fa-solid fa-mobile-screen-button";
+      }
+
+      renderRoundInputs();
+      renderSunriseScoreInputs();
+    }
+
+    function toggleManualDeviceMode() {
+      manualDeviceOverride = isMobileDeviceMode ? 'desktop' : 'mobile';
+      applyDeviceLayoutMode(true);
+    }
+
+    window.addEventListener('resize', () => applyDeviceLayoutMode(false));
+
+    /* ==========================================================
+       ROLE PERMISSION CONTROLLER (ADMIN vs FACULTY/STATION/HR/RRG)
+       ========================================================== */
+    function resolveUserRole(emailStr) {
+      const email = (emailStr || '').trim().toLowerCase();
+      if (MASTER_ADMIN_EMAILS.includes(email)) return 'admin';
+      if (
+        RESTRICTED_FACULTY_EMAILS.includes(email) ||
+        email.startsWith('faculty') ||
+        email.startsWith('station') ||
+        email.startsWith('hr@') ||
+        email.startsWith('rrg@')
+      ) {
+        return 'faculty';
+      }
+      return 'admin';
+    }
+
+    function applyRolePermissions(emailStr) {
+      currentUserRole = resolveUserRole(emailStr);
+      const roleBadge = document.getElementById('headerRoleBadge');
+      const mobileNavGrid = document.getElementById('mobileBottomNavGrid');
+
+      if (currentUserRole === 'faculty') {
+        if (roleBadge) {
+          const emailPrefix = (emailStr || 'FACULTY').split('@')[0].toUpperCase();
+          roleBadge.textContent = emailPrefix;
+          roleBadge.className = "text-[9px] font-mono font-extrabold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 shrink-0";
+        }
+        document.querySelectorAll('.admin-only-tab').forEach(el => el.classList.add('hidden'));
+        if (mobileNavGrid) {
+          mobileNavGrid.classList.remove('grid-cols-6');
+          mobileNavGrid.classList.add('grid-cols-3');
+        }
+        switchUnifiedTab('scores');
+      } else {
+        if (roleBadge) {
+          roleBadge.textContent = "ADMIN";
+          roleBadge.className = "text-[9px] font-mono font-extrabold px-2 py-0.5 rounded-full bg-deloitte-green/20 text-deloitte-green border border-deloitte-green/40 shrink-0";
+        }
+        document.querySelectorAll('.admin-only-tab').forEach(el => el.classList.remove('hidden'));
+        if (mobileNavGrid) {
+          mobileNavGrid.classList.remove('grid-cols-3');
+          mobileNavGrid.classList.add('grid-cols-6');
+        }
+        switchUnifiedTab('scores');
+      }
+    }
+
+    /* ==========================================================
+       UNIFIED TAB SWITCHER (6 TABS)
+       ========================================================== */
+    const ALL_TABS = ['scores', 'sunrise', 'hub', 'leaderboard', 'broadcast', 'reset'];
+
+    function switchUnifiedTab(targetTab) {
+      // Restricted accounts (faculty / station / hr / rrg) can only access 'scores', 'sunrise', and 'hub'
+      if (currentUserRole === 'faculty' && !['scores', 'sunrise', 'hub'].includes(targetTab)) {
+        targetTab = 'scores';
+      }
+
+      ALL_TABS.forEach(tab => {
+        const deskBtn = document.getElementById(`tabBtn-${tab}`);
+        const mobBtn = document.getElementById(`navBtn-${tab}`);
+        const panel = document.getElementById(`panel-${tab}`);
+
+        if (panel) {
+          if (tab === targetTab) panel.classList.remove('hidden');
+          else panel.classList.add('hidden');
+        }
+
+        if (deskBtn) {
+          const isAdminOnly = deskBtn.classList.contains('admin-only-tab');
+          const hideClass = (currentUserRole === 'faculty' && isAdminOnly) ? 'hidden' : '';
+          deskBtn.className = (tab === targetTab)
+            ? `button-press flex-1 min-w-[90px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-deloitte-green text-black shadow-lg shadow-deloitte-green/20 ${hideClass}`
+            : `button-press flex-1 min-w-[90px] py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white ${hideClass}`;
+        }
+
+        if (mobBtn) {
+          const isAdminOnly = mobBtn.classList.contains('admin-only-tab');
+          const hideClass = (currentUserRole === 'faculty' && isAdminOnly) ? 'hidden' : '';
+          mobBtn.className = (tab === targetTab)
+            ? `button-press py-1.5 flex flex-col items-center justify-center gap-1 text-deloitte-green ${hideClass}`
+            : `button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-gray-200 ${hideClass}`;
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (targetTab === 'scores') {
+        renderStationButtons();
+        renderRoundButtons();
+        renderRoundInputs();
+      } else if (targetTab === 'sunrise') {
+        renderSunriseScoreInputs();
+      } else if (targetTab === 'leaderboard') {
+        renderBothLeaderboards();
+      } else if (targetTab === 'broadcast') {
+        loadAdminMessages();
+      }
+    }
+
+    /* ==========================================================
+       BILINGUAL I18N DICTIONARY (NO EMOJIS)
        ========================================================== */
     const I18N = {
       zh: {
         langToggle: "EN",
-        gateSubtitle: "请使用管理员账号登录控制台",
-        labelEmail: "管理员邮箱",
+        gateSubtitle: "请使用管理员或站点导师账号登录",
+        labelEmail: "登录邮箱",
         labelPassword: "密码",
         btnSignIn: "登录控制台",
         btnOpenParticipant: "学员端",
+        btnBack: "返回",
+        btnSaveShort: "保存",
+        btnRefresh: "刷新",
+        btnOpen: "打开",
         tabHub: "系统配置",
-        tabScores: "录入分数",
+        tabScores: "站点计分",
+        tabSunrise: "日出计分",
         tabLeaderboard: "排行榜",
         tabBroadcast: "广播与留言",
         tabReset: "规模与重置",
+        navScores: "站点分",
+        navSunrise: "日出分",
+        navTools: "配置",
+        navBroadcast: "广播",
+        navStandings: "总榜",
+        navReset: "重置",
         oracleHeader: "Daily Green Pulse",
         nextQuote: "换一句",
         signalTitle: "D.Signal 信号解密",
         signalDesc: "自定义 3 轮双语猜词词库",
-        signalConfigBtn: "编辑词库",
-        signalGuideText: "格式：每行输入“中文 英文”（如：熊猫 Panda）",
+        signalConfigBtn: "编辑 3 轮词库",
+        signalGuideText: "每行输入“中文 英文”（如：熊猫 Panda）",
         btnInsertSample: "填入示例",
-        launchSignal: "打开 D.Signal",
         saveWordsBtn: "保存词库",
         kcTitle: "Knowledge Clash 勤业智库",
         kcDesc: "自定义双语四选一抢答题库",
-        kcConfigBtn: "编辑题库",
-        kcGuideText: "每行一题，逗号分隔，正确答案加 [ ]：题目, 选项A, [正确B], 选项C, 选项D",
-        launchKC: "打开 Knowledge Clash",
+        kcConfigBtn: "编辑智库题库",
+        kcGuideText: "每行一题，正确答案加 [ ]：题目, A, [正确B], C, D",
         saveQuestionsBtn: "保存题库",
         fpTitle: "FastPass 快速通行证",
-        fpDesc: "设置 6 大站点房间名与 6 轮活动时间（实时同步学员端）",
+        fpDescShort: "修改 6 站房间名称与 6 轮活动起止时间",
         fpConfigBtn: "编辑场地与时间",
         fpVenueLabel: "6 站房间名称",
         fpTimeLabel: "6 轮起止时间",
-        btnAutoCalcTime: "按首轮自动推算 (30m+10m)",
+        btnAutoCalcTime: "按首轮推算 (30m+10m)",
         saveFastpassBtn: "保存场地与时间",
-        statusReadyToSync: "保存后立即同步至云端",
+        secQuickLaunch: "站点大屏与工具直达",
         qrTitle: "QR 打卡码",
-        qrDesc: "各站点签到二维码",
-        bcTitle: "Business Chemistry",
-        bcDesc: "四大商业化学风格指南",
-        sunriseTitle: "Project Sunrise 日出计划",
-        drushDesc: "跑酷小游戏",
-        btnOpen: "打开",
+        portalHome: "Sunrise 主站",
         scoreEntryTitle: "站点计分录入",
-        lblActiveScale: "当前规模:",
-        layer1Title: "第 1 步：选择站点 (右上角显示已录轮数)",
-        layer2Title: "第 2 步：选择轮次 (绿点代表本轮已录入)",
-        btnSampleScores: "填入测试分",
+        btnPinStation: "锁定此站",
+        btnPinnedStation: "已锁定此站",
+        layer1Title: "选择执裁站点 (显示已录轮数)",
+        layer2Title: "选择轮次 (绿点代表本轮已录入)",
+        btnPullCloud: "同步云端",
         btnClearRound: "清空本轮",
-        scoreReadyHint: "输入完成后请点击右侧按钮保存至云端",
-        scoreUnsavedHint: "有未保存的修改，请点击右侧保存按钮",
-        btnSyncLeaderboard: "保存并同步排行榜",
-        fullLeaderboardTitle: "全员总榜",
-        fullLeaderboardSub: "展示所有小组 6 站明细与总分（学员端仅展示前 10 名）",
-        btnRefresh: "刷新",
+        colTeamNum: "组号 (Team #)",
+        colScoreVal: "得分 (0-100)",
+        safeMergeNote: "多裁判安全模式：仅合并保存当前站点本轮分数",
+        unsavedRoundNote: "当前轮次有未保存修改，请点击下方保存",
+        btnSaveRound: "保存并同步本轮得分",
+        sunriseScoreTitle: "Project Sunrise 日出计划计分",
+        sunriseScoreSub: "按组号直接录入各队日出计划得分（自动计入全员总榜）",
+        btnClearSunrise: "清空本页",
+        sunriseSafeMergeNote: "安全合并模式：仅更新日出计划得分，不影响 6 站成绩",
+        sunriseUnsavedNote: "日出计划有未保存修改，请点击下方保存",
+        btnSaveSunrise: "保存并同步日出计划得分",
+        thSunrise: "日出计划",
+        fullLeaderboardTitle: "全员实时总榜",
+        fullLeaderboardSub: "所有小组 6 站明细、日出计划与总成绩（学员端仅展示前 10 名）",
+        searchTeamPlaceholder: "搜组号 (如 08)...",
         st0: "一起拼未来",
         st1: "职业道德之树",
         st2: "信号解密",
@@ -904,12 +1270,21 @@
         st5: "AI 纪元",
         secAnnouncement: "现场广播推送",
         broadcastDesc: "向学员端顶部横幅实时发送中英文通知",
+        lblQuickPresets: "一键填入常用双语通知：",
+        preset0Btn: "倒计时 5 分钟",
+        preset1Btn: "换场休息 (10m)",
+        preset2Btn: "新一轮开始",
+        preset3Btn: "全员返回主会场",
         lblAnnouncementZH: "中文广播内容",
         lblAnnouncementEN: "英文广播内容 (English)",
+        announceZhPlaceholder: "输入中文广播内容...",
+        announceEnPlaceholder: "Enter English broadcast...",
+        statusReadyToSync: "保存后立即同步至学员端",
         btnClearBroadcast: "清空横幅",
         btnPublishAnnouncement: "发布广播",
         modWallTitle: "互动留言墙管理",
         modWallSub: "实时查看学员留言，点击右侧删除按钮可一键移除不当言论",
+        searchMsgPlaceholder: "搜索留言或花名...",
         modEmptyMessages: "当前没有学员留言",
         btnDeleteMsg: "删除",
         resetTitle: "全局规模设定与数据清理",
@@ -924,65 +1299,79 @@
         resetTimesDesc: "将 6 轮活动起止时间重置为空白。",
         btnResetTimes: "清空时间",
         resetScoresTitle: "清空所有得分",
-        resetScoresDesc: "清空全部 6 站打分记录并归零排行榜。",
+        resetScoresDesc: "清空全部 6 站与日出计划打分记录并归零排行榜。",
         btnResetScores: "清空全部得分",
         btnResetMessages: "清空全部留言墙",
-        btnMasterReset: "一键重置全场数据 (需口令)"
+        btnMasterReset: "一键重置全场数据 (需输入 RESET)"
       },
       en: {
         langToggle: "中",
-        gateSubtitle: "Sign in with administrator credentials",
-        labelEmail: "Admin Email",
+        gateSubtitle: "Sign in with Admin or Station Faculty credentials",
+        labelEmail: "Email Address",
         labelPassword: "Password",
         btnSignIn: "Sign In",
         btnOpenParticipant: "Participant Hub",
+        btnBack: "Back",
+        btnSaveShort: "Save",
+        btnRefresh: "Refresh",
+        btnOpen: "Open",
         tabHub: "Core Config",
-        tabScores: "Score Input",
+        tabScores: "Station Scores",
+        tabSunrise: "Sunrise Scores",
         tabLeaderboard: "Leaderboard",
         tabBroadcast: "Broadcast & Wall",
         tabReset: "Scale & Reset",
+        navScores: "Stations",
+        navSunrise: "Sunrise",
+        navTools: "Config",
+        navBroadcast: "Broadcast",
+        navStandings: "Standings",
+        navReset: "Reset",
         oracleHeader: "Daily Green Pulse",
         nextQuote: "Next",
         signalTitle: "D.Signal Decoder",
         signalDesc: "Customize 3 rounds of bilingual word pairs",
-        signalConfigBtn: "Edit Words",
-        signalGuideText: "Format: One pair per line 'Chinese English' (e.g. 熊猫 Panda)",
+        signalConfigBtn: "Edit 3-Round Words",
+        signalGuideText: "One pair per line: 'Chinese English' (e.g. 熊猫 Panda)",
         btnInsertSample: "Insert Sample",
-        launchSignal: "Open D.Signal",
         saveWordsBtn: "Save Words",
         kcTitle: "Knowledge Clash Trivia",
         kcDesc: "Customize bilingual 4-option multiple choice questions",
-        kcConfigBtn: "Edit Questions",
-        kcGuideText: "One per line, comma-separated, wrap correct answer in [ ]: Question, A, [Correct B], C, D",
-        launchKC: "Open Knowledge Clash",
+        kcConfigBtn: "Edit Trivia Questions",
+        kcGuideText: "Wrap correct answer in [ ]: Question, A, [Correct B], C, D",
         saveQuestionsBtn: "Save Questions",
         fpTitle: "FastPass Navigation",
-        fpDesc: "Configure 6 station room names and 6 round time slots",
+        fpDescShort: "Edit 6 station room names and 6 session time slots",
         fpConfigBtn: "Edit Rooms & Times",
         fpVenueLabel: "6 Station Room Names",
         fpTimeLabel: "6 Session Time Slots",
         btnAutoCalcTime: "Auto-Fill from R1 (30m+10m)",
         saveFastpassBtn: "Save Rooms & Times",
-        statusReadyToSync: "Saves and syncs to cloud immediately",
-        qrTitle: "QR Check-in Hub",
-        qrDesc: "Station check-in QR codes",
-        bcTitle: "Business Chemistry",
-        bcDesc: "4 working styles guide",
-        sunriseTitle: "Project Sunrise Quests",
-        drushDesc: "Arcade mini-game",
-        btnOpen: "Open",
+        secQuickLaunch: "Launch Station Screens",
+        qrTitle: "QR Check-in",
+        portalHome: "Sunrise Main",
         scoreEntryTitle: "Station Score Entry",
-        lblActiveScale: "Cohort Scale:",
-        layer1Title: "Step 1: Select Station (Shows completed rounds)",
-        layer2Title: "Step 2: Select Round (Green dot = scores entered)",
-        btnSampleScores: "Fill Test Scores",
+        btnPinStation: "Pin Station",
+        btnPinnedStation: "Station Pinned",
+        layer1Title: "Select Station (Shows completed rounds)",
+        layer2Title: "Select Round (Green dot = scores entered)",
+        btnPullCloud: "Sync Cloud",
         btnClearRound: "Clear Round",
-        scoreReadyHint: "Click Save & Sync on the right after entering scores",
-        scoreUnsavedHint: "Unsaved edits — click Save & Sync to push live",
-        btnSyncLeaderboard: "Save & Sync Standings",
-        fullLeaderboardTitle: "Full Standings",
-        fullLeaderboardSub: "All teams with 6-station breakdown (Participant hub shows Top 10)",
-        btnRefresh: "Refresh",
+        colTeamNum: "Team #",
+        colScoreVal: "Score (0-100)",
+        safeMergeNote: "Multi-Judge Safe Mode: Merges only this station & round",
+        unsavedRoundNote: "Unsaved edits — click Save below to push live",
+        btnSaveRound: "Save & Sync Round",
+        sunriseScoreTitle: "Project Sunrise Team Scoring",
+        sunriseScoreSub: "Enter Project Sunrise scores for each team (automatically added to total standings)",
+        btnClearSunrise: "Clear All",
+        sunriseSafeMergeNote: "Safe Merge Mode: Updates only Project Sunrise scores",
+        sunriseUnsavedNote: "Unsaved Project Sunrise edits — click Save below",
+        btnSaveSunrise: "Save & Sync Sunrise Scores",
+        thSunrise: "Sunrise",
+        fullLeaderboardTitle: "Cohort Standings",
+        fullLeaderboardSub: "All teams with 6-station breakdown, Project Sunrise & total (Participant hub shows Top 10)",
+        searchTeamPlaceholder: "Search Team # (e.g. 08)...",
         st0: "Piece by Piece",
         st1: "Ethical Tree",
         st2: "D.Signal",
@@ -991,12 +1380,21 @@
         st5: "The AI Era",
         secAnnouncement: "Live Broadcast Banner",
         broadcastDesc: "Push bilingual notices to the top banner on participant phones",
+        lblQuickPresets: "1-Tap Bilingual Presets:",
+        preset0Btn: "5m Warning",
+        preset1Btn: "Rotate Now (10m)",
+        preset2Btn: "Round Started",
+        preset3Btn: "Return to Hall",
         lblAnnouncementZH: "Broadcast Message (Chinese)",
         lblAnnouncementEN: "Broadcast Message (English)",
+        announceZhPlaceholder: "Enter Chinese broadcast...",
+        announceEnPlaceholder: "Enter English broadcast...",
+        statusReadyToSync: "Saves and syncs to cloud immediately",
         btnClearBroadcast: "Clear Banner",
         btnPublishAnnouncement: "Publish Broadcast",
         modWallTitle: "Community Wall Moderation",
         modWallSub: "Monitor live posts and delete inappropriate comments with one tap",
+        searchMsgPlaceholder: "Search messages or names...",
         modEmptyMessages: "No participant messages posted yet",
         btnDeleteMsg: "Delete",
         resetTitle: "Cohort Scale & Data Reset",
@@ -1011,26 +1409,46 @@
         resetTimesDesc: "Resets all 6 session time slots to blank.",
         btnResetTimes: "Clear Times",
         resetScoresTitle: "Clear All Scores",
-        resetScoresDesc: "Wipes all station scores and resets the leaderboard.",
+        resetScoresDesc: "Wipes all station & Project Sunrise scores and resets the leaderboard.",
         btnResetScores: "Clear Scores",
         btnResetMessages: "Clear Entire Message Wall",
         btnMasterReset: "Master Factory Reset (Requires PIN)"
       }
     };
 
-    function detectInitialAdminLanguage() {
+    const BROADCAST_PRESETS = [
+      {
+        zh: "本轮挑战还剩最后 5 分钟，请各组抓紧时间完成冲刺！",
+        en: "5 minutes remaining in this round! Please wrap up your station challenge."
+      },
+      {
+        zh: "本轮结束！现在是 10 分钟换场与茶歇时间，请查看 FastPass 前往下一站。",
+        en: "Round complete! You have 10 minutes to rotate. Check FastPass for your next room."
+      },
+      {
+        zh: "新一轮站点挑战正式开始，祝各组旗开得胜！",
+        en: "The next station round has officially started. Good luck teams!"
+      },
+      {
+        zh: "全部 6 轮站点挑战圆满结束！请所有小组返回主会场集合。",
+        en: "All 6 station rounds are complete! Please return to the main hall."
+      }
+    ];
+
+    function detectInitialLanguage() {
       const saved = localStorage.getItem('admin_lang');
       if (saved === 'zh' || saved === 'en') return saved;
       const browserLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
       return browserLang.startsWith('zh') ? 'zh' : 'en';
     }
 
-    let currentLang = detectInitialAdminLanguage();
+    let currentLang = detectInitialLanguage();
 
     function setLanguage(lang) {
       currentLang = lang;
       localStorage.setItem('admin_lang', lang);
       document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : 'en';
+
       document.querySelectorAll('.lang-toggle-text').forEach(el => el.textContent = I18N[lang].langToggle);
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
@@ -1038,9 +1456,20 @@
           el.textContent = I18N[lang][key];
         }
       });
-      updateLayer3TitleAndBoxes();
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (I18N[lang] && typeof I18N[lang][key] === 'string') {
+          el.placeholder = I18N[lang][key];
+        }
+      });
+
+      updatePinButtonUI();
+      updateLayer3Header();
       renderStationButtons();
       renderRoundButtons();
+      renderRoundInputs();
+      renderSunriseScoreInputs();
+      renderBothLeaderboards();
       renderAdminMessagesList();
     }
 
@@ -1049,54 +1478,46 @@
     }
 
     /* ==========================================================
-       TAB SWITCHING CONTROLLER (5 TABS)
+       SLIDE-OVER CONFIG DRAWERS
        ========================================================== */
-    const TABS = ['hub', 'scores', 'leaderboard', 'broadcast', 'reset'];
+    let activeConfigDrawer = null;
 
-    function switchAdminMainTab(activeTab) {
-      TABS.forEach(tab => {
-        const btn = document.getElementById(`tabBtn-${tab}`);
-        const panel = document.getElementById(`panel-${tab}`);
-        if (btn && panel) {
-          if (tab === activeTab) {
-            btn.className = "button-press flex-1 min-w-[75px] sm:min-w-[90px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-deloitte-green text-black shadow-lg shadow-deloitte-green/20";
-            panel.classList.remove('hidden');
-          } else {
-            btn.className = "button-press flex-1 min-w-[75px] sm:min-w-[90px] py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 whitespace-nowrap bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white";
-            panel.classList.add('hidden');
-          }
-        }
-      });
+    function openConfigDrawer(drawerName, pushState = true) {
+      const el = document.getElementById(`drawer-${drawerName}`);
+      if (!el) return;
+      activeConfigDrawer = drawerName;
+      document.body.style.overflow = 'hidden';
+      el.classList.remove('translate-x-full');
+      el.classList.add('translate-x-0');
 
-      if (activeTab === 'scores') {
-        renderStationButtons();
-        renderRoundButtons();
-        renderRoundInputs();
-      } else if (activeTab === 'leaderboard') {
-        renderAdminLeaderboardTable();
-      } else if (activeTab === 'broadcast') {
-        loadAdminMessages();
+      if (pushState) {
+        try { window.history.pushState({ drawer: drawerName }, '', `#${drawerName}`); } catch (e) {}
       }
     }
 
-    function togglePanel(panelId, chevronId) {
-      const panel = document.getElementById(panelId);
-      const chevron = document.getElementById(chevronId);
-      if (!panel) return;
-      const isHidden = panel.classList.contains('hidden');
-      if (isHidden) {
-        panel.classList.remove('hidden');
-        if (chevron) chevron.classList.add('rotate-180');
-      } else {
-        panel.classList.add('hidden');
-        if (chevron) chevron.classList.remove('rotate-180');
+    function closeConfigDrawer(fromPopState = false) {
+      if (!activeConfigDrawer) return;
+      const el = document.getElementById(`drawer-${activeConfigDrawer}`);
+      if (el) {
+        el.classList.remove('translate-x-0');
+        el.classList.add('translate-x-full');
+      }
+      activeConfigDrawer = null;
+      document.body.style.overflow = '';
+
+      if (!fromPopState && window.location.hash) {
+        try { window.history.back(); } catch (e) {}
       }
     }
+
+    window.addEventListener('popstate', () => {
+      if (activeConfigDrawer) closeConfigDrawer(true);
+    });
 
     /* ==========================================================
-       GLOBAL COHORT SCALE CONTROLLER (CENTRALIZED)
+       GLOBAL COHORT SCALE (24 / 36 / 48)
        ========================================================== */
-    let currentCohortScale = 36; // 24, 36, or 48
+    let currentCohortScale = 36;
 
     function setGlobalCohortScale(scale) {
       currentCohortScale = parseInt(scale, 10) || 36;
@@ -1107,21 +1528,22 @@
         if (btn) {
           btn.className = (sc === currentCohortScale)
             ? "button-press p-3 rounded-xl border bg-deloitte-green text-black border-deloitte-green font-black text-center shadow-lg shadow-deloitte-green/20"
-            : "button-press p-3 rounded-xl border bg-black/40 border-white/10 text-gray-300 hover:border-white/20 font-bold text-center";
+            : "button-press p-3 rounded-xl border bg-black/40 border-white/10 text-gray-300 font-bold text-center";
         }
       });
 
-      const scaleText = `${currentCohortScale} Teams`;
-      const badge = document.getElementById('activeScaleIndicatorBadge');
       const headerPill = document.getElementById('headerCohortPill');
+      const resetBadge = document.getElementById('activeScaleIndicatorBadge');
       const scoresBadge = document.getElementById('scoresActiveScaleBadge');
 
-      if (badge) badge.textContent = scaleText;
       if (headerPill) headerPill.textContent = `FP-${currentCohortScale}`;
-      if (scoresBadge) scoresBadge.textContent = `${scaleText} (${getTeamCountPerStation()}/站)`;
+      if (resetBadge) resetBadge.textContent = `${currentCohortScale} Teams`;
+      if (scoresBadge) scoresBadge.textContent = `${currentCohortScale} Teams (${getTeamCountPerStation()}/站)`;
 
-      updateLayer3TitleAndBoxes();
-      renderAdminLeaderboardTable();
+      updateLayer3Header();
+      renderRoundInputs();
+      renderSunriseScoreInputs();
+      renderBothLeaderboards();
       syncCohortScaleToSupabase(currentCohortScale);
     }
 
@@ -1134,9 +1556,7 @@
             updated_at: new Date().toISOString()
           });
         }
-      } catch (err) {
-        console.warn("Sync cohort scale error:", err);
-      }
+      } catch (err) {}
     }
 
     function getTeamCountPerStation() {
@@ -1145,28 +1565,24 @@
       return 6;
     }
 
-    function updateLayer3TitleAndBoxes() {
+    function updateLayer3Header() {
       const teamsCount = getTeamCountPerStation();
       const titleEl = document.getElementById('layer3TitleText');
       const hintEl = document.getElementById('matrixSubtitleHint');
-      
       if (titleEl) {
-        titleEl.textContent = currentLang === 'zh' 
-          ? `第 3 步：录入本轮 ${teamsCount} 支小组的组号与得分`
-          : `Step 3: Enter Team # (1-${currentCohortScale}) and Score for ${teamsCount} Teams`;
+        titleEl.textContent = currentLang === 'zh'
+          ? `录入本轮得分 (${teamsCount} 组)`
+          : `Enter Scores (${teamsCount} Teams)`;
       }
-
       if (hintEl) {
         hintEl.textContent = currentLang === 'zh'
           ? `当前全场 ${currentCohortScale} 组（每站每轮 ${teamsCount} 组同时比赛）`
           : `Active scale: ${currentCohortScale} teams total (${teamsCount} teams per station per round)`;
       }
-
-      renderRoundInputs();
     }
 
     /* ==========================================================
-       FOOLPROOF SCORES MATRIX STATE & VALIDATION
+       6-STATION SCORING MATRIX & PROJECT SUNRISE SCORING
        ========================================================== */
     const STATIONS = [
       { id: 0, zh: "一起拼未来", en: "Piece by Piece", icon: "fa-puzzle-piece" },
@@ -1177,13 +1593,41 @@
       { id: 5, zh: "AI 纪元", en: "The AI Era", icon: "fa-microchip" }
     ];
 
-    let activeStationIndex = 0;
+    let pinnedStationId = localStorage.getItem('admin_pinned_station');
+    let activeStationIndex = (pinnedStationId !== null && pinnedStationId !== '') ? parseInt(pinnedStationId, 10) : 0;
     let activeRoundIndex = 0;
     let scoresGrid = {};
-    let hasUnsavedScoreEdits = false;
+    let expandedTeamId = null;
+
+    function togglePinCurrentStation() {
+      if (pinnedStationId !== null && parseInt(pinnedStationId, 10) === activeStationIndex) {
+        pinnedStationId = null;
+        localStorage.removeItem('admin_pinned_station');
+      } else {
+        pinnedStationId = String(activeStationIndex);
+        localStorage.setItem('admin_pinned_station', pinnedStationId);
+      }
+      updatePinButtonUI();
+      renderStationButtons();
+    }
+
+    function updatePinButtonUI() {
+      const btn = document.getElementById('btnPinStation');
+      const label = document.getElementById('pinStationLabel');
+      if (!btn || !label) return;
+
+      const isPinned = (pinnedStationId !== null && parseInt(pinnedStationId, 10) === activeStationIndex);
+      if (isPinned) {
+        btn.className = "button-press h-8 px-3 rounded-xl border text-xs font-extrabold flex items-center gap-1.5 bg-amber-400/20 border-amber-400 text-amber-300 whitespace-nowrap";
+        label.textContent = I18N[currentLang].btnPinnedStation;
+      } else {
+        btn.className = "button-press h-8 px-3 rounded-xl border text-xs font-bold flex items-center gap-1.5 bg-white/5 border-white/15 text-gray-300 whitespace-nowrap";
+        label.textContent = I18N[currentLang].btnPinStation;
+      }
+    }
 
     function normalizeScoresGrid(source) {
-      const result = {};
+      const result = { sunrise: {} };
       for (let s = 0; s < 6; s++) {
         result[s] = {};
         for (let r = 0; r < 6; r++) {
@@ -1197,6 +1641,11 @@
             });
           }
         }
+      }
+      // Preserve Project Sunrise team scores (Team 1 .. 48)
+      const srcSunrise = (source && source.sunrise && typeof source.sunrise === 'object') ? source.sunrise : {};
+      for (let t = 1; t <= 48; t++) {
+        result.sunrise[t] = (srcSunrise[t] !== undefined && srcSunrise[t] !== null) ? String(srcSunrise[t]) : "";
       }
       return result;
     }
@@ -1224,18 +1673,20 @@
       container.innerHTML = STATIONS.map(st => {
         const doneCount = countCompletedRoundsForStation(st.id);
         const isActive = (st.id === activeStationIndex);
+        const isPinned = (pinnedStationId !== null && parseInt(pinnedStationId, 10) === st.id);
         const badgeColor = isActive
-          ? "bg-black/20 text-black"
+          ? "bg-black/25 text-black"
           : (doneCount > 0 ? "bg-deloitte-green/20 text-deloitte-green" : "bg-white/5 text-gray-500");
 
         return `
-          <button type="button" onclick="selectStation(${st.id})" id="stBtn-${st.id}"
-            class="button-press p-2.5 rounded-xl border text-left transition-all ${isActive ? 'bg-amber-400 text-black border-amber-400 font-extrabold shadow-md' : 'bg-black/40 border-white/10 text-gray-300 hover:bg-white/5'}">
-            <div class="flex items-center justify-between gap-1">
-              <i class="fa-solid ${st.icon} text-[11px]"></i>
-              <span class="text-[9px] font-mono px-1.5 py-0.2 rounded ${badgeColor}">${doneCount}/6</span>
+          <button type="button" onclick="selectStation(${st.id})"
+            class="button-press p-2.5 rounded-xl border text-left transition-all flex items-center justify-between gap-2 ${isActive ? 'bg-amber-400 text-black border-amber-400 font-black shadow-md' : 'bg-black/40 border-white/10 text-gray-200 hover:bg-white/5'}">
+            <div class="flex items-center gap-2 min-w-0">
+              <i class="fa-solid ${st.icon} text-xs shrink-0"></i>
+              <span class="text-xs truncate">${st[currentLang === 'zh' ? 'zh' : 'en']}</span>
+              ${isPinned ? '<i class="fa-solid fa-thumbtack text-[9px] shrink-0"></i>' : ''}
             </div>
-            <div class="text-xs font-bold truncate mt-1">${st[currentLang === 'zh' ? 'zh' : 'en']}</div>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded shrink-0 ${badgeColor}">${doneCount}/6</span>
           </button>
         `;
       }).join('');
@@ -1251,27 +1702,25 @@
           ? `<span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-black' : 'bg-deloitte-green'}"></span>`
           : '';
         return `
-          <button type="button" onclick="selectRound(${r})" id="rdBtn-${r}"
-            class="button-press py-2 rounded-xl border text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 ${isActive ? 'bg-deloitte-green text-black border-deloitte-green shadow-md' : 'bg-black/40 border-white/10 text-gray-400 hover:bg-white/5'}">
+          <button type="button" onclick="selectRound(${r})"
+            class="button-press h-10 rounded-xl border text-xs font-mono font-bold transition-all flex items-center justify-center gap-1 ${isActive ? 'bg-deloitte-green text-black border-deloitte-green shadow-md' : 'bg-black/40 border-white/10 text-gray-400 hover:bg-white/5'}">
             <span>R${r + 1}</span>
             ${dotHtml}
           </button>
         `;
       }).join('');
-      updateActiveBadge();
-    }
 
-    function updateActiveBadge() {
       const badge = document.getElementById('activeStationRoundBadge');
       if (badge) {
-        const stName = STATIONS[activeStationIndex] ? STATIONS[activeStationIndex][currentLang === 'zh' ? 'zh' : 'en'] : `Station ${activeStationIndex + 1}`;
-        badge.textContent = `${stName} · Round ${activeRoundIndex + 1}`;
+        const stName = STATIONS[activeStationIndex][currentLang === 'zh' ? 'zh' : 'en'];
+        badge.textContent = `${stName} · R${activeRoundIndex + 1}`;
       }
     }
 
     function selectStation(stId) {
       syncCurrentInputsToMemory();
       activeStationIndex = stId;
+      updatePinButtonUI();
       renderStationButtons();
       renderRoundButtons();
       renderRoundInputs();
@@ -1285,40 +1734,82 @@
     }
 
     function renderRoundInputs() {
-      updateActiveBadge();
-      const container = document.getElementById('twelveBoxesContainer');
+      const container = document.getElementById('adaptiveScoreSlotsContainer');
       if (!container) return;
 
+      container.className = isMobileDeviceMode
+        ? "space-y-2 pt-1"
+        : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1";
+
       const teamsCount = getTeamCountPerStation();
-      const currentStationData = scoresGrid[activeStationIndex] || {};
-      const pairs = currentStationData[activeRoundIndex] || [];
+      const pairs = (scoresGrid[activeStationIndex] && scoresGrid[activeStationIndex][activeRoundIndex]) || [];
+      const teamPlaceholder = `1 - ${currentCohortScale}`;
+      const scorePlaceholder = `0 - 100`;
 
       let html = '';
       for (let idx = 0; idx < teamsCount; idx++) {
         const pair = pairs[idx] || { team: "", score: "" };
-        html += `
-          <div id="slotCard-${idx}" class="p-2.5 rounded-xl bg-deloitte-cardbg border border-white/10 space-y-1.5 transition-colors">
-            <div class="flex items-center justify-between text-[10px] font-mono text-gray-400">
-              <span class="font-bold text-amber-300">Slot ${idx + 1}</span>
-              <span>Team # & Score</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <input type="number" inputmode="numeric" min="1" max="${currentCohortScale}" id="input-team-${idx}" value="${pair.team}" placeholder="Team (1-${currentCohortScale})"
+        if (isMobileDeviceMode) {
+          html += `
+            <div id="slotCard-${idx}" class="grid grid-cols-12 gap-2 items-center p-2 rounded-xl bg-deloitte-cardbg border border-white/10 transition-colors">
+              <div class="col-span-2 text-center font-mono text-xs font-bold text-amber-300">#${idx + 1}</div>
+              <div class="col-span-5">
+                <input type="number" inputmode="numeric" min="1" max="${currentCohortScale}" id="input-team-${idx}" value="${pair.team}"
+                  placeholder="${teamPlaceholder}"
                   oninput="handleLiveInputChange()"
-                  class="w-full bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-lg px-2 py-1.5 text-xs font-mono text-white text-center">
+                  onkeydown="handleSlotKeydown(event, 'team', ${idx})"
+                  class="w-full h-10 bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-xl px-2 font-mono font-bold text-white text-center">
               </div>
-              <div>
-                <input type="number" inputmode="numeric" min="0" max="100" id="input-score-${idx}" value="${pair.score}" placeholder="Score (0-100)"
+              <div class="col-span-5">
+                <input type="number" inputmode="numeric" min="0" max="100" id="input-score-${idx}" value="${pair.score}"
+                  placeholder="${scorePlaceholder}"
                   oninput="handleLiveInputChange()"
-                  class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-lg px-2 py-1.5 text-xs font-mono text-deloitte-green font-bold text-center">
+                  onkeydown="handleSlotKeydown(event, 'score', ${idx})"
+                  class="w-full h-10 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl px-2 font-mono font-black text-deloitte-green text-center">
               </div>
             </div>
-          </div>
-        `;
+          `;
+        } else {
+          html += `
+            <div id="slotCard-${idx}" class="p-3 rounded-xl bg-deloitte-cardbg border border-white/10 space-y-2 transition-colors">
+              <div class="flex items-center justify-between text-[10px] font-mono text-gray-400">
+                <span class="font-bold text-amber-300">Slot #${idx + 1}</span>
+                <span>${I18N[currentLang].colTeamNum} / ${I18N[currentLang].colScoreVal}</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <input type="number" inputmode="numeric" min="1" max="${currentCohortScale}" id="input-team-${idx}" value="${pair.team}" placeholder="${teamPlaceholder}"
+                  oninput="handleLiveInputChange()"
+                  onkeydown="handleSlotKeydown(event, 'team', ${idx})"
+                  class="w-full h-10 bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-xl px-2 text-xs font-mono font-bold text-white text-center">
+                <input type="number" inputmode="numeric" min="0" max="100" id="input-score-${idx}" value="${pair.score}" placeholder="${scorePlaceholder}"
+                  oninput="handleLiveInputChange()"
+                  onkeydown="handleSlotKeydown(event, 'score', ${idx})"
+                  class="w-full h-10 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-lg px-2 text-xs font-mono text-deloitte-green font-black text-center">
+              </div>
+            </div>
+          `;
+        }
       }
       container.innerHTML = html;
       validateCurrentRoundInputs();
+    }
+
+    function handleSlotKeydown(e, fieldType, idx) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const teamsCount = getTeamCountPerStation();
+        if (fieldType === 'team') {
+          const scoreInput = document.getElementById(`input-score-${idx}`);
+          if (scoreInput) scoreInput.focus();
+        } else if (fieldType === 'score') {
+          if (idx + 1 < teamsCount) {
+            const nextTeamInput = document.getElementById(`input-team-${idx + 1}`);
+            if (nextTeamInput) nextTeamInput.focus();
+          } else {
+            e.target.blur();
+          }
+        }
+      }
     }
 
     function validateCurrentRoundInputs() {
@@ -1326,9 +1817,16 @@
       const seenTeams = {};
       let errorMsg = "";
 
+      const baseCardClass = isMobileDeviceMode
+        ? "grid grid-cols-12 gap-2 items-center p-2 rounded-xl bg-deloitte-cardbg border border-white/10 transition-colors"
+        : "p-3 rounded-xl bg-deloitte-cardbg border border-white/10 space-y-2 transition-colors";
+      const errCardClass = isMobileDeviceMode
+        ? "grid grid-cols-12 gap-2 items-center p-2 rounded-xl bg-rose-950/40 border border-rose-500"
+        : "p-3 rounded-xl bg-rose-950/40 border border-rose-500 space-y-2";
+
       for (let idx = 0; idx < teamsCount; idx++) {
         const card = document.getElementById(`slotCard-${idx}`);
-        if (card) card.className = "p-2.5 rounded-xl bg-deloitte-cardbg border border-white/10 space-y-1.5 transition-colors";
+        if (card) card.className = baseCardClass;
       }
 
       for (let idx = 0; idx < teamsCount; idx++) {
@@ -1343,17 +1841,17 @@
         if (tVal !== "") {
           const tNum = parseInt(tVal, 10);
           if (isNaN(tNum) || tNum < 1 || tNum > currentCohortScale) {
-            if (card) card.className = "p-2.5 rounded-xl bg-rose-950/30 border border-rose-500 space-y-1.5";
+            if (card) card.className = errCardClass;
             errorMsg = currentLang === 'zh'
-              ? `组号 ${tVal} 超出范围（当前规模支持 1 至 ${currentCohortScale} 组）`
-              : `Team #${tVal} is out of range (valid: 1 to ${currentCohortScale})`;
+              ? `组号 ${tVal} 超出范围 (1 - ${currentCohortScale})`
+              : `Team #${tVal} out of range (1 - ${currentCohortScale})`;
           } else if (seenTeams[tNum] !== undefined) {
-            if (card) card.className = "p-2.5 rounded-xl bg-rose-950/30 border border-rose-500 space-y-1.5";
+            if (card) card.className = errCardClass;
             const prevCard = document.getElementById(`slotCard-${seenTeams[tNum]}`);
-            if (prevCard) prevCard.className = "p-2.5 rounded-xl bg-rose-950/30 border border-rose-500 space-y-1.5";
+            if (prevCard) prevCard.className = errCardClass;
             errorMsg = currentLang === 'zh'
-              ? `本轮重复录入了第 ${tNum} 组，请检查核对`
-              : `Duplicate entry for Team #${tNum} in this round`;
+              ? `本轮重复录入了第 ${tNum} 组`
+              : `Duplicate Team #${tNum} in this round`;
           } else {
             seenTeams[tNum] = idx;
           }
@@ -1362,10 +1860,8 @@
         if (sVal !== "") {
           const sNum = parseInt(sVal, 10);
           if (isNaN(sNum) || sNum < 0 || sNum > 200) {
-            if (card) card.className = "p-2.5 rounded-xl bg-rose-950/30 border border-rose-500 space-y-1.5";
-            errorMsg = currentLang === 'zh'
-              ? `分数 ${sVal} 无效（请输入 0 - 100 之间的分数）`
-              : `Invalid score ${sVal} (enter 0 - 100)`;
+            if (card) card.className = errCardClass;
+            errorMsg = currentLang === 'zh' ? `分数 ${sVal} 超出范围` : `Invalid score ${sVal}`;
           }
         }
       }
@@ -1398,36 +1894,16 @@
       localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
     }
 
-    function markUnsavedScoreChanges() {
-      hasUnsavedScoreEdits = true;
-      const statusEl = document.getElementById('scoresSaveStatusBadge');
-      if (statusEl) {
-        statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400"></i><span class="text-amber-300 font-semibold">${I18N[currentLang].scoreUnsavedHint}</span>`;
-      }
-    }
-
     function handleLiveInputChange() {
       syncCurrentInputsToMemory();
       validateCurrentRoundInputs();
       renderStationButtons();
       renderRoundButtons();
-      renderAdminLeaderboardTable();
-      markUnsavedScoreChanges();
-    }
-
-    function autoFillMockRoundScores() {
-      const teamsCount = getTeamCountPerStation();
-      for (let idx = 0; idx < teamsCount; idx++) {
-        const teamInput = document.getElementById(`input-team-${idx}`);
-        const scoreInput = document.getElementById(`input-score-${idx}`);
-        if (teamInput && scoreInput) {
-          const simulatedTeam = (activeRoundIndex * teamsCount + idx + 1) % currentCohortScale || currentCohortScale;
-          const simulatedScore = Math.floor(75 + Math.random() * 24);
-          teamInput.value = simulatedTeam;
-          scoreInput.value = simulatedScore;
-        }
+      renderBothLeaderboards();
+      const statusEl = document.getElementById('scoresSaveStatusBadge');
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-300 font-bold">${I18N[currentLang].unsavedRoundNote}</span>`;
       }
-      handleLiveInputChange();
     }
 
     function clearActiveRoundInputs() {
@@ -1443,11 +1919,269 @@
       handleLiveInputChange();
     }
 
+    /* ==========================================================
+       PROJECT SUNRISE SCORE INPUT FUNCTIONS
+       ========================================================== */
+    function renderSunriseScoreInputs() {
+      const container = document.getElementById('sunriseTeamsGridContainer');
+      if (!container) return;
+      if (!scoresGrid.sunrise) scoresGrid.sunrise = {};
+
+      let html = '';
+      for (let t = 1; t <= currentCohortScale; t++) {
+        const val = scoresGrid.sunrise[t] !== undefined ? scoresGrid.sunrise[t] : '';
+        const hasVal = val !== '';
+        const borderCls = hasVal ? 'border-amber-400/50 bg-amber-500/10' : 'border-white/10 bg-black/40';
+
+        html += `
+          <div id="sunriseTeamCard-${t}" data-team-num="${t}" class="p-2.5 rounded-xl border ${borderCls} flex items-center justify-between gap-2 transition-colors">
+            <span class="text-xs font-mono font-extrabold ${hasVal ? 'text-amber-300' : 'text-gray-300'} shrink-0">Team #${String(t).padStart(2, '0')}</span>
+            <input type="number" inputmode="numeric" min="0" max="500" id="sunrise-score-${t}" value="${val}"
+              placeholder="0"
+              oninput="handleSunriseLiveInput(${t})"
+              onkeydown="handleSunriseKeydown(event, ${t})"
+              class="w-20 h-9 bg-deloitte-cardbg border border-white/15 focus:border-amber-400 focus:outline-none rounded-lg px-2 text-xs font-mono font-black text-amber-400 text-center">
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+      updateSunriseRecordedBadge();
+      filterSunriseTeamCards();
+    }
+
+    function handleSunriseKeydown(e, teamNum) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (teamNum < currentCohortScale) {
+          const nextEl = document.getElementById(`sunrise-score-${teamNum + 1}`);
+          if (nextEl) nextEl.focus();
+        } else {
+          e.target.blur();
+        }
+      }
+    }
+
+    function syncSunriseInputsToMemory() {
+      if (!scoresGrid.sunrise) scoresGrid.sunrise = {};
+      for (let t = 1; t <= currentCohortScale; t++) {
+        const el = document.getElementById(`sunrise-score-${t}`);
+        if (el) {
+          scoresGrid.sunrise[t] = el.value.trim();
+        }
+      }
+      localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
+    }
+
+    function updateSunriseRecordedBadge() {
+      const badge = document.getElementById('sunriseRecordedCountBadge');
+      if (!badge || !scoresGrid.sunrise) return;
+      let count = 0;
+      for (let t = 1; t <= currentCohortScale; t++) {
+        if (scoresGrid.sunrise[t] && scoresGrid.sunrise[t] !== '') count++;
+      }
+      badge.textContent = `${count} / ${currentCohortScale}`;
+    }
+
+    function handleSunriseLiveInput(teamNum) {
+      syncSunriseInputsToMemory();
+      const card = document.getElementById(`sunriseTeamCard-${teamNum}`);
+      const val = scoresGrid.sunrise[teamNum];
+      if (card) {
+        const hasVal = val !== '';
+        card.className = `p-2.5 rounded-xl border ${hasVal ? 'border-amber-400/50 bg-amber-500/10' : 'border-white/10 bg-black/40'} flex items-center justify-between gap-2 transition-colors`;
+      }
+      updateSunriseRecordedBadge();
+      renderBothLeaderboards();
+
+      const statusEl = document.getElementById('sunriseSaveStatusBadge');
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-300 font-bold">${I18N[currentLang].sunriseUnsavedNote}</span>`;
+      }
+    }
+
+    function filterSunriseTeamCards() {
+      const q = (document.getElementById('sunriseTeamSearchInput')?.value || '').trim().toLowerCase();
+      for (let t = 1; t <= currentCohortScale; t++) {
+        const card = document.getElementById(`sunriseTeamCard-${t}`);
+        if (!card) continue;
+        const label = `team #${String(t).padStart(2, '0')} ${t}`;
+        if (!q || label.includes(q)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      }
+    }
+
+    function clearAllSunriseInputs() {
+      for (let t = 1; t <= currentCohortScale; t++) {
+        const el = document.getElementById(`sunrise-score-${t}`);
+        if (el) el.value = '';
+      }
+      syncSunriseInputsToMemory();
+      renderSunriseScoreInputs();
+      renderBothLeaderboards();
+      const statusEl = document.getElementById('sunriseSaveStatusBadge');
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-300 font-bold">${I18N[currentLang].sunriseUnsavedNote}</span>`;
+      }
+    }
+
+    async function saveSunriseScoresSafeMerge() {
+      syncSunriseInputsToMemory();
+      const localSunriseCopy = JSON.parse(JSON.stringify(scoresGrid.sunrise || {}));
+      const statusEl = document.getElementById('sunriseSaveStatusBadge');
+      const saveBtn = document.getElementById('btnSaveSunriseMain');
+
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400 shrink-0"></i><span>Merging & Syncing...</span>`;
+      }
+      if (saveBtn) saveBtn.disabled = true;
+
+      try {
+        if (supabaseClient) {
+          const { data: latestCloud } = await supabaseClient
+            .from('station_leaderboards')
+            .select('grid_raw')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (latestCloud && latestCloud.grid_raw && typeof latestCloud.grid_raw === 'object') {
+            scoresGrid = normalizeScoresGrid(latestCloud.grid_raw);
+          }
+
+          scoresGrid.sunrise = localSunriseCopy;
+
+          const standings = calculateFullStandings();
+          localStorage.setItem('leaderboard_data_cache', JSON.stringify(standings));
+          localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
+
+          const { error } = await supabaseClient.from('station_leaderboards').upsert({
+            id: 1,
+            team_scores: standings,
+            grid_raw: scoresGrid,
+            updated_at: new Date().toISOString()
+          });
+          if (error) throw error;
+        }
+
+        renderSunriseScoreInputs();
+        renderBothLeaderboards();
+
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (statusEl) {
+          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green shrink-0"></i><span class="text-deloitte-green font-bold">${currentLang === 'zh' ? `日出计划得分已同步 (${nowStr})` : `Sunrise Scores Synced (${nowStr})`}</span>`;
+        }
+        if (window.confetti) {
+          confetti({ particleCount: 25, spread: 50, origin: { y: 0.7 } });
+        }
+      } catch (err) {
+        if (statusEl) {
+          statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-400">Saved locally: ${err.message}</span>`;
+        }
+      } finally {
+        if (saveBtn) saveBtn.disabled = false;
+      }
+    }
+
+    /* ==========================================================
+       MULTI-JUDGE SAFE MERGE SAVE (6 STATIONS)
+       ========================================================== */
+    async function saveActiveRoundSafeMerge() {
+      if (!validateCurrentRoundInputs()) return;
+      syncCurrentInputsToMemory();
+
+      const localActiveRoundCopy = JSON.parse(JSON.stringify(scoresGrid[activeStationIndex][activeRoundIndex]));
+      const statusEl = document.getElementById('scoresSaveStatusBadge');
+      const saveBtn = document.getElementById('btnSaveScoresMain');
+
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400 shrink-0"></i><span>Merging & Syncing...</span>`;
+      }
+      if (saveBtn) saveBtn.disabled = true;
+
+      try {
+        if (supabaseClient) {
+          const { data: latestCloud } = await supabaseClient
+            .from('station_leaderboards')
+            .select('grid_raw')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (latestCloud && latestCloud.grid_raw && typeof latestCloud.grid_raw === 'object') {
+            scoresGrid = normalizeScoresGrid(latestCloud.grid_raw);
+          }
+
+          scoresGrid[activeStationIndex][activeRoundIndex] = localActiveRoundCopy;
+
+          const standings = calculateFullStandings();
+          localStorage.setItem('leaderboard_data_cache', JSON.stringify(standings));
+          localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
+
+          const { error } = await supabaseClient.from('station_leaderboards').upsert({
+            id: 1,
+            team_scores: standings,
+            grid_raw: scoresGrid,
+            updated_at: new Date().toISOString()
+          });
+          if (error) throw error;
+        }
+
+        renderStationButtons();
+        renderRoundButtons();
+        renderBothLeaderboards();
+
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (statusEl) {
+          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green shrink-0"></i><span class="text-deloitte-green font-bold">${currentLang === 'zh' ? `本轮已安全合并至云端 (${nowStr})` : `Round Merged & Synced (${nowStr})`}</span>`;
+        }
+        if (window.confetti) {
+          confetti({ particleCount: 25, spread: 50, origin: { y: 0.7 } });
+        }
+      } catch (err) {
+        if (statusEl) {
+          statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-400">Saved locally: ${err.message}</span>`;
+        }
+      } finally {
+        if (saveBtn) saveBtn.disabled = false;
+      }
+    }
+
+    async function pullLatestCloudScores() {
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient
+            .from('station_leaderboards')
+            .select('*')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (!error && data && data.grid_raw && Object.keys(data.grid_raw).length > 0) {
+            scoresGrid = normalizeScoresGrid(data.grid_raw);
+            localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
+          }
+        }
+      } catch (e) {}
+      renderStationButtons();
+      renderRoundButtons();
+      renderRoundInputs();
+      renderSunriseScoreInputs();
+      renderBothLeaderboards();
+    }
+
     function calculateFullStandings() {
       const teamsMap = {};
       for (let t = 1; t <= currentCohortScale; t++) {
         const teamName = `Team ${String(t).padStart(2, '0')}`;
-        teamsMap[t] = { teamId: t, team: teamName, stations: [0, 0, 0, 0, 0, 0], total: 0 };
+        const sunriseRaw = (scoresGrid.sunrise && scoresGrid.sunrise[t]) ? parseInt(scoresGrid.sunrise[t], 10) : 0;
+        const sunriseScore = !isNaN(sunriseRaw) ? sunriseRaw : 0;
+        teamsMap[t] = {
+          teamId: t,
+          team: teamName,
+          stations: [0, 0, 0, 0, 0, 0],
+          sunrise: sunriseScore,
+          total: 0
+        };
       }
 
       const teamsCount = getTeamCountPerStation();
@@ -1467,7 +2201,8 @@
       }
 
       const teamList = Object.values(teamsMap).map(item => {
-        item.total = item.stations.reduce((a, b) => a + b, 0);
+        const stationsTotal = item.stations.reduce((a, b) => a + b, 0);
+        item.total = stationsTotal + (item.sunrise || 0);
         return item;
       });
 
@@ -1475,116 +2210,95 @@
       return teamList;
     }
 
-    function renderAdminLeaderboardTable() {
-      const tbody = document.getElementById('adminLeaderboardTableBody');
-      const search = (document.getElementById('leaderboardSearchInput')?.value || '').trim().toLowerCase();
-      if (!tbody) return;
+    /* ==========================================================
+       TAB 4: DUAL LEADERBOARD RENDERER (INCLUDES SUNRISE COLUMN)
+       ========================================================== */
+    function toggleExpandLeaderboardTeam(teamId) {
+      expandedTeamId = (expandedTeamId === teamId) ? null : teamId;
+      renderBothLeaderboards();
+    }
 
+    function renderBothLeaderboards() {
+      const search = (document.getElementById('leaderboardSearchInput')?.value || '').trim().toLowerCase();
       const standings = calculateFullStandings();
       const filtered = search ? standings.filter(item => item.team.toLowerCase().includes(search)) : standings;
 
-      tbody.innerHTML = filtered.map((item, idx) => `
-        <tr class="hover:bg-white/[0.04] transition-colors">
-          <td class="py-2.5 px-3 font-bold text-gray-400">#${idx + 1}</td>
-          <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">${item.team}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[0]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[1]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[2]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[3]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[4]}</td>
-          <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[5]}</td>
-          <td class="py-2.5 px-3 text-right text-deloitte-green font-bold text-sm">${item.total}</td>
-        </tr>
-      `).join('');
-    }
-
-    async function saveScoresToSupabase() {
-      if (!validateCurrentRoundInputs()) return;
-
-      syncCurrentInputsToMemory();
-      const standings = calculateFullStandings();
-      const statusEl = document.getElementById('scoresSaveStatusBadge');
-      const saveBtn = document.getElementById('btnSaveScoresMain');
-
-      if (statusEl) {
-        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400"></i><span>Syncing...</span>`;
-      }
-      if (saveBtn) saveBtn.disabled = true;
-
-      localStorage.setItem('leaderboard_data_cache', JSON.stringify(standings));
-      localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
-
-      try {
-        if (supabaseClient) {
-          const { error } = await supabaseClient.from('station_leaderboards').upsert({
-            id: 1,
-            team_scores: standings,
-            grid_raw: scoresGrid,
-            updated_at: new Date().toISOString()
-          });
-          if (error) throw error;
-        }
-
-        hasUnsavedScoreEdits = false;
-        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        if (statusEl) {
-          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green"></i><span class="text-deloitte-green font-bold">${currentLang === 'zh' ? `已保存并同步排行榜 (${nowStr})` : `Standings Synced (${nowStr})`}</span>`;
-        }
-        if (window.confetti) {
-          confetti({ particleCount: 30, spread: 50, origin: { x: 0.5, y: 0.6 } });
-        }
-      } catch (err) {
-        console.warn("Supabase leaderboard upsert err:", err);
-        if (statusEl) {
-          statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-400">本地已存，云端提示: ${err.message}</span>`;
-        }
-      } finally {
-        if (saveBtn) saveBtn.disabled = false;
-      }
-    }
-
-    async function loadSavedScores() {
-      let loadedFromCloud = false;
-      try {
-        if (supabaseClient) {
-          const { data, error } = await supabaseClient
-            .from('station_leaderboards')
-            .select('*')
-            .eq('id', 1)
-            .maybeSingle();
-
-          if (!error && data && data.grid_raw && typeof data.grid_raw === 'object' && Object.keys(data.grid_raw).length > 0) {
-            scoresGrid = normalizeScoresGrid(data.grid_raw);
-            loadedFromCloud = true;
-          }
-        }
-      } catch (e) {
-        console.warn("Scores fetch err:", e);
+      const tbody = document.getElementById('adminLeaderboardTableBody');
+      if (tbody) {
+        tbody.innerHTML = filtered.map((item, idx) => `
+          <tr class="hover:bg-white/[0.04] transition-colors">
+            <td class="py-2.5 px-3 font-bold text-gray-400">#${idx + 1}</td>
+            <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">${item.team}</td>
+            <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[0]}</td>
+            <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[1]}</td>
+            <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[2]}</td>
+            <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[3]}</td>
+            <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[4]}</td>
+            <td class="py-2.5 px-2 text-center text-gray-300">${item.stations[5]}</td>
+            <td class="py-2.5 px-2 text-center text-amber-400 font-bold">${item.sunrise || 0}</td>
+            <td class="py-2.5 px-3 text-right text-deloitte-green font-bold text-sm">${item.total}</td>
+          </tr>
+        `).join('');
       }
 
-      if (!loadedFromCloud) {
-        try {
-          const cachedGrid = localStorage.getItem('scores_grid_cache');
-          if (cachedGrid) {
-            scoresGrid = normalizeScoresGrid(JSON.parse(cachedGrid));
-          } else {
-            scoresGrid = normalizeScoresGrid({});
-          }
-        } catch (e) {
-          scoresGrid = normalizeScoresGrid({});
-        }
-      }
+      const mobContainer = document.getElementById('mobileLeaderboardContainer');
+      if (mobContainer) {
+        mobContainer.innerHTML = filtered.map((item, idx) => {
+          const rank = idx + 1;
+          const isExpanded = (expandedTeamId === item.teamId);
+          let rankBadge = `<span class="w-6 text-center font-mono font-bold text-gray-400 text-xs">#${rank}</span>`;
+          if (rank === 1) rankBadge = `<span class="w-6 text-center text-amber-400 text-xs"><i class="fa-solid fa-crown"></i></span>`;
+          else if (rank === 2) rankBadge = `<span class="w-6 text-center text-slate-300 text-xs"><i class="fa-solid fa-medal"></i></span>`;
+          else if (rank === 3) rankBadge = `<span class="w-6 text-center text-amber-600 text-xs"><i class="fa-solid fa-award"></i></span>`;
 
-      renderStationButtons();
-      renderRoundButtons();
-      renderRoundInputs();
-      renderAdminLeaderboardTable();
+          const breakdownHtml = isExpanded ? `
+            <div class="grid grid-cols-2 xs:grid-cols-3 gap-1.5 pt-2.5 mt-2.5 border-t border-white/10 text-[10px]">
+              ${STATIONS.map((st, sIdx) => `
+                <div class="p-1.5 rounded-lg bg-black/50 border border-white/5 flex items-center justify-between gap-1">
+                  <span class="text-gray-400 truncate">${st[currentLang === 'zh' ? 'zh' : 'en']}</span>
+                  <span class="font-mono font-bold text-white shrink-0">${item.stations[sIdx]}</span>
+                </div>
+              `).join('')}
+              <div class="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-1">
+                <span class="text-amber-300 font-bold truncate">${I18N[currentLang].thSunrise}</span>
+                <span class="font-mono font-bold text-amber-400 shrink-0">${item.sunrise || 0}</span>
+              </div>
+            </div>
+          ` : '';
+
+          return `
+            <div onclick="toggleExpandLeaderboardTeam(${item.teamId})"
+              class="p-3 rounded-xl bg-black/40 border ${rank <= 10 ? 'border-deloitte-green/30' : 'border-white/10'} cursor-pointer transition-all">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  ${rankBadge}
+                  <span class="text-xs font-extrabold text-white">${item.team}</span>
+                  ${rank <= 10 ? '<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green">TOP 10</span>' : ''}
+                </div>
+                <div class="flex items-center gap-2 font-mono">
+                  <span class="text-sm font-black text-deloitte-green">${item.total}</span>
+                  <span class="text-[10px] text-gray-500">pts</span>
+                  <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}"></i>
+                </div>
+              </div>
+              ${breakdownHtml}
+            </div>
+          `;
+        }).join('');
+      }
     }
 
     /* ==========================================================
-       TAB 4: BROADCAST & 1-TAP MESSAGE WALL MODERATION
+       TAB 5: BROADCAST PRESETS & 1-TAP WALL MODERATION
        ========================================================== */
     let adminMessagesList = [];
+
+    function applyBroadcastPreset(presetIdx) {
+      const preset = BROADCAST_PRESETS[presetIdx];
+      if (!preset) return;
+      document.getElementById('adminAnnounceZH').value = preset.zh;
+      document.getElementById('adminAnnounceEN').value = preset.en;
+    }
 
     function cleanDisplayNickname(rawNick) {
       const str = rawNick || 'Participant';
@@ -1613,9 +2327,7 @@
             return;
           }
         }
-      } catch (e) {
-        console.warn("Admin messages load error:", e);
-      }
+      } catch (e) {}
       renderAdminMessagesList();
     }
 
@@ -1625,7 +2337,7 @@
       const searchVal = (document.getElementById('adminMsgSearchInput')?.value || '').trim().toLowerCase();
       if (!container) return;
 
-      if (countBadge) countBadge.textContent = `${adminMessagesList.length} msgs`;
+      if (countBadge) countBadge.textContent = `${adminMessagesList.length}`;
 
       const filtered = searchVal
         ? adminMessagesList.filter(m =>
@@ -1651,16 +2363,16 @@
           : '';
 
         return `
-          <div id="adminMsgRow-${m.id}" class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-3 hover:border-white/20 transition-all">
+          <div id="adminMsgRow-${m.id}" class="p-3 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-2.5">
             <div class="min-w-0 flex-1 space-y-0.5">
-              <div class="flex items-center gap-2 text-[11px]">
+              <div class="flex items-center gap-2 text-[10px]">
                 <span class="font-bold text-teal-300 truncate">${escapeHtml(sender)}</span>
-                <span class="text-gray-500 font-mono text-[10px] shrink-0">${timeStr}</span>
+                <span class="text-gray-500 font-mono shrink-0">${timeStr}</span>
               </div>
               <p class="text-xs text-gray-200 break-words leading-snug">${escapeHtml(body)}</p>
             </div>
             <button type="button" onclick="deleteSingleMessage(${m.id})"
-              class="button-press px-3 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/30 border border-rose-500/30 text-rose-300 text-xs font-bold flex items-center gap-1.5 shrink-0">
+              class="button-press px-2.5 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/30 border border-rose-500/30 text-rose-300 text-xs font-bold flex items-center gap-1 shrink-0 whitespace-nowrap">
               <i class="fa-solid fa-trash-can text-[10px]"></i>
               <span>${I18N[currentLang].btnDeleteMsg}</span>
             </button>
@@ -1685,9 +2397,8 @@
         adminMessagesList = adminMessagesList.filter(m => m.id !== msgId);
         renderAdminMessagesList();
       } catch (err) {
-        console.warn("Delete message error:", err);
         if (rowEl) rowEl.classList.remove('opacity-40', 'pointer-events-none');
-        alert("删除失败 / Delete failed: " + err.message);
+        alert("Delete failed: " + err.message);
       }
     }
 
@@ -1705,12 +2416,9 @@
               const dt = new Date(data.updated_at);
               document.getElementById('announcementSyncBadge').textContent = `Sync: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
             }
-            return;
           }
         }
-      } catch (err) {
-        console.warn("Announcement fetch err:", err);
-      }
+      } catch (err) {}
     }
 
     async function savePortalAnnouncementConfig() {
@@ -1736,155 +2444,118 @@
           if (error) throw error;
         }
         const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green mr-1"></i><span class="text-deloitte-green font-bold">Synced (${nowStr})</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green mr-1"></i><span class="text-deloitte-green font-bold">Published (${nowStr})</span>`;
         document.getElementById('announcementSyncBadge').textContent = `Sync: ${nowStr}`;
-        if (window.confetti) confetti({ particleCount: 20, spread: 30, origin: { x: 0.5, y: 0.3 } });
+        if (window.confetti) confetti({ particleCount: 20, spread: 30, origin: { y: 0.4 } });
       } catch (e) {
-        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400 mr-1"></i><span class="text-amber-400">Saved locally: ${e.message}</span>`;
+        statusEl.innerHTML = `<span class="text-amber-400">Saved locally: ${e.message}</span>`;
       }
     }
 
     /* ==========================================================
-       RESET ACTIONS (VENUES, TIMES, SCORES, AUXILIARIES)
+       DRAWER CONFIGURATIONS: FASTPASS, D.SIGNAL & KNOWLEDGE CLASH
        ========================================================== */
-    async function confirmResetAction(type) {
-      if (type === 'venues') {
-        if (!confirm("确定要清空全部 6 个站点的中英文房间名称吗？\nClear all 6 station room names?")) return;
-        resetVenuesData();
-      } else if (type === 'times') {
-        if (!confirm("确定要清空全部 6 轮活动的时间段设置吗？\nClear all 6 session time slots?")) return;
-        resetTimesData();
-      } else if (type === 'scores') {
-        if (!confirm("警告：确定要清空全部 6 个站点的得分记录并归零排行榜吗？\nWipe all station scores and standings?")) return;
-        resetScoresData();
-      } else if (type === 'messages') {
-        if (!confirm("确定要清空互动留言墙的所有留言吗？\nClear all messages on the Community Wall?")) return;
-        resetMessagesData();
-      } else if (type === 'announcement') {
-        if (!confirm("确定要清空当前的广播横幅通知吗？\nClear current broadcast banner?")) return;
-        resetAnnouncementData();
-      } else if (type === 'master') {
-        const pin = prompt("危险操作：这将清空所有地点、时间、得分、留言及广播！\n请输入确认口令 'RESET' 以继续：");
-        if (pin === 'RESET' || pin === 'reset') {
-          await resetVenuesData(false);
-          await resetTimesData(false);
-          await resetScoresData(false);
-          await resetMessagesData(false);
-          await resetAnnouncementData(false);
-          alert("全场数据已成功重置初始化。\nMaster factory reset complete.");
-        }
+    const DEFAULT_FP_VENUES = {
+      0: { zh: '场地 1', en: 'Venue 1' }, 1: { zh: '场地 2', en: 'Venue 2' },
+      2: { zh: '场地 3', en: 'Venue 3' }, 3: { zh: '场地 4', en: 'Venue 4' },
+      4: { zh: '场地 5', en: 'Venue 5' }, 5: { zh: '场地 6', en: 'Venue 6' }
+    };
+
+    const DEFAULT_FP_TIME_SLOTS = [
+      { start: '13:50', end: '14:20' }, { start: '14:30', end: '15:00' },
+      { start: '15:10', end: '15:40' }, { start: '16:00', end: '16:30' },
+      { start: '16:40', end: '17:10' }, { start: '17:20', end: '17:50' }
+    ];
+
+    let fpConfigState = { venues: DEFAULT_FP_VENUES, time_slots: DEFAULT_FP_TIME_SLOTS };
+
+    function renderFastPassEditorInputs() {
+      const venueContainer = document.getElementById('fpVenueInputsContainer');
+      if (venueContainer) {
+        venueContainer.innerHTML = STATIONS.map(st => {
+          const v = fpConfigState.venues[st.id] || { zh: `场地 ${st.id + 1}`, en: `Venue ${st.id + 1}` };
+          return `
+            <div class="space-y-1">
+              <span class="text-[10px] font-bold text-gray-400">${st.zh} · ${st.en}</span>
+              <div class="grid grid-cols-2 gap-2">
+                <input type="text" id="fp-venue-zh-${st.id}" value="${v.zh}" placeholder="${st.zh}" class="w-full h-10 bg-black/60 border border-white/15 focus:border-lime-400 focus:outline-none rounded-xl px-2.5 text-xs text-white">
+                <input type="text" id="fp-venue-en-${st.id}" value="${v.en}" placeholder="${st.en}" class="w-full h-10 bg-black/60 border border-white/15 focus:border-lime-400 focus:outline-none rounded-xl px-2.5 text-xs text-white">
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const timeContainer = document.getElementById('fpTimeInputsContainer');
+      if (timeContainer) {
+        timeContainer.innerHTML = fpConfigState.time_slots.map((slot, idx) => `
+          <div class="flex items-center justify-between gap-2 bg-black/40 border border-white/10 rounded-xl px-3 py-2">
+            <span class="text-xs font-mono font-bold text-gray-300">Round ${idx + 1}</span>
+            <div class="flex items-center gap-1.5 font-mono">
+              <input type="time" id="fp-time-start-${idx}" value="${slot.start}" class="bg-deloitte-cardbg border border-white/15 rounded-lg px-2 py-1 text-xs text-white text-center">
+              <span class="text-gray-500">~</span>
+              <input type="time" id="fp-time-end-${idx}" value="${slot.end}" class="bg-deloitte-cardbg border border-white/15 rounded-lg px-2 py-1 text-xs text-white text-center">
+            </div>
+          </div>
+        `).join('');
       }
     }
 
-    async function resetVenuesData(showAlert = true) {
-      const blankVenues = {};
+    function autoFillTimeSlots() {
+      const firstStartEl = document.getElementById('fp-time-start-0');
+      if (!firstStartEl || !firstStartEl.value) return;
+      let [h, m] = firstStartEl.value.split(':').map(Number);
+      let cursor = (h || 0) * 60 + (m || 0);
+
       for (let i = 0; i < 6; i++) {
-        blankVenues[i] = { zh: "", en: "" };
-      }
-      fpConfigState.venues = blankVenues;
-      renderFastPassEditorInputs();
-      localStorage.setItem('fastpass_config_v1', JSON.stringify(fpConfigState));
-
-      try {
-        if (supabaseClient) {
-          await supabaseClient.from('fastpass_config').upsert({
-            id: 1,
-            venues: blankVenues,
-            updated_at: new Date().toISOString()
-          });
-        }
-        if (showAlert) alert("6 站房间地点已清空。\nStation venues cleared.");
-      } catch (err) {
-        if (showAlert) alert("本地已清空: " + err.message);
+        const startStr = `${String(Math.floor((cursor % 1440) / 60)).padStart(2, '0')}:${String(cursor % 60).padStart(2, '0')}`;
+        const endCursor = cursor + 30;
+        const endStr = `${String(Math.floor((endCursor % 1440) / 60)).padStart(2, '0')}:${String(endCursor % 60).padStart(2, '0')}`;
+        document.getElementById(`fp-time-start-${i}`).value = startStr;
+        document.getElementById(`fp-time-end-${i}`).value = endStr;
+        cursor += 40;
       }
     }
 
-    async function resetTimesData(showAlert = true) {
-      const blankTimes = [];
+    async function loadFastPassConfig() {
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('fastpass_config').select('*').eq('id', 1).maybeSingle();
+          if (!error && data) {
+            if (data.venues) fpConfigState.venues = data.venues;
+            if (data.time_slots) fpConfigState.time_slots = data.time_slots;
+          }
+        }
+      } catch (err) {}
+      renderFastPassEditorInputs();
+    }
+
+    async function saveFastPassConfig() {
+      const newVenues = {};
       for (let i = 0; i < 6; i++) {
-        blankTimes.push({ start: "", end: "" });
+        newVenues[i] = {
+          zh: document.getElementById(`fp-venue-zh-${i}`).value.trim() || `场地 ${i + 1}`,
+          en: document.getElementById(`fp-venue-en-${i}`).value.trim() || `Venue ${i + 1}`
+        };
       }
-      fpConfigState.time_slots = blankTimes;
-      renderFastPassEditorInputs();
-      localStorage.setItem('fastpass_config_v1', JSON.stringify(fpConfigState));
+      const newTimeSlots = [];
+      for (let i = 0; i < 6; i++) {
+        newTimeSlots.push({
+          start: document.getElementById(`fp-time-start-${i}`).value,
+          end: document.getElementById(`fp-time-end-${i}`).value
+        });
+      }
+      fpConfigState = { venues: newVenues, time_slots: newTimeSlots };
 
       try {
         if (supabaseClient) {
-          await supabaseClient.from('fastpass_config').upsert({
-            id: 1,
-            time_slots: blankTimes,
-            updated_at: new Date().toISOString()
-          });
+          await supabaseClient.from('fastpass_config').upsert({ id: 1, venues: newVenues, time_slots: newTimeSlots, updated_at: new Date().toISOString() });
         }
-        if (showAlert) alert("6 轮时间设置已清空。\nTime slots cleared.");
-      } catch (err) {
-        if (showAlert) alert("本地已清空: " + err.message);
-      }
+        document.getElementById('fpSaveStatus').innerHTML = `<i class="fa-solid fa-circle-check text-lime-400 mr-1"></i><span class="text-lime-400 font-bold">Synced to Cloud</span>`;
+      } catch (e) {}
     }
 
-    async function resetScoresData(showAlert = true) {
-      scoresGrid = normalizeScoresGrid({});
-      renderStationButtons();
-      renderRoundButtons();
-      renderRoundInputs();
-      renderAdminLeaderboardTable();
-
-      localStorage.removeItem('leaderboard_data_cache');
-      localStorage.removeItem('scores_grid_cache');
-
-      try {
-        if (supabaseClient) {
-          await supabaseClient.from('station_leaderboards').upsert({
-            id: 1,
-            team_scores: [],
-            grid_raw: scoresGrid,
-            updated_at: new Date().toISOString()
-          });
-        }
-        if (showAlert) alert("全部得分记录及排行榜已归零。\nAll scores and standings cleared.");
-      } catch (err) {
-        if (showAlert) alert("本地已清空: " + err.message);
-      }
-    }
-
-    async function resetMessagesData(showAlert = true) {
-      try {
-        if (supabaseClient) {
-          await supabaseClient.from('participant_messages').delete().neq('id', 0);
-        }
-        adminMessagesList = [];
-        renderAdminMessagesList();
-        if (showAlert) alert("留言墙数据已全部清空。\nCommunity Wall cleared.");
-      } catch (err) {
-        if (showAlert) alert("留言清空提示: " + err.message);
-      }
-    }
-
-    async function resetAnnouncementData(showAlert = true) {
-      document.getElementById('adminAnnounceZH').value = '';
-      document.getElementById('adminAnnounceEN').value = '';
-
-      try {
-        if (supabaseClient) {
-          await supabaseClient.from('portal_announcements').upsert({
-            id: 1,
-            text_zh: '',
-            text_en: '',
-            text: '',
-            fastpass_target: String(currentCohortScale),
-            updated_at: new Date().toISOString()
-          });
-        }
-        localStorage.removeItem('portal_announcement_cache');
-        if (showAlert) alert("现场广播横幅已清空。\nBroadcast banner cleared.");
-      } catch (err) {
-        if (showAlert) alert("广播清空提示: " + err.message);
-      }
-    }
-
-    /* ==========================================================
-       D.SIGNAL, KNOWLEDGE CLASH & FASTPASS CONFIGURATIONS
-       ========================================================== */
+    // D.Signal Config
     const DEFAULT_SIGNAL_ROUND_DATA = {
       1: { title: "Round 1", words: [{ cn: "熊猫", en: "Panda" }, { cn: "金丝猴", en: "Golden Monkey" }] },
       2: { title: "Round 2", words: [{ cn: "合伙人", en: "Partner" }, { cn: "客户", en: "Client" }] },
@@ -1949,10 +2620,10 @@
         const panel = document.getElementById(`sigTabPanel${r}`);
         if (btn && panel) {
           if (r === tabNum) {
-            btn.className = "flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-deloitte-green text-black text-center";
+            btn.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-deloitte-green text-black text-center";
             panel.classList.remove("hidden");
           } else {
-            btn.className = "flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all bg-white/5 text-gray-300 text-center";
+            btn.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-white/5 text-gray-300 text-center";
             panel.classList.add("hidden");
           }
         }
@@ -1975,10 +2646,6 @@
           if (!error && data && data.round_data) {
             signalRoundState = data.round_data;
             renderSignalEditorInputs();
-            if (data.updated_at) {
-              const dt = new Date(data.updated_at);
-              document.getElementById('signalLastSavedBadge').textContent = `Sync: ${dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-            }
             return;
           }
         }
@@ -1987,10 +2654,7 @@
     }
 
     async function saveSignalConfig() {
-      const saveBtn = document.getElementById('signalSaveBtn');
-      const saveBtnText = document.getElementById('signalSaveBtnText');
       const statusEl = document.getElementById('signalSaveStatus');
-
       for (let r = 1; r <= 3; r++) {
         const textarea = document.getElementById(`sigInputRound${r}`);
         if (textarea && textarea.value.trim() !== "") {
@@ -1998,23 +2662,17 @@
           if (parsed && parsed.length > 0) signalRoundState[r].words = parsed;
         }
       }
-
-      saveBtn.disabled = true;
-      saveBtnText.textContent = "Saving...";
-
       try {
         if (supabaseClient) {
           await supabaseClient.from('signal_config').upsert({ id: 1, round_data: signalRoundState, updated_at: new Date().toISOString() });
         }
-        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green mr-1"></i><span class="text-deloitte-green font-bold">Synced</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green mr-1"></i><span class="text-deloitte-green font-bold">Synced to Cloud</span>`;
       } catch (err) {
         statusEl.innerHTML = `<span class="text-amber-400">Saved locally</span>`;
-      } finally {
-        saveBtn.disabled = false;
-        saveBtnText.textContent = I18N[currentLang].saveWordsBtn;
       }
     }
 
+    // Knowledge Clash Config
     const DEFAULT_KC_RAW = [
       "德勤品牌于哪一年在全球创立？ / Founded year?, [1845年 / 1845], 1895年 / 1895, 1917年 / 1917, 1945年 / 1945",
       "德勤当前的全球品牌标语是什么？ / Brand tagline?, 因我不同 / To make an impact that matters, [众行致远 / Together makes progress], 清晰敏锐 / Clear Confident, 诚信至上 / Integrity First"
@@ -2050,17 +2708,10 @@
       }).join("\n");
     }
 
-    function updateKcParsedCount() {
-      const textarea = document.getElementById('kcQuestionTextarea');
-      if (!textarea) return;
-      parseKcQuestionsFromText(textarea.value);
-    }
-
     function insertKcTemplate() {
       const textarea = document.getElementById('kcQuestionTextarea');
       if (textarea) {
         textarea.value += (textarea.value.trim() ? "\n" : "") + "德勤安全可控的生成式AI平台是？ / GenAI platform?, D.Brain, [D.Nova], DeloitteGPT, AI.Pilot";
-        updateKcParsedCount();
       }
     }
 
@@ -2070,123 +2721,115 @@
           const { data, error } = await supabaseClient.from('knowledge_config').select('*').eq('id', 1).maybeSingle();
           if (!error && data && data.questions) {
             document.getElementById('kcQuestionTextarea').value = formatKcQuestionsToText(data.questions);
-            updateKcParsedCount();
             return;
           }
         }
       } catch (err) {}
       document.getElementById('kcQuestionTextarea').value = DEFAULT_KC_RAW.join("\n");
-      updateKcParsedCount();
     }
 
     async function saveKnowledgeConfig() {
       const textarea = document.getElementById('kcQuestionTextarea');
       const parsed = parseKcQuestionsFromText(textarea.value);
       if (parsed.length === 0) return;
-
       try {
         if (supabaseClient) {
           await supabaseClient.from('knowledge_config').upsert({ id: 1, questions: parsed, updated_at: new Date().toISOString() });
         }
-        document.getElementById('kcSaveStatus').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i><span class="text-emerald-400 font-bold">Synced (${parsed.length})</span>`;
+        document.getElementById('kcSaveStatus').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i><span class="text-emerald-400 font-bold">Synced (${parsed.length} Questions)</span>`;
       } catch (err) {}
     }
 
-    const DEFAULT_FP_VENUES = {
-      0: { zh: '场地 1', en: 'Venue 1' }, 1: { zh: '场地 2', en: 'Venue 2' },
-      2: { zh: '场地 3', en: 'Venue 3' }, 3: { zh: '场地 4', en: 'Venue 4' },
-      4: { zh: '场地 5', en: 'Venue 5' }, 5: { zh: '场地 6', en: 'Venue 6' }
-    };
-
-    const DEFAULT_FP_TIME_SLOTS = [
-      { start: '13:50', end: '14:20' }, { start: '14:30', end: '15:00' },
-      { start: '15:10', end: '15:40' }, { start: '16:00', end: '16:30' },
-      { start: '16:40', end: '17:10' }, { start: '17:20', end: '17:50' }
-    ];
-
-    let fpConfigState = { venues: DEFAULT_FP_VENUES, time_slots: DEFAULT_FP_TIME_SLOTS };
-
-    function renderFastPassEditorInputs() {
-      const venueContainer = document.getElementById('fpVenueInputsContainer');
-      if (venueContainer) {
-        venueContainer.innerHTML = STATIONS.map(st => {
-          const v = fpConfigState.venues[st.id] || { zh: `场地 ${st.id + 1}`, en: `Venue ${st.id + 1}` };
-          return `
-            <div class="grid grid-cols-2 gap-1.5">
-              <input type="text" id="fp-venue-zh-${st.id}" value="${v.zh}" placeholder="${st.zh}" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2 py-1 text-xs text-white">
-              <input type="text" id="fp-venue-en-${st.id}" value="${v.en}" placeholder="${st.en}" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2 py-1 text-xs text-white">
-            </div>
-          `;
-        }).join('');
-      }
-
-      const timeContainer = document.getElementById('fpTimeInputsContainer');
-      if (timeContainer) {
-        timeContainer.innerHTML = fpConfigState.time_slots.map((slot, idx) => `
-          <div class="flex items-center justify-between gap-1 bg-deloitte-cardbg border border-white/10 rounded-lg px-2 py-1">
-            <span class="text-xs font-mono font-bold text-gray-400">R${idx + 1}</span>
-            <div class="flex items-center gap-1 font-mono">
-              <input type="time" id="fp-time-start-${idx}" value="${slot.start}" class="bg-black/60 border border-white/15 rounded px-1 py-0.5 text-xs text-white text-center">
-              <span class="text-gray-500 text-[10px]">~</span>
-              <input type="time" id="fp-time-end-${idx}" value="${slot.end}" class="bg-black/60 border border-white/15 rounded px-1 py-0.5 text-xs text-white text-center">
-            </div>
-          </div>
-        `).join('');
-      }
-    }
-
-    function autoFillTimeSlots() {
-      const firstStartEl = document.getElementById('fp-time-start-0');
-      if (!firstStartEl || !firstStartEl.value) return;
-      let [h, m] = firstStartEl.value.split(':').map(Number);
-      let cursor = (h || 0) * 60 + (m || 0);
-
-      for (let i = 0; i < 6; i++) {
-        const startStr = `${String(Math.floor((cursor % 1440) / 60)).padStart(2, '0')}:${String(cursor % 60).padStart(2, '0')}`;
-        const endCursor = cursor + 30;
-        const endStr = `${String(Math.floor((endCursor % 1440) / 60)).padStart(2, '0')}:${String(endCursor % 60).padStart(2, '0')}`;
-        document.getElementById(`fp-time-start-${i}`).value = startStr;
-        document.getElementById(`fp-time-end-${i}`).value = endStr;
-        cursor += 40;
-      }
-    }
-
-    async function loadFastPassConfig() {
-      try {
-        if (supabaseClient) {
-          const { data, error } = await supabaseClient.from('fastpass_config').select('*').eq('id', 1).maybeSingle();
-          if (!error && data) {
-            if (data.venues) fpConfigState.venues = data.venues;
-            if (data.time_slots) fpConfigState.time_slots = data.time_slots;
-          }
+    /* ==========================================================
+       RESET ACTIONS (MASTER ADMIN ONLY)
+       ========================================================== */
+    async function confirmResetAction(type) {
+      if (currentUserRole !== 'admin') return;
+      if (type === 'venues') {
+        if (!confirm("确定要清空全部 6 个站点的房间名称吗？\nClear all 6 station room names?")) return;
+        await resetVenuesData(true);
+      } else if (type === 'times') {
+        if (!confirm("确定要清空全部 6 轮的时间段设置吗？\nClear all 6 session time slots?")) return;
+        await resetTimesData(true);
+      } else if (type === 'scores') {
+        if (!confirm("警告：确定要清空全部 6 站及日出计划得分并归零排行榜吗？\nWipe all station & Sunrise scores and standings?")) return;
+        await resetScoresData(true);
+      } else if (type === 'messages') {
+        if (!confirm("确定要清空留言墙的所有留言吗？\nClear all messages on the Community Wall?")) return;
+        await resetMessagesData(true);
+      } else if (type === 'announcement') {
+        if (!confirm("确定要清空当前的广播横幅吗？\nClear current broadcast banner?")) return;
+        await resetAnnouncementData(true);
+      } else if (type === 'master') {
+        const pin = prompt("危险操作：这将清空所有地点、时间、得分、留言及广播！\n请输入确认口令 'RESET' 以继续：");
+        if (pin === 'RESET' || pin === 'reset') {
+          await resetVenuesData(false);
+          await resetTimesData(false);
+          await resetScoresData(false);
+          await resetMessagesData(false);
+          await resetAnnouncementData(false);
+          alert("全场数据已成功重置初始化。\nMaster factory reset complete.");
         }
-      } catch (err) {}
+      }
+    }
+
+    async function resetVenuesData(showAlert = true) {
+      const blankVenues = {};
+      for (let i = 0; i < 6; i++) blankVenues[i] = { zh: "", en: "" };
+      fpConfigState.venues = blankVenues;
       renderFastPassEditorInputs();
+      try {
+        if (supabaseClient) await supabaseClient.from('fastpass_config').upsert({ id: 1, venues: blankVenues, updated_at: new Date().toISOString() });
+        if (showAlert) alert("6 站房间地点已清空。");
+      } catch (err) {}
     }
 
-    async function saveFastPassConfig() {
-      const newVenues = {};
-      for (let i = 0; i < 6; i++) {
-        newVenues[i] = {
-          zh: document.getElementById(`fp-venue-zh-${i}`).value.trim() || `场地 ${i + 1}`,
-          en: document.getElementById(`fp-venue-en-${i}`).value.trim() || `Venue ${i + 1}`
-        };
-      }
-      const newTimeSlots = [];
-      for (let i = 0; i < 6; i++) {
-        newTimeSlots.push({
-          start: document.getElementById(`fp-time-start-${i}`).value,
-          end: document.getElementById(`fp-time-end-${i}`).value
-        });
-      }
-      fpConfigState = { venues: newVenues, time_slots: newTimeSlots };
+    async function resetTimesData(showAlert = true) {
+      const blankTimes = [];
+      for (let i = 0; i < 6; i++) blankTimes.push({ start: "", end: "" });
+      fpConfigState.time_slots = blankTimes;
+      renderFastPassEditorInputs();
+      try {
+        if (supabaseClient) await supabaseClient.from('fastpass_config').upsert({ id: 1, time_slots: blankTimes, updated_at: new Date().toISOString() });
+        if (showAlert) alert("6 轮时间设置已清空。");
+      } catch (err) {}
+    }
 
+    async function resetScoresData(showAlert = true) {
+      scoresGrid = normalizeScoresGrid({});
+      renderStationButtons();
+      renderRoundButtons();
+      renderRoundInputs();
+      renderSunriseScoreInputs();
+      renderBothLeaderboards();
+      localStorage.removeItem('leaderboard_data_cache');
+      localStorage.removeItem('scores_grid_cache');
+      try {
+        if (supabaseClient) await supabaseClient.from('station_leaderboards').upsert({ id: 1, team_scores: [], grid_raw: scoresGrid, updated_at: new Date().toISOString() });
+        if (showAlert) alert("全部得分及排行榜已归零。");
+      } catch (err) {}
+    }
+
+    async function resetMessagesData(showAlert = true) {
+      try {
+        if (supabaseClient) await supabaseClient.from('participant_messages').delete().neq('id', 0);
+        adminMessagesList = [];
+        renderAdminMessagesList();
+        if (showAlert) alert("留言墙已全部清空。");
+      } catch (err) {}
+    }
+
+    async function resetAnnouncementData(showAlert = true) {
+      document.getElementById('adminAnnounceZH').value = '';
+      document.getElementById('adminAnnounceEN').value = '';
       try {
         if (supabaseClient) {
-          await supabaseClient.from('fastpass_config').upsert({ id: 1, venues: newVenues, time_slots: newTimeSlots, updated_at: new Date().toISOString() });
+          await supabaseClient.from('portal_announcements').upsert({
+            id: 1, text_zh: '', text_en: '', text: '', fastpass_target: String(currentCohortScale), updated_at: new Date().toISOString()
+          });
         }
-        document.getElementById('fpSaveStatus').innerHTML = `<i class="fa-solid fa-circle-check text-lime-400 mr-1"></i><span class="text-lime-400 font-bold">Synced</span>`;
-      } catch (e) {}
+        if (showAlert) alert("广播横幅已清空。");
+      } catch (err) {}
     }
 
     /* ==========================================================
@@ -2194,9 +2837,8 @@
        ========================================================== */
     window.addEventListener('load', async () => {
       scoresGrid = normalizeScoresGrid({});
+      applyDeviceLayoutMode(true);
       setLanguage(currentLang);
-      renderStationButtons();
-      renderRoundButtons();
 
       const savedScale = localStorage.getItem('admin_selected_cohort_scale') || 36;
       setGlobalCohortScale(savedScale);
@@ -2205,19 +2847,17 @@
 
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) {
+        if (session && session.user) {
           renderAuthorized(session.user);
         } else {
           document.getElementById('emailInput').focus();
         }
 
         supabaseClient.auth.onAuthStateChange((event, session) => {
-          if (event === 'SIGNED_IN' && session) renderAuthorized(session.user);
+          if (event === 'SIGNED_IN' && session?.user) renderAuthorized(session.user);
           else if (event === 'SIGNED_OUT') renderLocked();
         });
-      } catch (err) {
-        console.error("Auth init err:", err);
-      }
+      } catch (err) {}
     });
 
     async function handleLoginSubmit(event) {
@@ -2232,9 +2872,8 @@
 
       try {
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) {
-          showError(error.message);
-        } else if (data?.user) {
+        if (error) showError(error.message);
+        else if (data?.user) {
           document.getElementById('errorMessage').classList.add('hidden');
           renderAuthorized(data.user);
         }
@@ -2267,16 +2906,20 @@
       document.getElementById('mainAdminContent').classList.remove('hidden');
       document.getElementById('mainAdminContent').classList.add('flex');
 
+      applyDeviceLayoutMode(true);
+      applyRolePermissions(user?.email);
+
       loadPortalAnnouncementConfig();
-      loadSavedScores();
+      pullLatestCloudScores();
       loadSignalConfig();
       loadKnowledgeConfig();
       loadFastPassConfig();
-      loadAdminMessages();
+      if (currentUserRole === 'admin') {
+        loadAdminMessages();
+      }
 
-      // Poll messages every 15s when authenticated
       setInterval(() => {
-        if (!document.getElementById('panel-broadcast').classList.contains('hidden')) {
+        if (currentUserRole === 'admin' && !document.getElementById('panel-broadcast').classList.contains('hidden')) {
           loadAdminMessages();
         }
       }, 15000);
@@ -2298,26 +2941,18 @@
     }
 
     let lastQuoteIdx = -1;
-
     function nextOracleQuote(e) {
       if (e && window.confetti) {
-        confetti({ particleCount: 25, spread: 40, origin: { x: 0.5, y: 0.2 }, colors: ['#86BC25', '#a3e635'] });
+        confetti({ particleCount: 20, spread: 40, origin: { y: 0.2 }, colors: ['#86BC25', '#a3e635'] });
       }
       const MOOD_QUOTES = [
         { text: "Make an impact that matters — starting with not breaking production. | 成就不凡，先从别点崩系统开始。", icon: "fa-shield-halved" },
         { text: "Coffee in, deliverables out. | 咖啡入腹，交付物神速，优雅闭环。", icon: "fa-mug-hot" },
         { text: "Green dot glowing, sanity loading... 99%. | 绿点长明，理智值正在飞速回血中。", icon: "fa-battery-three-quarters" },
         { text: "Aligned, granular, and heavily caffeinated. | 颗粒度已对齐，底层逻辑已打通，咖啡因全面就绪。", icon: "fa-bullseye" },
-        { text: "May your bandwidth be wide and your meetings be emails. | 愿你网速拉满，愿所有冗长会议都化为一句邮件。", icon: "fa-envelope-open-text" },
         { text: "Behind every flawless deck is a file named 'FINAL_v8_REAL_FINAL.pptx'. | 每个惊艳成果背后，都有个叫“最终版_打死不改版”的文件。", icon: "fa-file-powerpoint" },
-        { text: "My spiritual animal is a pivot table that doesn't throw #REF! | 我的守护神兽是一张永不报错的数据透视表。", icon: "fa-table" },
-        { text: "Turning pure chaos into structured MECE bullet points since 9 AM. | 擅长把一团乱麻，梳理成无懈可击的 MECE 列表。", icon: "fa-puzzle-piece" },
-        { text: "Keep calm and blame the staging cache. | 遇事不决先清缓存，实在不行再怪网络波动。", icon: "fa-rotate" },
-        { text: "Ctrl+Z is the closest thing we have to a time machine. | Ctrl+Z 是人类目前距离时光机最近的一项伟大发明。", icon: "fa-clock-rotate-left" },
-        { text: "Adding a green dot to the end of every sentence makes it 50% smarter. | 在每句话末尾加个小绿点，看起来会聪明 50%。", icon: "fa-circle-dot" },
-        { text: "Together makes progress — especially when ordering team boba. | 众行致远——尤其是在全组一起拼单点奶茶的时候。", icon: "fa-users" }
+        { text: "Turning pure chaos into structured MECE bullet points since 9 AM. | 擅长把一团乱麻，梳理成无懈可击的 MECE 列表。", icon: "fa-puzzle-piece" }
       ];
-
       let nextIdx;
       do {
         nextIdx = Math.floor(Math.random() * MOOD_QUOTES.length);
@@ -2325,11 +2960,8 @@
       lastQuoteIdx = nextIdx;
 
       const q = MOOD_QUOTES[nextIdx];
-      const quoteEl = document.getElementById('oracleQuote');
-      const iconEl = document.getElementById('oracleIcon');
-
-      if (quoteEl) quoteEl.textContent = q.text;
-      if (iconEl && q.icon) iconEl.className = `fa-solid ${q.icon}`;
+      document.getElementById('oracleQuote').textContent = q.text;
+      document.getElementById('oracleIcon').className = `fa-solid ${q.icon}`;
     }
   </script>
 </body>
