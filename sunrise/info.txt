@@ -35,7 +35,7 @@ SETTLEMENT_MINUTES = 120
 # ROLE_MODE = off -> everyone sees everything.
 ROLE_MODE = on
 # Seconds a player is locked out of evidence after switching role (discourages role-hopping).
-ROLE_SWITCH_COOLDOWN = 60
+ROLE_SWITCH_COOLDOWN = 300
 # Seconds added to the team's time for each wrong override answer.
 STRIKE_PENALTY_SECONDS = 60
 # Seconds added for hint 1, 2 and 3 of each override question (comma-separated).
