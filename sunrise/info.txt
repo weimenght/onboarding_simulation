@@ -22,6 +22,22 @@ FALLBACK_NODE2_KEY = GUARDIAN
 FALLBACK_NODE3_KEY = TOGETHER MAKES PROGRESS
 
 
+[GAME]
+# GAME_SESSION: a label for this run. Change it for each event so the leaderboard starts empty.
+GAME_SESSION = DU-2026-DAY2
+# GAME_START: the moment the facilitator says "go" (ISO format with time zone).
+# Every team's 120-minute settlement clock counts down from here.
+# Leave blank to start each team's clock when its first member joins.
+GAME_START =
+# Minutes before the rogue wire settles.
+SETTLEMENT_MINUTES = 120
+# ROLE_MODE = on  -> each player picks Forensic IT, Finance or Compliance and sees only that evidence.
+# ROLE_MODE = off -> everyone sees everything.
+ROLE_MODE = on
+# Seconds a player is locked out of evidence after switching role (discourages role-hopping).
+ROLE_SWITCH_COOLDOWN = 60
+
+
 [DIRECTORY]
 # Format: ID | Full Legal Name | Department | Role | Extension | IP Address
 EMP001 | Victoria Vance   | Executive             | Chief Executive Officer | 2885 | 10.45.99.201
@@ -88,6 +104,26 @@ Daniel Reyes (EMP002)     | FTV-PROD-01             | Standard User      | false
 Priya Castillo (EMP009)   | Model Training DB       | Standard User      | false
 Karim Castillo (EMP047)   | FTV-PROD-01             | Administrator (VP) | true
 Elena Petrov (EMP051)     | Model Training DB       | Administrator (VP) | true
+
+
+[CHANGE_TICKETS]
+# Change ticket register (Security tab, Compliance role)
+# Format: Ticket | Activity | Requested By | Approved By | Status
+CHG-4410 | Sandbox data scrub & routine scan            | Marcus Bergstrom (EMP004) | Elena Petrov (EMP051) — VP, Finance               | Approved
+CHG-4417 | Privilege escalation — ML pipeline           | Nia Bergstrom (EMP041)    | Elena Petrov (EMP051) — VP, Finance               | Approved
+CHG-4425 | Privilege escalation — production hotfix     | Layla Okafor (EMP022)     | Karim Castillo (EMP047) — VP, Growth & Marketing  | Approved
+CHG-4450 | Mass record deletion — duplicate invoices    | Priya Castillo (EMP009)   | Elena Petrov (EMP051) — VP, Finance               | Approved
+CHG-4462 | PII data scrub — test environment            | Noah Nguyen (EMP012)      | Zara Malik (EMP039) — VP, Legal & Compliance      | Approved
+CHG-4468 | Automated purge — retention policy           | SYSTEM                    | Zara Malik (EMP039) — VP, Legal & Compliance      | Approved
+CHG-4470 | Anonymized data scrub — research dataset     | Leila Abara (EMP021)      | Zara Malik (EMP039) — VP, Legal & Compliance      | Approved
+CHG-4471 | Production data scrub & audit log maintenance | Marcus Bergstrom (EMP004) | —                                                 | Submitted — awaiting approval
+CHG-4472 | Audit log archive — quarterly                | Leila Abara (EMP021)      | Zara Malik (EMP039) — VP, Legal & Compliance      | Approved
+CHG-4473 | Privilege escalation — firewall maintenance  | Noah Nguyen (EMP012)      | Karim Castillo (EMP047) — VP, Growth & Marketing  | Approved
+CHG-4477 | Data scrub & masked export — QA              | Daniel Reyes (EMP002)     | Zara Malik (EMP039) — VP, Legal & Compliance      | Approved
+CHG-4478 | Customer data export — CRM migration         | Ivan Castillo (EMP006)    | Zara Malik (EMP039) — VP, Legal & Compliance      | Approved
+CHG-4482 | Anonymized Q2 data scrub — staging           | Wei Girard (EMP032)       | Karim Castillo (EMP047) — VP, Growth & Marketing  | Approved
+CHG-4485 | Database export — campaign analytics         | Kenji Ibrahim (EMP017)    | Karim Castillo (EMP047) — VP, Growth & Marketing  | Approved
+CHG-4741 | Customer record removal — GDPR request       | Samuel Sorensen (EMP003)  | Zara Malik (EMP039) — VP, Legal & Compliance      | Approved
 
 
 [EDD_WATCHLIST]
@@ -444,7 +480,7 @@ TXN8820 | 2026-06-15 | 02:10 | Redwood Trading Partners        | V8851 | 133,509
 TXN8821 | 2026-06-15 | 02:25 | Ashford Holdings & Co.          | V8828 | 308,555.59 EUR    | Controller, AP  | CLEARED
 TXN8822 | 2026-06-15 | 02:39 | Cobalt Systems & Co.            | V8843 | 418,047.72 EUR    | VP, Finance     | CLEARED
 TXN8823 | 2026-06-15 | 02:50 | Northbridge Logistics Inc       | V8809 | 598,567.84 CAD    | VP, Finance     | CLEARED
-TXN8824 | 2026-06-15 | 03:00 | APEX Shell Logistics            | V8824 | 22,000,000.00 USD | V. Vance        | CLEARED
+TXN8824 | 2026-06-15 | 03:00 | APEX Shell Logistics            | V8824 | 22,000,000.00 USD | V. Vance        | PENDING SETTLEMENT
 TXN8825 | 2026-06-15 | 03:01 | Vireo Trading Partners          | V8819 | 474,031.82 EUR    | Controller, AP  | CLEARED
 TXN8826 | 2026-06-15 | 03:02 | Waverly Systems & Co.           | V8804 | 864,567.85 DKK    | AP Supervisor   | CLEARED
 TXN8827 | 2026-06-15 | 03:04 | Everline Holdings Holdings      | V8842 | 419,051.25 DKK    | VP, Finance     | CLEARED
@@ -552,4 +588,3 @@ pTier5 | > $5,000,000  | pJur3 | FEDWIRE   | pAnom4 | TERMINATE-SESSION-DIRECT |
 puzzle1 | MARCUS BERGSTROM | MARCUS B. | M. BERGSTROM
 puzzle2 | TXN-8824 | TXN8824
 puzzle3 | VOID-WIRE-INTERCEPT | VOID WIRE INTERCEPT | VOIDWIREINTERCEPT | VOID-WIRE | VOID WIRE | VOIDWIRE
-puzzle4 | GATE-BVI-INTERCEPT | GW-BVI-INTERCEPT | GATE BVI INTERCEPT | GATE-BVI | GATEBVIINTERCEPT | GATE-EDD-04 | GATEEDD04
