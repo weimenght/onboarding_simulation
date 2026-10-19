@@ -12,11 +12,11 @@
 
   <!-- Web App Icon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23080b11'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2386BC25' stroke-width='18' stroke-opacity='0.4'/%3E%3Ctext x='215' y='330' font-family='sans-serif' font-weight='900' font-size='240' fill='%23ffffff' text-anchor='middle'%3EA%3C/text%3E%3Ccircle cx='355' cy='305' r='36' fill='%2386BC25'/%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23080b11'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2386BC25' stroke-width='18' stroke-opacity='0.4'/%3E%3Ctext x='215' y='330' font-family='sans-serif' font-weight='900' font-size='240' fill='%23ffffff' text-anchor='middle'%3EA%3C/text%3E%3Ccircle cx='355' cy='305' r='36' fill='%2386BC25'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23080b11'/%3E%3Ccircle cx='256' cy='256' r='190' fill='none' stroke='%2386BC25' stroke-width='18' stroke-opacity='0.4'/%3E%3Ctext x='215' y='330' font-family='sans-serif' font-weight='900' font-size='240' fill='%23ffffff' text-anchor='middle'%3EA%3C/text%3E%3Ccircle cx='355' cy='305' r='36' fill='%2386BC25'/%3E%3C/svg%3E">
 
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Tailwind CSS & FontAwesome -->
+  <!-- Tailwind CSS & FontAwesome 6 -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,14 +52,39 @@
   </script>
 
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
       background-color: #080b11;
       background-image:
         radial-gradient(circle at 10% 10%, rgba(134, 188, 37, 0.1) 0%, transparent 45%),
         radial-gradient(circle at 90% 85%, rgba(0, 79, 89, 0.16) 0%, transparent 50%);
       min-height: 100vh;
+      min-height: 100dvh;
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior-y: none;
+    }
+
+    /* Remove native browser number input spinners across Chrome, Safari, Edge, Firefox */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    /* Prevent iOS Safari auto-zoom when tapping inputs */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    textarea {
+      font-size: 16px !important;
     }
 
     .deloitte-dot {
@@ -69,6 +94,7 @@
       background-color: #86BC25;
       border-radius: 50%;
       margin-left: 0.1em;
+      vertical-align: baseline;
       box-shadow: 0 0 12px rgba(134, 188, 37, 0.9);
     }
 
@@ -113,9 +139,9 @@
        LOGIN GATE OVERLAY
        ========================================================== -->
   <div id="gateUtilityBar" class="fixed top-3 right-3 z-50 flex items-center gap-2">
-    <button type="button" onclick="toggleLanguage()" class="button-press px-3 py-1.5 rounded-full text-xs font-bold bg-white/10 border border-white/20 text-white backdrop-blur-md flex items-center gap-1.5">
+    <button type="button" onclick="toggleLanguage()" class="button-press h-8 px-3 rounded-full text-xs font-bold bg-white/10 border border-white/20 text-white backdrop-blur-md flex items-center gap-1.5 shadow-lg">
       <i class="fa-solid fa-language text-deloitte-green"></i>
-      <span class="lang-toggle-text">EN</span>
+      <span class="lang-toggle-text font-mono">EN</span>
     </button>
   </div>
 
@@ -128,26 +154,26 @@
           <i class="fa-solid fa-mobile-screen-button"></i>
         </div>
         <div>
-          <h1 class="text-2xl font-black text-white">Admin Mobile<span class="deloitte-dot"></span></h1>
-          <p class="text-xs text-gray-400 mt-1" data-i18n="gateSubtitle">现场工作人员与站点裁判端</p>
+          <h1 class="text-2xl font-black text-white tracking-tight">Admin Mobile<span class="deloitte-dot"></span></h1>
+          <p class="text-xs text-gray-400 mt-1" data-i18n="gateSubtitle">请使用管理员或站点导师账号登录</p>
         </div>
       </div>
 
       <form onsubmit="handleLoginSubmit(event)" class="space-y-3.5 relative z-10 text-left">
         <div>
-          <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider" data-i18n="labelEmail">管理员邮箱</label>
+          <label for="emailInput" class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider" data-i18n="labelEmail">登录邮箱</label>
           <div class="relative">
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"><i class="fa-solid fa-envelope"></i></span>
-            <input id="emailInput" type="email" placeholder="admin@deloitte.com.cn" autocomplete="username" class="w-full h-11 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-10 pr-4 text-sm text-white" required>
+            <input id="emailInput" type="email" placeholder="admin@deloitte.com.cn" autocomplete="username" class="w-full h-11 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-10 pr-4 text-white" required>
           </div>
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider" data-i18n="labelPassword">登录密码</label>
+          <label for="passwordInput" class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-wider" data-i18n="labelPassword">登录密码</label>
           <div class="relative">
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"><i class="fa-solid fa-lock"></i></span>
-            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full h-11 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-10 pr-10 text-sm text-white" required>
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs p-1">
+            <input id="passwordInput" type="password" placeholder="••••••••••••" autocomplete="current-password" class="w-full h-11 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-10 pr-10 text-white" required>
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs p-1.5">
               <i id="toggleEyeIcon" class="fa-solid fa-eye"></i>
             </button>
           </div>
@@ -171,33 +197,30 @@
        ========================================================== -->
   <div id="mainAdminContent" class="hidden flex-col min-h-screen pb-24">
 
-    <!-- Compact Mobile App Header -->
+    <!-- Compact Overflow-Proof Mobile App Header -->
     <header class="sticky top-0 z-30 bg-[#080b11]/95 backdrop-blur-md border-b border-white/10 safe-top">
-      <div class="max-w-md mx-auto px-4 h-14 flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2 min-w-0">
-          <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-xs font-black shrink-0">
+      <div class="max-w-md mx-auto px-3.5 h-14 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <div class="w-7 h-7 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-xs font-black shrink-0">
             <i class="fa-solid fa-bolt"></i>
           </div>
-          <div class="min-w-0">
-            <div class="flex items-center gap-1.5">
-              <span class="font-black text-base tracking-tight text-white truncate">Admin<span class="deloitte-dot"></span></span>
-              <button type="button" onclick="switchMobileTab('reset')" id="headerScaleBadge" class="text-[10px] font-mono font-extrabold px-2 py-0.5 rounded-full bg-lime-400/15 text-lime-300 border border-lime-400/30 shrink-0">
-                FP-36
-              </button>
-            </div>
+          <div class="flex items-center gap-1.5 min-w-0 overflow-hidden">
+            <span class="font-black text-sm tracking-tight text-white truncate">DL Admin<span class="deloitte-dot"></span></span>
+            <span id="headerRoleBadge" class="text-[9px] font-mono font-extrabold px-1.5 py-0.5 rounded-md bg-deloitte-green/20 text-deloitte-green border border-deloitte-green/40 shrink-0 whitespace-nowrap">ADMIN</span>
+            <span id="headerScaleBadge" class="text-[9px] font-mono font-extrabold px-1.5 py-0.5 rounded-md bg-lime-400/15 text-lime-300 border border-lime-400/30 shrink-0 whitespace-nowrap">FP-36</span>
           </div>
         </div>
 
         <div class="flex items-center gap-1.5 shrink-0">
-          <a href="https://projectsunrise.win/A1" target="_blank" class="button-press h-8 px-2.5 rounded-full text-[11px] font-bold bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30 flex items-center gap-1">
+          <a href="https://projectsunrise.win/A1" target="_blank" class="button-press h-7 px-2.5 rounded-full text-[11px] font-bold bg-deloitte-green/15 text-deloitte-green border border-deloitte-green/30 flex items-center justify-center gap-1 whitespace-nowrap">
             <i class="fa-solid fa-mobile-screen text-[10px]"></i>
             <span data-i18n="btnOpenParticipant">学员端</span>
           </a>
-          <button type="button" onclick="toggleLanguage()" class="button-press h-8 px-2.5 rounded-full text-[11px] font-bold bg-white/10 border border-white/15 text-white flex items-center gap-1">
+          <button type="button" onclick="toggleLanguage()" class="button-press h-7 px-2.5 rounded-full text-[11px] font-bold bg-white/10 border border-white/15 text-white flex items-center justify-center gap-1 whitespace-nowrap">
             <i class="fa-solid fa-language text-deloitte-green text-xs"></i>
             <span class="lang-toggle-text font-mono">EN</span>
           </button>
-          <button type="button" onclick="handleLogout()" class="button-press w-8 h-8 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-rose-400 flex items-center justify-center text-xs" title="Sign Out">
+          <button type="button" onclick="handleLogout()" class="button-press w-7 h-7 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-rose-400 flex items-center justify-center text-xs" title="Sign Out">
             <i class="fa-solid fa-power-off"></i>
           </button>
         </div>
@@ -205,41 +228,39 @@
     </header>
 
     <!-- Main Mobile Viewport (Max-Width 448px) -->
-    <main class="flex-1 max-w-md mx-auto w-full px-3.5 py-4 space-y-4">
+    <main class="flex-1 max-w-md mx-auto w-full px-3.5 py-3.5 space-y-3.5">
 
       <!-- ==========================================================
-           TAB 1: SCORES (DEFAULT FOR STATION JUDGES - SAFE MERGE SAVE)
+           TAB 1: 6-STATION SCORES (ADMIN & FACULTY/HR/ORG/RRG/STATION)
            ========================================================== -->
       <section id="panel-scores" class="space-y-3.5">
         
-        <!-- Top Judge Bar: Station Selector + Pin My Station Toggle -->
-        <div class="p-3.5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
+        <!-- Step 1: Station Selector + Pin My Station Toggle -->
+        <div class="p-3.5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-2.5">
           <div class="flex items-center justify-between gap-2">
-            <div class="flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded-full bg-amber-400 text-black font-black text-[10px] flex items-center justify-center">1</span>
-              <span class="text-xs font-extrabold text-white uppercase tracking-wider" data-i18n="step1Station">选择执裁站点</span>
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-4 h-4 rounded-full bg-amber-400 text-black font-black text-[10px] flex items-center justify-center shrink-0">1</span>
+              <span class="text-xs font-extrabold text-white uppercase tracking-wider truncate" data-i18n="step1Station">选择执裁站点</span>
             </div>
 
-            <!-- Pin My Station Button -->
             <button type="button" onclick="togglePinCurrentStation()" id="btnPinStation"
-              class="button-press px-2.5 py-1 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition-all bg-white/5 border-white/15 text-gray-300">
+              class="button-press h-7 px-2.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition-all bg-white/5 border-white/15 text-gray-300 shrink-0 whitespace-nowrap">
               <i class="fa-solid fa-thumbtack text-[10px]"></i>
               <span id="pinStationLabel" data-i18n="btnPinStation">锁定此站</span>
             </button>
           </div>
 
-          <!-- 2x3 Compact Station Grid -->
           <div class="grid grid-cols-2 gap-2" id="stationButtonsGrid"></div>
         </div>
 
         <!-- Step 2: 6 Rounds Selector Bar -->
         <div class="p-3.5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-2.5">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded-full bg-amber-400 text-black font-black text-[10px] flex items-center justify-center">2</span>
-              <span class="text-xs font-extrabold text-white uppercase tracking-wider" data-i18n="step2Round">选择当前轮次</span>
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-4 h-4 rounded-full bg-amber-400 text-black font-black text-[10px] flex items-center justify-center shrink-0">2</span>
+              <span class="text-xs font-extrabold text-white uppercase tracking-wider truncate" data-i18n="step2Round">选择当前轮次</span>
             </div>
-            <span id="activeStationRoundBadge" class="text-[11px] font-mono text-deloitte-green font-bold"></span>
+            <span id="activeStationRoundBadge" class="text-[11px] font-mono text-deloitte-green font-bold shrink-0"></span>
           </div>
 
           <div class="grid grid-cols-6 gap-1.5" id="roundButtonsGrid"></div>
@@ -247,17 +268,17 @@
 
         <!-- Step 3: One-Handed Team & Score Rows -->
         <div class="p-3.5 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded-full bg-deloitte-green text-black font-black text-[10px] flex items-center justify-center">3</span>
-              <span id="layer3TitleText" class="text-xs font-black text-white">录入本轮得分</span>
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-4 h-4 rounded-full bg-deloitte-green text-black font-black text-[10px] flex items-center justify-center shrink-0">3</span>
+              <span id="layer3TitleText" class="text-xs font-black text-white truncate">录入本轮得分</span>
             </div>
-            <div class="flex items-center gap-2.5">
-              <button type="button" onclick="pullLatestCloudScores()" class="text-[11px] text-deloitte-green font-bold flex items-center gap-1" title="Sync latest from cloud">
+            <div class="flex items-center gap-2.5 shrink-0">
+              <button type="button" onclick="pullLatestCloudScores()" class="text-[11px] text-deloitte-green font-bold flex items-center gap-1 whitespace-nowrap">
                 <i class="fa-solid fa-rotate text-[10px]"></i>
                 <span data-i18n="btnPullCloud">同步云端</span>
               </button>
-              <button type="button" onclick="clearActiveRoundInputs()" class="text-[11px] text-gray-400 hover:text-rose-400 font-bold flex items-center gap-1">
+              <button type="button" onclick="clearActiveRoundInputs()" class="text-[11px] text-gray-400 hover:text-rose-400 font-bold flex items-center gap-1 whitespace-nowrap">
                 <i class="fa-solid fa-eraser text-[10px]"></i>
                 <span data-i18n="btnClearRound">清空本轮</span>
               </button>
@@ -272,7 +293,7 @@
 
           <!-- Column Headers -->
           <div class="grid grid-cols-12 gap-2 px-2 text-[10px] font-mono font-bold text-gray-400 uppercase">
-            <div class="col-span-2">SLOT</div>
+            <div class="col-span-2 text-center">SLOT</div>
             <div class="col-span-5 text-center" data-i18n="colTeamNum">组号 (Team #)</div>
             <div class="col-span-5 text-center" data-i18n="colScoreVal">得分 (0-100)</div>
           </div>
@@ -280,14 +301,14 @@
           <!-- 1-Row-Per-Team Container -->
           <div id="mobileScoreRowsContainer" class="space-y-2"></div>
 
-          <!-- Sticky-feel Save Action Box -->
+          <!-- Save Action Box -->
           <div class="pt-2 border-t border-white/10 space-y-2">
             <div id="scoresSaveStatusBadge" class="text-[11px] text-gray-400 flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-shield-halved text-deloitte-green"></i>
-              <span data-i18n="safeMergeNote">多裁判安全模式：仅合并保存当前站点本轮分数</span>
+              <i class="fa-solid fa-shield-halved text-deloitte-green shrink-0"></i>
+              <span class="truncate" data-i18n="safeMergeNote">多裁判安全模式：仅合并保存当前站点本轮分数</span>
             </div>
             <button type="button" onclick="saveActiveRoundSafeMerge()" id="btnSaveScoresMain"
-              class="button-press w-full h-12 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20">
+              class="button-press w-full h-11 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20">
               <i class="fa-solid fa-cloud-arrow-up"></i>
               <span data-i18n="btnSaveRound">保存并同步本轮得分</span>
             </button>
@@ -297,7 +318,187 @@
       </section>
 
       <!-- ==========================================================
-           TAB 2: BROADCAST & COMMUNITY WALL MODERATION (MC VIEW)
+           TAB 2: PROJECT SUNRISE SCORES (ADMIN & FACULTY/HR/ORG/RRG/STATION)
+           ========================================================== -->
+      <section id="panel-sunrise" class="hidden space-y-3.5">
+        <div class="p-3.5 rounded-2xl bg-deloitte-cardbg border border-amber-500/30 card-shadow space-y-3.5">
+          
+          <div class="flex items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-sun text-amber-400 text-xs shrink-0"></i>
+                <h2 class="text-sm font-black text-white truncate" data-i18n="sunriseScoreTitle">Project Sunrise 日出计划计分</h2>
+              </div>
+              <p class="text-[11px] text-gray-400 truncate mt-0.5" data-i18n="sunriseScoreSub">按组号录入各队日出计划得分（自动计入总榜）</p>
+            </div>
+            <span id="sunriseRecordedCountBadge" class="h-7 px-2.5 rounded-lg bg-amber-400/15 border border-amber-400/30 text-[11px] font-mono font-bold text-amber-300 flex items-center shrink-0">0 / 36</span>
+          </div>
+
+          <!-- Search & Action Bar -->
+          <div class="flex items-center justify-between gap-2">
+            <div class="relative flex-1">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+              <input type="text" id="sunriseTeamSearchInput" oninput="filterSunriseTeamCards()" data-i18n-placeholder="searchTeamPlaceholder" placeholder="搜组号 (如 08)..."
+                class="w-full h-9 bg-black/60 border border-white/15 focus:border-amber-400 focus:outline-none rounded-xl pl-8 pr-3 text-white">
+            </div>
+            <button type="button" onclick="pullLatestCloudScores()" class="button-press h-9 px-2.5 rounded-xl bg-white/5 border border-white/10 text-[11px] font-bold text-gray-200 flex items-center gap-1 shrink-0 whitespace-nowrap">
+              <i class="fa-solid fa-rotate text-[10px] text-amber-400"></i>
+              <span data-i18n="btnPullCloud">同步</span>
+            </button>
+            <button type="button" onclick="clearAllSunriseInputs()" class="button-press h-9 px-2.5 rounded-xl bg-white/5 border border-white/10 text-[11px] font-bold text-gray-400 hover:text-rose-400 flex items-center gap-1 shrink-0 whitespace-nowrap">
+              <i class="fa-solid fa-eraser text-[10px]"></i>
+              <span data-i18n="btnClearSunrise">清空</span>
+            </button>
+          </div>
+
+          <!-- 2-Column Mobile Team Grid -->
+          <div id="sunriseTeamsGridContainer" class="grid grid-cols-2 gap-2 pt-0.5"></div>
+
+          <!-- Save Footer -->
+          <div class="pt-2 border-t border-white/10 space-y-2">
+            <div id="sunriseSaveStatusBadge" class="text-[11px] text-gray-400 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-shield-halved text-amber-400 shrink-0"></i>
+              <span class="truncate" data-i18n="sunriseSafeMergeNote">安全合并模式：仅更新日出计划得分</span>
+            </div>
+            <button type="button" onclick="saveSunriseScoresSafeMerge()" id="btnSaveSunriseMain"
+              class="button-press w-full h-11 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span data-i18n="btnSaveSunrise">保存并同步日出计划得分</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           TAB 3: CONFIG & TOOLS (ADMIN & FACULTY/HR/ORG/RRG/STATION)
+           ========================================================== -->
+      <section id="panel-hub" class="hidden space-y-3">
+        
+        <!-- Mood Oracle Card -->
+        <div class="bg-gradient-to-r from-deloitte-green/10 via-deloitte-teal/15 to-transparent border border-deloitte-green/30 rounded-2xl p-3.5 flex items-center justify-between gap-2.5 shadow-md">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-sm shrink-0">
+              <i id="oracleIcon" class="fa-solid fa-bolt"></i>
+            </div>
+            <div id="oracleQuote" class="text-xs font-semibold text-gray-200 line-clamp-2">成就不凡，先从别点崩系统开始。</div>
+          </div>
+          <button type="button" onclick="nextOracleQuote(event)" class="button-press shrink-0 w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 text-deloitte-green text-xs font-bold flex items-center justify-center">
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+        </div>
+
+        <!-- Slide-Over Config Trigger Cards -->
+        <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-2.5">
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400" data-i18n="secConfigDrawers">配置面板 (点击滑出全屏编辑)</h3>
+
+          <div onclick="openConfigDrawer('fastpass')" class="button-press p-3.5 rounded-xl bg-black/40 border border-lime-400/30 flex items-center justify-between gap-2 cursor-pointer">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-lime-400/15 text-lime-400 flex items-center justify-center text-sm shrink-0">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="text-xs font-black text-white truncate" data-i18n="fpConfigBtn">FastPass 场地与时间</div>
+                <div class="text-[10px] text-gray-400 truncate mt-0.5" data-i18n="fpDescShort">修改 6 站房间名称与 6 轮时间段</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-lime-400 shrink-0"></i>
+          </div>
+
+          <div onclick="openConfigDrawer('signal')" class="button-press p-3.5 rounded-xl bg-black/40 border border-deloitte-green/30 flex items-center justify-between gap-2 cursor-pointer">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-deloitte-green/15 text-deloitte-green flex items-center justify-center text-sm shrink-0">
+                <i class="fa-solid fa-tower-broadcast"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="text-xs font-black text-white truncate" data-i18n="signalTitle">D.Signal 信号解密词库</div>
+                <div class="text-[10px] text-gray-400 truncate mt-0.5" data-i18n="signalDesc">自定义 3 轮双语猜词词库</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-deloitte-green shrink-0"></i>
+          </div>
+
+          <div onclick="openConfigDrawer('kc')" class="button-press p-3.5 rounded-xl bg-black/40 border border-emerald-500/30 flex items-center justify-between gap-2 cursor-pointer">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-sm shrink-0">
+                <i class="fa-solid fa-brain"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="text-xs font-black text-white truncate" data-i18n="kcTitle">Knowledge Clash 题库</div>
+                <div class="text-[10px] text-gray-400 truncate mt-0.5" data-i18n="kcDesc">自定义双语四选一抢答题库</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-emerald-400 shrink-0"></i>
+          </div>
+        </div>
+
+        <!-- Quick Station Launchers -->
+        <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-2.5">
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400" data-i18n="secQuickLaunch">站点大屏与工具直达</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <a href="https://www.projectsunrise.win/signal" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate">D.Signal</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-deloitte-green shrink-0"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/knowledge" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate">Knowledge Clash</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-emerald-400 shrink-0"></i>
+            </a>
+            <a href="https://projectsunrise.win/qr" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate" data-i18n="qrTitle">QR 打卡码</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-teal-400 shrink-0"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/bc" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate">Chemistry</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-cyan-400 shrink-0"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/sunrise" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate" data-i18n="portalHome">Sunrise 主站</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-amber-400 shrink-0"></i>
+            </a>
+            <a href="https://www.projectsunrise.win/game" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
+              <span class="truncate">D-Rush</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-deloitte-green shrink-0"></i>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 pt-1">
+            <a href="https://projectsunrise.win/fastpass/24" target="_blank" class="button-press py-2 px-2 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-300 font-bold text-[11px] text-center">FP-24</a>
+            <a href="https://projectsunrise.win/fastpass/36" target="_blank" class="button-press py-2 px-2 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-300 font-bold text-[11px] text-center">FP-36</a>
+            <a href="https://projectsunrise.win/fastpass/48" target="_blank" class="button-press py-2 px-2 rounded-xl bg-lime-400/15 border border-lime-400/30 text-lime-300 font-bold text-[11px] text-center">FP-48</a>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==========================================================
+           TAB 4: EXPANDABLE STANDINGS CARDS (MASTER ADMIN ONLY)
+           ========================================================== -->
+      <section id="panel-leaderboard" class="hidden space-y-3.5">
+        <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <h2 class="text-sm font-black text-white uppercase tracking-wider truncate" data-i18n="fullLeaderboardTitle">全员实时总榜</h2>
+              <p class="text-[11px] text-gray-400 truncate mt-0.5" data-i18n="tapToExpandHint">点击任意队伍展开 6 站与日出计划明细</p>
+            </div>
+            <button type="button" onclick="pullLatestCloudScores()" class="button-press h-8 px-3 rounded-xl bg-deloitte-green text-black font-extrabold text-xs flex items-center gap-1 shrink-0 whitespace-nowrap">
+              <i class="fa-solid fa-rotate-right text-[10px]"></i>
+              <span data-i18n="btnRefresh">刷新</span>
+            </button>
+          </div>
+
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+            <input type="text" id="leaderboardSearchInput" oninput="renderMobileLeaderboardCards()" data-i18n-placeholder="searchTeamPlaceholder" placeholder="搜组号 (如 08)..."
+              class="w-full h-9 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-8 pr-3 text-white">
+          </div>
+
+          <div id="mobileLeaderboardContainer" class="space-y-2 pt-1"></div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           TAB 5: BROADCAST & COMMUNITY WALL MODERATION (MASTER ADMIN ONLY)
            ========================================================== -->
       <section id="panel-broadcast" class="hidden space-y-4">
         
@@ -311,7 +512,7 @@
             <span id="announcementSyncBadge" class="text-[10px] font-mono text-gray-500"></span>
           </div>
 
-          <!-- 1-Tap Bilingual Broadcast Preset Chips -->
+          <!-- 1-Tap Bilingual Broadcast Presets -->
           <div class="space-y-1">
             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider" data-i18n="lblQuickPresets">一键填入常用双语通知：</span>
             <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
@@ -333,13 +534,13 @@
           <div class="space-y-2.5">
             <div>
               <label class="block text-[11px] font-bold text-gray-300 mb-1" data-i18n="lblAnnouncementZH">中文通知</label>
-              <textarea id="adminAnnounceZH" rows="2" placeholder="输入中文广播内容..."
-                class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs text-white leading-relaxed resize-none"></textarea>
+              <textarea id="adminAnnounceZH" rows="2" data-i18n-placeholder="announceZhPlaceholder" placeholder="输入中文广播内容..."
+                class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-white leading-relaxed resize-none"></textarea>
             </div>
             <div>
               <label class="block text-[11px] font-bold text-gray-400 mb-1" data-i18n="lblAnnouncementEN">English Notice</label>
-              <textarea id="adminAnnounceEN" rows="2" placeholder="Enter English broadcast..."
-                class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-xs text-white leading-relaxed resize-none"></textarea>
+              <textarea id="adminAnnounceEN" rows="2" data-i18n-placeholder="announceEnPlaceholder" placeholder="Enter English broadcast..."
+                class="w-full bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-2.5 text-white leading-relaxed resize-none"></textarea>
             </div>
           </div>
 
@@ -351,7 +552,7 @@
             <button type="button" onclick="savePortalAnnouncementConfig()"
               class="button-press flex-1 h-10 rounded-xl bg-deloitte-green hover:bg-emerald-400 text-black font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
               <i class="fa-solid fa-paper-plane"></i>
-              <span id="announceBtnText" data-i18n="btnPublishAnnouncement">立即发布广播</span>
+              <span data-i18n="btnPublishAnnouncement">立即发布广播</span>
             </button>
           </div>
           <div id="announceSaveStatus" class="text-[11px] text-center text-gray-400"></div>
@@ -365,7 +566,7 @@
               <h2 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="modWallTitle">留言墙实时管理</h2>
               <span id="adminMsgCountBadge" class="text-[10px] font-mono text-teal-300 bg-teal-500/10 px-2 py-0.5 rounded-full border border-teal-500/20">0</span>
             </div>
-            <button type="button" onclick="loadAdminMessages()" class="button-press px-2.5 py-1 rounded-lg bg-white/10 text-white font-bold text-xs flex items-center gap-1">
+            <button type="button" onclick="loadAdminMessages()" class="button-press h-7 px-2.5 rounded-lg bg-white/10 text-white font-bold text-xs flex items-center gap-1 whitespace-nowrap">
               <i class="fa-solid fa-rotate-right text-teal-400 text-[10px]"></i>
               <span data-i18n="btnRefresh">刷新</span>
             </button>
@@ -373,8 +574,8 @@
 
           <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
-            <input type="text" id="adminMsgSearchInput" oninput="renderAdminMessagesList()" placeholder="搜索留言或花名..."
-              class="w-full h-9 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-xl pl-8 pr-3 text-xs text-white">
+            <input type="text" id="adminMsgSearchInput" oninput="renderAdminMessagesList()" data-i18n-placeholder="searchMsgPlaceholder" placeholder="搜索留言或花名..."
+              class="w-full h-9 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-xl pl-8 pr-3 text-white">
           </div>
 
           <div id="adminMessagesContainer" class="max-h-96 overflow-y-auto space-y-2 pr-0.5"></div>
@@ -383,132 +584,7 @@
       </section>
 
       <!-- ==========================================================
-           TAB 3: EXPANDABLE MOBILE STANDINGS CARDS
-           ========================================================== -->
-      <section id="panel-leaderboard" class="hidden space-y-3.5">
-        <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-3">
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="text-sm font-black text-white uppercase tracking-wider" data-i18n="fullLeaderboardTitle">全员实时总榜</h2>
-              <p class="text-[11px] text-gray-400 mt-0.5" data-i18n="tapToExpandHint">点击任意队伍可展开 6 站得分明细</p>
-            </div>
-            <button type="button" onclick="pullLatestCloudScores()" class="button-press px-3 py-1.5 rounded-xl bg-deloitte-green text-black font-extrabold text-xs flex items-center gap-1">
-              <i class="fa-solid fa-rotate-right text-[10px]"></i>
-              <span data-i18n="btnRefresh">刷新</span>
-            </button>
-          </div>
-
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
-            <input type="text" id="leaderboardSearchInput" oninput="renderMobileLeaderboardCards()" placeholder="搜索队伍编号 (如 08)..."
-              class="w-full h-9 bg-black/60 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-8 pr-3 text-xs text-white">
-          </div>
-
-          <!-- Expandable Cards List -->
-          <div id="mobileLeaderboardContainer" class="space-y-2 pt-1"></div>
-        </div>
-      </section>
-
-      <!-- ==========================================================
-           TAB 4: TOOLS & SLIDE-OVER CONFIG DRAWERS
-           ========================================================== -->
-      <section id="panel-hub" class="hidden space-y-3">
-        
-        <!-- Mood Oracle Card -->
-        <div class="bg-gradient-to-r from-deloitte-green/10 via-deloitte-teal/15 to-transparent border border-deloitte-green/30 rounded-2xl p-3.5 flex items-center justify-between gap-2.5 shadow-md">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 flex items-center justify-center text-deloitte-green text-sm shrink-0">
-              <i id="oracleIcon" class="fa-solid fa-bolt"></i>
-            </div>
-            <div id="oracleQuote" class="text-xs font-semibold text-gray-200 line-clamp-2">成就不凡，先从别点崩系统开始。</div>
-          </div>
-          <button type="button" onclick="nextOracleQuote(event)" class="button-press shrink-0 px-2.5 py-1.5 rounded-xl bg-deloitte-green/20 border border-deloitte-green/40 text-deloitte-green text-xs font-bold">
-            <i class="fa-solid fa-rotate"></i>
-          </button>
-        </div>
-
-        <!-- Slide-Over Config Trigger Cards -->
-        <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-2.5">
-          <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400" data-i18n="secConfigDrawers">核心配置面板 (点击滑出编辑)</h3>
-
-          <!-- FastPass Venues & Times Drawer Button -->
-          <div onclick="openConfigDrawer('fastpass')" class="button-press p-3.5 rounded-xl bg-black/40 border border-lime-400/30 flex items-center justify-between cursor-pointer">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-lime-400/15 text-lime-400 flex items-center justify-center text-sm">
-                <i class="fa-solid fa-clock"></i>
-              </div>
-              <div>
-                <div class="text-xs font-black text-white" data-i18n="fpConfigBtn">FastPass 场地与时间</div>
-                <div class="text-[10px] text-gray-400" data-i18n="fpDescShort">修改 6 站房间名称与 6 轮时间段</div>
-              </div>
-            </div>
-            <i class="fa-solid fa-chevron-right text-xs text-lime-400"></i>
-          </div>
-
-          <!-- D.Signal Words Drawer Button -->
-          <div onclick="openConfigDrawer('signal')" class="button-press p-3.5 rounded-xl bg-black/40 border border-deloitte-green/30 flex items-center justify-between cursor-pointer">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-deloitte-green/15 text-deloitte-green flex items-center justify-center text-sm">
-                <i class="fa-solid fa-tower-broadcast"></i>
-              </div>
-              <div>
-                <div class="text-xs font-black text-white" data-i18n="signalTitle">D.Signal 信号解密词库</div>
-                <div class="text-[10px] text-gray-400" data-i18n="signalDesc">自定义 3 轮双语猜词词库</div>
-              </div>
-            </div>
-            <i class="fa-solid fa-chevron-right text-xs text-deloitte-green"></i>
-          </div>
-
-          <!-- Knowledge Clash Questions Drawer Button -->
-          <div onclick="openConfigDrawer('kc')" class="button-press p-3.5 rounded-xl bg-black/40 border border-emerald-500/30 flex items-center justify-between cursor-pointer">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-sm">
-                <i class="fa-solid fa-brain"></i>
-              </div>
-              <div>
-                <div class="text-xs font-black text-white" data-i18n="kcTitle">Knowledge Clash 题库</div>
-                <div class="text-[10px] text-gray-400" data-i18n="kcDesc">自定义双语四选一抢答题库</div>
-              </div>
-            </div>
-            <i class="fa-solid fa-chevron-right text-xs text-emerald-400"></i>
-          </div>
-        </div>
-
-        <!-- Quick Station Launchers -->
-        <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-white/10 card-shadow space-y-2.5">
-          <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400" data-i18n="secQuickLaunch">站点大屏与工具直达</h3>
-          <div class="grid grid-cols-2 gap-2">
-            <a href="https://www.projectsunrise.win/signal" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
-              <span>D.Signal</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-deloitte-green"></i>
-            </a>
-            <a href="https://www.projectsunrise.win/knowledge" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
-              <span>Knowledge Clash</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-emerald-400"></i>
-            </a>
-            <a href="https://projectsunrise.win/qr" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
-              <span>QR Check-in</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-teal-400"></i>
-            </a>
-            <a href="https://www.projectsunrise.win/bc" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
-              <span>Chemistry</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-cyan-400"></i>
-            </a>
-            <a href="https://www.projectsunrise.win/sunrise" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
-              <span>Sunrise Main</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-amber-400"></i>
-            </a>
-            <a href="https://www.projectsunrise.win/game" target="_blank" class="button-press p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs font-bold text-white">
-              <span>D-Rush Game</span>
-              <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-deloitte-green"></i>
-            </a>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- ==========================================================
-           TAB 5: COHORT SCALE & GRANULAR RESET
+           TAB 6: COHORT SCALE & GRANULAR RESET (MASTER ADMIN ONLY)
            ========================================================== -->
       <section id="panel-reset" class="hidden space-y-4">
         <div class="p-4 rounded-2xl bg-deloitte-cardbg border border-rose-500/30 card-shadow space-y-4">
@@ -560,7 +636,7 @@
             </button>
 
             <button type="button" onclick="confirmResetAction('scores')" class="button-press w-full p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-between text-xs font-bold text-rose-300">
-              <span class="flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400 w-4"></i><span data-i18n="resetScoresTitle">清空全部 6 站得分与排行榜</span></span>
+              <span class="flex items-center gap-2"><i class="fa-solid fa-trophy text-amber-400 w-4"></i><span data-i18n="resetScoresTitle">清空全部 6 站与日出计划得分</span></span>
               <i class="fa-solid fa-trash-can"></i>
             </button>
 
@@ -576,32 +652,38 @@
     </main>
 
     <!-- ==========================================================
-         FIXED THUMB-FRIENDLY BOTTOM NAVIGATION BAR (5 TABS)
+         FIXED THUMB-FRIENDLY BOTTOM NAVIGATION BAR
+         (6 Tabs for Master Admin / 3 Tabs for Faculty, HR, ORG, RRG, Station)
          ========================================================== -->
     <nav class="fixed bottom-0 inset-x-0 z-30 bg-[#080b11]/95 backdrop-blur-md border-t border-white/10 safe-bottom-nav">
-      <div class="max-w-md mx-auto grid grid-cols-5 px-2 pt-1.5">
+      <div id="mobileBottomNavGrid" class="max-w-md mx-auto grid grid-cols-6 px-1.5 pt-1.5">
         <button type="button" onclick="switchMobileTab('scores')" id="navBtn-scores" class="button-press py-1.5 flex flex-col items-center justify-center gap-1 text-deloitte-green">
-          <i class="fa-solid fa-pen-to-square text-base"></i>
-          <span class="text-[10px] font-extrabold leading-none" data-i18n="navScores">计分</span>
+          <i class="fa-solid fa-pen-to-square text-sm"></i>
+          <span class="text-[10px] font-extrabold leading-none" data-i18n="navScores">站点分</span>
         </button>
 
-        <button type="button" onclick="switchMobileTab('broadcast')" id="navBtn-broadcast" class="button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
-          <i class="fa-solid fa-bullhorn text-base"></i>
-          <span class="text-[10px] font-bold leading-none" data-i18n="navBroadcast">广播/墙</span>
-        </button>
-
-        <button type="button" onclick="switchMobileTab('leaderboard')" id="navBtn-leaderboard" class="button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
-          <i class="fa-solid fa-ranking-star text-base"></i>
-          <span class="text-[10px] font-bold leading-none" data-i18n="navStandings">总榜</span>
+        <button type="button" onclick="switchMobileTab('sunrise')" id="navBtn-sunrise" class="button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
+          <i class="fa-solid fa-sun text-sm text-amber-400"></i>
+          <span class="text-[10px] font-bold leading-none" data-i18n="navSunrise">日出分</span>
         </button>
 
         <button type="button" onclick="switchMobileTab('hub')" id="navBtn-hub" class="button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
-          <i class="fa-solid fa-cubes text-base"></i>
+          <i class="fa-solid fa-cubes text-sm"></i>
           <span class="text-[10px] font-bold leading-none" data-i18n="navTools">配置</span>
         </button>
 
-        <button type="button" onclick="switchMobileTab('reset')" id="navBtn-reset" class="button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
-          <i class="fa-solid fa-sliders text-base"></i>
+        <button type="button" onclick="switchMobileTab('leaderboard')" id="navBtn-leaderboard" class="admin-only-tab button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
+          <i class="fa-solid fa-ranking-star text-sm"></i>
+          <span class="text-[10px] font-bold leading-none" data-i18n="navStandings">总榜</span>
+        </button>
+
+        <button type="button" onclick="switchMobileTab('broadcast')" id="navBtn-broadcast" class="admin-only-tab button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
+          <i class="fa-solid fa-bullhorn text-sm"></i>
+          <span class="text-[10px] font-bold leading-none" data-i18n="navBroadcast">广播</span>
+        </button>
+
+        <button type="button" onclick="switchMobileTab('reset')" id="navBtn-reset" class="admin-only-tab button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400">
+          <i class="fa-solid fa-sliders text-sm"></i>
           <span class="text-[10px] font-bold leading-none" data-i18n="navReset">重置</span>
         </button>
       </div>
@@ -614,13 +696,13 @@
        ========================================================== -->
   <div id="drawer-fastpass" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
     <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
-      <div class="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-        <button type="button" onclick="closeConfigDrawer()" class="button-press h-8 px-3 rounded-xl bg-white/10 text-xs font-bold text-white flex items-center gap-1.5">
+      <div class="max-w-md mx-auto px-4 h-14 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeConfigDrawer()" class="button-press h-8 px-3 rounded-xl bg-white/10 text-xs font-bold text-white flex items-center gap-1.5 shrink-0">
           <i class="fa-solid fa-chevron-left text-lime-400"></i>
           <span data-i18n="btnBack">返回</span>
         </button>
-        <span class="font-black text-sm text-white" data-i18n="fpConfigBtn">FastPass 场地与时间</span>
-        <button type="button" onclick="saveFastPassConfig()" class="button-press h-8 px-3 rounded-xl bg-lime-400 text-black font-extrabold text-xs">
+        <span class="font-black text-sm text-white truncate" data-i18n="fpConfigBtn">FastPass 场地与时间</span>
+        <button type="button" onclick="saveFastPassConfig()" class="button-press h-8 px-3 rounded-xl bg-lime-400 text-black font-extrabold text-xs shrink-0">
           <span data-i18n="btnSaveShort">保存</span>
         </button>
       </div>
@@ -635,7 +717,7 @@
             <span class="text-xs font-extrabold text-lime-400" data-i18n="fpVenueLabel">6 站房间名称</span>
             <span class="text-[10px] text-gray-400 font-mono">中文 / English</span>
           </div>
-          <div id="fpVenueInputsContainer" class="space-y-2"></div>
+          <div id="fpVenueInputsContainer" class="space-y-2.5"></div>
         </div>
 
         <div class="bg-deloitte-cardbg border border-white/10 rounded-2xl p-4 space-y-3">
@@ -659,13 +741,13 @@
        ========================================================== -->
   <div id="drawer-signal" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
     <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
-      <div class="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-        <button type="button" onclick="closeConfigDrawer()" class="button-press h-8 px-3 rounded-xl bg-white/10 text-xs font-bold text-white flex items-center gap-1.5">
+      <div class="max-w-md mx-auto px-4 h-14 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeConfigDrawer()" class="button-press h-8 px-3 rounded-xl bg-white/10 text-xs font-bold text-white flex items-center gap-1.5 shrink-0">
           <i class="fa-solid fa-chevron-left text-deloitte-green"></i>
           <span data-i18n="btnBack">返回</span>
         </button>
-        <span class="font-black text-sm text-white">D.Signal Words</span>
-        <button type="button" onclick="saveSignalConfig()" class="button-press h-8 px-3 rounded-xl bg-deloitte-green text-black font-extrabold text-xs">
+        <span class="font-black text-sm text-white truncate" data-i18n="signalTitle">D.Signal 信号解密词库</span>
+        <button type="button" onclick="saveSignalConfig()" class="button-press h-8 px-3 rounded-xl bg-deloitte-green text-black font-extrabold text-xs shrink-0">
           <span data-i18n="btnSaveShort">保存</span>
         </button>
       </div>
@@ -690,9 +772,9 @@
           </button>
         </div>
 
-        <div id="sigTabPanel1"><textarea id="sigInputRound1" rows="10" oninput="updateSignalLiveCounts()" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs font-mono text-gray-200"></textarea></div>
-        <div id="sigTabPanel2" class="hidden"><textarea id="sigInputRound2" rows="10" oninput="updateSignalLiveCounts()" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs font-mono text-gray-200"></textarea></div>
-        <div id="sigTabPanel3" class="hidden"><textarea id="sigInputRound3" rows="10" oninput="updateSignalLiveCounts()" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 text-xs font-mono text-gray-200"></textarea></div>
+        <div id="sigTabPanel1"><textarea id="sigInputRound1" rows="9" oninput="updateSignalLiveCounts()" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 font-mono text-gray-200"></textarea></div>
+        <div id="sigTabPanel2" class="hidden"><textarea id="sigInputRound2" rows="9" oninput="updateSignalLiveCounts()" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 font-mono text-gray-200"></textarea></div>
+        <div id="sigTabPanel3" class="hidden"><textarea id="sigInputRound3" rows="9" oninput="updateSignalLiveCounts()" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl p-3 font-mono text-gray-200"></textarea></div>
 
         <div id="signalSaveStatus" class="text-xs text-center text-gray-400"></div>
         <button id="signalSaveBtn" type="button" onclick="saveSignalConfig()" class="button-press w-full h-11 rounded-xl bg-deloitte-green text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg">
@@ -708,13 +790,13 @@
        ========================================================== -->
   <div id="drawer-kc" class="app-drawer fixed inset-0 z-50 bg-[#080b11] flex flex-col translate-x-full overflow-hidden">
     <div class="w-full border-b border-white/10 bg-[#080b11]/95 backdrop-blur-md safe-top shrink-0">
-      <div class="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-        <button type="button" onclick="closeConfigDrawer()" class="button-press h-8 px-3 rounded-xl bg-white/10 text-xs font-bold text-white flex items-center gap-1.5">
+      <div class="max-w-md mx-auto px-4 h-14 flex items-center justify-between gap-2">
+        <button type="button" onclick="closeConfigDrawer()" class="button-press h-8 px-3 rounded-xl bg-white/10 text-xs font-bold text-white flex items-center gap-1.5 shrink-0">
           <i class="fa-solid fa-chevron-left text-emerald-400"></i>
           <span data-i18n="btnBack">返回</span>
         </button>
-        <span class="font-black text-sm text-white">Knowledge Clash</span>
-        <button type="button" onclick="saveKnowledgeConfig()" class="button-press h-8 px-3 rounded-xl bg-emerald-500 text-black font-extrabold text-xs">
+        <span class="font-black text-sm text-white truncate" data-i18n="kcTitle">Knowledge Clash 题库</span>
+        <button type="button" onclick="saveKnowledgeConfig()" class="button-press h-8 px-3 rounded-xl bg-emerald-500 text-black font-extrabold text-xs shrink-0">
           <span data-i18n="btnSaveShort">保存</span>
         </button>
       </div>
@@ -727,7 +809,7 @@
           <button type="button" onclick="insertKcTemplate()" class="text-[11px] text-emerald-400 underline font-bold shrink-0" data-i18n="btnInsertSample">填入示例</button>
         </div>
 
-        <textarea id="kcQuestionTextarea" rows="12" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-emerald-400 focus:outline-none rounded-xl p-3 text-xs font-mono text-gray-200"></textarea>
+        <textarea id="kcQuestionTextarea" rows="11" class="w-full bg-deloitte-cardbg border border-white/15 focus:border-emerald-400 focus:outline-none rounded-xl p-3 font-mono text-gray-200"></textarea>
 
         <div id="kcSaveStatus" class="text-xs text-center text-gray-400"></div>
         <button id="kcSaveBtn" type="button" onclick="saveKnowledgeConfig()" class="button-press w-full h-11 rounded-xl bg-emerald-500 text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg">
@@ -740,7 +822,7 @@
 
   <script>
     /* ==========================================================
-       SUPABASE CONFIGURATION
+       SUPABASE & ROLE-BASED ACCESS CONTROL (RBAC)
        ========================================================== */
     const SUPABASE_URL = "https://pwnvkrrnxbpxignynvuh.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ";
@@ -750,36 +832,109 @@
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
+    // Full Master Admin Emails
+    const MASTER_ADMIN_EMAILS = [
+      'admin@deloitte.com.cn',
+      'weimeng@deloitte.com.cn',
+      'zhischen@deloitte.com.cn'
+    ];
+
+    // Config & Score Input Only Emails (faculty, station, hr, org, rrg)
+    const RESTRICTED_FACULTY_EMAILS = [
+      'faculty@deloitte.com.cn',
+      'station@deloitte.com.cn',
+      'hr@deloitte.com.cn',
+      'org@deloitte.com.cn',
+      'rrg@deloitte.com.cn'
+    ];
+
+    let currentUserRole = 'admin';
+
+    function resolveUserRole(emailStr) {
+      const email = (emailStr || '').trim().toLowerCase();
+      if (MASTER_ADMIN_EMAILS.includes(email)) return 'admin';
+      if (
+        RESTRICTED_FACULTY_EMAILS.includes(email) ||
+        email.startsWith('faculty') ||
+        email.startsWith('station') ||
+        email.startsWith('hr@') ||
+        email.startsWith('org@') ||
+        email.startsWith('rrg@')
+      ) {
+        return 'faculty';
+      }
+      return 'admin';
+    }
+
+    function applyRolePermissions(emailStr) {
+      currentUserRole = resolveUserRole(emailStr);
+      const roleBadge = document.getElementById('headerRoleBadge');
+      const mobileNavGrid = document.getElementById('mobileBottomNavGrid');
+
+      if (currentUserRole === 'faculty') {
+        if (roleBadge) {
+          const emailPrefix = (emailStr || 'FACULTY').split('@')[0].toUpperCase();
+          roleBadge.textContent = emailPrefix;
+          roleBadge.className = "text-[9px] font-mono font-extrabold px-1.5 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/40 shrink-0 whitespace-nowrap";
+        }
+        document.querySelectorAll('.admin-only-tab').forEach(el => el.classList.add('hidden'));
+        if (mobileNavGrid) {
+          mobileNavGrid.classList.remove('grid-cols-6');
+          mobileNavGrid.classList.add('grid-cols-3');
+        }
+        switchMobileTab('scores');
+      } else {
+        if (roleBadge) {
+          roleBadge.textContent = "ADMIN";
+          roleBadge.className = "text-[9px] font-mono font-extrabold px-1.5 py-0.5 rounded-md bg-deloitte-green/20 text-deloitte-green border border-deloitte-green/40 shrink-0 whitespace-nowrap";
+        }
+        document.querySelectorAll('.admin-only-tab').forEach(el => el.classList.remove('hidden'));
+        if (mobileNavGrid) {
+          mobileNavGrid.classList.remove('grid-cols-3');
+          mobileNavGrid.classList.add('grid-cols-6');
+        }
+        switchMobileTab('scores');
+      }
+    }
+
     /* ==========================================================
        BILINGUAL DICTIONARY (CONCISE & NO EMOJIS)
        ========================================================== */
     const I18N = {
       zh: {
         langToggle: "EN",
-        gateSubtitle: "现场工作人员与站点裁判端",
-        labelEmail: "管理员邮箱",
+        gateSubtitle: "请使用管理员或站点导师账号登录",
+        labelEmail: "登录邮箱",
         labelPassword: "登录密码",
         btnSignIn: "进入移动控制台",
         btnOpenParticipant: "学员端",
         btnBack: "返回",
         btnSaveShort: "保存",
         btnRefresh: "刷新",
-        navScores: "计分",
-        navBroadcast: "广播/墙",
-        navStandings: "总榜",
+        navScores: "站点分",
+        navSunrise: "日出分",
         navTools: "配置",
+        navStandings: "总榜",
+        navBroadcast: "广播",
         navReset: "重置",
         step1Station: "选择执裁站点",
         btnPinStation: "锁定此站",
         btnPinnedStation: "已锁定此站",
         step2Round: "选择当前轮次",
-        btnPullCloud: "同步云端",
+        btnPullCloud: "同步",
         btnClearRound: "清空本轮",
         colTeamNum: "组号 (Team #)",
         colScoreVal: "得分 (0-100)",
         safeMergeNote: "多裁判安全模式：仅合并保存当前站点本轮分数",
         unsavedRoundNote: "当前轮次有未保存修改，请点击下方保存",
         btnSaveRound: "保存并同步本轮得分",
+        sunriseScoreTitle: "Project Sunrise 日出计划计分",
+        sunriseScoreSub: "按组号录入各队日出计划得分（自动计入总榜）",
+        btnClearSunrise: "清空",
+        sunriseSafeMergeNote: "安全合并模式：仅更新日出计划得分",
+        sunriseUnsavedNote: "日出计划有未保存修改，请点击下方保存",
+        btnSaveSunrise: "保存并同步日出计划得分",
+        thSunrise: "日出计划",
         secAnnouncement: "现场广播推送",
         lblQuickPresets: "一键填入常用双语通知：",
         preset0Btn: "倒计时 5 分钟",
@@ -788,14 +943,18 @@
         preset3Btn: "全员返回主会场",
         lblAnnouncementZH: "中文通知",
         lblAnnouncementEN: "English Notice",
+        announceZhPlaceholder: "输入中文广播内容...",
+        announceEnPlaceholder: "Enter English broadcast...",
         btnClearBroadcast: "清空",
         btnPublishAnnouncement: "立即发布广播",
         modWallTitle: "留言墙实时管理",
+        searchMsgPlaceholder: "搜索留言或花名...",
         modEmptyMessages: "当前没有学员留言",
         btnDeleteMsg: "删除",
         fullLeaderboardTitle: "全员实时总榜",
-        tapToExpandHint: "点击任意队伍可展开 6 站得分明细",
-        secConfigDrawers: "核心配置面板 (点击滑出编辑)",
+        tapToExpandHint: "点击任意队伍展开 6 站与日出计划明细",
+        searchTeamPlaceholder: "搜组号 (如 08)...",
+        secConfigDrawers: "配置面板 (点击滑出全屏编辑)",
         fpConfigBtn: "FastPass 场地与时间",
         fpDescShort: "修改 6 站房间名称与 6 轮时间段",
         fpVenueLabel: "6 站房间名称",
@@ -812,6 +971,8 @@
         saveQuestionsBtn: "保存题库",
         btnInsertSample: "填入示例",
         secQuickLaunch: "站点大屏与工具直达",
+        qrTitle: "QR 打卡码",
+        portalHome: "Sunrise 主站",
         resetTitle: "全局规模设定与数据清理",
         resetSubtitle: "切换全场总组数，或按需清空各项活动数据",
         resetCohortHeader: "全场小组规模 (Cohort Scale)",
@@ -819,7 +980,7 @@
         resetVenuesTitle: "清空 6 站地点名称",
         resetTimesTitle: "清空 6 轮时间段",
         btnResetMessages: "清空全部留言墙",
-        resetScoresTitle: "清空全部 6 站得分与排行榜",
+        resetScoresTitle: "清空全部 6 站与日出计划得分",
         btnMasterReset: "一键重置全场数据 (需输入 RESET)",
         st0: "一起拼未来",
         st1: "职业道德之树",
@@ -830,30 +991,38 @@
       },
       en: {
         langToggle: "中",
-        gateSubtitle: "Mobile Console for Judges & MCs",
-        labelEmail: "Admin Email",
+        gateSubtitle: "Sign in with Admin or Station Faculty credentials",
+        labelEmail: "Email Address",
         labelPassword: "Password",
         btnSignIn: "Sign In",
         btnOpenParticipant: "Hub",
         btnBack: "Back",
         btnSaveShort: "Save",
         btnRefresh: "Refresh",
-        navScores: "Scores",
-        navBroadcast: "Broadcast",
+        navScores: "Stations",
+        navSunrise: "Sunrise",
+        navTools: "Config",
         navStandings: "Standings",
-        navTools: "Tools",
+        navBroadcast: "Broadcast",
         navReset: "Reset",
         step1Station: "Select Station",
         btnPinStation: "Pin Station",
         btnPinnedStation: "Station Pinned",
         step2Round: "Select Round",
-        btnPullCloud: "Sync Cloud",
+        btnPullCloud: "Sync",
         btnClearRound: "Clear",
         colTeamNum: "Team #",
         colScoreVal: "Score (0-100)",
         safeMergeNote: "Multi-Judge Safe Mode: Merges only this round",
         unsavedRoundNote: "Unsaved edits — tap Save below to push live",
         btnSaveRound: "Save & Sync Round",
+        sunriseScoreTitle: "Project Sunrise Team Scoring",
+        sunriseScoreSub: "Enter Project Sunrise scores by team (added to total standings)",
+        btnClearSunrise: "Clear",
+        sunriseSafeMergeNote: "Safe Merge Mode: Updates only Project Sunrise scores",
+        sunriseUnsavedNote: "Unsaved Sunrise edits — tap Save below",
+        btnSaveSunrise: "Save & Sync Sunrise Scores",
+        thSunrise: "Sunrise",
         secAnnouncement: "Live Broadcast",
         lblQuickPresets: "1-Tap Bilingual Presets:",
         preset0Btn: "5m Warning",
@@ -862,13 +1031,17 @@
         preset3Btn: "Return to Hall",
         lblAnnouncementZH: "Chinese Notice",
         lblAnnouncementEN: "English Notice",
+        announceZhPlaceholder: "Enter Chinese broadcast...",
+        announceEnPlaceholder: "Enter English broadcast...",
         btnClearBroadcast: "Clear",
         btnPublishAnnouncement: "Publish Broadcast",
         modWallTitle: "Community Wall Moderation",
+        searchMsgPlaceholder: "Search messages or names...",
         modEmptyMessages: "No participant messages posted yet",
         btnDeleteMsg: "Delete",
         fullLeaderboardTitle: "Cohort Standings",
-        tapToExpandHint: "Tap any team row to expand 6-station breakdown",
+        tapToExpandHint: "Tap any team row to expand 6 stations & Sunrise",
+        searchTeamPlaceholder: "Search Team # (e.g. 08)...",
         secConfigDrawers: "Configuration Drawers",
         fpConfigBtn: "FastPass Rooms & Times",
         fpDescShort: "Edit 6 room names and 6 session time slots",
@@ -886,6 +1059,8 @@
         saveQuestionsBtn: "Save Questions",
         btnInsertSample: "Sample",
         secQuickLaunch: "Launch Station Screens",
+        qrTitle: "QR Check-in",
+        portalHome: "Sunrise Main",
         resetTitle: "Cohort Scale & Resets",
         resetSubtitle: "Switch total team count or clear event datasets",
         resetCohortHeader: "Global Cohort Scale",
@@ -893,7 +1068,7 @@
         resetVenuesTitle: "Clear 6 Room Names",
         resetTimesTitle: "Clear 6 Time Slots",
         btnResetMessages: "Clear Entire Message Wall",
-        resetScoresTitle: "Clear All Scores & Standings",
+        resetScoresTitle: "Clear All Station & Sunrise Scores",
         btnMasterReset: "Master Factory Reset (Requires PIN)",
         st0: "Piece by Piece",
         st1: "Ethical Tree",
@@ -944,11 +1119,18 @@
           el.textContent = I18N[lang][key];
         }
       });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (I18N[lang] && typeof I18N[lang][key] === 'string') {
+          el.placeholder = I18N[lang][key];
+        }
+      });
 
       updatePinButtonUI();
       updateLayer3Header();
       renderStationButtons();
       renderRoundButtons();
+      renderSunriseScoreInputs();
       renderMobileLeaderboardCards();
       renderAdminMessagesList();
     }
@@ -960,20 +1142,26 @@
     /* ==========================================================
        BOTTOM NAVIGATION BAR & SLIDE-OVER DRAWERS
        ========================================================== */
-    const MOBILE_TABS = ['scores', 'broadcast', 'leaderboard', 'hub', 'reset'];
+    const MOBILE_TABS = ['scores', 'sunrise', 'hub', 'leaderboard', 'broadcast', 'reset'];
 
     function switchMobileTab(activeTab) {
+      if (currentUserRole === 'faculty' && !['scores', 'sunrise', 'hub'].includes(activeTab)) {
+        activeTab = 'scores';
+      }
+
       MOBILE_TABS.forEach(tab => {
         const btn = document.getElementById(`navBtn-${tab}`);
         const panel = document.getElementById(`panel-${tab}`);
-        if (btn && panel) {
-          if (tab === activeTab) {
-            btn.className = "button-press py-1.5 flex flex-col items-center justify-center gap-1 text-deloitte-green";
-            panel.classList.remove('hidden');
-          } else {
-            btn.className = "button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-gray-200";
-            panel.classList.add('hidden');
-          }
+        if (panel) {
+          if (tab === activeTab) panel.classList.remove('hidden');
+          else panel.classList.add('hidden');
+        }
+        if (btn) {
+          const isAdminOnly = btn.classList.contains('admin-only-tab');
+          const hideClass = (currentUserRole === 'faculty' && isAdminOnly) ? 'hidden' : '';
+          btn.className = (tab === activeTab)
+            ? `button-press py-1.5 flex flex-col items-center justify-center gap-1 text-deloitte-green ${hideClass}`
+            : `button-press py-1.5 flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-gray-200 ${hideClass}`;
         }
       });
 
@@ -983,6 +1171,8 @@
         renderStationButtons();
         renderRoundButtons();
         renderRoundInputs();
+      } else if (activeTab === 'sunrise') {
+        renderSunriseScoreInputs();
       } else if (activeTab === 'leaderboard') {
         renderMobileLeaderboardCards();
       } else if (activeTab === 'broadcast') {
@@ -1049,6 +1239,7 @@
 
       updateLayer3Header();
       renderRoundInputs();
+      renderSunriseScoreInputs();
       renderMobileLeaderboardCards();
       syncCohortScaleToSupabase(currentCohortScale);
     }
@@ -1082,7 +1273,7 @@
     }
 
     /* ==========================================================
-       SCORING MATRIX, PIN MY STATION & MULTI-JUDGE SAFE MERGE
+       SCORING MATRIX, PIN MY STATION & PROJECT SUNRISE SCORING
        ========================================================== */
     const STATIONS = [
       { id: 0, zh: "一起拼未来", en: "Piece by Piece", icon: "fa-puzzle-piece" },
@@ -1118,16 +1309,16 @@
 
       const isPinned = (pinnedStationId !== null && parseInt(pinnedStationId, 10) === activeStationIndex);
       if (isPinned) {
-        btn.className = "button-press px-2.5 py-1 rounded-lg border text-[11px] font-extrabold flex items-center gap-1 bg-amber-400/20 border-amber-400 text-amber-300";
+        btn.className = "button-press h-7 px-2.5 rounded-lg border text-[11px] font-extrabold flex items-center gap-1 bg-amber-400/20 border-amber-400 text-amber-300 shrink-0 whitespace-nowrap";
         label.textContent = I18N[currentLang].btnPinnedStation;
       } else {
-        btn.className = "button-press px-2.5 py-1 rounded-lg border text-[11px] font-bold flex items-center gap-1 bg-white/5 border-white/15 text-gray-300";
+        btn.className = "button-press h-7 px-2.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 bg-white/5 border-white/15 text-gray-300 shrink-0 whitespace-nowrap";
         label.textContent = I18N[currentLang].btnPinStation;
       }
     }
 
     function normalizeScoresGrid(source) {
-      const result = {};
+      const result = { sunrise: {} };
       for (let s = 0; s < 6; s++) {
         result[s] = {};
         for (let r = 0; r < 6; r++) {
@@ -1141,6 +1332,10 @@
             });
           }
         }
+      }
+      const srcSunrise = (source && source.sunrise && typeof source.sunrise === 'object') ? source.sunrise : {};
+      for (let t = 1; t <= 48; t++) {
+        result.sunrise[t] = (srcSunrise[t] !== undefined && srcSunrise[t] !== null) ? String(srcSunrise[t]) : "";
       }
       return result;
     }
@@ -1246,14 +1441,14 @@
                 placeholder="1 - ${currentCohortScale}"
                 oninput="handleLiveInputChange()"
                 onkeydown="handleSlotKeydown(event, 'team', ${idx})"
-                class="w-full h-10 bg-deloitte-cardbg border border-white/15 focus:border-amber-400 focus:outline-none rounded-xl px-2 text-sm font-mono font-bold text-white text-center">
+                class="w-full h-10 bg-deloitte-cardbg border border-white/15 focus:border-amber-400 focus:outline-none rounded-xl px-2 font-mono font-bold text-white text-center">
             </div>
             <div class="col-span-5">
               <input type="number" inputmode="numeric" min="0" max="100" id="input-score-${idx}" value="${pair.score}"
                 placeholder="0 - 100"
                 oninput="handleLiveInputChange()"
                 onkeydown="handleSlotKeydown(event, 'score', ${idx})"
-                class="w-full h-10 bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl px-2 text-sm font-mono font-black text-deloitte-green text-center">
+                class="w-full h-10 bg-deloitte-cardbg border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl px-2 font-mono font-black text-deloitte-green text-center">
             </div>
           </div>
         `;
@@ -1262,7 +1457,6 @@
       validateCurrentRoundInputs();
     }
 
-    // Auto-advance focus on Enter key for fast 1-handed mobile numpad entry
     function handleSlotKeydown(e, fieldType, idx) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -1361,9 +1555,10 @@
       validateCurrentRoundInputs();
       renderStationButtons();
       renderRoundButtons();
+      renderMobileLeaderboardCards();
       const statusEl = document.getElementById('scoresSaveStatusBadge');
       if (statusEl) {
-        statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400"></i><span class="text-amber-300 font-bold">${I18N[currentLang].unsavedRoundNote}</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-300 font-bold truncate">${I18N[currentLang].unsavedRoundNote}</span>`;
       }
     }
 
@@ -1380,23 +1575,127 @@
       handleLiveInputChange();
     }
 
-    // MULTI-JUDGE SAFE MERGE SAVE: Fetches latest cloud grid first, merges active station+round, then saves
-    async function saveActiveRoundSafeMerge() {
-      if (!validateCurrentRoundInputs()) return;
-      syncCurrentInputsToMemory();
+    /* ==========================================================
+       PROJECT SUNRISE SCORE INPUT FUNCTIONS
+       ========================================================== */
+    function renderSunriseScoreInputs() {
+      const container = document.getElementById('sunriseTeamsGridContainer');
+      if (!container) return;
+      if (!scoresGrid.sunrise) scoresGrid.sunrise = {};
 
-      const localActiveRoundCopy = JSON.parse(JSON.stringify(scoresGrid[activeStationIndex][activeRoundIndex]));
-      const statusEl = document.getElementById('scoresSaveStatusBadge');
-      const saveBtn = document.getElementById('btnSaveScoresMain');
+      let html = '';
+      for (let t = 1; t <= currentCohortScale; t++) {
+        const val = scoresGrid.sunrise[t] !== undefined ? scoresGrid.sunrise[t] : '';
+        const hasVal = val !== '';
+        const borderCls = hasVal ? 'border-amber-400/50 bg-amber-500/10' : 'border-white/10 bg-black/40';
+
+        html += `
+          <div id="sunriseTeamCard-${t}" data-team-num="${t}" class="p-2.5 rounded-xl border ${borderCls} flex items-center justify-between gap-2 transition-colors">
+            <span class="text-xs font-mono font-extrabold ${hasVal ? 'text-amber-300' : 'text-gray-300'} shrink-0">Team #${String(t).padStart(2, '0')}</span>
+            <input type="number" inputmode="numeric" min="0" max="500" id="sunrise-score-${t}" value="${val}"
+              placeholder="0"
+              oninput="handleSunriseLiveInput(${t})"
+              onkeydown="handleSunriseKeydown(event, ${t})"
+              class="w-20 h-9 bg-deloitte-cardbg border border-white/15 focus:border-amber-400 focus:outline-none rounded-lg px-2 font-mono font-black text-amber-400 text-center">
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+      updateSunriseRecordedBadge();
+      filterSunriseTeamCards();
+    }
+
+    function handleSunriseKeydown(e, teamNum) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (teamNum < currentCohortScale) {
+          const nextEl = document.getElementById(`sunrise-score-${teamNum + 1}`);
+          if (nextEl) nextEl.focus();
+        } else {
+          e.target.blur();
+        }
+      }
+    }
+
+    function syncSunriseInputsToMemory() {
+      if (!scoresGrid.sunrise) scoresGrid.sunrise = {};
+      for (let t = 1; t <= currentCohortScale; t++) {
+        const el = document.getElementById(`sunrise-score-${t}`);
+        if (el) {
+          scoresGrid.sunrise[t] = el.value.trim();
+        }
+      }
+      localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
+    }
+
+    function updateSunriseRecordedBadge() {
+      const badge = document.getElementById('sunriseRecordedCountBadge');
+      if (!badge || !scoresGrid.sunrise) return;
+      let count = 0;
+      for (let t = 1; t <= currentCohortScale; t++) {
+        if (scoresGrid.sunrise[t] && scoresGrid.sunrise[t] !== '') count++;
+      }
+      badge.textContent = `${count} / ${currentCohortScale}`;
+    }
+
+    function handleSunriseLiveInput(teamNum) {
+      syncSunriseInputsToMemory();
+      const card = document.getElementById(`sunriseTeamCard-${teamNum}`);
+      const val = scoresGrid.sunrise[teamNum];
+      if (card) {
+        const hasVal = val !== '';
+        card.className = `p-2.5 rounded-xl border ${hasVal ? 'border-amber-400/50 bg-amber-500/10' : 'border-white/10 bg-black/40'} flex items-center justify-between gap-2 transition-colors`;
+      }
+      updateSunriseRecordedBadge();
+      renderMobileLeaderboardCards();
+
+      const statusEl = document.getElementById('sunriseSaveStatusBadge');
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-300 font-bold truncate">${I18N[currentLang].sunriseUnsavedNote}</span>`;
+      }
+    }
+
+    function filterSunriseTeamCards() {
+      const q = (document.getElementById('sunriseTeamSearchInput')?.value || '').trim().toLowerCase();
+      for (let t = 1; t <= currentCohortScale; t++) {
+        const card = document.getElementById(`sunriseTeamCard-${t}`);
+        if (!card) continue;
+        const label = `team #${String(t).padStart(2, '0')} ${t}`;
+        if (!q || label.includes(q)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      }
+    }
+
+    function clearAllSunriseInputs() {
+      for (let t = 1; t <= currentCohortScale; t++) {
+        const el = document.getElementById(`sunrise-score-${t}`);
+        if (el) el.value = '';
+      }
+      syncSunriseInputsToMemory();
+      renderSunriseScoreInputs();
+      renderMobileLeaderboardCards();
+      const statusEl = document.getElementById('sunriseSaveStatusBadge');
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-300 font-bold truncate">${I18N[currentLang].sunriseUnsavedNote}</span>`;
+      }
+    }
+
+    async function saveSunriseScoresSafeMerge() {
+      syncSunriseInputsToMemory();
+      const localSunriseCopy = JSON.parse(JSON.stringify(scoresGrid.sunrise || {}));
+      const statusEl = document.getElementById('sunriseSaveStatusBadge');
+      const saveBtn = document.getElementById('btnSaveSunriseMain');
 
       if (statusEl) {
-        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400"></i><span>Merging & Syncing...</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400 shrink-0"></i><span>Merging & Syncing...</span>`;
       }
       if (saveBtn) saveBtn.disabled = true;
 
       try {
         if (supabaseClient) {
-          // 1. Fetch latest cloud grid so other judges' concurrent saves are preserved
           const { data: latestCloud } = await supabaseClient
             .from('station_leaderboards')
             .select('grid_raw')
@@ -1407,10 +1706,70 @@
             scoresGrid = normalizeScoresGrid(latestCloud.grid_raw);
           }
 
-          // 2. Merge ONLY the active station + active round into the fresh grid
+          scoresGrid.sunrise = localSunriseCopy;
+
+          const standings = calculateFullStandings();
+          localStorage.setItem('leaderboard_data_cache', JSON.stringify(standings));
+          localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
+
+          const { error } = await supabaseClient.from('station_leaderboards').upsert({
+            id: 1,
+            team_scores: standings,
+            grid_raw: scoresGrid,
+            updated_at: new Date().toISOString()
+          });
+          if (error) throw error;
+        }
+
+        renderSunriseScoreInputs();
+        renderMobileLeaderboardCards();
+
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (statusEl) {
+          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green shrink-0"></i><span class="text-deloitte-green font-bold">${currentLang === 'zh' ? `日出计划得分已同步 (${nowStr})` : `Sunrise Scores Synced (${nowStr})`}</span>`;
+        }
+        if (window.confetti) {
+          confetti({ particleCount: 25, spread: 50, origin: { y: 0.75 } });
+        }
+      } catch (err) {
+        if (statusEl) {
+          statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-400">Saved locally: ${err.message}</span>`;
+        }
+      } finally {
+        if (saveBtn) saveBtn.disabled = false;
+      }
+    }
+
+    /* ==========================================================
+       MULTI-JUDGE SAFE MERGE SAVE (6 STATIONS)
+       ========================================================== */
+    async function saveActiveRoundSafeMerge() {
+      if (!validateCurrentRoundInputs()) return;
+      syncCurrentInputsToMemory();
+
+      const localActiveRoundCopy = JSON.parse(JSON.stringify(scoresGrid[activeStationIndex][activeRoundIndex]));
+      const statusEl = document.getElementById('scoresSaveStatusBadge');
+      const saveBtn = document.getElementById('btnSaveScoresMain');
+
+      if (statusEl) {
+        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400 shrink-0"></i><span>Merging & Syncing...</span>`;
+      }
+      if (saveBtn) saveBtn.disabled = true;
+
+      try {
+        if (supabaseClient) {
+          const { data: latestCloud } = await supabaseClient
+            .from('station_leaderboards')
+            .select('grid_raw')
+            .eq('id', 1)
+            .maybeSingle();
+
+          if (latestCloud && latestCloud.grid_raw && typeof latestCloud.grid_raw === 'object') {
+            scoresGrid = normalizeScoresGrid(latestCloud.grid_raw);
+          }
+
           scoresGrid[activeStationIndex][activeRoundIndex] = localActiveRoundCopy;
 
-          // 3. Recompute full standings and upsert
           const standings = calculateFullStandings();
           localStorage.setItem('leaderboard_data_cache', JSON.stringify(standings));
           localStorage.setItem('scores_grid_cache', JSON.stringify(scoresGrid));
@@ -1430,15 +1789,14 @@
 
         const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         if (statusEl) {
-          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green"></i><span class="text-deloitte-green font-bold">${currentLang === 'zh' ? `本轮已安全合并至云端 (${nowStr})` : `Round Merged & Synced (${nowStr})`}</span>`;
+          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-deloitte-green shrink-0"></i><span class="text-deloitte-green font-bold">${currentLang === 'zh' ? `本轮已安全合并至云端 (${nowStr})` : `Round Merged & Synced (${nowStr})`}</span>`;
         }
         if (window.confetti) {
           confetti({ particleCount: 25, spread: 50, origin: { y: 0.75 } });
         }
       } catch (err) {
-        console.warn("Safe merge error:", err);
         if (statusEl) {
-          statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-400">Saved locally: ${err.message}</span>`;
+          statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400 shrink-0"></i><span class="text-amber-400">Saved locally: ${err.message}</span>`;
         }
       } finally {
         if (saveBtn) saveBtn.disabled = false;
@@ -1463,6 +1821,7 @@
       renderStationButtons();
       renderRoundButtons();
       renderRoundInputs();
+      renderSunriseScoreInputs();
       renderMobileLeaderboardCards();
     }
 
@@ -1470,7 +1829,15 @@
       const teamsMap = {};
       for (let t = 1; t <= currentCohortScale; t++) {
         const teamName = `Team ${String(t).padStart(2, '0')}`;
-        teamsMap[t] = { teamId: t, team: teamName, stations: [0, 0, 0, 0, 0, 0], total: 0 };
+        const sunriseRaw = (scoresGrid.sunrise && scoresGrid.sunrise[t]) ? parseInt(scoresGrid.sunrise[t], 10) : 0;
+        const sunriseScore = !isNaN(sunriseRaw) ? sunriseRaw : 0;
+        teamsMap[t] = {
+          teamId: t,
+          team: teamName,
+          stations: [0, 0, 0, 0, 0, 0],
+          sunrise: sunriseScore,
+          total: 0
+        };
       }
 
       const teamsCount = getTeamCountPerStation();
@@ -1490,7 +1857,8 @@
       }
 
       const teamList = Object.values(teamsMap).map(item => {
-        item.total = item.stations.reduce((a, b) => a + b, 0);
+        const stationsTotal = item.stations.reduce((a, b) => a + b, 0);
+        item.total = stationsTotal + (item.sunrise || 0);
         return item;
       });
 
@@ -1499,7 +1867,7 @@
     }
 
     /* ==========================================================
-       TAB 3: EXPANDABLE MOBILE LEADERBOARD CARDS
+       TAB 4: EXPANDABLE MOBILE LEADERBOARD CARDS (INCLUDES SUNRISE)
        ========================================================== */
     function toggleExpandLeaderboardTeam(teamId) {
       expandedTeamId = (expandedTeamId === teamId) ? null : teamId;
@@ -1523,13 +1891,17 @@
         else if (rank === 3) rankBadge = `<span class="w-6 text-center text-amber-600 text-xs"><i class="fa-solid fa-award"></i></span>`;
 
         const breakdownHtml = isExpanded ? `
-          <div class="grid grid-cols-3 gap-1.5 pt-2.5 mt-2.5 border-t border-white/10 text-[10px]">
+          <div class="grid grid-cols-2 gap-1.5 pt-2.5 mt-2.5 border-t border-white/10 text-[10px]">
             ${STATIONS.map((st, sIdx) => `
-              <div class="p-1.5 rounded-lg bg-black/50 border border-white/5 flex items-center justify-between">
-                <span class="text-gray-400 truncate pr-1">${st[currentLang === 'zh' ? 'zh' : 'en']}</span>
-                <span class="font-mono font-bold text-white">${item.stations[sIdx]}</span>
+              <div class="p-1.5 rounded-lg bg-black/50 border border-white/5 flex items-center justify-between gap-1">
+                <span class="text-gray-400 truncate">${st[currentLang === 'zh' ? 'zh' : 'en']}</span>
+                <span class="font-mono font-bold text-white shrink-0">${item.stations[sIdx]}</span>
               </div>
             `).join('')}
+            <div class="col-span-2 p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-1">
+              <span class="text-amber-300 font-bold truncate"><i class="fa-solid fa-sun mr-1"></i>${I18N[currentLang].thSunrise}</span>
+              <span class="font-mono font-bold text-amber-400 shrink-0">${item.sunrise || 0}</span>
+            </div>
           </div>
         ` : '';
 
@@ -1540,7 +1912,7 @@
               <div class="flex items-center gap-2">
                 ${rankBadge}
                 <span class="text-xs font-extrabold text-white">${item.team}</span>
-                ${rank <= 10 ? '<span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-deloitte-green/15 text-deloitte-green">TOP 10</span>' : ''}
+                ${rank <= 10 ? '<span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-deloitte-green/15 text-deloitte-green">TOP 10</span>' : ''}
               </div>
               <div class="flex items-center gap-2 font-mono">
                 <span class="text-sm font-black text-deloitte-green">${item.total}</span>
@@ -1555,7 +1927,7 @@
     }
 
     /* ==========================================================
-       TAB 2: BROADCAST PRESETS & 1-TAP WALL MODERATION
+       TAB 5: BROADCAST PRESETS & 1-TAP WALL MODERATION
        ========================================================== */
     let adminMessagesList = [];
 
@@ -1638,7 +2010,7 @@
               <p class="text-xs text-gray-200 break-words leading-snug">${escapeHtml(body)}</p>
             </div>
             <button type="button" onclick="deleteSingleMessage(${m.id})"
-              class="button-press px-2.5 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/30 border border-rose-500/30 text-rose-300 text-xs font-bold flex items-center gap-1 shrink-0">
+              class="button-press px-2.5 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/30 border border-rose-500/30 text-rose-300 text-xs font-bold flex items-center gap-1 shrink-0 whitespace-nowrap">
               <i class="fa-solid fa-trash-can text-[10px]"></i>
               <span>${I18N[currentLang].btnDeleteMsg}</span>
             </button>
@@ -1744,8 +2116,8 @@
             <div class="space-y-1">
               <span class="text-[10px] font-bold text-gray-400">${st.zh} · ${st.en}</span>
               <div class="grid grid-cols-2 gap-1.5">
-                <input type="text" id="fp-venue-zh-${st.id}" value="${v.zh}" placeholder="${st.zh}" class="w-full h-9 bg-black/60 border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2.5 text-xs text-white">
-                <input type="text" id="fp-venue-en-${st.id}" value="${v.en}" placeholder="${st.en}" class="w-full h-9 bg-black/60 border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2.5 text-xs text-white">
+                <input type="text" id="fp-venue-zh-${st.id}" value="${v.zh}" placeholder="${st.zh}" class="w-full h-9 bg-black/60 border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2.5 text-white">
+                <input type="text" id="fp-venue-en-${st.id}" value="${v.en}" placeholder="${st.en}" class="w-full h-9 bg-black/60 border border-white/15 focus:border-lime-400 focus:outline-none rounded-lg px-2.5 text-white">
               </div>
             </div>
           `;
@@ -2007,9 +2379,10 @@
     }
 
     /* ==========================================================
-       RESET ACTIONS
+       RESET ACTIONS (MASTER ADMIN ONLY)
        ========================================================== */
     async function confirmResetAction(type) {
+      if (currentUserRole !== 'admin') return;
       if (type === 'venues') {
         if (!confirm("确定要清空全部 6 个站点的房间名称吗？\nClear all 6 station room names?")) return;
         await resetVenuesData(true);
@@ -2017,7 +2390,7 @@
         if (!confirm("确定要清空全部 6 轮的时间段设置吗？\nClear all 6 session time slots?")) return;
         await resetTimesData(true);
       } else if (type === 'scores') {
-        if (!confirm("警告：确定要清空全部 6 站得分并归零排行榜吗？\nWipe all station scores and standings?")) return;
+        if (!confirm("警告：确定要清空全部 6 站与日出计划得分并归零排行榜吗？\nWipe all station & Sunrise scores and standings?")) return;
         await resetScoresData(true);
       } else if (type === 'messages') {
         if (!confirm("确定要清空留言墙的所有留言吗？\nClear all messages on the Community Wall?")) return;
@@ -2065,6 +2438,7 @@
       renderStationButtons();
       renderRoundButtons();
       renderRoundInputs();
+      renderSunriseScoreInputs();
       renderMobileLeaderboardCards();
       localStorage.removeItem('leaderboard_data_cache');
       localStorage.removeItem('scores_grid_cache');
@@ -2110,14 +2484,14 @@
 
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) {
-          renderAuthorized();
+        if (session && session.user) {
+          renderAuthorized(session.user);
         } else {
           document.getElementById('emailInput').focus();
         }
 
         supabaseClient.auth.onAuthStateChange((event, session) => {
-          if (event === 'SIGNED_IN' && session) renderAuthorized();
+          if (event === 'SIGNED_IN' && session?.user) renderAuthorized(session.user);
           else if (event === 'SIGNED_OUT') renderLocked();
         });
       } catch (err) {}
@@ -2138,7 +2512,7 @@
         if (error) showError(error.message);
         else if (data?.user) {
           document.getElementById('errorMessage').classList.add('hidden');
-          renderAuthorized();
+          renderAuthorized(data.user);
         }
       } catch (err) {
         showError(err.message || "Network Error");
@@ -2163,21 +2537,25 @@
       if (supabaseClient) await supabaseClient.auth.signOut();
     }
 
-    function renderAuthorized() {
+    function renderAuthorized(user) {
       document.getElementById('passwordGate').classList.add('hidden');
       document.getElementById('gateUtilityBar').classList.add('hidden');
       document.getElementById('mainAdminContent').classList.remove('hidden');
       document.getElementById('mainAdminContent').classList.add('flex');
+
+      applyRolePermissions(user?.email);
 
       loadPortalAnnouncementConfig();
       pullLatestCloudScores();
       loadSignalConfig();
       loadKnowledgeConfig();
       loadFastPassConfig();
-      loadAdminMessages();
+      if (currentUserRole === 'admin') {
+        loadAdminMessages();
+      }
 
       setInterval(() => {
-        if (!document.getElementById('panel-broadcast').classList.contains('hidden')) {
+        if (currentUserRole === 'admin' && !document.getElementById('panel-broadcast').classList.contains('hidden')) {
           loadAdminMessages();
         }
       }, 15000);
