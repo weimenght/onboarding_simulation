@@ -10,7 +10,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
-    <title>PROJECT SUNRISE</title>
+    <title>PROJECT SUNRISE // SECURE OS</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -217,7 +217,7 @@
                 riskTier: "Risk Tier", capThreshold: "Capital Threshold", jurisdiction: "Jurisdiction",
                 channel: "Channel", anomalyFlag: "Anomaly Flag", actionCode: "Action Code",
                 routingGw: "Routing Gateway", authHash: "Auth Hash",
-                missionAccomplished: "Mission accomplished. Rogue transfer halted, APEX Shell Logistics account frozen, and Summit & Co.'s audit integrity safeguarded.",
+                missionAccomplished: "Mission accomplished. The rogue wire is halted, the shell account posing as APEX Logistics is frozen, and Summit & Co.'s audit integrity is safeguarded.",
                 sysOverride: "System Override Terminal",
                 sysOverrideDesc: "Pool your team's evidence, then enter three things: who ran the unapproved data scrub, which transaction is the illegal wire, and the protocol action code that stops it.",
                 terminalLockedTitle: "Terminal Locked",
@@ -292,7 +292,7 @@
                 exportProofBtn: "Export Clearance Proof (JPEG)",
                 exportingText: "Generating proof…",
                 groupNumRequired: "Enter your group number to start.",
-                watermarkNotice: "The proof carries anti-tamper watermarks and a checksum. Squads are ranked by time to halt; secrets found break ties.",
+                watermarkNotice: "The proof carries anti-tamper watermarks and a checksum. Squads are ranked by team time (including penalties); secrets found break ties.",
                 certCardTitle: "Official Clearance & Leaderboard Verification",
                 rankingMetricNotice: "Official time of record",
                 downloadSuccess: "Proof ready. Show the JPEG to the judging panel.",
@@ -366,7 +366,7 @@
                 n2PizzaVendor: "The DU Barn Midnight Cookie Syndicate",
                 n2PizzaApprover: "Hungry Audit Senior",
                 n2PizzaStatus: "REJECTED (NICE TRY)",
-                n3Tier6: "Apocalyptic",
+                n3Tier6: "Tier 6: Apocalyptic",
                 n3Tier6Jur: "DU Barn Cookie Jar",
                 n3Tier6Anom: "Partner asks for a 'quick 5-min sync' on Friday at 16:55",
                 n3DefconTitle: "DEFCON 1: GLOBAL SANCTION OVERRIDE",
@@ -377,6 +377,45 @@
                 haltJokePlsFix: "'Pls fix, thx' works on slide decks at 1:00 AM, but the firewall needs an actual override code! (0 strikes added)",
                 haltJokePassword: "Seriously? 'PASSWORD'? Even the DU Barn Wi-Fi has better security than that! (0 strikes added)",
                 haltJokeCoffee: "Bribing the firewall with DU Barn cookies and coffee? Tempting… but it only accepts forensic codes! (0 strikes added)",
+
+                // Hints & penalties
+                penaltyRule: "Each wrong answer adds {s} to your team's time. Stuck? Hints cost {h}.",
+                hintBtn: "Hint {n}",
+                hintConfirm: "Tap again · +{cost}",
+                hintLabel: "Hint {n}",
+                penaltyLabel: "Penalties",
+                penaltyNote: "Includes +{p} penalties ({s} wrong answers, {h} hints on this phone).",
+                penaltyTeamNote: "Team total across all phones, as ranked on the leaderboard.",
+                strikePenaltyToast: "Wrong answer: +{cost} added to your team's time.",
+                hints: {
+                    puzzle1: [
+                        "Look for data scrubs in the server logs, then check whether each one was approved.",
+                        "Every scrub cites a CHG ticket. Your Compliance teammate can see which ticket never got VP approval.",
+                        "CHG-4471 was never approved. Find who ran it in the logs, then look their ID up in the Directory."
+                    ],
+                    puzzle2: [
+                        "Several big wires are still pending. The illegal one left at the same minute as something suspicious in the server logs.",
+                        "Compare each payment's vendor name with the vendor master. One name doesn't quite match its vendor ID, and Finance didn't approve it.",
+                        "Check 03:00 on 15 June, then look at who approved that payment."
+                    ],
+                    puzzle3: [
+                        "You need four facts: the amount, where the money is going, the channel, and the anomaly.",
+                        "IT's log line for the wire shows where it was sent and through which channel. Compliance's watchlist says whether that place is EDD.",
+                        "$22M to the British Virgin Islands via SWIFT-EDD. Several anomalies apply, so use rule 3: act on the most severe."
+                    ]
+                },
+
+                // Debrief
+                debriefTitle: "Debrief: what a real auditor would have caught",
+                debriefIntro: "Every clue in this case is a real control failure. These are the ones to remember on your first engagement.",
+                debrief: [
+                    ["Segregation of duties", "The CEO approved her own $22M wire. Payment approval should sit with Finance under a delegation of authority, never with the person who benefits from it."],
+                    ["Vendor master match", "The payment went to “APEX Logistic Ltd” under vendor ID V8824, which belongs to “APEX Logistics Ltd”. One missing letter is a classic shell-company trick. Always match name, ID and bank details to the vendor master."],
+                    ["Purchase order matching", "There was no purchase order for the name that was paid. A payment without an exact PO match is a red flag on its own."],
+                    ["Enhanced due diligence", "The funds were routed to the British Virgin Islands, an EDD jurisdiction, which needed Compliance sign-off before release."],
+                    ["Privileged change control (ISS-04)", "A production data scrub ran in the same minute as the wire, under a ticket with no VP approval. Approval must come before the work, not after."],
+                    ["Audit log integrity and standing access", "The audit trail was truncated a minute later, using standing admin rights shown on the access map. Logs should be tamper-proof, and admin rights should be granted only when needed."]
+                ],
                 victoryBlessing: "PARTNER'S SECRET BLESSING UNLOCKED: May your spreadsheets always balance, your VLOOKUPs never return #N/A, and your expense reports auto-approve within 24 hours!"
             },
             zh: {
@@ -412,7 +451,7 @@
                 riskTier: "风险等级", capThreshold: "资金阈值", jurisdiction: "管辖区",
                 channel: "结算渠道", anomalyFlag: "异常标记", actionCode: "行动代码",
                 routingGw: "路由网关", authHash: "授权散列",
-                missionAccomplished: "任务完成。违规转账已被拦截，APEX Shell Logistics 账户已冻结，Summit & Co. 的审计完整性得到保障。",
+                missionAccomplished: "任务完成。违规汇款已被拦截，冒充 APEX Logistics 的空壳账户已冻结，Summit & Co. 的审计完整性得到保障。",
                 sysOverride: "系统覆盖终端",
                 sysOverrideDesc: "汇总全队的证据，然后输入三项：谁执行了未经批准的数据清洗、哪一笔是非法汇款，以及能拦截它的协议行动代码。",
                 terminalLockedTitle: "终端已锁定",
@@ -487,7 +526,7 @@
                 exportProofBtn: "导出通关凭证（JPEG）",
                 exportingText: "正在生成凭证…",
                 groupNumRequired: "请先填写小组编号。",
-                watermarkNotice: "凭证带有防伪水印与校验码。按拦截用时排名，发现的彩蛋数用于决胜。",
+                watermarkNotice: "凭证带有防伪水印与校验码。按全队用时（含罚时）排名，发现的彩蛋数用于决胜。",
                 certCardTitle: "官方通关记录与排名凭证",
                 rankingMetricNotice: "官方计时依据",
                 downloadSuccess: "凭证已生成，请向评委出示该 JPEG 图片。",
@@ -557,7 +596,7 @@
                 n2PizzaVendor: "The DU Barn Midnight Cookie Syndicate",
                 n2PizzaApprover: "饥肠辘辘的高级审计师",
                 n2PizzaStatus: "已驳回（想得美）",
-                n3Tier6: "末日级",
+                n3Tier6: "末日级（Tier 6）",
                 n3Tier6Jur: "DU 谷仓曲奇罐",
                 n3Tier6Anom: "合伙人周五 16:55 突然约“5 分钟快速对齐”",
                 n3DefconTitle: "一级戒备：全球制裁覆盖",
@@ -568,6 +607,43 @@
                 haltJokePlsFix: "凌晨一点在邮件里写 “Pls fix, thx” 也许管用，但防火墙只认真正的覆盖代码！（不计告警）",
                 haltJokePassword: "认真的吗？输入 “PASSWORD”？连 DU 谷仓的公共 Wi-Fi 密码都比这复杂！（不计告警）",
                 haltJokeCoffee: "想用 DU 谷仓的曲奇和咖啡贿赂防火墙？系统很心动……但只认取证代码！（不计告警）",
+
+                penaltyRule: "每答错一次，全队用时增加 {s}。卡住了？提示需付出 {h}。",
+                hintBtn: "提示 {n}",
+                hintConfirm: "再点一次 · +{cost}",
+                hintLabel: "提示 {n}",
+                penaltyLabel: "罚时",
+                penaltyNote: "含罚时 +{p}（本机答错 {s} 次，使用提示 {h} 次）。",
+                penaltyTeamNote: "全队所有手机合计，与排行榜一致。",
+                strikePenaltyToast: "答错：全队用时 +{cost}。",
+                hints: {
+                    puzzle1: [
+                        "在服务器日志里找出数据清洗操作，再核实每一项是否获批。",
+                        "每次清洗都引用了一张 CHG 工单。合规队友能看到哪张工单始终没有 VP 批准。",
+                        "CHG-4471 从未获批。在日志里找到执行它的人，再到员工目录里查他的工号。"
+                    ],
+                    puzzle2: [
+                        "有好几笔大额汇款仍在待结算。非法的那一笔，和服务器日志里某个可疑操作发生在同一分钟。",
+                        "把每笔付款的供应商名称和供应商主数据比对。有一个名称和它的供应商编号对不上，而且不是财务批的。",
+                        "看 6 月 15 日 03:00，再看是谁批准了那笔付款。"
+                    ],
+                    puzzle3: [
+                        "你需要四项信息：金额、资金去向、结算渠道和异常类型。",
+                        "IT 日志里这笔汇款的记录显示了汇往何处、走哪个渠道。合规的观察名单能告诉你那里是否属于 EDD。",
+                        "2,200 万美元经 SWIFT-EDD 汇往英属维尔京群岛。存在多种异常，按规则 3 只处理最严重的一种。"
+                    ]
+                },
+
+                debriefTitle: "复盘：真正的审计师会发现什么",
+                debriefIntro: "本案的每条线索都是一项真实的控制缺陷。第一次进项目时，记住这几条。",
+                debrief: [
+                    ["职责分离", "CEO 亲自批准了自己发起的 2,200 万美元汇款。付款审批应按授权制度交由财务负责，绝不能由受益人本人批准。"],
+                    ["供应商主数据比对", "这笔款付给了“APEX Logistic Ltd”，用的却是“APEX Logistics Ltd”的供应商编号 V8824。少一个字母，是空壳公司的经典伎俩。务必核对名称、编号和银行信息是否与主数据一致。"],
+                    ["采购订单匹配", "收款名称没有对应的采购订单。付款无法与采购订单精确匹配，本身就是危险信号。"],
+                    ["增强尽职调查", "资金汇往英属维尔京群岛这一 EDD 管辖区，放款前必须获得合规签批。"],
+                    ["特权变更管控（ISS-04）", "一次生产数据清洗与汇款发生在同一分钟，而且所用工单没有 VP 批准。审批必须在操作之前，而不是之后。"],
+                    ["审计日志完整性与常驻权限", "一分钟后，审计日志被截断，用的是访问映射里显示的常驻管理员权限。日志应当防篡改，管理员权限应按需临时授予。"]
+                ],
                 victoryBlessing: "已解锁【合伙人的神秘祝福】：愿你的底稿永远平账，VLOOKUP 永不报 #N/A，报销永远秒批！"
             }
         };
@@ -639,12 +715,16 @@
             const startMs = g.GAME_START ? Date.parse(g.GAME_START) : NaN;
             const minutes = parseInt(g.SETTLEMENT_MINUTES, 10);
             const cooldown = parseInt(g.ROLE_SWITCH_COOLDOWN, 10);
+            const strikePen = parseInt(g.STRIKE_PENALTY_SECONDS, 10);
+            const hintPens = String(g.HINT_PENALTIES || '').split(',').map(x => parseInt(x, 10)).filter(x => Number.isFinite(x) && x >= 0);
             return {
                 session: (g.GAME_SESSION || 'default').slice(0, 40),
                 startMs: Number.isFinite(startMs) ? startMs : null,
                 limitSec: (Number.isFinite(minutes) && minutes > 0 ? minutes : 120) * 60,
                 roleMode: (g.ROLE_MODE || 'on').toLowerCase() !== 'off',
-                cooldownSec: Number.isFinite(cooldown) && cooldown >= 0 ? cooldown : 60
+                cooldownSec: Number.isFinite(cooldown) && cooldown >= 0 ? cooldown : 60,
+                strikePenaltySec: Number.isFinite(strikePen) && strikePen >= 0 ? strikePen : 60,
+                hintPenaltiesSec: hintPens.length === 3 ? hintPens : [60, 120, 180]
             };
         }
 
@@ -1290,6 +1370,10 @@
             const [nodeLockoutUntil, setNodeLockoutUntil] = useState(typeof saved.nodeLockoutUntil === 'number' ? saved.nodeLockoutUntil : 0);
             const [haltStrikes, setHaltStrikes] = useState(typeof saved.haltStrikes === 'number' ? saved.haltStrikes : 0);
             const [haltLockoutUntil, setHaltLockoutUntil] = useState(typeof saved.haltLockoutUntil === 'number' ? saved.haltLockoutUntil : 0);
+            const [hintsUsed, setHintsUsed] = useState(saved.hintsUsed || { puzzle1: 0, puzzle2: 0, puzzle3: 0 });
+            const [hintArm, setHintArm] = useState(null); // puzzle key awaiting a second tap to confirm a hint
+            const [penaltyToast, setPenaltyToast] = useState('');
+            const [teamTotals, setTeamTotals] = useState(null); // fetched from the leaderboard feed on the finish screen
             const [now, setNow] = useState(Date.now());
 
             const [warningToast, setWarningToast] = useState('');
@@ -1342,10 +1426,15 @@
             // Clock: shared start (GAME_START) or this team's first join
             const getStartMs = () => config.startMs || startedAt || now;
             const elapsedSecAt = (ts) => Math.max(0, Math.floor((ts - getStartMs()) / 1000));
+            const hintCostFor = (level) => config.hintPenaltiesSec.slice(0, level).reduce((a, b) => a + b, 0);
+            const hintCount = PUZZLE_KEYS.reduce((a, k) => a + (hintsUsed[k] || 0), 0);
+            const penaltySec = haltStrikes * config.strikePenaltySec + PUZZLE_KEYS.reduce((a, k) => a + hintCostFor(hintsUsed[k] || 0), 0);
+            const rawElapsed = elapsedSecAt(finishedAt || now);
             const clock = {
                 finished: !!finishedAt,
-                elapsed: elapsedSecAt(finishedAt || now),
-                remaining: config.limitSec - elapsedSecAt(finishedAt || now)
+                penalty: penaltySec,
+                elapsed: rawElapsed + penaltySec,
+                remaining: config.limitSec - rawElapsed - penaltySec
             };
 
             // ─── Live event feed (Supabase 'sunrise_events') ───
@@ -1452,10 +1541,10 @@
                     localStorage.setItem(STORAGE_KEY, JSON.stringify({
                         lang, registered, groupNumber, role, startedAt, finishedAt, roleCooldownUntil, secrets,
                         activeTab, hubSubTab, unlockedNodes, solvedPuzzles, puzzleInputs,
-                        nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil, completionTime
+                        nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil, completionTime, hintsUsed
                     }));
                 } catch (e) {}
-            }, [lang, registered, groupNumber, role, startedAt, finishedAt, roleCooldownUntil, secrets, activeTab, hubSubTab, unlockedNodes, solvedPuzzles, puzzleInputs, nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil, completionTime]);
+            }, [lang, registered, groupNumber, role, startedAt, finishedAt, roleCooldownUntil, secrets, activeTab, hubSubTab, unlockedNodes, solvedPuzzles, puzzleInputs, nodeStrikeCount, nodeLockoutUntil, haltStrikes, haltLockoutUntil, completionTime, hintsUsed]);
 
             // Finish: freeze the clock, stamp the time, tell the leaderboard
             useEffect(() => {
@@ -1469,6 +1558,35 @@
 
             useEffect(() => () => { if (proof && proof.revoke) URL.revokeObjectURL(proof.url); }, [proof]);
 
+            const fetchTeamTotals = async () => {
+                if (!sbClient || !group) return null;
+                try {
+                    const { data, error } = await sbClient.from('sunrise_events').select('event_type, detail, elapsed_seconds')
+                        .eq('session', config.session).eq('group_name', group).limit(2000);
+                    if (error || !data) return null;
+                    const sec = new Set(secretsRef.current);
+                    let strikes = 0, hintSec = 0, hints = 0, finish = null;
+                    data.forEach(e => {
+                        if (e.event_type === 'secret' && e.detail) sec.add(e.detail);
+                        if (e.event_type === 'strike') strikes++;
+                        if (e.event_type === 'hint') { const lvl = parseInt(String(e.detail).split(':')[1], 10); if (lvl >= 1 && lvl <= 3) { hintSec += config.hintPenaltiesSec[lvl - 1]; hints++; } }
+                        if (e.event_type === 'finish' && Number.isFinite(e.elapsed_seconds)) finish = finish === null ? e.elapsed_seconds : Math.min(finish, e.elapsed_seconds);
+                    });
+                    if (finish === null) return null;
+                    const penalty = strikes * config.strikePenaltySec + hintSec;
+                    return { secrets: sec.size, strikes, hints, penalty, time: finish + penalty };
+                } catch (e) { return null; }
+            };
+
+            useEffect(() => {
+                if (!finishedAt || !sbClient) return;
+                let alive = true;
+                const load = async () => { const r = await fetchTeamTotals(); if (alive && r) setTeamTotals(r); };
+                const first = setTimeout(load, 1500); // give the finish event time to land
+                const again = setInterval(load, 20000);
+                return () => { alive = false; clearTimeout(first); clearInterval(again); };
+            }, [finishedAt, sbClient, group]);
+
             const getNextFreezeThreshold = (strikes) => {
                 if (strikes < 5) return 5;
                 if (strikes < 8) return 8;
@@ -1477,7 +1595,12 @@
                 return Math.ceil((strikes + 1) / 5) * 5;
             };
 
-            const applyHaltStrike = () => {
+            const applyHaltStrike = (key) => {
+                logEvent('strike', key);
+                if (config.strikePenaltySec > 0) {
+                    setPenaltyToast(fmt(t.strikePenaltyToast, { cost: formatClock(config.strikePenaltySec) }));
+                    setTimeout(() => setPenaltyToast(''), 3500);
+                }
                 const newStrikes = haltStrikes + 1;
                 setHaltStrikes(newStrikes);
                 let freezeSecs = 0;
@@ -1572,6 +1695,19 @@
                 if (goTerminal) go('mystery');
             };
 
+            const buyHint = (key) => {
+                const level = hintsUsed[key] || 0;
+                if (level >= 3) return;
+                if (hintArm !== key) {
+                    setHintArm(key);
+                    setTimeout(() => setHintArm(a => (a === key ? null : a)), 3000);
+                    return;
+                }
+                setHintArm(null);
+                setHintsUsed(prev => ({ ...prev, [key]: level + 1 }));
+                logEvent('hint', `${key}:${level + 1}`);
+            };
+
             const triggerEasterEggToast = (msg) => { setEasterEggToast(msg); setTimeout(() => setEasterEggToast(''), 6500); };
 
             // ─── Halt puzzles ───
@@ -1591,7 +1727,7 @@
                     setTimeout(() => setWarningToast(''), 4500);
                     setPuzzleErrors(prev => ({ ...prev, [key]: true }));
                     setTimeout(() => setPuzzleErrors(prev => ({ ...prev, [key]: false })), 1500);
-                    applyHaltStrike();
+                    applyHaltStrike(key);
                     return;
                 }
 
@@ -1617,7 +1753,7 @@
                 } else {
                     setPuzzleErrors(prev => ({ ...prev, [key]: true }));
                     setTimeout(() => setPuzzleErrors(prev => ({ ...prev, [key]: false })), 1500);
-                    applyHaltStrike();
+                    applyHaltStrike(key);
                 }
             };
 
@@ -1644,8 +1780,11 @@
                     const code = proto ? proto.code : (puzzleInputs.puzzle3 || '—').toUpperCase();
                     const gateway = proto ? proto.gateway : '—';
                     const jurLabel = proto ? (en[proto.jurKey] || proto.jurKey) : '';
-                    const haltElapsed = clock.elapsed;
-                    const remaining = clock.remaining;
+                    const team = (await fetchTeamTotals()) || teamTotals;
+                    const haltElapsed = team ? team.time : clock.elapsed;
+                    const penaltyShown = team ? team.penalty : clock.penalty;
+                    const secretsShown = team ? team.secrets : secrets.length;
+                    const remaining = config.limitSec - haltElapsed;
 
                     const W = 1400, H = 960;
                     const canvas = document.createElement('canvas');
@@ -1699,7 +1838,7 @@
                     ctx.fillStyle = '#86BC25'; ctx.font = `bold 42px ${MONO}`;
                     ctx.fillText(fit(timeToPrint, 660), 95, 250);
                     ctx.fillStyle = '#94a3b8'; ctx.font = `bold 12px ${MONO}`;
-                    ctx.fillText(`TIME TO HALT ${formatClock(haltElapsed)}  ·  ${remaining >= 0 ? `${formatClock(remaining)} BEFORE SETTLEMENT` : `${formatClock(-remaining)} OVERTIME`}`, 95, 285);
+                    ctx.fillText(`TEAM TIME ${formatClock(haltElapsed)} (INCL. +${formatClock(penaltyShown)} PENALTIES)  ·  ${remaining >= 0 ? `${formatClock(remaining)} BEFORE SETTLEMENT` : `${formatClock(-remaining)} OVERTIME`}`, 95, 285);
                     ctx.fillStyle = '#94a3b8'; ctx.font = `bold 13px ${MONO}`;
                     ctx.fillText("AUTHENTICATED GROUP:", 780, 195);
                     ctx.fillStyle = '#FFFFFF'; ctx.font = `bold 36px ${SANS}`;
@@ -1731,8 +1870,8 @@
                         ["Transaction Approver", txn.approved || '—'],
                         ["Policy Violation", `ISS-04 High Control Breach${scrubLog ? ` (${scrubLog.ticket} unapproved)` : ''}`],
                         ["Protocol Match", proto ? `${en[proto.tierKey] || proto.tierKey} · ${en[proto.anomalyKey] || proto.anomalyKey}` : '—'],
-                        ["Time to Halt", formatClock(haltElapsed)],
-                        ["Secrets Found", `${secrets.length} / ${SECRET_IDS.length}`]
+                        ["Team Time (incl. penalties)", `${formatClock(haltElapsed)} (+${formatClock(penaltyShown)})`],
+                        ["Secrets Found (team)", `${secretsShown} / ${SECRET_IDS.length}`]
                     ], [4]);
 
                     ctx.fillStyle = 'rgba(239, 68, 68, 0.08)'; ctx.fillRect(70, 730, 1260, 95);
@@ -1740,7 +1879,7 @@
                     ctx.fillStyle = '#ef4444'; ctx.font = `bold 12px ${MONO}`;
                     ctx.fillText("JUDICIAL EVALUATION & RANKING DIRECTIVE // ANTI-FRAUD SPECIFICATION:", 95, 760);
                     ctx.fillStyle = '#cbd5e1'; ctx.font = `12px ${SANS}`;
-                    ctx.fillText("1. Squads are ranked by time to halt (settlement clock). Secrets found break ties.", 95, 783);
+                    ctx.fillText("1. Squads are ranked by team time to halt, including penalties for wrong answers and hints. Secrets found break ties.", 95, 783);
                     ctx.fillText("2. Cryptographic background watermarks and checksums are mathematically bound to this timestamp and squad identification.", 95, 801);
 
                     const cleanTimestamp = timeToPrint.replace(/[^0-9]/g, '_').substring(0, 19);
@@ -2418,8 +2557,8 @@
                             <div className="grid grid-cols-3 gap-2 text-center">
                                 {[
                                     [t.groupLabel, group, 'text-white'],
-                                    [t.timeToHalt, formatClock(clock.elapsed), 'text-deloitte-green'],
-                                    [t.secretsLabel, `${secrets.length}/${SECRET_IDS.length}`, 'text-amber-300']
+                                    [t.timeToHalt, formatClock(teamTotals ? teamTotals.time : clock.elapsed), 'text-deloitte-green'],
+                                    [t.secretsLabel, `${teamTotals ? teamTotals.secrets : secrets.length}/${SECRET_IDS.length}`, 'text-amber-300']
                                 ].map(([l, v, c]) => (
                                     <div key={l} className="rounded-xl border border-slate-800 bg-slate-900 px-2 py-2.5">
                                         <div className="caps truncate font-mono text-[10px] text-slate-500">{l}</div>
@@ -2427,6 +2566,11 @@
                                     </div>
                                 ))}
                             </div>
+                            <p className="-mt-1 text-center font-mono text-[11px] leading-relaxed text-slate-500">
+                                {teamTotals
+                                    ? <React.Fragment>{fmt(t.penaltyNote, { p: formatClock(teamTotals.penalty), s: teamTotals.strikes, h: teamTotals.hints }).replace(/ on this phone|本机/, '')} {t.penaltyTeamNote}</React.Fragment>
+                                    : fmt(t.penaltyNote, { p: formatClock(clock.penalty), s: haltStrikes, h: hintCount })}
+                            </p>
                             <div>
                                 <label className="mb-1.5 block font-mono text-[11px] text-slate-400"><i className="fa-solid fa-clock mr-1.5 text-deloitte-green"></i>{t.timestampLabel}</label>
                                 <div className="flex flex-col justify-between gap-2 rounded-xl border border-slate-800 bg-slate-900 p-3 sm:flex-row sm:items-center">
@@ -2446,6 +2590,22 @@
                             <i className={`fa-solid ${isExporting ? 'fa-circle-notch fa-spin' : 'fa-file-arrow-down'}`}></i>
                             <span>{isExporting ? t.exportingText : t.exportProofBtn}</span>
                         </button>
+
+                        <section className="mt-6 border-t border-slate-800 pt-5" aria-labelledby="debrief-title">
+                            <h2 id="debrief-title" className="caps mb-1 font-mono text-xs font-bold text-cyan-300"><i className="fa-solid fa-graduation-cap mr-1.5"></i>{t.debriefTitle}</h2>
+                            <p className="mb-4 text-sm leading-relaxed text-slate-400">{t.debriefIntro}</p>
+                            <ol className="space-y-2.5">
+                                {t.debrief.map(([title, body], i) => (
+                                    <li key={i} className="flex gap-3 rounded-xl border border-slate-800 bg-slate-950/60 p-3.5">
+                                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-cyan-400/50 font-mono text-[11px] font-bold text-cyan-300">{i + 1}</span>
+                                        <div className="min-w-0">
+                                            <h3 className="text-sm font-bold text-white">{title}</h3>
+                                            <p className="mt-0.5 text-[13px] leading-relaxed text-slate-300">{body}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ol>
+                        </section>
                     </div>
                 </div>
             );
@@ -2466,8 +2626,16 @@
                             </span>
                         )}
                     </div>
-                    <p className="mb-5 max-w-3xl text-sm leading-relaxed text-slate-400">{t.sysOverrideDesc}</p>
+                    <p className="mb-2 max-w-3xl text-sm leading-relaxed text-slate-400">{t.sysOverrideDesc}</p>
+                    <p className="mb-5 max-w-3xl font-mono text-[11px] leading-relaxed text-amber-300/90">
+                        <i className="fa-solid fa-stopwatch mr-1.5"></i>{fmt(t.penaltyRule, { s: `+${formatClock(config.strikePenaltySec)}`, h: config.hintPenaltiesSec.map(x => `+${formatClock(x)}`).join(' / ') })}
+                    </p>
                     <div aria-live="polite">
+                        {penaltyToast && (
+                            <div className="fade-in mb-4 flex items-start gap-2.5 rounded-xl border border-amber-500/60 bg-amber-950/80 p-3 text-sm text-amber-200">
+                                <i className="fa-solid fa-stopwatch mt-0.5 shrink-0 text-amber-300"></i><span>{penaltyToast}</span>
+                            </div>
+                        )}
                         {easterEggToast && (
                             <div className="fade-in mb-4 flex items-start gap-3 rounded-xl border border-cyan-400 bg-cyan-950/90 p-3.5 text-sm leading-relaxed text-cyan-200">
                                 <i className="fa-solid fa-face-laugh-wink mt-0.5 shrink-0 text-lg text-cyan-400"></i><span>{easterEggToast}</span>
@@ -2514,6 +2682,26 @@
                                                 {isVerifyingThis ? <i className="fa-solid fa-circle-notch fa-spin"></i> : t.verifyBtn}
                                             </button>
                                         </form>
+                                    )}
+                                    {!isSolved && (
+                                        <div className="space-y-2 border-t border-slate-800/80 pt-3">
+                                            {t.hints[puz.k].slice(0, hintsUsed[puz.k] || 0).map((h, i) => (
+                                                <p key={i} className="fade-in rounded-lg border border-amber-500/30 bg-amber-500/5 p-2.5 text-xs leading-relaxed text-amber-100">
+                                                    <span className="caps mr-1.5 font-mono text-[10px] font-bold text-amber-300">{fmt(t.hintLabel, { n: i + 1 })}</span>{h}
+                                                </p>
+                                            ))}
+                                            {(hintsUsed[puz.k] || 0) < 3 && (() => {
+                                                const lvl = (hintsUsed[puz.k] || 0) + 1;
+                                                const cost = formatClock(config.hintPenaltiesSec[lvl - 1]);
+                                                const armed = hintArm === puz.k;
+                                                return (
+                                                    <button type="button" onClick={() => buyHint(puz.k)} className={`flex w-full items-center justify-center gap-1.5 rounded-lg border py-2 font-mono text-[11px] font-bold transition-colors ${armed ? 'border-amber-400 bg-amber-400 text-slate-950' : 'border-slate-700 bg-slate-900 text-slate-300 hover:border-amber-500/60'}`}>
+                                                        <i className="fa-solid fa-lightbulb"></i>
+                                                        {armed ? fmt(t.hintConfirm, { cost }) : `${fmt(t.hintBtn, { n: lvl })} · +${cost}`}
+                                                    </button>
+                                                );
+                                            })()}
+                                        </div>
                                     )}
                                 </div>
                             );
