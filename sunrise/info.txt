@@ -36,6 +36,10 @@ SETTLEMENT_MINUTES = 120
 ROLE_MODE = on
 # Seconds a player is locked out of evidence after switching role (discourages role-hopping).
 ROLE_SWITCH_COOLDOWN = 60
+# Seconds added to the team's time for each wrong override answer.
+STRIKE_PENALTY_SECONDS = 60
+# Seconds added for hint 1, 2 and 3 of each override question (comma-separated).
+HINT_PENALTIES = 60, 120, 180
 
 
 [DIRECTORY]
@@ -342,8 +346,8 @@ V8880 | Prescott Systems Holdings       | Portugal               | Approved     
 02:57 | Index_Rebuild_Bypass           | EMP004 | WARNING  | CHG-4471
 02:59 | Cache Cleanup                  | SYSTEM | OK       | —
 03:00 | SWIFT_EDD_WIRE_DISPATCH [BVI]  | EMP001 | CRITICAL | —
-03:00 | DATA_SCRUB_EXECUTED            | EMP004 | CRITICAL | CHG-4471
-03:01 | Audit_Trail_Truncate           | EMP004 | CRITICAL | CHG-4471
+03:00 | DATA_SCRUB_EXECUTED            | EMP004 | WARNING  | CHG-4471
+03:01 | Audit_Trail_Truncate           | EMP004 | WARNING  | CHG-4471
 03:02 | Logout                         | EMP004 | OK       | —
 03:03 | Logout                         | EMP001 | OK       | —
 03:04 | Routine Scan                   | SYSTEM | OK       | —
@@ -480,7 +484,7 @@ TXN8820 | 2026-06-15 | 02:10 | Redwood Trading Partners        | V8851 | 133,509
 TXN8821 | 2026-06-15 | 02:25 | Ashford Holdings & Co.          | V8828 | 308,555.59 EUR    | Controller, AP  | CLEARED
 TXN8822 | 2026-06-15 | 02:39 | Cobalt Systems & Co.            | V8843 | 418,047.72 EUR    | VP, Finance     | CLEARED
 TXN8823 | 2026-06-15 | 02:50 | Northbridge Logistics Inc       | V8809 | 598,567.84 CAD    | VP, Finance     | CLEARED
-TXN8824 | 2026-06-15 | 03:00 | APEX Shell Logistics            | V8824 | 22,000,000.00 USD | V. Vance        | PENDING SETTLEMENT
+TXN8824 | 2026-06-15 | 03:00 | APEX Logistic Ltd               | V8824 | 22,000,000.00 USD | V. Vance        | PENDING SETTLEMENT
 TXN8825 | 2026-06-15 | 03:01 | Vireo Trading Partners          | V8819 | 474,031.82 EUR    | Controller, AP  | CLEARED
 TXN8826 | 2026-06-15 | 03:02 | Waverly Systems & Co.           | V8804 | 864,567.85 DKK    | AP Supervisor   | CLEARED
 TXN8827 | 2026-06-15 | 03:04 | Everline Holdings Holdings      | V8842 | 419,051.25 DKK    | VP, Finance     | CLEARED
@@ -491,7 +495,7 @@ TXN8831 | 2026-06-15 | 03:10 | Delta Point Trading Co          | V8859 | 6,309,3
 TXN8832 | 2026-06-15 | 03:11 | Kingsbridge Systems Ltd         | V8855 | 329,797.65 EUR    | Controller, AP  | CLEARED
 TXN8833 | 2026-06-15 | 03:13 | Cobalt Systems LLC              | V8811 | 9,155,630.51 INR  | Finance Manager | CLEARED
 TXN8834 | 2026-06-15 | 03:14 | Prescott Systems Holdings       | V8880 | 304,427.21 EUR    | Controller, AP  | CLEARED
-TXN8835 | 2026-06-15 | 03:16 | Falcon Holdings Co              | V8834 | 25,000,000.00 USD | VP, Finance     | CLEARED
+TXN8835 | 2026-06-15 | 03:16 | Falcon Holdings Co              | V8834 | 25,000,000.00 USD | VP, Finance     | PENDING SETTLEMENT
 TXN8836 | 2026-06-15 | 03:17 | Cliffside Holdings LLC          | V8815 | 409,561.32 EUR    | VP, Finance     | CLEARED
 TXN8837 | 2026-06-15 | 03:19 | Ashford Holdings & Co.          | V8828 | 207,288.47 EUR    | Finance Manager | CLEARED
 TXN8838 | 2026-06-15 | 03:20 | Delta Point Trading Co          | V8859 | 4,192,292.39 INR  | Controller, AP  | CLEARED
@@ -522,7 +526,7 @@ TXN8862 | 2026-06-15 | 03:56 | Union Trading Holdings          | V8846 | 735,988
 TXN8863 | 2026-06-15 | 03:58 | Fairmont Trading Partners       | V8803 | 1,621,492.41 MXN  | AP Supervisor   | CLEARED
 TXN8864 | 2026-06-15 | 03:59 | Kingsbridge Systems Ltd         | V8855 | 275,871.75 EUR    | Finance Manager | CLEARED
 TXN8865 | 2026-06-15 | 04:01 | Cliffside Holdings LLC          | V8815 | 195,307.96 EUR    | AP Supervisor   | CLEARED
-TXN8866 | 2026-06-15 | 04:02 | Fairmont Services & Co.         | V8838 | 23,789,400.19 USD | VP, Finance     | CLEARED
+TXN8866 | 2026-06-15 | 04:02 | Fairmont Services & Co.         | V8838 | 23,789,400.19 USD | VP, Finance     | PENDING SETTLEMENT
 TXN8867 | 2026-06-15 | 04:04 | Union Services Group            | V8814 | 617,926.93 BRL    | Controller, AP  | CLEARED
 TXN8868 | 2026-06-15 | 04:05 | Redwood Trading Partners        | V8851 | 418,045.93 EUR    | Finance Manager | CLEARED
 TXN8869 | 2026-06-15 | 04:07 | Delta Point Solutions Group     | V8822 | 438,047.53 USD    | AP Supervisor   | CLEARED
@@ -548,7 +552,7 @@ TXN8888 | 2026-06-15 | 04:35 | Vireo Trading Partners          | V8819 | 440,163
 TXN8889 | 2026-06-15 | 04:37 | Cobalt Trading Holdings         | V8877 | 340,677.08 EUR    | Controller, AP  | CLEARED
 TXN8890 | 2026-06-15 | 04:38 | Cobalt Systems & Co.            | V8843 | 390,608.92 EUR    | Controller, AP  | CLEARED
 TXN8891 | 2026-06-15 | 04:40 | Ashford Systems & Co.           | V8818 | 487,467.03 USD    | Controller, AP  | CLEARED
-TXN8892 | 2026-06-15 | 04:41 | Delta Point Solutions Group     | V8822 | 26,105,884.50 USD | VP, Finance     | CLEARED
+TXN8892 | 2026-06-15 | 04:41 | Delta Point Solutions Group     | V8822 | 26,105,884.50 USD | VP, Finance     | PENDING SETTLEMENT
 TXN8893 | 2026-06-15 | 04:42 | Bellwood Services Co            | V8862 | 464,393.28 USD    | Controller, AP  | CLEARED
 TXN8894 | 2026-06-15 | 04:44 | Cobalt Trading Holdings         | V8877 | 255,371.45 EUR    | Controller, AP  | CLEARED
 TXN8895 | 2026-06-15 | 04:45 | Summit Peak Solutions LLC       | V8840 | 385,232.21 AUD    | Controller, AP  | CLEARED
