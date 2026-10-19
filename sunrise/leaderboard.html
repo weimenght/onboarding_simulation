@@ -84,6 +84,7 @@
             halted: 'HALTED', join: (g, r) => `${g} joined${r ? ' · ' + r : ''}`,
             node: (g, n) => `${g} just decrypted Node ${n}`, puzzle: (g, n) => `${g} cracked override ${n}/3`,
             secret: (g, c) => `${g} found a secret (${c}/${SECRET_TOTAL})`, finish: (g, tm) => `${g} HALTED THE WIRE in ${tm}!`,
+            hint: (g, c) => `${g} bought a hint (+${c})`, strike: (g, c) => `${g} entered a wrong override (+${c})`, penalty: (c) => `incl. +${c}`,
             roles: { it: 'Forensic IT', finance: 'Finance', compliance: 'Compliance' }, ago: (s) => s < 60 ? `${s}s ago` : `${Math.floor(s / 60)}m ago`
         },
         zh: {
@@ -94,6 +95,7 @@
             halted: '已拦截', join: (g, r) => `${g} 已加入${r ? ' · ' + r : ''}`,
             node: (g, n) => `${g} 刚刚解密了节点 ${n}`, puzzle: (g, n) => `${g} 破解了覆盖代码 ${n}/3`,
             secret: (g, c) => `${g} 发现了一个彩蛋（${c}/${SECRET_TOTAL}）`, finish: (g, tm) => `${g} 拦截成功！用时 ${tm}`,
+            hint: (g, c) => `${g} 使用了提示（+${c}）`, strike: (g, c) => `${g} 输错了覆盖代码（+${c}）`, penalty: (c) => `含 +${c}`,
             roles: { it: '取证 IT', finance: '财务', compliance: '合规' }, ago: (s) => s < 60 ? `${s} 秒前` : `${Math.floor(s / 60)} 分钟前`
         }
     };
@@ -101,7 +103,7 @@
     const PUZZLE_NUM = { puzzle1: 1, puzzle2: 2, puzzle3: 3 };
 
     let lang = (new URLSearchParams(location.search).get('lang') || 'en').startsWith('zh') ? 'zh' : 'en';
-    let config = { session: 'default', startMs: null, limitSec: 7200 };
+    let config = { session: 'default', startMs: null, limitSec: 7200, strikeSec: 60, hintSec: [60, 120, 180] };
     let events = [];
     const seen = new Set();
     let prevRanks = {};
@@ -126,13 +128,15 @@
     }
 
     // Pure aggregation (also unit-tested): events must be in chronological order
-    function aggregate(evts) {
+    function aggregate(evts, cfg) {
+        const strikeSec = cfg && Number.isFinite(cfg.strikeSec) ? cfg.strikeSec : 60;
+        const hintSec = cfg && cfg.hintSec && cfg.hintSec.length === 3 ? cfg.hintSec : [60, 120, 180];
         const groups = {};
         const feed = [];
         for (const e of evts) {
             const name = e.group_name;
             if (!name) continue;
-            const g = groups[name] || (groups[name] = { name, nodes: new Set(), puzzles: new Set(), secrets: new Set(), roles: new Set(), finish: null, lastProgressAt: 0, lastAt: 0 });
+            const g = groups[name] || (groups[name] = { name, nodes: new Set(), puzzles: new Set(), secrets: new Set(), roles: new Set(), finish: null, penalty: 0, lastProgressAt: 0, lastAt: 0 });
             const at = Date.parse(e.created_at) || 0;
             g.lastAt = Math.max(g.lastAt, at);
             if (e.role) g.roles.add(e.role);
@@ -141,23 +145,30 @@
             else if (e.event_type === 'node' && NODE_NUM[e.detail] && !g.nodes.has(e.detail)) { g.nodes.add(e.detail); g.lastProgressAt = at; item = { kind: 'node', n: NODE_NUM[e.detail] }; }
             else if (e.event_type === 'puzzle' && PUZZLE_NUM[e.detail] && !g.puzzles.has(e.detail)) { g.puzzles.add(e.detail); g.lastProgressAt = at; item = { kind: 'puzzle', n: g.puzzles.size }; }
             else if (e.event_type === 'secret' && e.detail && !g.secrets.has(e.detail)) { g.secrets.add(e.detail); item = { kind: 'secret', n: g.secrets.size }; }
+            else if (e.event_type === 'strike') { g.penalty += strikeSec; item = { kind: 'strike', cost: strikeSec }; }
+            else if (e.event_type === 'hint') {
+                const lvl = parseInt(String(e.detail || '').split(':')[1], 10);
+                if (lvl >= 1 && lvl <= 3) { g.penalty += hintSec[lvl - 1]; item = { kind: 'hint', cost: hintSec[lvl - 1] }; }
+            }
             else if (e.event_type === 'finish' && (g.finish === null || (e.elapsed_seconds ?? Infinity) < g.finish)) {
                 const first = g.finish === null;
                 g.finish = Number.isFinite(e.elapsed_seconds) ? e.elapsed_seconds : 0;
                 g.lastProgressAt = at;
-                if (first) item = { kind: 'finish', elapsed: g.finish };
+                if (first) item = { kind: 'finish', elapsed: g.finish, groupRef: g };
             }
             if (item) feed.push({ ...item, id: e.id, group: name, at });
         }
-        const rows = Object.values(groups).map((g) => ({ ...g, stage: g.nodes.size + g.puzzles.size }));
+        const rows = Object.values(groups).map((g) => ({ ...g, stage: g.nodes.size + g.puzzles.size, total: g.finish === null ? null : g.finish + g.penalty }));
         rows.sort((a, b) => {
             const af = a.finish !== null, bf = b.finish !== null;
             if (af !== bf) return af ? -1 : 1;
-            if (af && bf && a.finish !== b.finish) return a.finish - b.finish;
+            if (af && bf && a.total !== b.total) return a.total - b.total;
             if (!af && a.stage !== b.stage) return b.stage - a.stage;
             if (a.secrets.size !== b.secrets.size) return b.secrets.size - a.secrets.size;
+            if (!af && a.penalty !== b.penalty) return a.penalty - b.penalty;
             return (a.lastProgressAt || Infinity) - (b.lastProgressAt || Infinity);
         });
+        feed.forEach((f) => { if (f.kind === 'finish') { f.elapsed = f.elapsed + f.groupRef.penalty; delete f.groupRef; } });
         return { rows, feed: feed.reverse() };
     }
     window.__sunriseAggregate = aggregate;
@@ -168,6 +179,8 @@
         if (f.kind === 'node') return { icon: 'fa-unlock-keyhole text-brand', html: t.node(g, f.n) };
         if (f.kind === 'puzzle') return { icon: 'fa-crosshairs text-red-400', html: t.puzzle(g, f.n) };
         if (f.kind === 'secret') return { icon: 'fa-star text-amber-300', html: t.secret(g, f.n) };
+        if (f.kind === 'hint') return { icon: 'fa-lightbulb text-amber-400', html: t.hint(g, fmtClock(f.cost)) };
+        if (f.kind === 'strike') return { icon: 'fa-xmark text-red-400', html: t.strike(g, fmtClock(f.cost)) };
         return { icon: 'fa-shield-halved text-brand', html: `<span class="text-brand">${t.finish(g, fmtClock(f.elapsed))}</span>` };
     }
 
@@ -178,7 +191,7 @@
         $('langBtn').textContent = lang === 'en' ? '中文' : 'EN';
         $('status').textContent = statusKey ? t[statusKey] : '';
 
-        const { rows, feed } = aggregate(events);
+        const { rows, feed } = aggregate(events, config);
         $('empty').classList.toggle('hidden', rows.length > 0);
 
         const now = Date.now();
@@ -189,9 +202,10 @@
             const dots = ['logs', 'ledger', 'banking'].map((k) => `<span class="h-3 w-3 rounded-full md:h-3.5 md:w-3.5 ${r.nodes.has(k) ? 'bg-brand' : 'border border-slate-700'}"></span>`).join('')
                 + '<span class="mx-1 h-4 w-px bg-slate-700"></span>'
                 + ['puzzle1', 'puzzle2', 'puzzle3'].map((k) => `<span class="h-3 w-3 rotate-45 md:h-3.5 md:w-3.5 ${r.puzzles.has(k) ? 'bg-red-500' : 'border border-slate-700'}"></span>`).join('');
+            const pen = r.penalty > 0 ? `<span class="block font-mono text-[11px] text-amber-300/90">${t.penalty(fmtClock(r.penalty))}</span>` : '';
             const time = r.finish !== null
-                ? `<span class="font-bold text-brand">${fmtClock(r.finish)}</span>`
-                : `<span class="text-slate-500">${t.ago(Math.max(0, Math.floor((now - r.lastAt) / 1000)))}</span>`;
+                ? `<span class="font-bold text-brand">${fmtClock(r.total)}</span>${pen}`
+                : `<span class="text-slate-500">${t.ago(Math.max(0, Math.floor((now - r.lastAt) / 1000)))}</span>${pen}`;
             return `<li class="${moved ? 'flash ' : ''}grid grid-cols-[3rem_1fr_9rem_5rem_6rem] items-center gap-3 rounded-xl border ${r.finish !== null ? 'border-brand/40 bg-brand/5' : 'border-slate-800 bg-slate-950/50'} px-3 py-3 md:grid-cols-[3.5rem_1fr_12rem_7rem_7rem] md:py-4">
                 <span class="flex h-9 w-9 items-center justify-center rounded-full border font-mono text-base font-bold md:h-11 md:w-11 md:text-lg ${medal}">${rank}</span>
                 <span class="min-w-0"><span class="block truncate text-lg font-bold text-white md:text-2xl">${esc(r.name)}</span>
@@ -244,7 +258,12 @@
 
         const start = cfg.GAME_START ? Date.parse(cfg.GAME_START) : NaN;
         const minutes = parseInt(cfg.SETTLEMENT_MINUTES, 10);
-        config = { session: (cfg.GAME_SESSION || 'default').slice(0, 40), startMs: Number.isFinite(start) ? start : null, limitSec: (minutes > 0 ? minutes : 120) * 60 };
+        const strikeSec = parseInt(cfg.STRIKE_PENALTY_SECONDS, 10);
+        const hintSec = String(cfg.HINT_PENALTIES || '').split(',').map((x) => parseInt(x, 10)).filter((x) => Number.isFinite(x) && x >= 0);
+        config = {
+            session: (cfg.GAME_SESSION || 'default').slice(0, 40), startMs: Number.isFinite(start) ? start : null, limitSec: (minutes > 0 ? minutes : 120) * 60,
+            strikeSec: Number.isFinite(strikeSec) && strikeSec >= 0 ? strikeSec : 60, hintSec: hintSec.length === 3 ? hintSec : [60, 120, 180]
+        };
         $('session').textContent = config.session;
 
         if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || !window.supabase) { statusKey = 'noSupabase'; render(); return; }
