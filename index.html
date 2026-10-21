@@ -82,6 +82,12 @@ a { color: inherit; }
 .brand { display: flex; align-items: baseline; gap: 2px; font-weight: 800; font-size: 20px; letter-spacing: -.01em; text-decoration: none; }
 .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); display: inline-block; margin-left: 2px; transform: translateY(-1px); }
 .brand small { font-weight: 600; font-size: 12px; color: var(--fg-3); margin-left: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.lang-seg { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); flex: none; }
+.lang-seg button { all: unset; box-sizing: border-box; cursor: pointer; min-width: 34px; height: 30px; padding: 0 9px; border-radius: 999px; display: inline-grid; place-items: center; font-size: 13px; font-weight: 800; color: #9aa4b2; }
+@media (max-width: 560px) { .bar-lang button { min-width: 28px; padding: 0 6px; height: 26px; font-size: 12px; } }
+.lang-seg button:hover { color: #fff; }
+.lang-seg button[aria-pressed="true"] { background: #86BC25; color: #071008; }
+.lang-seg button:focus-visible { outline: 2px solid #62B5E5; outline-offset: 2px; }
 .pill-btn {
   height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2);
   background: rgba(255,255,255,.04); font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
@@ -277,6 +283,174 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 }
 </style>
 <script>(function () {
+  // One language setting for the whole site: 'en', 'zh-Hans' or 'zh-Hant' (Hong Kong).
+  // First visit follows the browser; a choice made anywhere is remembered and passed to every page.
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function fromBrowser() {
+    var list = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || navigator.userLanguage || 'en']);
+    for (var i = 0; i < list.length; i++) {
+      var l = String(list[i] || '').toLowerCase();
+      if (l.indexOf('zh') === 0) return /hant|-tw|-hk|-mo/.test(l) ? 'zh-Hant' : 'zh-Hans';
+      if (l.indexOf('en') === 0) return 'en';
+    }
+    return 'en';
+  }
+  var saved = store('dl_lang');
+  // Older pages only know EN / 中: remember which Chinese the visitor last chose, so 中 brings that back.
+  var lastZh = store('dl_lang_zh');
+  if (lastZh !== 'zh-Hans' && lastZh !== 'zh-Hant') { var b = fromBrowser(); lastZh = b === 'en' ? 'zh-Hans' : b; }
+  var current = saved === 'en' || saved === 'zh-Hans' || saved === 'zh-Hant' ? saved : fromBrowser();
+  var listeners = [];
+  // Keys the individual pages read at start-up.
+  function syncPages(l) {
+    var two = l === 'en' ? 'en' : 'zh';
+    ['participant_lang', 'admin_lang', 'kc_live_lang', 'deloitte_journey_lang'].forEach(function (k) { store(k, two); });
+    try {
+      var raw = localStorage.getItem('PROJECT_SUNRISE_STATE_V3');
+      if (raw) { var o = JSON.parse(raw); if (o && o.lang !== two) { o.lang = two; localStorage.setItem('PROJECT_SUNRISE_STATE_V3', JSON.stringify(o)); } }
+    } catch (e) {}
+  }
+  if (current !== 'en') lastZh = current;
+  syncPages(current);
+  window.DLLang = {
+    get: function () { return current; },
+    two: function () { return current === 'en' ? 'en' : 'zh'; },
+    lastZh: function () { return current !== 'en' ? current : lastZh; },
+    browser: fromBrowser,
+    set: function (l, src) {
+      if (l !== 'en' && l !== 'zh-Hans' && l !== 'zh-Hant') return;
+      var prev = current;
+      store('dl_lang', l);
+      if (l !== 'en') { lastZh = l; store('dl_lang_zh', l); }
+      if (l === prev) return;
+      current = l; syncPages(l);
+      listeners = listeners.filter(function (x) {
+        try { if (x.win && (x.win.closed || !x.win.document)) return false; x.fn(l, prev, src); return true; } catch (e) { return false; }
+      });
+    },
+    on: function (fn, win) { listeners.push({ fn: fn, win: win || null }); }
+  };
+})();
+</script><script>(function () {
+  // Simplified → Traditional (Hong Kong) conversion, longest phrase first.
+  var D = {"c":"㐷傌㐹㑶㐽偑㑇㑳㑈倲㑔㑯㑩儸㓥劏㓰劃㔉劚㖊噚㖞喎㘎㘚㚯㜄㛀媰㛣㜏㛤孋㟆㠏㟥嵾㡎幓㤘㥮㤽懤㥪慺㧏掆㧐㩳㧑撝㧟擓㧰擽㨫㩜㭎棡㭏椲㭤樢㭴樫㱩殰㱮殨㲿瀇㳔濧㳕灡㳠澾㳡濄㳽瀰㴋潚㶉鸂㶶燶㶽煱㺍獱㻅璯䀥䁻䁖瞜䂵碽䃅磾䅉稏䅟穇䇲筴䉤籔䌶䊷䌷紬䌸縳䌹絅䌺䋙䌻䋚䌼綐䌽綵䌾䋻䌿䋹䍀繿䍁繸䍠䍦䎬䎱䏝膞䓓薵䓕薳䓖藭䓨罃䗖螮䙌䙡䙓襬䜣訢䜤鿁䜧䜀䜩讌䝙貙䞍䝼䞐賰䟢躎䥺釾䥽鏺䥾䥱䦂䥇䦃鐯䦅鐥䦆钁䦶䦛䦷䦟䩄靦䯄騧䯅䯀䲝䱽䲟鮣䲠鰆䲡鰌䲢鰧䲣䱷䴓鳾䴔鵁䴕鴷䴖鶄䴗鶪䴘鷉䴙鸊䶮龑万萬与與丑醜专專业業丛叢东東丝絲丢丟两兩严嚴丧喪个個丰豐临臨为爲丽麗举舉么麼义義乌烏乐樂乔喬习習乡鄉书書买買乱亂争爭于於亏虧云雲亘亙亚亞产產亩畝亲親亵褻亸嚲亿億仅僅仆僕从從仑侖仓倉仪儀们們价價众衆优優伙夥会會伛傴伞傘伟偉传傳伡俥伣俔伤傷伥倀伦倫伧傖伪僞伫佇体體余餘佣傭佥僉侠俠侣侶侥僥侦偵侧側侨僑侩儈侪儕侬儂侭儘俣俁俦儔俨儼俩倆俪儷俫倈俭儉债債倾傾偬傯偻僂偾僨偿償傤儎傥儻傧儐储儲傩儺儿兒兑兌兖兗党黨兰蘭关關兴興兹茲养養兽獸冁囅内內冈岡册冊写寫军軍农農冯馮冲衝决決况況冻凍净淨凄悽准準凉涼减減凑湊凛凜几幾凤鳳凫鳧凭憑凯凱凶兇击擊凿鑿刍芻划劃刘劉则則刚剛创創删刪别別刬剗刭剄刹剎刽劊刾㓨刿劌剀剴剂劑剐剮剑劍剥剝剧劇劝勸办辦务務劢勱动動励勵劲勁劳勞势勢勋勳勚勩匀勻匦匭匮匱区區医醫华華协協单單卖賣占佔卢盧卤滷卧臥卫衛却卻卺巹厂廠厅廳历歷厉厲压壓厌厭厍厙厐龎厕廁厘釐厢廂厣厴厦廈厨廚厩廄厮廝县縣叁叄参參叆靉叇靆双雙发發变變叙敘叠疊台臺叶葉号號叹嘆叽嘰吁籲吃喫后後吓嚇吕呂吗嗎吨噸听聽启啓吴吳呐吶呒嘸呓囈呕嘔呖嚦呗唄员員呙咼呛嗆呜嗚咏詠咙嚨咛嚀咝噝咤吒咨諮咸鹹响響哑啞哒噠哓嘵哔嗶哕噦哗譁哙噲哜嚌哝噥哟喲唇脣唛嘜唝嗊唠嘮唡啢唢嗩唤喚啧嘖啬嗇啭囀啮齧啯嘓啰囉啴嘽啸嘯喷噴喽嘍喾嚳嗫囁嗳噯嘘噓嘤嚶嘱囑噜嚕嚣囂团團园園囱囪围圍囵圇国國图圖圆圓圣聖圹壙场場坏壞块塊坚堅坛壇坜壢坝壩坞塢坟墳坠墜垄壟垅壠垆壚垒壘垦墾垩堊垫墊垭埡垯墶垱壋垲塏垴堖埘塒埙壎埚堝堑塹堕墮塆壪墙牆壮壯声聲壳殼壶壺壸壼处處备備复復够夠头頭夸誇夹夾夺奪奁奩奂奐奋奮奖獎奥奧妆妝妇婦妈媽妩嫵妪嫗妫嬀姗姍姹奼娄婁娅婭娆嬈娇嬌娈孌娱娛娲媧娴嫺婳嫿婴嬰婵嬋婶嬸媪媼媭嬃嫒嬡嫔嬪嫱嬙嬷嬤孙孫学學孪孿宁寧宝寶实實宠寵审審宪憲宫宮宽寬宾賓寝寢对對寻尋导導寿壽将將尔爾尘塵尝嘗尧堯尴尷尸屍尽盡层層屃屓屉屜届屆属屬屡屢屦屨屿嶼岁歲岂豈岖嶇岗崗岘峴岚嵐岛島岩巖岭嶺岳嶽岽崬岿巋峃嶨峄嶧峡峽峣嶢峤嶠峥崢峦巒峰峯崂嶗崃崍崄嶮崭嶄嵘嶸嵚嶔嵝嶁巅巔巩鞏巯巰币幣帅帥师師帏幃帐帳帘簾帜幟带帶帧幀帮幫帱幬帻幘帼幗幂冪干幹并並广廣庄莊庆慶床牀庐廬庑廡库庫应應庙廟庞龐废廢庼廎廪廩开開异異弃棄弑弒张張弥彌弪弳弯彎弹彈强強归歸当當录錄彟彠彦彥彨彲彻徹征徵径徑徕徠忆憶忏懺忧憂忾愾怀懷态態怂慫怃憮怄慪怅悵怆愴怜憐总總怼懟怿懌恋戀恒恆恳懇恶惡恸慟恹懨恺愷恻惻恼惱恽惲悦悅悫愨悬懸悭慳悮悞悯憫惊驚惧懼惨慘惩懲惫憊惬愜惭慚惮憚惯慣愠慍愤憤愦憒愿願慑懾慭憖懑懣懒懶懔懍戆戇戋戔戏戲戗戧战戰戬戩戯戱户戶扑撲托託执執扩擴扪捫扫掃扬揚扰擾抚撫抛拋抟摶抠摳抡掄抢搶护護报報担擔拟擬拢攏拣揀拥擁拦攔拧擰拨撥择擇挂掛挚摯挛攣挜掗挝撾挞撻挟挾挠撓挡擋挢撟挣掙挤擠挥揮挦撏捝挩捞撈损損捡撿换換捣搗据據掳擄掴摑掷擲掸撣掺摻掼摜揽攬揾搵揿撳搀攙搁擱搂摟搄揯搅攪携攜摄攝摅攄摆擺摇搖摈擯摊攤撄攖撑撐撵攆撷擷撸擼撺攛擜㩵擞擻攒攢敌敵敚敓敛斂敩斆数數斋齋斓斕斗鬥斩斬断斷无無旧舊时時旷曠旸暘昙曇昵暱昼晝昽曨显顯晋晉晒曬晓曉晔曄晕暈晖暉暂暫暧曖术術朴樸机機杀殺杂雜权權杠槓条條来來杨楊杩榪杰傑极極构構枞樅枢樞枣棗枥櫪枧梘枨棖枪槍枫楓枭梟柜櫃柠檸柽檉栀梔栅柵标標栈棧栉櫛栊櫳栋棟栌櫨栎櫟栏欄树樹栖棲栗慄样樣栾欒桠椏桡橈桢楨档檔桤榿桥橋桦樺桧檜桨槳桩樁桪樳梦夢梼檮梾棶梿槤检檢棁梲棂欞椁槨椝槼椟櫝椠槧椢槶椤欏椫樿椭橢椮槮楼樓榄欖榅榲榇櫬榈櫚榉櫸榝樧槚檟槛檻槟檳槠櫧横橫樯檣樱櫻橥櫫橱櫥橹櫓橼櫞檩檁欢歡欤歟欧歐歼殲殁歿殇殤残殘殒殞殓殮殚殫殡殯殴毆毁毀毂轂毕畢毙斃毡氈毵毿氇氌气氣氢氫氩氬氲氳汇匯汉漢汤湯汹洶沄澐沟溝没沒沣灃沤漚沥瀝沦淪沧滄沨渢沩潙沪滬泞濘泪淚泶澩泷瀧泸瀘泺濼泻瀉泼潑泽澤泾涇洁潔洒灑洼窪浃浹浅淺浆漿浇澆浈湞浉溮浊濁测測浍澮济濟浏瀏浐滻浑渾浒滸浓濃浔潯浕濜涂塗涌湧涚涗涛濤涝澇涞淶涟漣涠潿涡渦涢溳涣渙涤滌润潤涧澗涨漲涩澀淀澱渊淵渌淥渍漬渎瀆渐漸渑澠渔漁渖瀋渗滲温溫游遊湾灣湿溼溁濚溃潰溅濺溆漵溇漊滗潷滚滾滞滯滟灩滠灄满滿滢瀅滤濾滥濫滦灤滨濱滩灘滪澦潆瀠潇瀟潋瀲潍濰潜潛潴瀦澛瀂澜瀾濑瀨濒瀕灏灝灭滅灯燈灵靈灶竈灾災灿燦炀煬炉爐炖燉炜煒炝熗点點炼煉炽熾烁爍烂爛烃烴烛燭烟煙烦煩烧燒烨燁烩燴烫燙烬燼热熱焕煥焖燜焘燾煴熅熏燻爱愛爷爺牍牘牦犛牵牽牺犧犊犢状狀犷獷犸獁犹猶狈狽狝獮狞獰独獨狭狹狮獅狯獪狰猙狱獄狲猻猃獫猎獵猕獼猡玀猪豬猫貓猬蝟献獻獭獺玑璣玙璵玚瑒玛瑪玮瑋环環现現玱瑲玺璽珐琺珑瓏珰璫珲琿琎璡琏璉琐瑣琼瓊瑶瑤瑷璦瑸璸璎瓔瓒瓚瓮甕瓯甌电電画畫畅暢畴疇疖癤疗療疟瘧疠癘疡瘍疬癧疭瘲疮瘡疯瘋疱皰疴痾痈癰痉痙痒癢痖瘂痨癆痪瘓痫癇痴癡瘅癉瘆瘮瘗瘞瘘瘻瘪癟瘫癱瘾癮瘿癭癞癩癣癬癫癲皂皁皑皚皱皺皲皸盏盞盐鹽监監盖蓋盗盜盘盤眍瞘眦眥眬矓睁睜睐睞睑瞼瞆瞶瞒瞞瞩矚矫矯矶磯矾礬矿礦砀碭码碼砖磚砗硨砚硯砜碸砺礪砻礱砾礫础礎硁硜硕碩硖硤硗磽硙磑硚礄确確硵磠硷礆碍礙碛磧碜磣碱鹼礼禮祃禡祎禕祢禰祯禎祷禱祸禍禀稟禄祿禅禪离離秃禿秆稈种種秘祕积積称稱秽穢秾穠稆穭税稅稣穌稳穩穑穡穞穭穷窮窃竊窍竅窎窵窑窯窜竄窝窩窥窺窦竇窭窶竖豎竞競笃篤笋筍笔筆笕筧笺箋笼籠笾籩筑築筚篳筛篩筜簹筝箏筹籌筼篔签籤筿篠简簡箓籙箦簀箧篋箨籜箩籮箪簞箫簫篑簣篓簍篮籃篯籛篱籬簖籪籁籟籴糴类類籼秈粜糶粝糲粤粵粪糞粮糧粽糉糁糝糇餱糍餈紧緊絷縶緼縕縆緪纟糹纠糾纡紆红紅纣紂纤纖纥紇约約级級纨紈纩纊纪紀纫紉纬緯纭紜纮紘纯純纰紕纱紗纲綱纳納纴紝纵縱纶綸纷紛纸紙纹紋纺紡纻紵纼紖纽紐纾紓线線绀紺绁紲绂紱练練组組绅紳细細织織终終绉縐绊絆绋紼绌絀绍紹绎繹经經绐紿绑綁绒絨结結绔絝绕繞绖絰绗絎绘繪给給绚絢绛絳络絡绝絕绞絞统統绠綆绡綃绢絹绣繡绤綌绥綏绦絛继繼绨綈绩績绪緒绫綾绬緓续續绮綺绯緋绰綽绱鞝绲緄绳繩维維绵綿绶綬绷繃绸綢绹綯绺綹绻綣综綜绽綻绾綰绿綠缀綴缁緇缂緙缃緗缄緘缅緬缆纜缇緹缈緲缉緝缊縕缋繢缌緦缍綞缎緞缏緶缐線缑緱缒縋缓緩缔締缕縷编編缗緡缘緣缙縉缚縛缛縟缜縝缝縫缞縗缟縞缠纏缡縭缢縊缣縑缤繽缥縹缦縵缧縲缨纓缩縮缪繆缫繅缬纈缭繚缮繕缯繒缰繮缱繾缲繰缳繯缴繳缵纘罂罌网網罗羅罚罰罢罷罴羆羁羈羟羥羡羨群羣翘翹翙翽翚翬耢耮耧耬耸聳耻恥聂聶聋聾职職聍聹联聯聩聵聪聰肃肅肠腸肤膚肮骯肴餚肾腎肿腫胀脹胁脅胆膽胜勝胧朧胨腖胪臚胫脛胶膠脉脈脍膾脏髒脐臍脑腦脓膿脔臠脚腳脱脫脶腡脸臉腊臘腌醃腘膕腭齶腻膩腼靦腽膃腾騰膑臏膻羶臜臢舆輿舣艤舰艦舱艙舻艫艰艱艳豔艺藝节節芈羋芗薌芜蕪芦蘆苁蓯苇葦苈藶苋莧苌萇苍蒼苎苧苏蘇苧薴苹蘋范範茎莖茏蘢茑蔦茔塋茕煢茧繭荆荊荐薦荙薘荚莢荛蕘荜蓽荝萴荞蕎荟薈荠薺荡蕩荣榮荤葷荥滎荦犖荧熒荨蕁荩藎荪蓀荫蔭荬蕒荭葒荮葤药藥莅蒞莱萊莲蓮莳蒔莴萵莶薟获獲莸蕕莹瑩莺鶯莼蓴萚蘀萝蘿萤螢营營萦縈萧蕭萨薩葱蔥蒀蒕蒇蕆蒉蕢蒋蔣蒌蔞蒏醟蓝藍蓟薊蓠蘺蓣蕷蓥鎣蓦驀蔂虆蔷薔蔹蘞蔺藺蔼藹蕰薀蕲蘄蕴蘊薮藪藓蘚藴蘊蘖櫱虏虜虑慮虚虛虫蟲虬虯虮蟣虱蝨虽雖虾蝦虿蠆蚀蝕蚁蟻蚂螞蚃蠁蚕蠶蚝蠔蚬蜆蛊蠱蛎蠣蛏蟶蛮蠻蛰蟄蛱蛺蛲蟯蛳螄蛴蠐蜕蛻蜗蝸蜡蠟蝇蠅蝈蟈蝉蟬蝎蠍蝼螻蝾蠑螀螿螨蟎蟏蠨衅釁衔銜补補衬襯衮袞袄襖袅嫋袆褘袜襪袭襲袯襏装裝裆襠裈褌裢褳裣襝裤褲裥襉褛褸褴襤襕襴见見观觀觃覎规規觅覓视視觇覘览覽觉覺觊覬觋覡觌覿觍覥觎覦觏覯觐覲觑覷觞觴触觸觯觶訚誾詟讋誉譽誊謄讠訁计計订訂讣訃认認讥譏讦訐讧訌讨討让讓讪訕讫訖讬託训訓议議讯訊记記讱訒讲講讳諱讴謳讵詎讶訝讷訥许許讹訛论論讻訩讼訟讽諷设設访訪诀訣证證诂詁诃訶评評诅詛识識诇詗诈詐诉訴诊診诋詆诌謅词詞诎詘诏詔诐詖译譯诒詒诓誆诔誄试試诖詿诗詩诘詰诙詼诚誠诛誅诜詵话話诞誕诟詬诠詮诡詭询詢诣詣诤諍该該详詳诧詫诨諢诩詡诪譸诫誡诬誣语語诮誚误誤诰誥诱誘诲誨诳誑说說诵誦诶誒请請诸諸诹諏诺諾读讀诼諑诽誹课課诿諉谀諛谁誰谂諗调調谄諂谅諒谆諄谇誶谈談谉讅谊誼谋謀谌諶谍諜谎謊谏諫谐諧谑謔谒謁谓謂谔諤谕諭谖諼谗讒谘諮谙諳谚諺谛諦谜謎谝諞谞諝谟謨谠讜谡謖谢謝谣謠谤謗谥諡谦謙谧謐谨謹谩謾谪謫谫譾谬謬谭譚谮譖谯譙谰讕谱譜谲譎谳讞谴譴谵譫谶讖豮豶贝貝贞貞负負贠貟贡貢财財责責贤賢败敗账賬货貨质質贩販贪貪贫貧贬貶购購贮貯贯貫贰貳贱賤贲賁贳貰贴貼贵貴贶貺贷貸贸貿费費贺賀贻貽贼賊贽贄贾賈贿賄赀貲赁賃赂賂赃贓资資赅賅赆贐赇賕赈賑赉賚赊賒赋賦赌賭赍齎赎贖赏賞赐賜赑贔赒賙赓賡赔賠赕賧赖賴赗賵赘贅赙賻赚賺赛賽赜賾赝贗赞贊赟贇赠贈赡贍赢贏赣贛赪赬赵趙赶趕趋趨趱趲趸躉跃躍跄蹌跖蹠跞躒践踐跶躂跷蹺跸蹕跹躚跻躋踌躊踪蹤踬躓踯躑蹑躡蹒蹣蹰躕蹿躥躏躪躜躦躯軀輼轀车車轧軋轨軌轩軒轪軑轫軔转轉轭軛轮輪软軟轰轟轱軲轲軻轳轤轴軸轵軹轶軼轷軤轸軫轹轢轺軺轻輕轼軾载載轾輊轿轎辀輈辁輇辂輅较較辄輒辅輔辆輛辇輦辈輩辉輝辊輥辋輞辌輬辍輟辎輜辏輳辐輻辑輯辒轀输輸辔轡辕轅辖轄辗輾辘轆辙轍辚轔辞辭辟闢辩辯辫辮边邊辽遼达達迁遷过過迈邁运運还還这這进進远遠违違连連迟遲迩邇迳逕迹跡适適选選逊遜递遞逦邐逻邏遗遺遥遙邓鄧邝鄺邬鄔邮郵邹鄒邺鄴邻鄰郁鬱郏郟郐鄶郑鄭郓鄆郦酈郧鄖郸鄲酂酇酝醞酦醱酱醬酽釅酾釃酿釀醖醞采採释釋里裏鉴鑑銮鑾錾鏨钅釒钆釓钇釔针針钉釘钊釗钋釙钌釕钍釷钎釺钏釧钐釤钑鈒钒釩钓釣钔鍆钕釹钖鍚钗釵钘鈃钙鈣钚鈈钛鈦钜鉅钝鈍钞鈔钟鍾钠鈉钡鋇钢鋼钣鈑钤鈐钥鑰钦欽钧鈞钨鎢钩鉤钪鈧钫鈁钬鈥钭鈄钮鈕钯鈀钰鈺钱錢钲鉦钳鉗钴鈷钵鉢钶鈳钷鉕钸鈽钹鈸钺鉞钻鑽钼鉬钽鉭钾鉀钿鈿铀鈾铁鐵铂鉑铃鈴铄鑠铅鉛铆鉚铇鉋铈鈰铉鉉铊鉈铋鉍铌鈮铍鈹铎鐸铏鉶铐銬铑銠铒鉺铓鋩铔錏铕銪铖鋮铗鋏铘鋣铙鐃铚銍铛鐺铜銅铝鋁铞銱铟銦铠鎧铡鍘铢銖铣銑铤鋌铥銩铦銛铧鏵铨銓铩鎩铪鉿铫銚铬鉻铭銘铮錚铯銫铰鉸铱銥铲鏟铳銃铴鐋铵銨银銀铷銣铸鑄铹鐒铺鋪铻鋙铼錸铽鋱链鏈铿鏗销銷锁鎖锂鋰锃鋥锄鋤锅鍋锆鋯锇鋨锈鏽锉銼锊鋝锋鋒锌鋅锍鋶锎鐦锏鐧锐銳锑銻锒鋃锓鋟锔鋦锕錒锖錆锗鍺锘鍩错錯锚錨锛錛锜錡锝鍀锞錁锟錕锠錩锡錫锢錮锣鑼锤錘锥錐锦錦锧鑕锨鍁锩錈锪鍃锫錇锬錟锭錠键鍵锯鋸锰錳锱錙锲鍥锳鍈锴鍇锵鏘锶鍶锷鍔锸鍤锹鍬锺鍾锻鍛锼鎪锽鍠锾鍰锿鎄镀鍍镁鎂镂鏤镃鎡镄鐨镅鎇镆鏌镇鎮镈鎛镉鎘镊鑷镋钂镌鐫镍鎳镎鎿镏鎦镐鎬镑鎊镒鎰镓鎵镔鑌镕鎔镖鏢镗鏜镘鏝镙鏍镚鏰镛鏞镜鏡镝鏑镞鏃镟鏇镠鏐镡鐔镢钁镣鐐镤鏷镥鑥镦鐓镧鑭镨鐠镩鑹镪鏹镫鐙镬鑊镭鐳镮鐶镯鐲镰鐮镱鐿镲鑔镳鑣镴鑞镵鑱镶鑲长長门門闩閂闪閃闫閆闬閈闭閉问問闯闖闰閏闱闈闲閒闳閎间間闵閔闶閌闷悶闸閘闹鬧闺閨闻聞闼闥闽閩闾閭闿闓阀閥阁閣阂閡阃閫阄鬮阅閱阆閬阇闍阈閾阉閹阊閶阋鬩阌閿阍閽阎閻阏閼阐闡阑闌阒闃阓闠阔闊阕闋阖闔阗闐阘闒阙闕阚闞阛闤队隊阳陽阴陰阵陣阶階际際陆陸陇隴陈陳陉陘陕陝陦隯陧隉陨隕险險随隨隐隱隶隸隽雋难難雇僱雏雛雠讎雳靂雾霧霁霽霉黴霡霢霭靄靓靚靔靝静靜靥靨鞑韃鞒鞽鞯韉鞲韝韦韋韧韌韨韍韩韓韪韙韫韞韬韜韵韻页頁顶頂顷頃顸頇项項顺順须須顼頊顽頑顾顧顿頓颀頎颁頒颂頌颃頏预預颅顱领領颇頗颈頸颉頡颊頰颋頲颌頜颍潁颎熲颏頦颐頤频頻颒頮颓頹颔頷颕頴颖穎颗顆题題颙顒颚顎颛顓颜顏额額颞顳颟顢颠顛颡顙颢顥颣纇颤顫颥顬颦顰颧顴风風飏颺飐颭飑颮飒颯飓颶飔颸飕颼飖颻飗飀飘飄飙飆飚飈飞飛飨饗餍饜饣飠饤飣饥飢饦飥饧餳饨飩饩餼饪飪饫飫饬飭饭飯饮飲饯餞饰飾饱飽饲飼饳飿饴飴饵餌饶饒饷餉饸餄饹餎饺餃饻餏饼餅饽餑饾餖饿餓馀餘馁餒馂餕馃餜馄餛馅餡馆館馇餷馈饋馉餶馊餿馋饞馌饁馍饃馎餺馏餾馐饈馑饉馒饅馓饊馔饌馕饢马馬驭馭驮馱驯馴驰馳驱驅驲馹驳駁驴驢驵駔驶駛驷駟驸駙驹駒驺騶驻駐驼駝驽駑驾駕驿驛骀駘骁驍骂罵骃駰骄驕骅驊骆駱骇駭骈駢骉驫骊驪骋騁验驗骍騂骎駸骏駿骐騏骑騎骒騍骓騅骔騌骕驌骖驂骗騙骘騭骙騤骚騷骛騖骜驁骝騮骞騫骟騸骠驃骡騾骢驄骣驏骤驟骥驥骦驦骧驤髅髏髋髖髌髕鬓鬢鬶鬹魇魘魉魎鱼魚鱽魛鱾魢鱿魷鲀魨鲁魯鲂魴鲃䰾鲄魺鲅鮁鲆鮃鲇鮎鲈鱸鲉鮋鲊鮓鲋鮒鲌鮊鲍鮑鲎鱟鲏鮍鲐鮐鲑鮭鲒鮚鲓鮳鲔鮪鲕鮞鲖鮦鲗鰂鲘鮜鲙鱠鲚鱭鲛鮫鲜鮮鲝鮺鲞鯗鲟鱘鲠鯁鲡鱺鲢鰱鲣鰹鲤鯉鲥鰣鲦鰷鲧鯀鲨鯊鲩鯇鲪鮶鲫鯽鲬鯒鲭鯖鲮鯪鲯鯕鲰鯫鲱鯡鲲鯤鲳鯧鲴鯝鲵鯢鲶鯰鲷鯛鲸鯨鲹鰺鲺鯴鲻鯔鲼鱝鲽鰈鲾鰏鲿鱨鳀鯷鳁鰮鳂鰃鳃鰓鳄鱷鳅鰍鳆鰒鳇鰉鳈鰁鳉鱂鳊鯿鳋鰠鳌鰲鳍鰭鳎鰨鳏鰥鳐鰩鳑鰟鳒鰜鳓鰳鳔鰾鳕鱈鳖鱉鳗鰻鳘鰵鳙鱅鳚䲁鳛鰼鳜鱖鳝鱔鳞鱗鳟鱒鳠鱯鳡鱤鳢鱧鳣鱣鳤䲘鸟鳥鸠鳩鸡雞鸢鳶鸣鳴鸤鳲鸥鷗鸦鴉鸧鶬鸨鴇鸩鴆鸪鴣鸫鶇鸬鸕鸭鴨鸮鴞鸯鴦鸰鴒鸱鴟鸲鴝鸳鴛鸴鷽鸵鴕鸶鷥鸷鷙鸸鴯鸹鴰鸺鵂鸻鴴鸼鵃鸽鴿鸾鸞鸿鴻鹀鵐鹁鵓鹂鸝鹃鵑鹄鵠鹅鵝鹆鵒鹇鷳鹈鵜鹉鵡鹊鵲鹋鶓鹌鵪鹍鵾鹎鵯鹏鵬鹐鵮鹑鶉鹒鶊鹓鵷鹔鷫鹕鶘鹖鶡鹗鶚鹘鶻鹙鶖鹚鷀鹛鶥鹜鶩鹝鷊鹞鷂鹟鶲鹠鶹鹡鶺鹢鷁鹣鶼鹤鶴鹥鷖鹦鸚鹧鷓鹨鷚鹩鷯鹪鷦鹫鷲鹬鷸鹭鷺鹮䴉鹯鸇鹰鷹鹱鸌鹲鸏鹳鸛鹴鸘鹾鹺麦麥麸麩麹麴麺麪麽麼黄黃黉黌黡黶黩黷黪黲黾黽鼋黿鼌鼂鼍鼉鼹鼴齐齊齑齏齿齒龀齔龁齕龂齗龃齟龄齡龅齙龆齠龇齜龈齦龉齬龊齪龋齲龌齷龙龍龚龔龛龕龟龜鿎䃮鿏䥑鿒鿓鿔鎶","h":"僞偽兌兑叄叁喫吃囪囱媼媪嬀媯悅悦慍愠戶户挩捝搵揾擡抬敓敚敘敍柺枴梲棁棱稜榲榅檯枱氳氲涗涚溫温溼濕潙溈潨潀熅煴爲為癡痴皁皂祕秘稅税竈灶糉粽縕緼纔才脣唇脫脱膃腽臥卧臺台菸煙蒕蒀蔥葱蔿蒍蘊藴蛻蜕衆眾衛衞覈核說説踊踴轀輼醞醖鉢缽鉤鈎銳鋭鍼針閱閲鰮鰛","p":{"一分钟":"一分鐘","一周":"一週","了解":"瞭解","公布":"公佈","关系":"關係","关系到":"關係到","冲冲":"沖沖","分钟":"分鐘","制造":"製造","反复":"反覆","发布":"發佈","合并":"合併","周五":"週五","回复":"回覆","备注":"備註","复制":"複製","复杂":"複雜","复核":"複覈","复盘":"覆盤","尽早":"儘早","局限":"侷限","干和":"乾和","并购":"併購","恶心":"噁心","批准":"批准","批准的":"批准的","批注":"批註","控制台":"控制檯","放松":"放鬆","日志":"日誌","时钟":"時鐘","本里":"本里","标志":"標誌","核实":"覈實","核对":"覈對","核查":"覈查","桥梁":"橋樑","每分钟":"每分鐘","每周":"每週","汇总":"彙總","汇报":"彙報","没关系":"沒關係","注册":"登記","签字":"簽字","系到":"繫到","细致":"細緻","联系":"聯繫","联系方式":"聯繫方式","谷仓":"穀倉","里程":"里程","里程碑":"里程碑","重复":"重複","钟关":"鐘關","钟快":"鐘快","饼干":"餅乾","信息":"資訊","视频":"影片","默认":"預設","屏幕":"螢幕","大屏幕":"大螢幕","大屏":"大螢幕","全屏":"全螢幕","登录":"登入","退出登录":"登出","账号":"帳戶","帐号":"帳戶","账户":"帳戶","用户":"用戶","链接":"連結","设置":"設定","刷新":"重新載入","加载":"載入","打印":"列印","程序":"程式","菜单":"選單","搜索":"搜尋","服务器":"伺服器","保存":"儲存","创建":"建立","自定义":"自訂","模板":"範本","交互":"互動","运营":"營運","邮箱":"電郵","邮件":"電郵","电子邮件":"電郵","信号":"訊號","窗口":"視窗","弹窗":"彈出視窗","文件夹":"資料夾","激活":"啟用","数据库":"資料庫","实时":"即時","短信":"短訊","截屏":"截圖","软件":"軟件","网络":"網絡","鼠标":"滑鼠","光标":"游標","点击":"按","单击":"按","双击":"按兩下","导出":"匯出","导入":"匯入","上传":"上載","下载":"下載","重置":"重設","倒计时":"倒數","字体":"字型","图标":"圖示","文本":"文字","幻灯片":"簡報","音频":"音訊","博客":"網誌","质量":"質素","项目组":"項目組","打卡":"打卡","手机号":"手機號碼","二维码":"二維碼","扫码":"掃描二維碼","扫描":"掃描","激光":"鐳射"}};
+  if (!D) return;
+  var chars = {}, i;
+  for (i = 0; i + 1 < D.c.length; i += 2) chars[D.c.charAt(i)] = D.c.charAt(i + 1);
+  var hk = {};
+  for (i = 0; i + 1 < D.h.length; i += 2) hk[D.h.charAt(i)] = D.h.charAt(i + 1);
+  var phrases = D.p, maxLen = 1, starts = {};
+  for (var k in phrases) { if (k.length > maxLen) maxLen = k.length; starts[k.charAt(0)] = 1; }
+  var CJK = /[㐀-鿿]/;
+  var cache = {};
+  function convert(s) {
+    if (!s || !CJK.test(s)) return s;
+    if (cache.hasOwnProperty(s)) return cache[s];
+    var out = '', n = s.length, p = 0;
+    while (p < n) {
+      var c = s.charAt(p), hit = null;
+      if (starts[c]) {
+        for (var L = Math.min(maxLen, n - p); L >= 2; L--) { var w = s.substr(p, L); if (phrases.hasOwnProperty(w)) { hit = phrases[w]; p += L; break; } }
+      }
+      if (hit === null) { hit = chars[c] || c; p++; }
+      out += hit;
+    }
+    var fin = '';
+    for (i = 0; i < out.length; i++) { var ch = out.charAt(i); fin += hk[ch] || ch; }
+    if (s.length < 400) cache[s] = fin;
+    return fin;
+  }
+  window.DLHant = { convert: convert };
+})();
+</script><script>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+</script>
+<script>(function () {
   // Participant notice and consent. Shown once per phone (per version) before anyone joins a team or posts.
   // Stored only on this phone: { v, at, lang }. Bump VERSION when the text changes materially.
   var VERSION = '2026-10-b';
@@ -379,7 +553,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     var T = TXT[lang], checked = root.querySelector('#dlcChk') && root.querySelector('#dlcChk').checked;
     root.innerHTML = '<div class="dlc-card" role="dialog" aria-modal="true" aria-labelledby="dlcTitle">' +
       '<div class="dlc-top"><div class="dlc-brand"><span class="dlc-dot"></span>DeloitteLand</div><div class="dlc-lang" role="group" aria-label="Language">' +
-      LANGS.map(function (l) { return '<button type="button" data-l="' + l[0] + '" aria-pressed="' + (l[0] === lang) + '">' + l[1] + '</button>'; }).join('') + '</div></div>' +
+      LANGS.map(function (l) { return '<button type="button" data-no-hant data-l="' + l[0] + '" aria-pressed="' + (l[0] === lang) + '">' + l[1] + '</button>'; }).join('') + '</div></div>' +
       '<h2 id="dlcTitle">' + esc(T.title) + '</h2><p class="dlc-intro">' + esc(T.intro) + '</p><ul>' +
       T.items.map(function (it) { return '<li><span class="dlc-ic"><i class="fa-solid ' + it[0] + '" aria-hidden="true"></i></span><div><b>' + esc(it[1]) + '</b><span>' + esc(it[2]) + '</span></div></li>'; }).join('') +
       '</ul><p class="dlc-small">' + esc(T.small) + '</p>' +
@@ -395,7 +569,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     });
     root.querySelector('#dlcNo').addEventListener('click', function () { root.querySelector('#dlcNote').hidden = false; });
     Array.prototype.forEach.call(root.querySelectorAll('.dlc-lang button'), function (b) {
-      b.addEventListener('click', function () { lang = b.getAttribute('data-l'); render(); });
+      b.addEventListener('click', function () { lang = b.getAttribute('data-l'); render(); if (window.DLLang) DLLang.set({ en: 'en', hans: 'zh-Hans', hant: 'zh-Hant' }[lang], window); });
     });
   }
   function close() {
@@ -407,7 +581,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   function show() {
     if (root) return;
     if (!document.getElementById('dlcCss')) { var st = document.createElement('style'); st.id = 'dlcCss'; st.textContent = CSS; document.head.appendChild(st); }
-    root = document.createElement('div'); root.className = 'dlc';
+    root = document.createElement('div'); root.className = 'dlc'; root.setAttribute('data-no-hant', '');
     document.body.appendChild(root);
     render();
     try { root.querySelector('#dlcChk').focus({ preventScroll: true }); } catch (e) {}
@@ -429,7 +603,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   <div class="wrap">
     <header class="top">
       <div class="brand">DeloitteLand<span class="dot" aria-hidden="true"></span><small data-t="suite"></small></div>
-      <button class="pill-btn js-lang" type="button"><i class="fa-solid fa-language"></i><span class="js-lang-label"></span></button>
+      <div class="lang-seg js-langseg" role="group" aria-label="Language / 語言"><button type="button" data-l="en" lang="en">EN</button><button type="button" data-l="zh-Hans" lang="zh-CN" data-no-hant>简</button><button type="button" data-l="zh-Hant" lang="zh-HK" data-no-hant>繁</button></div>
     </header>
     <section class="hero">
       <div class="eyebrow" data-t="eyebrow"></div>
@@ -475,7 +649,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   <div class="wrap narrow">
     <header class="top">
       <a class="back" href="#/"><i class="fa-solid fa-arrow-left"></i><span data-t="backStart"></span></a>
-      <button class="pill-btn js-lang" type="button"><i class="fa-solid fa-language"></i><span class="js-lang-label"></span></button>
+      <div class="lang-seg js-langseg" role="group" aria-label="Language / 語言"><button type="button" data-l="en" lang="en">EN</button><button type="button" data-l="zh-Hans" lang="zh-CN" data-no-hant>简</button><button type="button" data-l="zh-Hant" lang="zh-HK" data-no-hant>繁</button></div>
     </header>
     <form class="auth" id="loginForm" novalidate>
       <div>
@@ -510,7 +684,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     <header class="top">
       <div class="brand">DeloitteLand<span class="dot" aria-hidden="true"></span><small data-t="staffEyebrow"></small></div>
       <div class="top-r">
-        <button class="pill-btn js-lang" type="button"><i class="fa-solid fa-language"></i><span class="js-lang-label"></span></button>
+        <div class="lang-seg js-langseg" role="group" aria-label="Language / 語言"><button type="button" data-l="en" lang="en">EN</button><button type="button" data-l="zh-Hans" lang="zh-CN" data-no-hant>简</button><button type="button" data-l="zh-Hant" lang="zh-HK" data-no-hant>繁</button></div>
         <button class="pill-btn" id="signOutBtn" type="button"><i class="fa-solid fa-right-from-bracket"></i><span data-t="signOut"></span></button>
       </div>
     </header>
@@ -532,7 +706,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   <div class="wrap narrow">
     <header class="top">
       <a class="back" href="#/staff"><i class="fa-solid fa-arrow-left"></i><span data-t="backStaff"></span></a>
-      <button class="pill-btn js-lang" type="button"><i class="fa-solid fa-language"></i><span class="js-lang-label"></span></button>
+      <div class="lang-seg js-langseg" role="group" aria-label="Language / 語言"><button type="button" data-l="en" lang="en">EN</button><button type="button" data-l="zh-Hans" lang="zh-CN" data-no-hant>简</button><button type="button" data-l="zh-Hant" lang="zh-HK" data-no-hant>繁</button></div>
     </header>
     <section class="hero">
       <div class="eyebrow" data-t="visEyebrow"></div>
@@ -551,7 +725,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   <div class="wrap narrow">
     <header class="top">
       <a class="back" href="#/staff"><i class="fa-solid fa-arrow-left"></i><span data-t="backStaff"></span></a>
-      <button class="pill-btn js-lang" type="button"><i class="fa-solid fa-language"></i><span class="js-lang-label"></span></button>
+      <div class="lang-seg js-langseg" role="group" aria-label="Language / 語言"><button type="button" data-l="en" lang="en">EN</button><button type="button" data-l="zh-Hans" lang="zh-CN" data-no-hant>简</button><button type="button" data-l="zh-Hant" lang="zh-HK" data-no-hant>繁</button></div>
     </header>
     <section class="hero">
       <div class="eyebrow" data-t="visEyebrow"></div>
@@ -584,6 +758,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     <div class="seg" id="cohortSeg" hidden role="group" aria-label="Cohort">
       <button type="button" data-c="24">24</button><button type="button" data-c="36">36</button><button type="button" data-c="48">48</button>
     </div>
+    <div class="lang-seg js-langseg bar-lang" role="group" aria-label="Language / 語言"><button type="button" data-l="en" lang="en">EN</button><button type="button" data-l="zh-Hans" lang="zh-CN" data-no-hant>简</button><button type="button" data-l="zh-Hant" lang="zh-HK" data-no-hant>繁</button></div>
     <button class="icon-btn" id="reloadBtn" type="button"><i class="fa-solid fa-rotate-right"></i></button>
     <button class="icon-btn hide-sm" id="newTabBtn" type="button"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
     <button class="icon-btn" id="focusBtn" type="button"><i class="fa-solid fa-expand"></i></button>
@@ -597,6 +772,93 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 <script type="text/x-dl-module" id="dlm-hub"><!DOCTYPE html>
 <html lang="zh-CN">
 <head><@@DLS@@>window.DL_MODULE="hub";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -627,37 +889,51 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -2459,8 +2735,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       updateModalLivePreview();
     }
 
+    function dlNickPool() {
+      const p = FUNNY_NICKNAMES[currentLang] || [];
+      return currentLang === 'zh' && window.DLH && DLH.lang && DLH.lang() === 'zh-Hant' && DLH.toHant ? p.map((x) => DLH.toHant(x)) : p;
+    }
     function rollRandomNickname() {
-      const pool = FUNNY_NICKNAMES[currentLang];
+      const pool = dlNickPool();
       const currentVal = document.getElementById('modalNicknameInput')?.value.trim();
       let picked = pool[Math.floor(Math.random() * pool.length)];
       if (pool.length > 1 && picked === currentVal) {
@@ -2574,7 +2854,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       if (nickInput) {
         nickInput.placeholder = I18N[currentLang].nickInputPlaceholder;
         if (!participantNickname) {
-          const pool = FUNNY_NICKNAMES[currentLang];
+          const pool = dlNickPool();
           nickInput.value = pool[Math.floor(Math.random() * pool.length)];
         } else {
           nickInput.value = participantNickname;
@@ -3655,10 +3935,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : 'en';
 
       const headerLangLabel = document.getElementById('langToggleLabel');
-      if (headerLangLabel) headerLangLabel.textContent = I18N[lang].langToggle;
+      if (headerLangLabel) { headerLangLabel.textContent = dlLangName(); headerLangLabel.setAttribute('data-no-hant', ''); }
 
       const bcDrawerLangLabel = document.getElementById('bcDrawerLangLabel');
-      if (bcDrawerLangLabel) bcDrawerLangLabel.textContent = I18N[lang].langToggle;
+      if (bcDrawerLangLabel) { bcDrawerLangLabel.textContent = dlLangName(); bcDrawerLangLabel.setAttribute('data-no-hant', ''); }
 
       const zhBtn = document.getElementById('modalLangZhBtn');
       const enBtn = document.getElementById('modalLangEnBtn');
@@ -3732,7 +4012,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       renderMessageStream(cachedMessagesList);
     }
 
+    function dlLangName() { const l = window.DLH && DLH.lang ? DLH.lang() : (currentLang === 'en' ? 'en' : 'zh-Hans'); return l === 'en' ? 'EN' : l === 'zh-Hant' ? '繁' : '简'; }
     function toggleLanguage() {
+      if (window.DLH && DLH.setLang) {
+        const cur = DLH.lang(), next = cur === 'en' ? 'zh-Hans' : cur === 'zh-Hans' ? 'zh-Hant' : 'en';
+        DLH.setLang(next, window);
+        if (cur === 'zh-Hant') { location.reload(); return; }
+        if ((next === 'en') !== (currentLang === 'en')) setLanguage(next === 'en' ? 'en' : 'zh'); else setLanguage(currentLang);
+        return;
+      }
       setLanguage(currentLang === 'zh' ? 'en' : 'zh');
     }
 
@@ -4210,6 +4498,93 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <script type="text/x-dl-module" id="dlm-admin"><!DOCTYPE html>
 <html lang="zh-CN">
 <head><@@DLS@@>window.DL_MODULE="admin";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -4240,37 +4615,51 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -7715,6 +8104,93 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <script type="text/x-dl-module" id="dlm-bc"><!DOCTYPE html>
 <html lang="zh-CN">
 <head><@@DLS@@>window.DL_MODULE="bc";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -7745,37 +8221,51 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -8301,6 +8791,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     function toggleLanguage() {
       playSfx('tab');
       currentLang = currentLang === 'cn' ? 'en' : 'cn';
+      if (window.DLLangSet) DLLangSet(currentLang === 'cn' ? 'zh' : 'en');
       applyLanguageUI();
     }
 
@@ -8628,6 +9119,93 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <script type="text/x-dl-module" id="dlm-clue1"><!DOCTYPE html>
 <html lang="en">
 <head><@@DLS@@>window.DL_MODULE="clue1";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -8658,37 +9236,51 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -8891,7 +9483,11 @@ const dict = {
   }
 };
 function ClueApp() {
-  const [lang, setLang] = useState('zh');
+  const [lang, setLangRaw] = useState(window.DLTwo ? DLTwo('zh') : 'zh');
+  const setLang = l => {
+    setLangRaw(l);
+    if (window.DLLangSet) DLLangSet(l);
+  };
   const t = dict[lang];
   return /*#__PURE__*/React.createElement("div", {
     className: "w-full glass-panel border border-slate-700 rounded-xl shadow-2xl p-6 md:p-10 fade-in relative overflow-hidden"
@@ -8962,6 +9558,93 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
 <script type="text/x-dl-module" id="dlm-fastpass24"><!DOCTYPE html>
 <html lang="zh-CN">
 <head><@@DLS@@>window.DL_MODULE="fastpass24";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -8992,37 +9675,51 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -9323,7 +10020,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       : null;
 
     const TOTAL_TEAMS = 24;
-    let currentLang = 'zh';
+    let currentLang = window.DLTwo ? DLTwo('zh') : 'zh';
     let currentTeam = null;
     let audioEnabled = true;
     let audioReady = false;
@@ -9636,6 +10333,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
     function setLanguage(lang) {
       currentLang = lang;
+      if (window.DLLangSet) DLLangSet(lang);
       playSwitchSound();
       const zhBtn = document.getElementById("langZhBtn");
       const enBtn = document.getElementById("langEnBtn");
@@ -9792,7 +10490,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     }
 
     window.onload = function() {
-      updateStaticTranslations();
+      if (currentLang !== 'zh') setLanguage(currentLang); else updateStaticTranslations();
       loadVenueData();
       subscribeRealtimeConfig();
       setInterval(() => {
@@ -9811,6 +10509,93 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <script type="text/x-dl-module" id="dlm-fastpass36"><!DOCTYPE html>
 <html lang="zh-CN">
 <head><@@DLS@@>window.DL_MODULE="fastpass36";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -9841,37 +10626,51 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -10172,7 +10971,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       : null;
 
     const TOTAL_TEAMS = 36;
-    let currentLang = 'zh';
+    let currentLang = window.DLTwo ? DLTwo('zh') : 'zh';
     let currentTeam = null;
     let audioEnabled = true;
     let audioReady = false;
@@ -10497,6 +11296,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
     function setLanguage(lang) {
       currentLang = lang;
+      if (window.DLLangSet) DLLangSet(lang);
       playSwitchSound();
       const zhBtn = document.getElementById("langZhBtn");
       const enBtn = document.getElementById("langEnBtn");
@@ -10654,7 +11454,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     }
 
     window.onload = function() {
-      updateStaticTranslations();
+      if (currentLang !== 'zh') setLanguage(currentLang); else updateStaticTranslations();
       loadVenueData();
       subscribeRealtimeConfig();
       setInterval(() => {
@@ -10673,6 +11473,93 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <script type="text/x-dl-module" id="dlm-fastpass48"><!DOCTYPE html>
 <html lang="zh-CN">
 <head><@@DLS@@>window.DL_MODULE="fastpass48";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -10703,37 +11590,51 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -11034,7 +11935,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       : null;
 
     const TOTAL_TEAMS = 48;
-    let currentLang = 'zh';
+    let currentLang = window.DLTwo ? DLTwo('zh') : 'zh';
     let currentTeam = null;
     let audioEnabled = true;
     let audioReady = false;
@@ -11352,6 +12253,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
     function setLanguage(lang) {
       currentLang = lang;
+      if (window.DLLangSet) DLLangSet(lang);
       playSwitchSound();
       const zhBtn = document.getElementById("langZhBtn");
       const enBtn = document.getElementById("langEnBtn");
@@ -11508,7 +12410,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     }
 
     window.onload = function() {
-      updateStaticTranslations();
+      if (currentLang !== 'zh') setLanguage(currentLang); else updateStaticTranslations();
       loadVenueData();
       subscribeRealtimeConfig();
       setInterval(() => {
@@ -11527,6 +12429,93 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <script type="text/x-dl-module" id="dlm-game"><!DOCTYPE html>
 <html lang="en">
 <head><@@DLS@@>window.DL_MODULE="game";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -11557,37 +12546,51 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -12015,6 +13018,7 @@ const settings = Object.assign({
   lang: /^zh/i.test(navigator.language || '') ? 'zh' : 'en',
   sound: true, haptics: true, mode: ''
 }, LS.json('drush_settings', {}));
+if (window.DLTwo) settings.lang = DLTwo(settings.lang);
 const saveSettings = () => LS.setJson('drush_settings', settings);
 const stats = Object.assign({ runs: 0, quizRight: 0 }, LS.json('drush_stats', {}));
 const saveStats = () => LS.setJson('drush_stats', stats);
@@ -13442,6 +14446,93 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 <script type="text/x-dl-module" id="dlm-knowledge"><!DOCTYPE html>
 <html lang="zh-CN">
 <head><@@DLS@@>window.DL_MODULE="knowledge";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -13472,37 +14563,51 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -15158,6 +16263,93 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <script type="text/x-dl-module" id="dlm-clue2"><!DOCTYPE html>
 <html lang="en">
 <head><@@DLS@@>window.DL_MODULE="clue2";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -15188,37 +16380,51 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -15421,7 +16627,11 @@ const dict = {
   }
 };
 function ClueApp() {
-  const [lang, setLang] = useState('zh');
+  const [lang, setLangRaw] = useState(window.DLTwo ? DLTwo('zh') : 'zh');
+  const setLang = l => {
+    setLangRaw(l);
+    if (window.DLLangSet) DLLangSet(l);
+  };
   const t = dict[lang];
   return /*#__PURE__*/React.createElement("div", {
     className: "w-full glass-panel border border-slate-700 rounded-xl shadow-2xl p-6 md:p-10 fade-in relative overflow-hidden"
@@ -15492,6 +16702,93 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
 <script type="text/x-dl-module" id="dlm-qr"><!DOCTYPE html>
 <html lang="zh-CN">
 <head><@@DLS@@>window.DL_MODULE="qr";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -15522,37 +16819,51 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -16246,6 +17557,93 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <script type="text/x-dl-module" id="dlm-clue3"><!DOCTYPE html>
 <html lang="en">
 <head><@@DLS@@>window.DL_MODULE="clue3";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -16276,37 +17674,51 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -16509,7 +17921,11 @@ const dict = {
   }
 };
 function ClueApp() {
-  const [lang, setLang] = useState('zh');
+  const [lang, setLangRaw] = useState(window.DLTwo ? DLTwo('zh') : 'zh');
+  const setLang = l => {
+    setLangRaw(l);
+    if (window.DLLangSet) DLLangSet(l);
+  };
   const t = dict[lang];
   return /*#__PURE__*/React.createElement("div", {
     className: "w-full glass-panel border border-slate-700 rounded-xl shadow-2xl p-6 md:p-10 fade-in relative overflow-hidden"
@@ -16580,6 +17996,93 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
 <script type="text/x-dl-module" id="dlm-signal"><!DOCTYPE html>
 <html lang="en">
 <head><@@DLS@@>window.DL_MODULE="signal";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -16610,37 +18113,51 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -17999,6 +19516,93 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <script type="text/x-dl-module" id="dlm-kclive"><!DOCTYPE html>
 <html lang="zh-CN">
 <head><@@DLS@@>window.DL_MODULE="kclive";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -18029,37 +19633,51 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -19005,6 +20623,93 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
 <script type="text/x-dl-module" id="dlm-sunrise"><!DOCTYPE html>
 <html lang="en" class="dark">
 <head><@@DLS@@>window.DL_MODULE="sunrise";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -19035,37 +20740,51 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -21089,7 +22808,7 @@ function QuestView() {
   const [teamClues, setTeamClues] = useState([]);
   const [sxToast, setSxToast] = useState(null);
   const [pendingScan, setPendingScan] = useState(() => readPendingScan());
-  const [lang, setLang] = useState(saved.lang || 'en');
+  const [lang, setLang] = useState(window.DLTwo ? DLTwo(saved.lang || 'en') : saved.lang || 'en');
   const [registered, setRegistered] = useState(!!saved.registered);
   const [groupNumber, setGroupNumber] = useState(saved.groupNumber || '');
   const [role, setRole] = useState(saved.role || '');
@@ -23533,6 +25252,93 @@ if (rootContainer) ReactDOM.createRoot(rootContainer).render(/*#__PURE__*/React.
 <script type="text/x-dl-module" id="dlm-leaderboard"><!DOCTYPE html>
 <html lang="en">
 <head><@@DLS@@>window.DL_MODULE="leaderboard";<@@DLE@@><@@DLS@@>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -23563,37 +25369,51 @@ if (rootContainer) ReactDOM.createRoot(rootContainer).render(/*#__PURE__*/React.
   };
   if (!H) return;
 
-  // ---------- language: follow the site-wide setting ----------
+  // ---------- language: one site-wide setting (EN / 简 / 繁) ----------
+  // Pages start in it (DLTwo gives older pages their 'en' / 'zh'), and a page's own EN/中 toggle updates it.
+  // 中 means the visitor's last Chinese: Simplified or Traditional (Hong Kong). Traditional is drawn live from Simplified.
+  window.DLTwo = function (fallback) { try { if (H.lang) return H.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} return fallback; };
   if (H.lang) {
     var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
     try {
       Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
       Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
     } catch (e) {}
-    // When a page's own language button is used, tell the rest of the site.
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lastZh ? H.lastZh() : 'zh-Hans'); };
+    var tell = function (two) { try { if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window); } catch (e) {} };
+    window.DLLangSet = tell;
+    // Pages that remember their toggle in storage...
     var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
-    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
     try {
       var protoSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function (k, v) {
         protoSet.call(this, k, v);
         try {
           if (this !== window.localStorage) return;
-          var two = null;
-          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
-          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
-          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) tell(v);
+          else if (k === 'PROJECT_SUNRISE_STATE_V3' || k === 'drush_settings') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) tell(o.lang); }
         } catch (e) {}
       };
     } catch (e) {}
-    // Traditional Chinese is drawn from the Simplified text, live.
+    // ...and pages that mark the switch on <html lang>.
+    var htmlLang = document.documentElement.getAttribute('lang') || '';
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        var v = document.documentElement.getAttribute('lang') || '';
+        if (v === htmlLang) return; htmlLang = v;
+        if (/^en/i.test(v)) tell('en'); else if (/^zh/i.test(v)) tell('zh');
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    }
+    // Traditional Chinese, live.
     var hantDom = null;
-    var syncHant = function (l, prev) {
+    var syncHant = function (l, prev, src) {
       if (l === 'zh-Hant') {
         if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
         if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
-      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
-        location.reload();
+      } else if (hantDom && hantDom.isOn()) {
+        hantDom.stop();
+        // Converted text can't be turned back; a page that switched itself re-renders, others are reloaded by the shell.
+        if (src === window && l !== 'en') location.reload();
       }
     };
     syncHant(H.lang());
@@ -23778,7 +25598,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     const NODE_NUM = { logs: 1, ledger: 2, banking: 3 };
     const PUZZLE_NUM = { puzzle1: 1, puzzle2: 2, puzzle3: 3 };
 
-    let lang = (new URLSearchParams(location.search).get('lang') || 'en').startsWith('zh') ? 'zh' : 'en';
+    let lang = new URLSearchParams(location.search).get('lang') ? (new URLSearchParams(location.search).get('lang').startsWith('zh') ? 'zh' : 'en') : (window.DLTwo ? DLTwo('en') : 'en');
     let config = { session: 'default', startMs: null, limitSec: 7200, strikeSec: 60, hintSec: [60, 120, 180] };
     let events = [];
     const seen = new Set();
@@ -24919,7 +26739,10 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
   };
 
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
-  var lang = store('dl_suite_lang') || ((navigator.language || 'zh').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en');
+  // One language for the whole site (EN / 简 / 繁), shared with every page through DLLang.
+  var lang = window.DLLang ? DLLang.two() : (store('dl_suite_lang') || ((navigator.language || 'zh').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en'));
+  var shellHant = null;
+  function hantOn() { return window.DLLang && DLLang.get() === 'zh-Hant'; }
   function t(k, vars) { var s = (T[lang] && T[lang][k]) || T.zh[k] || k; if (vars) for (var v in vars) s = s.split('{' + v + '}').join(vars[v]); return s; }
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -25107,6 +26930,11 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
     info: function () { return source('info'); },
     hubInfo: function () { return source('hubinfo'); },
     roleOf: roleOf,
+    lang: function () { return window.DLLang ? DLLang.get() : (lang === 'zh' ? 'zh-Hans' : 'en'); },
+    lastZh: function () { return window.DLLang ? DLLang.lastZh() : 'zh-Hans'; },
+    setLang: function (l, win) { if (window.DLLang) DLLang.set(l, win); },
+    onLang: function (fn, win) { if (window.DLLang) DLLang.on(fn, win); },
+    toHant: function (s) { return window.DLHant ? DLHant.convert(s) : s; },
     onLinks: function (fn, win) { linkListeners.push({ fn: fn, win: win || null }); try { fn(links.slice()); } catch (e) {} },
     allowed: function (r) { return allowedRoute(r); },
     deniedText: function () { return T.zh.errNoRole + ' / ' + T.en.errNoRole; },
@@ -25133,7 +26961,9 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
 
   // ---------- shared text ----------
   function paintText() {
-    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.documentElement.lang = lang === 'zh' ? (hantOn() ? 'zh-HK' : 'zh-CN') : 'en';
+    var cur = window.DLLang ? DLLang.get() : (lang === 'zh' ? 'zh-Hans' : 'en');
+    Array.prototype.forEach.call(document.querySelectorAll('.js-langseg button'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-l') === cur)); });
     var nodes = document.querySelectorAll('[data-t]'), i;
     for (i = 0; i < nodes.length; i++) nodes[i].textContent = t(nodes[i].getAttribute('data-t'));
     nodes = document.querySelectorAll('[data-th]');
@@ -25451,11 +27281,8 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
       else { fallbackCopy(link); done(); }
       return;
     }
-    if (ev.target.closest && ev.target.closest('.js-lang')) {
-      lang = lang === 'zh' ? 'en' : 'zh'; store('dl_suite_lang', lang);
-      store('participant_lang', lang); store('admin_lang', lang);
-      apply();
-    }
+    var lb = ev.target.closest && ev.target.closest('.js-langseg button');
+    if (lb && window.DLLang) { DLLang.set(lb.getAttribute('data-l'), window); return; }
   });
   function fallbackCopy(text) {
     var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
@@ -25514,8 +27341,20 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
     navigate('fastpass' + b.getAttribute('data-c'));
   });
 
+  // ---------- language changes ----------
+  // Leaving Traditional: reload (converted text can't be turned back). Otherwise re-render the shell and
+  // rebuild the other open pages so they start in the new language; the page that switched keeps itself.
+  if (window.DLLang) DLLang.on(function (l, prev, src) {
+    if (prev === 'zh-Hant') { location.reload(); return; }
+    lang = l === 'en' ? 'en' : 'zh';
+    if (l === 'zh-Hant' && shellHant) shellHant.start();
+    Object.keys(frames).forEach(function (id) { var f = frames[id]; if (!src || !f || f.contentWindow !== src) dropFrame(id); });
+    apply();
+  }, window);
+
   // ---------- boot ----------
   function boot() {
+    if (window.DLHantDOM && window.DLHant) { shellHant = DLHantDOM(DLHant.convert); if (hantOn()) shellHant.start(); }
     // A stored session for an account that isn't on the staff lists counts as signed out.
     if (session && !staffRole()) { session = null; try { sb.auth.signOut(); } catch (e) {} }
     apply();

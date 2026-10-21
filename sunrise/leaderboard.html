@@ -1,6 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta name="robots" content="noindex, nofollow"><script>window.DL_MODULE="leaderboard";</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/800.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+<head><meta name="robots" content="noindex, nofollow"><script>window.DL_MODULE="leaderboard";</script><script>(function () {
+  // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
+  window.DLHantDOM = function (convert) {
+    var on = false, mo = null, busy = false, lastTitle = null;
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
+    var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    var CJK = /[㐀-鿿]/;
+    function skip(el) {
+      for (var e = el; e && e.nodeType === 1; e = e.parentNode) {
+        if (SKIP[e.tagName] || e.isContentEditable || (e.hasAttribute && e.hasAttribute('data-no-hant'))) return true;
+      }
+      return false;
+    }
+    // Remember what we wrote so our own change isn't converted a second time.
+    var mine = window.WeakMap ? new WeakMap() : null;
+    function text(node) {
+      var v = node.nodeValue;
+      if (!v || !CJK.test(v) || (mine && mine.get(node) === v) || skip(node.parentNode)) return;
+      var c = convert(v);
+      if (mine) mine.set(node, c);
+      if (c !== v) node.nodeValue = c;
+    }
+    function attrs(el) {
+      if (el.nodeType !== 1) return;
+      for (var i = 0; i < ATTRS.length; i++) {
+        var v = el.getAttribute(ATTRS[i]);
+        if (v && CJK.test(v) && el.getAttribute('data-hant-' + ATTRS[i]) !== v) { var c = convert(v); el.setAttribute('data-hant-' + ATTRS[i], c); if (c !== v) el.setAttribute(ATTRS[i], c); }
+      }
+      if (el.tagName === 'INPUT' && /^(button|submit|reset)$/i.test(el.type) && CJK.test(el.value)) el.value = convert(el.value);
+    }
+    function walk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) { text(root); return; }
+      if (root.nodeType !== 1 && root.nodeType !== 9) return;
+      if (root.nodeType === 1) { if (SKIP[root.tagName]) return; attrs(root); }
+      var w = document.createTreeWalker(root, 5 /* element | text */, null, false), n;
+      while ((n = w.nextNode())) { if (n.nodeType === 3) text(n); else attrs(n); }
+    }
+    function fixLang() {
+      var h = document.documentElement;
+      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
+    }
+    var drawPatched = false;
+    function patchCanvas() {
+      if (drawPatched || !window.CanvasRenderingContext2D) return; drawPatched = true;
+      var P = CanvasRenderingContext2D.prototype;
+      ['fillText', 'strokeText', 'measureText'].forEach(function (m) {
+        var orig = P[m]; if (!orig) return;
+        P[m] = function (s) { if (on && typeof s === 'string' && CJK.test(s)) { var a = Array.prototype.slice.call(arguments); a[0] = convert(s); return orig.apply(this, a); } return orig.apply(this, arguments); };
+      });
+    }
+    // Hong Kong character shapes: load Noto Sans HK under the name the pages already use ('Noto Sans SC').
+    // Faces defined later win, so the pages need no other change; system fonts stay as fallbacks.
+    var HK_FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-hk@5.2.9/';
+    function hkFont() {
+      if (window.__dlHkFont || !window.fetch) return; window.__dlHkFont = 1;
+      [400, 500, 700, 900].forEach(function (w) {
+        fetch(HK_FONT + w + '.css').then(function (r) { return r.ok ? r.text() : ''; }).then(function (css) {
+          if (!css) return;
+          var st = document.createElement('style'); st.setAttribute('data-dl', 'hk-font');
+          st.textContent = css.replace(/'Noto Sans HK'/g, "'Noto Sans SC'").replace(/url\(\.\/files\//g, 'url(' + HK_FONT + 'files/');
+          (document.head || document.documentElement).appendChild(st);
+        }, function () {});
+      });
+    }
+    function start() {
+      if (on) return; on = true; patchCanvas(); hkFont();
+      busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
+      if (!window.MutationObserver) return;
+      mo = new MutationObserver(function (muts) {
+        if (busy) return; busy = true;
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'characterData') text(m.target);
+          else if (m.type === 'attributes') { if (m.attributeName === 'lang') fixLang(); else attrs(m.target); }
+          else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]);
+        }
+        fixLang(); busy = false;
+      });
+      mo.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS.concat(['lang']) });
+      var head = document.querySelector('title'); if (head) mo.observe(head, { childList: true, characterData: true, subtree: true });
+    }
+    function stop() { on = false; if (mo) { mo.disconnect(); mo = null; } }
+    return { start: start, stop: stop, isOn: function () { return on; } };
+  };
+})();
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/800.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 ::selection{background:rgba(134,188,37,.35);color:#fff}</style>
     <meta charset="UTF-8">
@@ -102,7 +189,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     const NODE_NUM = { logs: 1, ledger: 2, banking: 3 };
     const PUZZLE_NUM = { puzzle1: 1, puzzle2: 2, puzzle3: 3 };
 
-    let lang = (new URLSearchParams(location.search).get('lang') || 'en').startsWith('zh') ? 'zh' : 'en';
+    let lang = new URLSearchParams(location.search).get('lang') ? (new URLSearchParams(location.search).get('lang').startsWith('zh') ? 'zh' : 'en') : (window.DLTwo ? DLTwo('en') : 'en');
     let config = { session: 'default', startMs: null, limitSec: 7200, strikeSec: 60, hintSec: [60, 120, 180] };
     let events = [];
     const seen = new Set();
