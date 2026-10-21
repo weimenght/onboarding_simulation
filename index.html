@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#080b11">
 <meta name="color-scheme" content="dark">
 <meta name="format-detection" content="telephone=no">
@@ -274,6 +276,150 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
 </style>
+<script>(function () {
+  // Participant notice and consent. Shown once per phone (per version) before anyone joins a team or posts.
+  // Stored only on this phone: { v, at, lang }. Bump VERSION when the text changes materially.
+  var VERSION = '2026-10-a';
+  var KEY = 'dl_consent';
+  var TXT = {
+    en: {
+      title: 'Before you play',
+      intro: 'DeloitteLand is a training game for your onboarding programme. Four things to know:',
+      items: [
+        ['fa-user-secret', 'Use a nickname', 'We never ask for your full name, staff ID, phone number or email, so please don’t type them anywhere in the game.'],
+        ['fa-shield-halved', 'Keep it fictional', 'Every company, person and transaction in the game is made up. Never enter client names, client data or anything confidential.'],
+        ['fa-bullhorn', 'Some things are public', 'Wall messages and D-Rush names are shown to everyone at the event, including on the big screen.'],
+        ['fa-database', 'What we save', 'Your nickname, team number, game progress and messages, on this phone and in the game’s cloud database (Supabase, hosted in Seoul, South Korea). They’re kept for this event only.']
+      ],
+      small: 'Fonts and app code load from public networks (jsDelivr, cdnjs). Questions? Ask a facilitator.',
+      check: 'I’ve read this and agree, including my game data being stored outside mainland China.',
+      agree: 'Agree and start',
+      later: 'Not now',
+      laterMsg: 'No problem. Without your agreement the game can’t save your team or progress. Ask a facilitator if you have questions.'
+    },
+    hans: {
+      title: '开始之前',
+      intro: 'DeloitteLand 是入职培训中的互动游戏。请先了解以下四点：',
+      items: [
+        ['fa-user-secret', '请使用昵称', '我们不会索取你的全名、员工编号、手机号或邮箱，也请不要在游戏中输入这些信息。'],
+        ['fa-shield-halved', '内容均为虚构', '游戏中的公司、人物和交易都是虚构的。请勿输入任何客户名称、客户数据或保密信息。'],
+        ['fa-bullhorn', '部分内容公开可见', '留言墙内容和 D-Rush 昵称会向全场展示，包括大屏幕。'],
+        ['fa-database', '我们保存的信息', '你的昵称、组号、游戏进度和留言，会保存在本机及游戏云数据库（Supabase，服务器位于韩国首尔），仅用于本次活动。']
+      ],
+      small: '字体和程序代码由公共网络（jsDelivr、cdnjs）加载。如有疑问，请咨询现场工作人员。',
+      check: '我已阅读并同意，包括游戏数据存储于中国大陆境外。',
+      agree: '同意并开始',
+      later: '暂不同意',
+      laterMsg: '没关系。未获得你的同意，游戏无法保存你的小组和进度。如有疑问，请咨询现场工作人员。'
+    },
+    hant: {
+      title: '開始之前',
+      intro: 'DeloitteLand 是入職培訓中的互動遊戲。請先了解以下四點：',
+      items: [
+        ['fa-user-secret', '請使用暱稱', '我們不會索取你的全名、員工編號、手機號碼或電郵，也請不要在遊戲中輸入這些資料。'],
+        ['fa-shield-halved', '內容均屬虛構', '遊戲中的公司、人物和交易都是虛構的。請勿輸入任何客戶名稱、客戶資料或機密資訊。'],
+        ['fa-bullhorn', '部分內容公開可見', '留言牆內容和 D-Rush 暱稱會向全場展示，包括大屏幕。'],
+        ['fa-database', '我們保存的資料', '你的暱稱、組號、遊戲進度和留言，會保存在本機及遊戲雲端資料庫（Supabase，伺服器位於韓國首爾），只用於今次活動。']
+      ],
+      small: '字型和程式碼經公共網絡（jsDelivr、cdnjs）載入。如有疑問，請向現場工作人員查詢。',
+      check: '我已閱讀並同意，包括遊戲資料儲存於中國內地以外地區。',
+      agree: '同意並開始',
+      later: '暫不同意',
+      laterMsg: '沒問題。未得到你的同意，遊戲無法儲存你的小組和進度。如有疑問，請向現場工作人員查詢。'
+    }
+  };
+  var LANGS = [['en', 'EN'], ['hans', '简'], ['hant', '繁']];
+
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function pickLang() {
+    var site = store('dl_lang');
+    if (site === 'en') return 'en'; if (site === 'zh-Hans') return 'hans'; if (site === 'zh-Hant') return 'hant';
+    var list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+    for (var i = 0; i < list.length; i++) {
+      var l = String(list[i] || '').toLowerCase();
+      if (l.indexOf('zh') === 0) return /hant|-tw|-hk|-mo/.test(l) ? 'hant' : 'hans';
+      if (l.indexOf('en') === 0) return 'en';
+    }
+    return 'en';
+  }
+  function given() { try { var o = JSON.parse(store(KEY) || 'null'); return !!(o && o.v === VERSION); } catch (e) { return false; } }
+
+  var CSS = '.dlc{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:flex-end;justify-content:center;background:rgba(3,6,10,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:Aptos,"Segoe UI",-apple-system,BlinkMacSystemFont,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;color:#E6EAF0;padding:0 0 env(safe-area-inset-bottom)}' +
+    '@media(min-width:640px){.dlc{align-items:center;padding:24px}}' +
+    '.dlc-card{position:relative;width:100%;max-width:520px;max-height:min(92vh,760px);overflow:auto;-webkit-overflow-scrolling:touch;background:#0B1117;border:1px solid rgba(134,188,37,.35);border-radius:22px 22px 0 0;box-shadow:0 -20px 60px rgba(0,0,0,.55);padding:22px 20px 18px}' +
+    '@media(min-width:640px){.dlc-card{border-radius:22px;padding:28px 28px 22px}}' +
+    '.dlc-card:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:22px 22px 0 0;background:linear-gradient(90deg,#86BC25,#0097A9,#86BC25)}' +
+    '.dlc-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}' +
+    '.dlc-brand{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#86BC25}' +
+    '.dlc-dot{width:8px;height:8px;border-radius:50%;background:#86BC25;box-shadow:0 0 10px #86BC25}' +
+    '.dlc-lang{display:flex;gap:2px;background:#121A22;border:1px solid #233040;border-radius:999px;padding:2px}' +
+    '.dlc-lang button{all:unset;cursor:pointer;font-size:12px;font-weight:700;color:#8A96A6;padding:5px 10px;border-radius:999px}' +
+    '.dlc-lang button[aria-pressed=true]{background:#86BC25;color:#071008}' +
+    '.dlc h2{margin:10px 0 6px;font-size:22px;line-height:1.25;font-weight:800;color:#fff}' +
+    '.dlc-intro{margin:0 0 14px;font-size:14px;line-height:1.55;color:#A9B4C2}' +
+    '.dlc ul{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:10px}' +
+    '.dlc li{display:flex;gap:12px;align-items:flex-start;background:#0F171F;border:1px solid #1C2733;border-radius:14px;padding:12px}' +
+    '.dlc-ic{flex:0 0 34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(134,188,37,.12);color:#86BC25;font-size:15px}' +
+    '.dlc li b{display:block;font-size:14px;color:#fff;margin-bottom:2px}' +
+    '.dlc li span{display:block;font-size:13px;line-height:1.5;color:#A9B4C2}' +
+    '.dlc-small{margin:0 0 14px;font-size:12px;line-height:1.5;color:#6F7C8C}' +
+    '.dlc-check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.5;color:#E6EAF0;cursor:pointer;padding:10px 12px;border-radius:12px;border:1px solid #233040;background:#0F171F}' +
+    '.dlc-check input{flex:0 0 auto;width:20px;height:20px;margin:1px 0 0;accent-color:#86BC25}' +
+    '.dlc-btns{display:flex;gap:10px;margin-top:14px}' +
+    '.dlc-btns button{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;border-radius:14px;padding:14px 16px;font-size:15px;font-weight:800}' +
+    '.dlc-yes{flex:1;background:#86BC25;color:#071008}' +
+    '.dlc-yes[aria-disabled=true]{opacity:.4;cursor:not-allowed}' +
+    '.dlc-no{color:#A9B4C2;border:1px solid #2A3646}' +
+    '.dlc-note{margin:12px 0 0;font-size:13px;line-height:1.5;color:#F5C26B}' +
+    '.dlc button:focus-visible,.dlc input:focus-visible{outline:2px solid #62B5E5;outline-offset:2px}';
+
+  var lang = pickLang(), root = null, waiters = [];
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function render() {
+    var T = TXT[lang], checked = root.querySelector('#dlcChk') && root.querySelector('#dlcChk').checked;
+    root.innerHTML = '<div class="dlc-card" role="dialog" aria-modal="true" aria-labelledby="dlcTitle">' +
+      '<div class="dlc-top"><div class="dlc-brand"><span class="dlc-dot"></span>DeloitteLand</div><div class="dlc-lang" role="group" aria-label="Language">' +
+      LANGS.map(function (l) { return '<button type="button" data-l="' + l[0] + '" aria-pressed="' + (l[0] === lang) + '">' + l[1] + '</button>'; }).join('') + '</div></div>' +
+      '<h2 id="dlcTitle">' + esc(T.title) + '</h2><p class="dlc-intro">' + esc(T.intro) + '</p><ul>' +
+      T.items.map(function (it) { return '<li><span class="dlc-ic"><i class="fa-solid ' + it[0] + '" aria-hidden="true"></i></span><div><b>' + esc(it[1]) + '</b><span>' + esc(it[2]) + '</span></div></li>'; }).join('') +
+      '</ul><p class="dlc-small">' + esc(T.small) + '</p>' +
+      '<label class="dlc-check"><input type="checkbox" id="dlcChk"' + (checked ? ' checked' : '') + '><span>' + esc(T.check) + '</span></label>' +
+      '<div class="dlc-btns"><button type="button" class="dlc-no" id="dlcNo">' + esc(T.later) + '</button>' +
+      '<button type="button" class="dlc-yes" id="dlcYes" aria-disabled="' + (!checked) + '">' + esc(T.agree) + '</button></div>' +
+      '<p class="dlc-note" id="dlcNote" hidden>' + esc(T.laterMsg) + '</p></div>';
+    root.querySelector('#dlcChk').addEventListener('change', function () { root.querySelector('#dlcYes').setAttribute('aria-disabled', String(!this.checked)); });
+    root.querySelector('#dlcYes').addEventListener('click', function () {
+      if (!root.querySelector('#dlcChk').checked) { root.querySelector('#dlcChk').focus(); return; }
+      store(KEY, JSON.stringify({ v: VERSION, at: new Date().toISOString(), lang: lang }));
+      close();
+    });
+    root.querySelector('#dlcNo').addEventListener('click', function () { root.querySelector('#dlcNote').hidden = false; });
+    Array.prototype.forEach.call(root.querySelectorAll('.dlc-lang button'), function (b) {
+      b.addEventListener('click', function () { lang = b.getAttribute('data-l'); render(); });
+    });
+  }
+  function close() {
+    if (root && root.parentNode) root.parentNode.removeChild(root);
+    root = null;
+    var w = waiters; waiters = [];
+    w.forEach(function (fn) { try { fn(); } catch (e) {} });
+  }
+  function show() {
+    if (root) return;
+    if (!document.getElementById('dlcCss')) { var st = document.createElement('style'); st.id = 'dlcCss'; st.textContent = CSS; document.head.appendChild(st); }
+    root = document.createElement('div'); root.className = 'dlc';
+    document.body.appendChild(root);
+    render();
+    try { root.querySelector('#dlcChk').focus({ preventScroll: true }); } catch (e) {}
+  }
+  window.DLConsent = {
+    given: given,
+    // Shows the notice unless already agreed; fn runs once agreed.
+    require: function (fn) { if (given()) { if (fn) fn(); return true; } if (fn) waiters.push(fn); if (document.body) show(); else document.addEventListener('DOMContentLoaded', show); return false; },
+    show: show
+  };
+})();
+</script>
 </head>
 <body>
 <noscript><p style="padding:24px;font-family:sans-serif;color:#fff">请启用 JavaScript / Please enable JavaScript.</p></noscript>
@@ -480,6 +626,43 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     return false;
   };
   if (!H) return;
+
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
 
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
@@ -774,7 +957,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
           <div class="flex items-center gap-2">
             <input type="text" id="modalNicknameInput" maxlength="18" required
               oninput="updateModalLivePreview()"
-              placeholder="输入名字或点右边随机"
+              placeholder="输入昵称（无需真名）或点右边随机"
               class="flex-1 h-10 min-w-0 bg-black/70 border border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl px-3 text-xs font-bold text-white">
             <button type="button" onclick="rollRandomNickname()" class="button-press h-10 px-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-bold text-amber-300 flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap">
               <i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i>
@@ -1126,7 +1309,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
           <@@DLC@@ Rendered dynamically via JS -->
         </div>
 
-        <input id="msgContent" type="text" placeholder="写句加油或点击上方快捷短语..." maxlength="100" required
+        <input id="msgContent" type="text" placeholder="写句加油（全场可见）或点击上方快捷短语..." maxlength="100" required
           oninput="hideModerationAlert()"
           class="w-full h-10 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-lg px-3 text-xs text-white placeholder-gray-600 transition-colors">
 
@@ -1491,7 +1674,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
     let supabaseClient = null;
     if (window.supabase && typeof window.supabase.createClient === 'function') {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      supabaseClient = (window.DLH && DLH.supabase && DLH.supabase(SUPABASE_URL, SUPABASE_ANON_KEY)) || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
     /* ==========================================================
@@ -1644,7 +1827,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         teamModalTitle: "你在哪一组？",
         teamRangeHint: (max) => `共 1 - ${max} 组`,
         lblModalNickname: "起个好玩的花名吧",
-        nickInputPlaceholder: "输入名字或点右边随机",
+        nickInputPlaceholder: "输入昵称（无需真名）或点右边随机",
         btnRandomNick: "随机花名",
         lblSelectAvatar: "选个代表你的头像",
         avatarSubHint: "点选你喜欢的风格",
@@ -1723,9 +1906,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         msgBoardTitle: "大家都在聊",
         msgBoardSub: "给队友打气，分享你的现场高光时刻",
         msgCountFormat: (n) => `${n} 条留言`,
-        msgPlaceholder: "写句加油或点击上方快捷短语...",
+        msgPlaceholder: "写句加油（全场可见）或点击上方快捷短语...",
         msgFriendlyTip: "每分钟可发 1 条友善留言",
-        msgBlockedNotice: "让我们保持积极友善的交流氛围，换句话试试吧",
+        msgBlockedNotice: "请保持友善，也请勿留下联系方式或客户信息，换句话试试吧",
         msgCooldownWait: (s) => `休息 ${s} 秒后就能再发啦`,
         emptyMessages: "快来发出今天的第一条加油留言吧",
         btnSendMsg: "发送",
@@ -1744,7 +1927,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         teamModalTitle: "What is your team number?",
         teamRangeHint: (max) => `Teams 1 - ${max}`,
         lblModalNickname: "Pick a fun nickname",
-        nickInputPlaceholder: "Type a name or tap Randomize",
+        nickInputPlaceholder: "Pick a nickname (no real name needed) or tap Randomize",
         btnRandomNick: "Randomize",
         lblSelectAvatar: "Choose your avatar",
         avatarSubHint: "Pick a style you like",
@@ -1823,9 +2006,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         msgBoardTitle: "Community Wall",
         msgBoardSub: "Cheer for your team and share the fun",
         msgCountFormat: (n) => `${n} msgs`,
-        msgPlaceholder: "Write a shoutout or tap a quick cheer above...",
+        msgPlaceholder: "Write a shoutout (everyone can see it) or tap a quick cheer...",
         msgFriendlyTip: "1 friendly post per minute",
-        msgBlockedNotice: "Let us keep the wall positive and supportive",
+        msgBlockedNotice: "Keep it positive, and please leave out contact details and client info",
         msgCooldownWait: (s) => `Ready to post again in ${s}s`,
         emptyMessages: "Be the first to post a team shoutout",
         btnSendMsg: "Post",
@@ -2645,10 +2828,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       return (h || 0) * 60 + (m || 0);
     }
 
+    var dlPulseNow = null;
+    function dlPulse(k) { return dlPulseNow && Object.prototype.hasOwnProperty.call(dlPulseNow, k) ? { data: dlPulseNow[k], error: null } : null; }
     async function loadFastpassVenueAndTimeConfig() {
       try {
         if (supabaseClient) {
-          const { data, error } = await supabaseClient
+          const { data, error } = dlPulse('fp') || await supabaseClient
             .from('fastpass_config')
             .select('venues, time_slots')
             .eq('id', 1)
@@ -2948,7 +3133,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
       try {
         if (supabaseClient) {
-          const { data, error } = await supabaseClient
+          const { data, error } = dlPulse('drush') || await supabaseClient
             .from('leaderboard')
             .select('player_name, score')
             .order('score', { ascending: false })
@@ -2978,7 +3163,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
       try {
         if (supabaseClient) {
-          const { data, error } = await supabaseClient
+          const { data, error } = dlPulse('ann') || await supabaseClient
             .from('portal_announcements')
             .select('*')
             .eq('id', 1)
@@ -3064,7 +3249,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     async function fetchLiveLeaderboard() {
       try {
         if (supabaseClient) {
-          const { data, error } = await supabaseClient
+          const { data, error } = dlPulse('board') || await supabaseClient
             .from('station_leaderboards')
             .select('*')
             .eq('id', 1)
@@ -3171,6 +3356,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       if (!rawStr) return false;
       const normalized = rawStr.toLowerCase().trim();
       if (normalized.length < 1) return false;
+      // No email addresses or phone / ID-length digit runs in public text (the database refuses them too).
+      if (/[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z.]{2,}/i.test(rawStr) || /\d{8,}/.test(rawStr.replace(/[\s\-().+]/g, ''))) return false;
 
       // 1. Block excessive repeated characters (e.g. "aaaaaaa" or "1111111")
       if (/(.)\1{5,}/.test(normalized)) {
@@ -3293,7 +3480,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     async function loadMessages() {
       try {
         if (supabaseClient) {
-          const { data, error } = await supabaseClient
+          const { data, error } = dlPulse('msgs') || await supabaseClient
             .from('participant_messages')
             .select('*')
             .order('created_at', { ascending: false })
@@ -3606,13 +3793,13 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         openTeamGateModal();
       }
 
-      setInterval(() => {
-        loadPortalAnnouncement();
-        loadFastpassVenueAndTimeConfig();
-        loadDrushHighScore();
-        loadMessages();
-        fetchLiveLeaderboard();
-      }, 12000);
+      const dlRefreshAll = (snap) => {
+        dlPulseNow = snap || null;
+        try { loadPortalAnnouncement(); loadFastpassVenueAndTimeConfig(); loadDrushHighScore(); loadMessages(); fetchLiveLeaderboard(); }
+        finally { dlPulseNow = null; }
+      };
+      if (window.DLH && DLH.pulse) DLH.pulse.on(dlRefreshAll, window);
+      else setInterval(() => { if (!document.hidden) dlRefreshAll(null); }, 12000);
 
       setInterval(() => {
         renderLiveFastPassPanel();
@@ -4005,13 +4192,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   // ---------- boot ----------
   syncClock(); setInterval(syncClock, 60000);
   loadLive();
-  try { sb.channel('dl-kc-live').on('postgres_changes', { event: '*', schema: 'public', table: 'kc_live' }, function () { loadLive(); }).subscribe(); } catch (e) {}
+  // Instant updates come through realtime; polling is only the safety net (slower while realtime is up).
+  var rtUp = false;
+  try { sb.channel('dl-kc-live').on('postgres_changes', { event: '*', schema: 'public', table: 'kc_live' }, function () { loadLive(); }).subscribe(function (st) { rtUp = st === 'SUBSCRIBED'; }); } catch (e) {}
   var lastPoll = Date.now(), lastStatus = Date.now(), lastTeam = team();
   setInterval(function () {
     if (document.hidden) return;
     if (team() !== lastTeam) { lastTeam = team(); ST = null; mine = null; loadStatus(); }
     var active = inRound() && L && (L.state === 'question' || L.state === 'live');
-    if (Date.now() - lastPoll > (active ? 1500 : 5000)) { lastPoll = Date.now(); loadLive(); }
+    if (Date.now() - lastPoll > (active ? 1500 : rtUp ? 20000 : 5000)) { lastPoll = Date.now(); loadLive(); }
     if (inRound() && Date.now() - lastStatus > 6000) { lastStatus = Date.now(); loadStatus(); }
   }, 500);
 })();
@@ -4050,6 +4239,43 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     return false;
   };
   if (!H) return;
+
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
 
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
@@ -4307,7 +4533,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
           <label class="block text-[11px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wider" data-i18n="labelEmail">登录邮箱</label>
           <div class="relative">
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"><i class="fa-solid fa-envelope"></i></span>
-            <input id="emailInput" type="email" placeholder="admin@deloitte.com.cn" autocomplete="username" class="w-full h-11 bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <input id="emailInput" type="email" placeholder="name@deloitte.com.cn" autocomplete="username" class="w-full h-11 bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
           </div>
         </div>
 
@@ -5129,10 +5355,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     }
 
     // Full Master Admin Emails
-    const MASTER_ADMIN_EMAILS = ["admin@deloitte.com.cn","weimeng@deloitte.com.cn","zhischen@deloitte.com.cn"];
+    const MASTER_ADMIN_EMAILS = [];
 
     // Config & Score Input Only Emails
-    const RESTRICTED_FACULTY_EMAILS = ["faculty@deloitte.com.cn","station@deloitte.com.cn","hr@deloitte.com.cn","org@deloitte.com.cn","rrg@deloitte.com.cn"];
+    const RESTRICTED_FACULTY_EMAILS = [];
 
     let currentUserRole = 'admin';
     let isMobileDeviceMode = null;
@@ -5208,10 +5434,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
        ROLE PERMISSION CONTROLLER (ADMIN vs FACULTY/STATION/HR/RRG)
        ========================================================== */
     function resolveUserRole(emailStr) {
-      const email = (emailStr || '').trim().toLowerCase();
-      if (MASTER_ADMIN_EMAILS.includes(email)) return 'admin';
-      if (RESTRICTED_FACULTY_EMAILS.includes(email) || /^(faculty|station)[a-z0-9._-]*@deloitte\.com\.cn$/.test(email)) return 'faculty';
-      return 'denied';
+      const r = window.DLH && DLH.roleOf ? DLH.roleOf(emailStr) : null;
+      return r === 'super' ? 'admin' : r === 'host' ? 'faculty' : 'denied';
     }
 
     function applyRolePermissions(emailStr) {
@@ -7521,6 +7745,43 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -8397,6 +8658,43 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -8693,6 +8991,43 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
     return false;
   };
   if (!H) return;
+
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
 
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
@@ -9505,6 +9840,43 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     return false;
   };
   if (!H) return;
+
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
 
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
@@ -10331,6 +10703,43 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -11148,6 +11557,43 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -11582,7 +12028,7 @@ let playerName = (LS.get('drush_player_name', 'A1 Analyst') || 'A1 Analyst').sli
 const T = {
   en: {
     sub: 'A1 ONBOARDING', kScore: 'SCORE', kBest: 'BEST', kRank: 'RANK', kDist: 'SPRINT',
-    startBadge: 'DELOITTE ONBOARDING ARCADE', nick: 'Your nickname',
+    startBadge: 'DELOITTE ONBOARDING ARCADE', nick: 'Your nickname (shown on the leaderboard)',
     startSub: 'High-five your <b>Buddy &amp; Coach</b>, dodge <b>#REF!</b> errors and reply-all storms, ace pop quizzes and run all the way to <b>Partner</b>.',
     startBtn: 'START SPRINT', startHint: 'Tap top half = jump (hold = higher) · bottom half = slide',
     startStats: 'Best {b} · Secrets {n}/{t}',
@@ -11643,7 +12089,7 @@ const T = {
   },
   zh: {
     sub: '校招新人跑酷', kScore: '积分', kBest: '最佳', kRank: '职级', kDist: '冲刺',
-    startBadge: '德勤新人破冰街机', nick: '你的昵称',
+    startBadge: '德勤新人破冰街机', nick: '你的昵称（排行榜可见）',
     startSub: '与<b>导师和伙伴</b>击掌，躲开 <b>#REF!</b> 报错和全员回复风暴，答对快问快答，一路冲到<b>合伙人</b>！',
     startBtn: '开始冲刺', startHint: '点上半屏＝起跳（长按跳更高）· 点下半屏＝滑行',
     startStats: '最佳 {b} · 已发现秘密 {n}/{t}',
@@ -11851,7 +12297,7 @@ let supaPromise = null;
 function getSupa() {
   if (supaPromise) return supaPromise;
   supaPromise = new Promise((resolve) => {
-    const make = () => { try { resolve(window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)); } catch (e) { resolve(null); } };
+    const make = () => { try { resolve((window.DLH && DLH.supabase && DLH.supabase(SUPABASE_URL, SUPABASE_ANON_KEY)) || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)); } catch (e) { resolve(null); } };
     if (window.supabase && window.supabase.createClient) return make();
     const s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js';
@@ -12659,7 +13105,9 @@ function applyCanvasFx() {
 }
 
 function startGame() {
-  const nm = ($('nameInput').value || '').trim().slice(0, 16) || 'A1 Analyst';
+  let nm = ($('nameInput').value || '').trim().slice(0, 16);
+  if (/@/.test(nm) || /\d{8,}/.test(nm.replace(/[\s\-().+]/g, ''))) nm = '';
+  nm = nm || 'A1 Analyst';
   playerName = nm; LS.set('drush_player_name', nm);
   $('nameInput').blur();
   Sfx.unlock();
@@ -13024,6 +13472,43 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -13228,7 +13713,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
               <i class="fa-solid fa-envelope"></i>
             </span>
-            <input id="emailInput" type="email" placeholder="admin@deloitte.com" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <input id="emailInput" type="email" placeholder="name@deloitte.com.cn" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
           </div>
         </div>
 
@@ -14703,6 +15188,43 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -15000,6 +15522,43 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -15200,7 +15759,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
               <i class="fa-solid fa-envelope"></i>
             </span>
-            <input id="emailInput" type="email" placeholder="admin@deloitte.com" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <input id="emailInput" type="email" placeholder="name@deloitte.com.cn" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
           </div>
         </div>
 
@@ -15717,6 +16276,43 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -16014,6 +16610,43 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -16211,7 +16844,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
               <i class="fa-solid fa-envelope"></i>
             </span>
-            <input id="emailInput" type="email" placeholder="admin@deloitte.com" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
+            <input id="emailInput" type="email" placeholder="name@deloitte.com.cn" autocomplete="username" class="w-full bg-black/60 border-2 border-white/15 focus:border-deloitte-green focus:outline-none rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-600 transition-colors" required>
           </div>
         </div>
 
@@ -17396,6 +18029,43 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -18351,6 +19021,43 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -18573,7 +19280,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             }
         }
     </style>
-<style data-dl="tailwind">*,::before,::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x:;--tw-pan-y:;--tw-pinch-zoom:;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position:;--tw-gradient-via-position:;--tw-gradient-to-position:;--tw-ordinal:;--tw-slashed-zero:;--tw-numeric-figure:;--tw-numeric-spacing:;--tw-numeric-fraction:;--tw-ring-inset:;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur:;--tw-brightness:;--tw-contrast:;--tw-grayscale:;--tw-hue-rotate:;--tw-invert:;--tw-saturate:;--tw-sepia:;--tw-drop-shadow:;--tw-backdrop-blur:;--tw-backdrop-brightness:;--tw-backdrop-contrast:;--tw-backdrop-grayscale:;--tw-backdrop-hue-rotate:;--tw-backdrop-invert:;--tw-backdrop-opacity:;--tw-backdrop-saturate:;--tw-backdrop-sepia:;--tw-contain-size:;--tw-contain-layout:;--tw-contain-paint:;--tw-contain-style:;}::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x:;--tw-pan-y:;--tw-pinch-zoom:;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position:;--tw-gradient-via-position:;--tw-gradient-to-position:;--tw-ordinal:;--tw-slashed-zero:;--tw-numeric-figure:;--tw-numeric-spacing:;--tw-numeric-fraction:;--tw-ring-inset:;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur:;--tw-brightness:;--tw-contrast:;--tw-grayscale:;--tw-hue-rotate:;--tw-invert:;--tw-saturate:;--tw-sepia:;--tw-drop-shadow:;--tw-backdrop-blur:;--tw-backdrop-brightness:;--tw-backdrop-contrast:;--tw-backdrop-grayscale:;--tw-backdrop-hue-rotate:;--tw-backdrop-invert:;--tw-backdrop-opacity:;--tw-backdrop-saturate:;--tw-backdrop-sepia:;--tw-contain-size:;--tw-contain-layout:;--tw-contain-paint:;--tw-contain-style:;}*,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb;}::before,::after{--tw-content:'';}html,:host{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent;}body{margin:0;line-height:inherit;}hr{height:0;color:inherit;border-top-width:1px;}abbr:where([title]){text-decoration:underline dotted;}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit;}a{color:inherit;text-decoration:inherit;}b,strong{font-weight:bolder;}code,kbd,samp,pre{font-family:JetBrains Mono,ui-monospace,SFMono-Regular,Menlo,Consolas,PingFang SC,Noto Sans CJK SC,Microsoft YaHei,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}table{text-indent:0;border-color:inherit;border-collapse:collapse;}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0;}button,select{text-transform:none;}button,input:where([type='button']),input:where([type='reset']),input:where([type='submit']){-webkit-appearance:button;background-color:transparent;background-image:none;}:-moz-focusring{outline:auto;}:-moz-ui-invalid{box-shadow:none;}progress{vertical-align:baseline;}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto;}[type='search']{-webkit-appearance:textfield;outline-offset:-2px;}::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}summary{display:list-item;}blockquote,dl,dd,h1,h2,h3,h4,h5,h6,hr,figure,p,pre{margin:0;}fieldset{margin:0;padding:0;}legend{padding:0;}ol,ul,menu{list-style:none;margin:0;padding:0;}dialog{padding:0;}textarea{resize:vertical;}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af;}button,[role="button"]{cursor:pointer;}:disabled{cursor:default;}img,svg,video,canvas,audio,iframe,embed,object{display:block;vertical-align:middle;}img,video{max-width:100%;height:auto;}[hidden]:where(:not([hidden="until-found"])){display:none;}.pointer-events-none{pointer-events:none;}.fixed{position:fixed;}.absolute{position:absolute;}.relative{position:relative;}.sticky{position:sticky;}.inset-0{inset:0px;}.-right-1\.5{right:-0.375rem;}.-top-1{top:-0.25rem;}.left-0{left:0px;}.left-1\/2{left:50%;}.left-3{left:0.75rem;}.top-0{top:0px;}.top-1\/2{top:50%;}.z-10{z-index:10;}.z-50{z-index:50;}.z-\[60\]{z-index:60;}.col-span-2{grid-column:span 2 / span 2;}.mx-2{margin-left:0.5rem;margin-right:0.5rem;}.mx-auto{margin-left:auto;margin-right:auto;}.my-0\.5{margin-top:0.125rem;margin-bottom:0.125rem;}.-mt-1{margin-top:-0.25rem;}.mb-0\.5{margin-bottom:0.125rem;}.mb-1{margin-bottom:0.25rem;}.mb-1\.5{margin-bottom:0.375rem;}.mb-2{margin-bottom:0.5rem;}.mb-2\.5{margin-bottom:0.625rem;}.mb-3{margin-bottom:0.75rem;}.mb-4{margin-bottom:1rem;}.mb-5{margin-bottom:1.25rem;}.mb-6{margin-bottom:1.5rem;}.ml-3{margin-left:0.75rem;}.ml-auto{margin-left:auto;}.mr-1{margin-right:0.25rem;}.mr-1\.5{margin-right:0.375rem;}.mr-2{margin-right:0.5rem;}.mt-0\.5{margin-top:0.125rem;}.mt-1{margin-top:0.25rem;}.mt-1\.5{margin-top:0.375rem;}.mt-2{margin-top:0.5rem;}.mt-2\.5{margin-top:0.625rem;}.mt-3{margin-top:0.75rem;}.mt-4{margin-top:1rem;}.mt-5{margin-top:1.25rem;}.mt-6{margin-top:1.5rem;}.block{display:block;}.inline-block{display:inline-block;}.inline{display:inline;}.flex{display:flex;}.inline-flex{display:inline-flex;}.table{display:table;}.grid{display:grid;}.hidden{display:none;}.aspect-square{aspect-ratio:1 / 1;}.h-1{height:0.25rem;}.h-1\.5{height:0.375rem;}.h-10{height:2.5rem;}.h-11{height:2.75rem;}.h-12{height:3rem;}.h-14{height:3.5rem;}.h-16{height:4rem;}.h-5{height:1.25rem;}.h-6{height:1.5rem;}.h-7{height:1.75rem;}.h-8{height:2rem;}.h-9{height:2.25rem;}.h-auto{height:auto;}.h-full{height:100%;}.max-h-80{max-height:20rem;}.max-h-full{max-height:100%;}.min-h-0{min-height:0px;}.min-h-\[40px\]{min-height:40px;}.min-h-\[50px\]{min-height:50px;}.min-h-full{min-height:100%;}.w-1\.5{width:0.375rem;}.w-10{width:2.5rem;}.w-11{width:2.75rem;}.w-12{width:3rem;}.w-14{width:3.5rem;}.w-16{width:4rem;}.w-4{width:1rem;}.w-5{width:1.25rem;}.w-6{width:1.5rem;}.w-64{width:16rem;}.w-7{width:1.75rem;}.w-8{width:2rem;}.w-\[min\(78vw\2c 340px\)\]{width:min(78vw,340px);}.w-full{width:100%;}.min-w-0{min-width:0px;}.min-w-\[640px\]{min-width:640px;}.min-w-\[780px\]{min-width:780px;}.min-w-\[880px\]{min-width:880px;}.max-w-2xl{max-width:42rem;}.max-w-3xl{max-width:48rem;}.max-w-\[1600px\]{max-width:1600px;}.max-w-lg{max-width:32rem;}.max-w-md{max-width:28rem;}.max-w-prose{max-width:65ch;}.max-w-sm{max-width:24rem;}.flex-1{flex:1 1 0%;}.shrink-0{flex-shrink:0;}.flex-grow{flex-grow:1;}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}.rotate-2{--tw-rotate:2deg;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}@keyframes pulse{50%{opacity:.5;}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;}.cursor-pointer{cursor:pointer;}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr));}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}.grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr));}.flex-col{flex-direction:column;}.flex-wrap{flex-wrap:wrap;}.items-start{align-items:flex-start;}.items-center{align-items:center;}.items-baseline{align-items:baseline;}.items-stretch{align-items:stretch;}.justify-center{justify-content:center;}.justify-between{justify-content:space-between;}.gap-1{gap:0.25rem;}.gap-1\.5{gap:0.375rem;}.gap-2{gap:0.5rem;}.gap-2\.5{gap:0.625rem;}.gap-3{gap:0.75rem;}.gap-4{gap:1rem;}.gap-x-2{column-gap:0.5rem;}.gap-x-3{column-gap:0.75rem;}.gap-y-1{row-gap:0.25rem;}.gap-y-1\.5{row-gap:0.375rem;}.space-y-0\.5>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.125rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.125rem * var(--tw-space-y-reverse));}.space-y-1>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse));}.space-y-2>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse));}.space-y-2\.5>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse));}.space-y-3>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse));}.space-y-4>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse));}.divide-y>:not([hidden]) ~:not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse));}.divide-slate-800\/60>:not([hidden]) ~:not([hidden]){border-color:rgb(30 41 59 / 0.6);}.divide-slate-800\/70>:not([hidden]) ~:not([hidden]){border-color:rgb(30 41 59 / 0.7);}.self-start{align-self:flex-start;}.overflow-auto{overflow:auto;}.overflow-hidden{overflow:hidden;}.overflow-x-auto{overflow-x:auto;}.overflow-y-auto{overflow-y:auto;}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.whitespace-nowrap{white-space:nowrap;}.whitespace-pre-wrap{white-space:pre-wrap;}.break-words{overflow-wrap:break-word;}.break-all{word-break:break-all;}.rounded{border-radius:0.25rem;}.rounded-2xl{border-radius:1rem;}.rounded-full{border-radius:9999px;}.rounded-lg{border-radius:0.5rem;}.rounded-md{border-radius:0.375rem;}.rounded-xl{border-radius:0.75rem;}.border{border-width:1px;}.border-2{border-width:2px;}.border-4{border-width:4px;}.border-b{border-bottom-width:1px;}.border-b-2{border-bottom-width:2px;}.border-l{border-left-width:1px;}.border-l-4{border-left-width:4px;}.border-t{border-top-width:1px;}.border-dashed{border-style:dashed;}.\!border-deloitte-green{--tw-border-opacity:1 !important;border-color:rgb(134 188 37 / var(--tw-border-opacity,1)) !important;}.\!border-red-500{--tw-border-opacity:1 !important;border-color:rgb(239 68 68 / var(--tw-border-opacity,1)) !important;}.\!border-red-500\/60{border-color:rgb(239 68 68 / 0.6) !important;}.border-amber-400{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity,1));}.border-amber-400\/50{border-color:rgb(251 191 36 / 0.5);}.border-amber-400\/60{border-color:rgb(251 191 36 / 0.6);}.border-amber-500{--tw-border-opacity:1;border-color:rgb(245 158 11 / var(--tw-border-opacity,1));}.border-amber-500\/30{border-color:rgb(245 158 11 / 0.3);}.border-amber-500\/40{border-color:rgb(245 158 11 / 0.4);}.border-amber-500\/50{border-color:rgb(245 158 11 / 0.5);}.border-amber-500\/60{border-color:rgb(245 158 11 / 0.6);}.border-amber-500\/70{border-color:rgb(245 158 11 / 0.7);}.border-cyan-400{--tw-border-opacity:1;border-color:rgb(34 211 238 / var(--tw-border-opacity,1));}.border-cyan-400\/50{border-color:rgb(34 211 238 / 0.5);}.border-cyan-400\/60{border-color:rgb(34 211 238 / 0.6);}.border-cyan-900\/50{border-color:rgb(22 78 99 / 0.5);}.border-deloitte-green{--tw-border-opacity:1;border-color:rgb(134 188 37 / var(--tw-border-opacity,1));}.border-deloitte-green\/30{border-color:rgb(134 188 37 / 0.3);}.border-deloitte-green\/40{border-color:rgb(134 188 37 / 0.4);}.border-deloitte-green\/50{border-color:rgb(134 188 37 / 0.5);}.border-deloitte-green\/60{border-color:rgb(134 188 37 / 0.6);}.border-emerald-500\/50{border-color:rgb(16 185 129 / 0.5);}.border-red-400{--tw-border-opacity:1;border-color:rgb(248 113 113 / var(--tw-border-opacity,1));}.border-red-500{--tw-border-opacity:1;border-color:rgb(239 68 68 / var(--tw-border-opacity,1));}.border-red-500\/40{border-color:rgb(239 68 68 / 0.4);}.border-red-500\/60{border-color:rgb(239 68 68 / 0.6);}.border-red-500\/70{border-color:rgb(239 68 68 / 0.7);}.border-red-500\/80{border-color:rgb(239 68 68 / 0.8);}.border-red-600{--tw-border-opacity:1;border-color:rgb(220 38 38 / var(--tw-border-opacity,1));}.border-red-700{--tw-border-opacity:1;border-color:rgb(185 28 28 / var(--tw-border-opacity,1));}.border-red-900\/50{border-color:rgb(127 29 29 / 0.5);}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity,1));}.border-slate-400{--tw-border-opacity:1;border-color:rgb(148 163 184 / var(--tw-border-opacity,1));}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity,1));}.border-slate-700\/80{border-color:rgb(51 65 85 / 0.8);}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59 / var(--tw-border-opacity,1));}.border-slate-800\/80{border-color:rgb(30 41 59 / 0.8);}.border-slate-800\/90{border-color:rgb(30 41 59 / 0.9);}.border-slate-900{--tw-border-opacity:1;border-color:rgb(15 23 42 / var(--tw-border-opacity,1));}.border-transparent{border-color:transparent;}.border-violet-400\/60{border-color:rgb(167 139 250 / 0.6);}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity,1));}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity,1));}.bg-amber-500\/10{background-color:rgb(245 158 11 / 0.1);}.bg-amber-500\/5{background-color:rgb(245 158 11 / 0.05);}.bg-amber-950\/20{background-color:rgb(69 26 3 / 0.2);}.bg-amber-950\/30{background-color:rgb(69 26 3 / 0.3);}.bg-amber-950\/40{background-color:rgb(69 26 3 / 0.4);}.bg-amber-950\/50{background-color:rgb(69 26 3 / 0.5);}.bg-amber-950\/80{background-color:rgb(69 26 3 / 0.8);}.bg-black\/85{background-color:rgb(0 0 0 / 0.85);}.bg-black\/90{background-color:rgb(0 0 0 / 0.9);}.bg-cyan-400{--tw-bg-opacity:1;background-color:rgb(34 211 238 / var(--tw-bg-opacity,1));}.bg-cyan-500{--tw-bg-opacity:1;background-color:rgb(6 182 212 / var(--tw-bg-opacity,1));}.bg-cyan-500\/10{background-color:rgb(6 182 212 / 0.1);}.bg-cyan-900\/50{background-color:rgb(22 78 99 / 0.5);}.bg-cyan-950\/30{background-color:rgb(8 51 68 / 0.3);}.bg-cyan-950\/70{background-color:rgb(8 51 68 / 0.7);}.bg-cyan-950\/90{background-color:rgb(8 51 68 / 0.9);}.bg-deloitte-green{--tw-bg-opacity:1;background-color:rgb(134 188 37 / var(--tw-bg-opacity,1));}.bg-deloitte-green\/10{background-color:rgb(134 188 37 / 0.1);}.bg-deloitte-green\/15{background-color:rgb(134 188 37 / 0.15);}.bg-deloitte-green\/5{background-color:rgb(134 188 37 / 0.05);}.bg-emerald-950\/60{background-color:rgb(2 44 34 / 0.6);}.bg-red-200\/60{background-color:rgb(254 202 202 / 0.6);}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity,1));}.bg-red-500\/10{background-color:rgb(239 68 68 / 0.1);}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity,1));}.bg-red-800{--tw-bg-opacity:1;background-color:rgb(153 27 27 / var(--tw-bg-opacity,1));}.bg-red-900\/40{background-color:rgb(127 29 29 / 0.4);}.bg-red-900\/60{background-color:rgb(127 29 29 / 0.6);}.bg-red-950{--tw-bg-opacity:1;background-color:rgb(69 10 10 / var(--tw-bg-opacity,1));}.bg-red-950\/20{background-color:rgb(69 10 10 / 0.2);}.bg-red-950\/50{background-color:rgb(69 10 10 / 0.5);}.bg-red-950\/60{background-color:rgb(69 10 10 / 0.6);}.bg-red-950\/70{background-color:rgb(69 10 10 / 0.7);}.bg-red-950\/80{background-color:rgb(69 10 10 / 0.8);}.bg-red-950\/85{background-color:rgb(69 10 10 / 0.85);}.bg-red-950\/90{background-color:rgb(69 10 10 / 0.9);}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity,1));}.bg-slate-900\/60{background-color:rgb(15 23 42 / 0.6);}.bg-slate-900\/80{background-color:rgb(15 23 42 / 0.8);}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23 / var(--tw-bg-opacity,1));}.bg-slate-950\/40{background-color:rgb(2 6 23 / 0.4);}.bg-slate-950\/50{background-color:rgb(2 6 23 / 0.5);}.bg-slate-950\/60{background-color:rgb(2 6 23 / 0.6);}.bg-slate-950\/70{background-color:rgb(2 6 23 / 0.7);}.bg-slate-950\/80{background-color:rgb(2 6 23 / 0.8);}.bg-slate-950\/90{background-color:rgb(2 6 23 / 0.9);}.bg-slate-950\/95{background-color:rgb(2 6 23 / 0.95);}.bg-violet-500\/10{background-color:rgb(139 92 246 / 0.1);}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops));}.from-deloitte-green{--tw-gradient-from:#86BC25 var(--tw-gradient-from-position);--tw-gradient-to:rgb(134 188 37 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to);}.from-red-500{--tw-gradient-from:#ef4444 var(--tw-gradient-from-position);--tw-gradient-to:rgb(239 68 68 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to);}.via-amber-400{--tw-gradient-to:rgb(251 191 36 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),#fbbf24 var(--tw-gradient-via-position),var(--tw-gradient-to);}.via-cyan-400{--tw-gradient-to:rgb(34 211 238 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),#22d3ee var(--tw-gradient-via-position),var(--tw-gradient-to);}.to-deloitte-green{--tw-gradient-to:#86BC25 var(--tw-gradient-to-position);}.to-red-500{--tw-gradient-to:#ef4444 var(--tw-gradient-to-position);}.p-1{padding:0.25rem;}.p-2\.5{padding:0.625rem;}.p-3{padding:0.75rem;}.p-3\.5{padding:0.875rem;}.p-4{padding:1rem;}.p-5{padding:1.25rem;}.p-6{padding:1.5rem;}.px-0\.5{padding-left:0.125rem;padding-right:0.125rem;}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem;}.px-2{padding-left:0.5rem;padding-right:0.5rem;}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem;}.px-3{padding-left:0.75rem;padding-right:0.75rem;}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem;}.px-4{padding-left:1rem;padding-right:1rem;}.px-5{padding-left:1.25rem;padding-right:1.25rem;}.px-6{padding-left:1.5rem;padding-right:1.5rem;}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem;}.py-1{padding-top:0.25rem;padding-bottom:0.25rem;}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem;}.py-2{padding-top:0.5rem;padding-bottom:0.5rem;}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem;}.py-3{padding-top:0.75rem;padding-bottom:0.75rem;}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem;}.py-4{padding-top:1rem;padding-bottom:1rem;}.py-8{padding-top:2rem;padding-bottom:2rem;}.pb-2{padding-bottom:0.5rem;}.pb-3{padding-bottom:0.75rem;}.pb-4{padding-bottom:1rem;}.pl-3{padding-left:0.75rem;}.pl-9{padding-left:2.25rem;}.pr-3{padding-right:0.75rem;}.pt-0\.5{padding-top:0.125rem;}.pt-1\.5{padding-top:0.375rem;}.pt-2{padding-top:0.5rem;}.pt-2\.5{padding-top:0.625rem;}.pt-3{padding-top:0.75rem;}.pt-5{padding-top:1.25rem;}.text-left{text-align:left;}.text-center{text-align:center;}.text-right{text-align:right;}.font-mono{font-family:JetBrains Mono,ui-monospace,SFMono-Regular,Menlo,Consolas,PingFang SC,Noto Sans CJK SC,Microsoft YaHei,monospace;}.font-sans{font-family:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;}.font-typewriter{font-family:Special Elite,Courier New,PingFang SC,Noto Sans CJK SC,Microsoft YaHei,monospace;}.text-2xl{font-size:1.5rem;line-height:2rem;}.text-3xl{font-size:1.875rem;line-height:2.25rem;}.text-\[10\.5px\]{font-size:10.5px;}.text-\[10px\]{font-size:10px;}.text-\[11px\]{font-size:11px;}.text-\[12\.5px\]{font-size:12.5px;}.text-\[12px\]{font-size:12px;}.text-\[13px\]{font-size:13px;}.text-\[15px\]{font-size:15px;}.text-base{font-size:1rem;line-height:1.5rem;}.text-lg{font-size:1.125rem;line-height:1.75rem;}.text-sm{font-size:0.875rem;line-height:1.25rem;}.text-xl{font-size:1.25rem;line-height:1.75rem;}.text-xs{font-size:0.75rem;line-height:1rem;}.font-bold{font-weight:700;}.font-medium{font-weight:500;}.font-semibold{font-weight:600;}.uppercase{text-transform:uppercase;}.italic{font-style:italic;}.tabular-nums{--tw-numeric-spacing:tabular-nums;font-variant-numeric:var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);}.leading-none{line-height:1;}.leading-relaxed{line-height:1.625;}.leading-snug{line-height:1.375;}.leading-tight{line-height:1.25;}.tracking-wide{letter-spacing:0.025em;}.tracking-wider{letter-spacing:0.05em;}.tracking-widest{letter-spacing:0.1em;}.text-amber-100{--tw-text-opacity:1;color:rgb(254 243 199 / var(--tw-text-opacity,1));}.text-amber-200{--tw-text-opacity:1;color:rgb(253 230 138 / var(--tw-text-opacity,1));}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity,1));}.text-amber-300\/90{color:rgb(252 211 77 / 0.9);}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity,1));}.text-amber-500{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity,1));}.text-cyan-200{--tw-text-opacity:1;color:rgb(165 243 252 / var(--tw-text-opacity,1));}.text-cyan-200\/80{color:rgb(165 243 252 / 0.8);}.text-cyan-300{--tw-text-opacity:1;color:rgb(103 232 249 / var(--tw-text-opacity,1));}.text-cyan-400{--tw-text-opacity:1;color:rgb(34 211 238 / var(--tw-text-opacity,1));}.text-deloitte-green{--tw-text-opacity:1;color:rgb(134 188 37 / var(--tw-text-opacity,1));}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity,1));}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity,1));}.text-red-200{--tw-text-opacity:1;color:rgb(254 202 202 / var(--tw-text-opacity,1));}.text-red-300{--tw-text-opacity:1;color:rgb(252 165 165 / var(--tw-text-opacity,1));}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity,1));}.text-red-400\/70{color:rgb(248 113 113 / 0.7);}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity,1));}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity,1));}.text-red-800{--tw-text-opacity:1;color:rgb(153 27 27 / var(--tw-text-opacity,1));}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249 / var(--tw-text-opacity,1));}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity,1));}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity,1));}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity,1));}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity,1));}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity,1));}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity,1));}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity,1));}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity,1));}.text-slate-950{--tw-text-opacity:1;color:rgb(2 6 23 / var(--tw-text-opacity,1));}.text-violet-300{--tw-text-opacity:1;color:rgb(196 181 253 / var(--tw-text-opacity,1));}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity,1));}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}.opacity-60{opacity:0.6;}.opacity-80{opacity:0.8;}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_20px_rgba\(220\2c 38\2c 38\2c 0\.45\)\]{--tw-shadow:0 0 20px rgba(220,38,38,0.45);--tw-shadow-colored:0 0 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_25px_rgba\(134\2c 188\2c 37\2c 0\.3\)\]{--tw-shadow:0 0 25px rgba(134,188,37,0.3);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_25px_rgba\(251\2c 191\2c 36\2c 0\.3\)\]{--tw-shadow:0 0 25px rgba(251,191,36,0.3);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_25px_rgba\(6\2c 182\2c 212\2c 0\.2\)\]{--tw-shadow:0 0 25px rgba(6,182,212,0.2);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_40px_rgba\(134\2c 188\2c 37\2c 0\.2\)\]{--tw-shadow:0 0 40px rgba(134,188,37,0.2);--tw-shadow-colored:0 0 40px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_40px_rgba\(6\2c 182\2c 212\2c 0\.3\)\]{--tw-shadow:0 0 40px rgba(6,182,212,0.3);--tw-shadow-colored:0 0 40px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_50px_rgba\(239\2c 68\2c 68\2c 0\.5\)\]{--tw-shadow:0 0 50px rgba(239,68,68,0.5);--tw-shadow-colored:0 0 50px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1),0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.outline{outline-style:solid;}.ring{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000);}.blur{--tw-blur:blur(8px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);}.grayscale{--tw-grayscale:grayscale(100%);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);}.backdrop-filter{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);}.transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}@media (hover:hover) and (pointer:fine){.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}.hover\:border-amber-500\/60:hover{border-color:rgb(245 158 11 / 0.6);}.hover\:border-red-500\/50:hover{border-color:rgb(239 68 68 / 0.5);}.hover\:border-slate-500:hover{--tw-border-opacity:1;border-color:rgb(100 116 139 / var(--tw-border-opacity,1));}.hover\:border-slate-600:hover{--tw-border-opacity:1;border-color:rgb(71 85 105 / var(--tw-border-opacity,1));}.hover\:border-slate-700:hover{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity,1));}.hover\:bg-cyan-400:hover{--tw-bg-opacity:1;background-color:rgb(34 211 238 / var(--tw-bg-opacity,1));}.hover\:bg-deloitte-green:hover{--tw-bg-opacity:1;background-color:rgb(134 188 37 / var(--tw-bg-opacity,1));}.hover\:bg-lime-400:hover{--tw-bg-opacity:1;background-color:rgb(163 230 53 / var(--tw-bg-opacity,1));}.hover\:bg-red-500:hover{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity,1));}.hover\:bg-red-600:hover{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity,1));}.hover\:bg-red-700:hover{--tw-bg-opacity:1;background-color:rgb(185 28 28 / var(--tw-bg-opacity,1));}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity,1));}.hover\:bg-slate-800\/60:hover{background-color:rgb(30 41 59 / 0.6);}.hover\:bg-slate-900\/50:hover{background-color:rgb(15 23 42 / 0.5);}.hover\:bg-slate-900\/60:hover{background-color:rgb(15 23 42 / 0.6);}.hover\:text-black:hover{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity,1));}.hover\:text-slate-200:hover{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity,1));}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity,1));}}.active\:bg-lime-500:active{--tw-bg-opacity:1;background-color:rgb(132 204 22 / var(--tw-bg-opacity,1));}.active\:bg-slate-800:active{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity,1));}.active\:bg-slate-800\/60:active{background-color:rgb(30 41 59 / 0.6);}.active\:bg-slate-900:active{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity,1));}.disabled\:cursor-not-allowed:disabled{cursor:not-allowed;}.disabled\:opacity-40:disabled{opacity:0.4;}.disabled\:opacity-70:disabled{opacity:0.7;}@media (min-width:380px){.min-\[380px\]\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}}@media (min-width:400px){.min-\[400px\]\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}@media (min-width:640px){.sm\:inline{display:inline;}.sm\:w-60{width:15rem;}.sm\:w-64{width:16rem;}.sm\:w-72{width:18rem;}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}.sm\:flex-row{flex-direction:row;}.sm\:items-center{align-items:center;}.sm\:justify-between{justify-content:space-between;}.sm\:self-auto{align-self:auto;}.sm\:p-5{padding:1.25rem;}}@media (min-width:768px){.md\:absolute{position:absolute;}.md\:right-4{right:1rem;}.md\:top-3{top:0.75rem;}.md\:mx-0{margin-left:0px;margin-right:0px;}.md\:mb-0{margin-bottom:0px;}.md\:mb-3{margin-bottom:0.75rem;}.md\:mt-0{margin-top:0px;}.md\:flex{display:flex;}.md\:hidden{display:none;}.md\:h-11{height:2.75rem;}.md\:h-16{height:4rem;}.md\:w-11{width:2.75rem;}.md\:w-16{width:4rem;}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}.md\:flex-row{flex-direction:row;}.md\:items-center{align-items:center;}.md\:justify-between{justify-content:space-between;}.md\:gap-4{gap:1rem;}.md\:p-5{padding:1.25rem;}.md\:p-6{padding:1.5rem;}.md\:p-8{padding:2rem;}.md\:px-0{padding-left:0px;padding-right:0px;}.md\:pb-0{padding-bottom:0px;}.md\:pr-1{padding-right:0.25rem;}.md\:pt-0{padding-top:0px;}.md\:text-2xl{font-size:1.5rem;line-height:2rem;}.md\:text-\[13px\]{font-size:13px;}.md\:text-base{font-size:1rem;line-height:1.5rem;}.md\:text-sm{font-size:0.875rem;line-height:1.25rem;}.md\:text-xl{font-size:1.25rem;line-height:1.75rem;}.md\:text-xs{font-size:0.75rem;line-height:1rem;}}@media (min-width:1024px){.lg\:inline{display:inline;}}@media (min-width:1280px){.xl\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}</style></head>
+<style data-dl="tailwind">*,::before,::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x:;--tw-pan-y:;--tw-pinch-zoom:;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position:;--tw-gradient-via-position:;--tw-gradient-to-position:;--tw-ordinal:;--tw-slashed-zero:;--tw-numeric-figure:;--tw-numeric-spacing:;--tw-numeric-fraction:;--tw-ring-inset:;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur:;--tw-brightness:;--tw-contrast:;--tw-grayscale:;--tw-hue-rotate:;--tw-invert:;--tw-saturate:;--tw-sepia:;--tw-drop-shadow:;--tw-backdrop-blur:;--tw-backdrop-brightness:;--tw-backdrop-contrast:;--tw-backdrop-grayscale:;--tw-backdrop-hue-rotate:;--tw-backdrop-invert:;--tw-backdrop-opacity:;--tw-backdrop-saturate:;--tw-backdrop-sepia:;--tw-contain-size:;--tw-contain-layout:;--tw-contain-paint:;--tw-contain-style:;}::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x:;--tw-pan-y:;--tw-pinch-zoom:;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position:;--tw-gradient-via-position:;--tw-gradient-to-position:;--tw-ordinal:;--tw-slashed-zero:;--tw-numeric-figure:;--tw-numeric-spacing:;--tw-numeric-fraction:;--tw-ring-inset:;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur:;--tw-brightness:;--tw-contrast:;--tw-grayscale:;--tw-hue-rotate:;--tw-invert:;--tw-saturate:;--tw-sepia:;--tw-drop-shadow:;--tw-backdrop-blur:;--tw-backdrop-brightness:;--tw-backdrop-contrast:;--tw-backdrop-grayscale:;--tw-backdrop-hue-rotate:;--tw-backdrop-invert:;--tw-backdrop-opacity:;--tw-backdrop-saturate:;--tw-backdrop-sepia:;--tw-contain-size:;--tw-contain-layout:;--tw-contain-paint:;--tw-contain-style:;}*,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb;}::before,::after{--tw-content:'';}html,:host{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent;}body{margin:0;line-height:inherit;}hr{height:0;color:inherit;border-top-width:1px;}abbr:where([title]){text-decoration:underline dotted;}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit;}a{color:inherit;text-decoration:inherit;}b,strong{font-weight:bolder;}code,kbd,samp,pre{font-family:JetBrains Mono,ui-monospace,SFMono-Regular,Menlo,Consolas,PingFang SC,Noto Sans CJK SC,Microsoft YaHei,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}table{text-indent:0;border-color:inherit;border-collapse:collapse;}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0;}button,select{text-transform:none;}button,input:where([type='button']),input:where([type='reset']),input:where([type='submit']){-webkit-appearance:button;background-color:transparent;background-image:none;}:-moz-focusring{outline:auto;}:-moz-ui-invalid{box-shadow:none;}progress{vertical-align:baseline;}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto;}[type='search']{-webkit-appearance:textfield;outline-offset:-2px;}::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}summary{display:list-item;}blockquote,dl,dd,h1,h2,h3,h4,h5,h6,hr,figure,p,pre{margin:0;}fieldset{margin:0;padding:0;}legend{padding:0;}ol,ul,menu{list-style:none;margin:0;padding:0;}dialog{padding:0;}textarea{resize:vertical;}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af;}button,[role="button"]{cursor:pointer;}:disabled{cursor:default;}img,svg,video,canvas,audio,iframe,embed,object{display:block;vertical-align:middle;}img,video{max-width:100%;height:auto;}[hidden]:where(:not([hidden="until-found"])){display:none;}.pointer-events-none{pointer-events:none;}.fixed{position:fixed;}.absolute{position:absolute;}.relative{position:relative;}.sticky{position:sticky;}.inset-0{inset:0px;}.-right-1\.5{right:-0.375rem;}.-top-1{top:-0.25rem;}.left-0{left:0px;}.left-1\/2{left:50%;}.left-3{left:0.75rem;}.top-0{top:0px;}.top-1\/2{top:50%;}.z-10{z-index:10;}.z-50{z-index:50;}.z-\[60\]{z-index:60;}.col-span-2{grid-column:span 2 / span 2;}.mx-2{margin-left:0.5rem;margin-right:0.5rem;}.mx-auto{margin-left:auto;margin-right:auto;}.my-0\.5{margin-top:0.125rem;margin-bottom:0.125rem;}.-mt-1{margin-top:-0.25rem;}.mb-0\.5{margin-bottom:0.125rem;}.mb-1{margin-bottom:0.25rem;}.mb-1\.5{margin-bottom:0.375rem;}.mb-2{margin-bottom:0.5rem;}.mb-2\.5{margin-bottom:0.625rem;}.mb-3{margin-bottom:0.75rem;}.mb-4{margin-bottom:1rem;}.mb-5{margin-bottom:1.25rem;}.mb-6{margin-bottom:1.5rem;}.ml-3{margin-left:0.75rem;}.ml-auto{margin-left:auto;}.mr-1{margin-right:0.25rem;}.mr-1\.5{margin-right:0.375rem;}.mr-2{margin-right:0.5rem;}.mt-0\.5{margin-top:0.125rem;}.mt-1{margin-top:0.25rem;}.mt-1\.5{margin-top:0.375rem;}.mt-2{margin-top:0.5rem;}.mt-2\.5{margin-top:0.625rem;}.mt-3{margin-top:0.75rem;}.mt-4{margin-top:1rem;}.mt-5{margin-top:1.25rem;}.mt-6{margin-top:1.5rem;}.block{display:block;}.inline-block{display:inline-block;}.inline{display:inline;}.flex{display:flex;}.inline-flex{display:inline-flex;}.table{display:table;}.grid{display:grid;}.hidden{display:none;}.aspect-square{aspect-ratio:1 / 1;}.h-1{height:0.25rem;}.h-1\.5{height:0.375rem;}.h-10{height:2.5rem;}.h-11{height:2.75rem;}.h-12{height:3rem;}.h-14{height:3.5rem;}.h-16{height:4rem;}.h-5{height:1.25rem;}.h-6{height:1.5rem;}.h-7{height:1.75rem;}.h-8{height:2rem;}.h-9{height:2.25rem;}.h-auto{height:auto;}.h-full{height:100%;}.max-h-80{max-height:20rem;}.max-h-full{max-height:100%;}.min-h-0{min-height:0px;}.min-h-\[40px\]{min-height:40px;}.min-h-\[50px\]{min-height:50px;}.min-h-full{min-height:100%;}.w-1\.5{width:0.375rem;}.w-10{width:2.5rem;}.w-11{width:2.75rem;}.w-12{width:3rem;}.w-14{width:3.5rem;}.w-16{width:4rem;}.w-4{width:1rem;}.w-5{width:1.25rem;}.w-6{width:1.5rem;}.w-64{width:16rem;}.w-7{width:1.75rem;}.w-8{width:2rem;}.w-\[min\(78vw\2c 340px\)\]{width:min(78vw,340px);}.w-full{width:100%;}.min-w-0{min-width:0px;}.min-w-\[640px\]{min-width:640px;}.min-w-\[780px\]{min-width:780px;}.min-w-\[880px\]{min-width:880px;}.max-w-2xl{max-width:42rem;}.max-w-3xl{max-width:48rem;}.max-w-\[1600px\]{max-width:1600px;}.max-w-\[92vw\]{max-width:92vw;}.max-w-lg{max-width:32rem;}.max-w-md{max-width:28rem;}.max-w-prose{max-width:65ch;}.max-w-sm{max-width:24rem;}.flex-1{flex:1 1 0%;}.shrink-0{flex-shrink:0;}.flex-grow{flex-grow:1;}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}.rotate-2{--tw-rotate:2deg;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}@keyframes pulse{50%{opacity:.5;}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;}.cursor-pointer{cursor:pointer;}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr));}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}.grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr));}.flex-col{flex-direction:column;}.flex-wrap{flex-wrap:wrap;}.items-start{align-items:flex-start;}.items-center{align-items:center;}.items-baseline{align-items:baseline;}.items-stretch{align-items:stretch;}.justify-center{justify-content:center;}.justify-between{justify-content:space-between;}.gap-1{gap:0.25rem;}.gap-1\.5{gap:0.375rem;}.gap-2{gap:0.5rem;}.gap-2\.5{gap:0.625rem;}.gap-3{gap:0.75rem;}.gap-4{gap:1rem;}.gap-x-2{column-gap:0.5rem;}.gap-x-3{column-gap:0.75rem;}.gap-y-1{row-gap:0.25rem;}.gap-y-1\.5{row-gap:0.375rem;}.space-y-0\.5>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.125rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.125rem * var(--tw-space-y-reverse));}.space-y-1>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse));}.space-y-2>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse));}.space-y-2\.5>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse));}.space-y-3>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse));}.space-y-4>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse));}.divide-y>:not([hidden]) ~:not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse));}.divide-slate-800\/60>:not([hidden]) ~:not([hidden]){border-color:rgb(30 41 59 / 0.6);}.divide-slate-800\/70>:not([hidden]) ~:not([hidden]){border-color:rgb(30 41 59 / 0.7);}.self-start{align-self:flex-start;}.overflow-auto{overflow:auto;}.overflow-hidden{overflow:hidden;}.overflow-x-auto{overflow-x:auto;}.overflow-y-auto{overflow-y:auto;}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.whitespace-nowrap{white-space:nowrap;}.whitespace-pre-wrap{white-space:pre-wrap;}.break-words{overflow-wrap:break-word;}.break-all{word-break:break-all;}.rounded{border-radius:0.25rem;}.rounded-2xl{border-radius:1rem;}.rounded-full{border-radius:9999px;}.rounded-lg{border-radius:0.5rem;}.rounded-md{border-radius:0.375rem;}.rounded-xl{border-radius:0.75rem;}.border{border-width:1px;}.border-2{border-width:2px;}.border-4{border-width:4px;}.border-b{border-bottom-width:1px;}.border-b-2{border-bottom-width:2px;}.border-l{border-left-width:1px;}.border-l-4{border-left-width:4px;}.border-t{border-top-width:1px;}.border-dashed{border-style:dashed;}.\!border-deloitte-green{--tw-border-opacity:1 !important;border-color:rgb(134 188 37 / var(--tw-border-opacity,1)) !important;}.\!border-red-500{--tw-border-opacity:1 !important;border-color:rgb(239 68 68 / var(--tw-border-opacity,1)) !important;}.\!border-red-500\/60{border-color:rgb(239 68 68 / 0.6) !important;}.border-amber-400{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity,1));}.border-amber-400\/50{border-color:rgb(251 191 36 / 0.5);}.border-amber-400\/60{border-color:rgb(251 191 36 / 0.6);}.border-amber-500{--tw-border-opacity:1;border-color:rgb(245 158 11 / var(--tw-border-opacity,1));}.border-amber-500\/30{border-color:rgb(245 158 11 / 0.3);}.border-amber-500\/40{border-color:rgb(245 158 11 / 0.4);}.border-amber-500\/50{border-color:rgb(245 158 11 / 0.5);}.border-amber-500\/60{border-color:rgb(245 158 11 / 0.6);}.border-amber-500\/70{border-color:rgb(245 158 11 / 0.7);}.border-cyan-400{--tw-border-opacity:1;border-color:rgb(34 211 238 / var(--tw-border-opacity,1));}.border-cyan-400\/30{border-color:rgb(34 211 238 / 0.3);}.border-cyan-400\/50{border-color:rgb(34 211 238 / 0.5);}.border-cyan-400\/60{border-color:rgb(34 211 238 / 0.6);}.border-cyan-900\/50{border-color:rgb(22 78 99 / 0.5);}.border-deloitte-green{--tw-border-opacity:1;border-color:rgb(134 188 37 / var(--tw-border-opacity,1));}.border-deloitte-green\/30{border-color:rgb(134 188 37 / 0.3);}.border-deloitte-green\/40{border-color:rgb(134 188 37 / 0.4);}.border-deloitte-green\/50{border-color:rgb(134 188 37 / 0.5);}.border-deloitte-green\/60{border-color:rgb(134 188 37 / 0.6);}.border-emerald-500\/50{border-color:rgb(16 185 129 / 0.5);}.border-red-400{--tw-border-opacity:1;border-color:rgb(248 113 113 / var(--tw-border-opacity,1));}.border-red-500{--tw-border-opacity:1;border-color:rgb(239 68 68 / var(--tw-border-opacity,1));}.border-red-500\/40{border-color:rgb(239 68 68 / 0.4);}.border-red-500\/60{border-color:rgb(239 68 68 / 0.6);}.border-red-500\/70{border-color:rgb(239 68 68 / 0.7);}.border-red-500\/80{border-color:rgb(239 68 68 / 0.8);}.border-red-600{--tw-border-opacity:1;border-color:rgb(220 38 38 / var(--tw-border-opacity,1));}.border-red-700{--tw-border-opacity:1;border-color:rgb(185 28 28 / var(--tw-border-opacity,1));}.border-red-900\/50{border-color:rgb(127 29 29 / 0.5);}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity,1));}.border-slate-400{--tw-border-opacity:1;border-color:rgb(148 163 184 / var(--tw-border-opacity,1));}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity,1));}.border-slate-700\/80{border-color:rgb(51 65 85 / 0.8);}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59 / var(--tw-border-opacity,1));}.border-slate-800\/80{border-color:rgb(30 41 59 / 0.8);}.border-slate-800\/90{border-color:rgb(30 41 59 / 0.9);}.border-slate-900{--tw-border-opacity:1;border-color:rgb(15 23 42 / var(--tw-border-opacity,1));}.border-transparent{border-color:transparent;}.border-violet-400\/60{border-color:rgb(167 139 250 / 0.6);}.bg-amber-400{--tw-bg-opacity:1;background-color:rgb(251 191 36 / var(--tw-bg-opacity,1));}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity,1));}.bg-amber-500\/10{background-color:rgb(245 158 11 / 0.1);}.bg-amber-500\/5{background-color:rgb(245 158 11 / 0.05);}.bg-amber-950\/20{background-color:rgb(69 26 3 / 0.2);}.bg-amber-950\/30{background-color:rgb(69 26 3 / 0.3);}.bg-amber-950\/40{background-color:rgb(69 26 3 / 0.4);}.bg-amber-950\/50{background-color:rgb(69 26 3 / 0.5);}.bg-amber-950\/80{background-color:rgb(69 26 3 / 0.8);}.bg-black\/85{background-color:rgb(0 0 0 / 0.85);}.bg-black\/90{background-color:rgb(0 0 0 / 0.9);}.bg-cyan-400{--tw-bg-opacity:1;background-color:rgb(34 211 238 / var(--tw-bg-opacity,1));}.bg-cyan-500{--tw-bg-opacity:1;background-color:rgb(6 182 212 / var(--tw-bg-opacity,1));}.bg-cyan-500\/10{background-color:rgb(6 182 212 / 0.1);}.bg-cyan-900\/50{background-color:rgb(22 78 99 / 0.5);}.bg-cyan-950\/30{background-color:rgb(8 51 68 / 0.3);}.bg-cyan-950\/40{background-color:rgb(8 51 68 / 0.4);}.bg-cyan-950\/70{background-color:rgb(8 51 68 / 0.7);}.bg-cyan-950\/90{background-color:rgb(8 51 68 / 0.9);}.bg-deloitte-green{--tw-bg-opacity:1;background-color:rgb(134 188 37 / var(--tw-bg-opacity,1));}.bg-deloitte-green\/10{background-color:rgb(134 188 37 / 0.1);}.bg-deloitte-green\/15{background-color:rgb(134 188 37 / 0.15);}.bg-deloitte-green\/5{background-color:rgb(134 188 37 / 0.05);}.bg-emerald-950\/60{background-color:rgb(2 44 34 / 0.6);}.bg-red-200\/60{background-color:rgb(254 202 202 / 0.6);}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity,1));}.bg-red-500\/10{background-color:rgb(239 68 68 / 0.1);}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity,1));}.bg-red-800{--tw-bg-opacity:1;background-color:rgb(153 27 27 / var(--tw-bg-opacity,1));}.bg-red-900\/40{background-color:rgb(127 29 29 / 0.4);}.bg-red-900\/60{background-color:rgb(127 29 29 / 0.6);}.bg-red-950{--tw-bg-opacity:1;background-color:rgb(69 10 10 / var(--tw-bg-opacity,1));}.bg-red-950\/20{background-color:rgb(69 10 10 / 0.2);}.bg-red-950\/50{background-color:rgb(69 10 10 / 0.5);}.bg-red-950\/60{background-color:rgb(69 10 10 / 0.6);}.bg-red-950\/70{background-color:rgb(69 10 10 / 0.7);}.bg-red-950\/80{background-color:rgb(69 10 10 / 0.8);}.bg-red-950\/85{background-color:rgb(69 10 10 / 0.85);}.bg-red-950\/90{background-color:rgb(69 10 10 / 0.9);}.bg-red-950\/95{background-color:rgb(69 10 10 / 0.95);}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity,1));}.bg-slate-900\/60{background-color:rgb(15 23 42 / 0.6);}.bg-slate-900\/80{background-color:rgb(15 23 42 / 0.8);}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23 / var(--tw-bg-opacity,1));}.bg-slate-950\/40{background-color:rgb(2 6 23 / 0.4);}.bg-slate-950\/50{background-color:rgb(2 6 23 / 0.5);}.bg-slate-950\/60{background-color:rgb(2 6 23 / 0.6);}.bg-slate-950\/70{background-color:rgb(2 6 23 / 0.7);}.bg-slate-950\/80{background-color:rgb(2 6 23 / 0.8);}.bg-slate-950\/90{background-color:rgb(2 6 23 / 0.9);}.bg-slate-950\/95{background-color:rgb(2 6 23 / 0.95);}.bg-violet-500\/10{background-color:rgb(139 92 246 / 0.1);}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops));}.from-deloitte-green{--tw-gradient-from:#86BC25 var(--tw-gradient-from-position);--tw-gradient-to:rgb(134 188 37 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to);}.from-red-500{--tw-gradient-from:#ef4444 var(--tw-gradient-from-position);--tw-gradient-to:rgb(239 68 68 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to);}.via-amber-400{--tw-gradient-to:rgb(251 191 36 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),#fbbf24 var(--tw-gradient-via-position),var(--tw-gradient-to);}.via-cyan-400{--tw-gradient-to:rgb(34 211 238 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),#22d3ee var(--tw-gradient-via-position),var(--tw-gradient-to);}.to-deloitte-green{--tw-gradient-to:#86BC25 var(--tw-gradient-to-position);}.to-red-500{--tw-gradient-to:#ef4444 var(--tw-gradient-to-position);}.p-1{padding:0.25rem;}.p-2\.5{padding:0.625rem;}.p-3{padding:0.75rem;}.p-3\.5{padding:0.875rem;}.p-4{padding:1rem;}.p-5{padding:1.25rem;}.p-6{padding:1.5rem;}.px-0\.5{padding-left:0.125rem;padding-right:0.125rem;}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem;}.px-2{padding-left:0.5rem;padding-right:0.5rem;}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem;}.px-3{padding-left:0.75rem;padding-right:0.75rem;}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem;}.px-4{padding-left:1rem;padding-right:1rem;}.px-5{padding-left:1.25rem;padding-right:1.25rem;}.px-6{padding-left:1.5rem;padding-right:1.5rem;}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem;}.py-1{padding-top:0.25rem;padding-bottom:0.25rem;}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem;}.py-2{padding-top:0.5rem;padding-bottom:0.5rem;}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem;}.py-3{padding-top:0.75rem;padding-bottom:0.75rem;}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem;}.py-4{padding-top:1rem;padding-bottom:1rem;}.py-8{padding-top:2rem;padding-bottom:2rem;}.pb-2{padding-bottom:0.5rem;}.pb-3{padding-bottom:0.75rem;}.pb-4{padding-bottom:1rem;}.pl-3{padding-left:0.75rem;}.pl-9{padding-left:2.25rem;}.pr-3{padding-right:0.75rem;}.pt-0\.5{padding-top:0.125rem;}.pt-1\.5{padding-top:0.375rem;}.pt-2{padding-top:0.5rem;}.pt-2\.5{padding-top:0.625rem;}.pt-3{padding-top:0.75rem;}.pt-5{padding-top:1.25rem;}.text-left{text-align:left;}.text-center{text-align:center;}.text-right{text-align:right;}.font-mono{font-family:JetBrains Mono,ui-monospace,SFMono-Regular,Menlo,Consolas,PingFang SC,Noto Sans CJK SC,Microsoft YaHei,monospace;}.font-sans{font-family:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;}.font-typewriter{font-family:Special Elite,Courier New,PingFang SC,Noto Sans CJK SC,Microsoft YaHei,monospace;}.text-2xl{font-size:1.5rem;line-height:2rem;}.text-3xl{font-size:1.875rem;line-height:2.25rem;}.text-\[10\.5px\]{font-size:10.5px;}.text-\[10px\]{font-size:10px;}.text-\[11px\]{font-size:11px;}.text-\[12\.5px\]{font-size:12.5px;}.text-\[12px\]{font-size:12px;}.text-\[13px\]{font-size:13px;}.text-\[15px\]{font-size:15px;}.text-base{font-size:1rem;line-height:1.5rem;}.text-lg{font-size:1.125rem;line-height:1.75rem;}.text-sm{font-size:0.875rem;line-height:1.25rem;}.text-xl{font-size:1.25rem;line-height:1.75rem;}.text-xs{font-size:0.75rem;line-height:1rem;}.font-bold{font-weight:700;}.font-medium{font-weight:500;}.font-semibold{font-weight:600;}.uppercase{text-transform:uppercase;}.italic{font-style:italic;}.tabular-nums{--tw-numeric-spacing:tabular-nums;font-variant-numeric:var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);}.leading-none{line-height:1;}.leading-relaxed{line-height:1.625;}.leading-snug{line-height:1.375;}.leading-tight{line-height:1.25;}.tracking-wide{letter-spacing:0.025em;}.tracking-wider{letter-spacing:0.05em;}.tracking-widest{letter-spacing:0.1em;}.text-amber-100{--tw-text-opacity:1;color:rgb(254 243 199 / var(--tw-text-opacity,1));}.text-amber-200{--tw-text-opacity:1;color:rgb(253 230 138 / var(--tw-text-opacity,1));}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity,1));}.text-amber-300\/90{color:rgb(252 211 77 / 0.9);}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity,1));}.text-amber-500{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity,1));}.text-cyan-100{--tw-text-opacity:1;color:rgb(207 250 254 / var(--tw-text-opacity,1));}.text-cyan-200{--tw-text-opacity:1;color:rgb(165 243 252 / var(--tw-text-opacity,1));}.text-cyan-200\/80{color:rgb(165 243 252 / 0.8);}.text-cyan-300{--tw-text-opacity:1;color:rgb(103 232 249 / var(--tw-text-opacity,1));}.text-cyan-400{--tw-text-opacity:1;color:rgb(34 211 238 / var(--tw-text-opacity,1));}.text-deloitte-green{--tw-text-opacity:1;color:rgb(134 188 37 / var(--tw-text-opacity,1));}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity,1));}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity,1));}.text-red-200{--tw-text-opacity:1;color:rgb(254 202 202 / var(--tw-text-opacity,1));}.text-red-300{--tw-text-opacity:1;color:rgb(252 165 165 / var(--tw-text-opacity,1));}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity,1));}.text-red-400\/70{color:rgb(248 113 113 / 0.7);}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity,1));}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity,1));}.text-red-800{--tw-text-opacity:1;color:rgb(153 27 27 / var(--tw-text-opacity,1));}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249 / var(--tw-text-opacity,1));}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity,1));}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity,1));}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity,1));}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity,1));}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity,1));}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity,1));}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity,1));}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity,1));}.text-slate-950{--tw-text-opacity:1;color:rgb(2 6 23 / var(--tw-text-opacity,1));}.text-violet-300{--tw-text-opacity:1;color:rgb(196 181 253 / var(--tw-text-opacity,1));}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity,1));}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}.opacity-60{opacity:0.6;}.opacity-80{opacity:0.8;}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_20px_rgba\(220\2c 38\2c 38\2c 0\.45\)\]{--tw-shadow:0 0 20px rgba(220,38,38,0.45);--tw-shadow-colored:0 0 20px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_25px_rgba\(134\2c 188\2c 37\2c 0\.3\)\]{--tw-shadow:0 0 25px rgba(134,188,37,0.3);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_25px_rgba\(251\2c 191\2c 36\2c 0\.3\)\]{--tw-shadow:0 0 25px rgba(251,191,36,0.3);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_25px_rgba\(6\2c 182\2c 212\2c 0\.2\)\]{--tw-shadow:0 0 25px rgba(6,182,212,0.2);--tw-shadow-colored:0 0 25px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_40px_rgba\(134\2c 188\2c 37\2c 0\.2\)\]{--tw-shadow:0 0 40px rgba(134,188,37,0.2);--tw-shadow-colored:0 0 40px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_40px_rgba\(6\2c 182\2c 212\2c 0\.3\)\]{--tw-shadow:0 0 40px rgba(6,182,212,0.3);--tw-shadow-colored:0 0 40px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_50px_rgba\(239\2c 68\2c 68\2c 0\.5\)\]{--tw-shadow:0 0 50px rgba(239,68,68,0.5);--tw-shadow-colored:0 0 50px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1),0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.outline{outline-style:solid;}.ring{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000);}.blur{--tw-blur:blur(8px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);}.grayscale{--tw-grayscale:grayscale(100%);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);}.backdrop-filter{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);}.transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}@media (hover:hover) and (pointer:fine){.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}.hover\:border-amber-500\/60:hover{border-color:rgb(245 158 11 / 0.6);}.hover\:border-red-500\/50:hover{border-color:rgb(239 68 68 / 0.5);}.hover\:border-slate-500:hover{--tw-border-opacity:1;border-color:rgb(100 116 139 / var(--tw-border-opacity,1));}.hover\:border-slate-600:hover{--tw-border-opacity:1;border-color:rgb(71 85 105 / var(--tw-border-opacity,1));}.hover\:border-slate-700:hover{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity,1));}.hover\:bg-cyan-400:hover{--tw-bg-opacity:1;background-color:rgb(34 211 238 / var(--tw-bg-opacity,1));}.hover\:bg-deloitte-green:hover{--tw-bg-opacity:1;background-color:rgb(134 188 37 / var(--tw-bg-opacity,1));}.hover\:bg-lime-400:hover{--tw-bg-opacity:1;background-color:rgb(163 230 53 / var(--tw-bg-opacity,1));}.hover\:bg-red-500:hover{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity,1));}.hover\:bg-red-600:hover{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity,1));}.hover\:bg-red-700:hover{--tw-bg-opacity:1;background-color:rgb(185 28 28 / var(--tw-bg-opacity,1));}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity,1));}.hover\:bg-slate-800\/60:hover{background-color:rgb(30 41 59 / 0.6);}.hover\:bg-slate-900\/50:hover{background-color:rgb(15 23 42 / 0.5);}.hover\:bg-slate-900\/60:hover{background-color:rgb(15 23 42 / 0.6);}.hover\:text-black:hover{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity,1));}.hover\:text-slate-200:hover{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity,1));}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity,1));}}.active\:bg-lime-500:active{--tw-bg-opacity:1;background-color:rgb(132 204 22 / var(--tw-bg-opacity,1));}.active\:bg-slate-800:active{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity,1));}.active\:bg-slate-800\/60:active{background-color:rgb(30 41 59 / 0.6);}.active\:bg-slate-900:active{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity,1));}.disabled\:cursor-not-allowed:disabled{cursor:not-allowed;}.disabled\:opacity-40:disabled{opacity:0.4;}.disabled\:opacity-70:disabled{opacity:0.7;}@media (min-width:380px){.min-\[380px\]\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}}@media (min-width:400px){.min-\[400px\]\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}@media (min-width:640px){.sm\:inline{display:inline;}.sm\:w-60{width:15rem;}.sm\:w-64{width:16rem;}.sm\:w-72{width:18rem;}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}.sm\:flex-row{flex-direction:row;}.sm\:items-center{align-items:center;}.sm\:justify-between{justify-content:space-between;}.sm\:self-auto{align-self:auto;}.sm\:p-5{padding:1.25rem;}}@media (min-width:768px){.md\:absolute{position:absolute;}.md\:right-4{right:1rem;}.md\:top-3{top:0.75rem;}.md\:mx-0{margin-left:0px;margin-right:0px;}.md\:mb-0{margin-bottom:0px;}.md\:mb-3{margin-bottom:0.75rem;}.md\:mt-0{margin-top:0px;}.md\:flex{display:flex;}.md\:hidden{display:none;}.md\:h-11{height:2.75rem;}.md\:h-16{height:4rem;}.md\:w-11{width:2.75rem;}.md\:w-16{width:4rem;}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}.md\:flex-row{flex-direction:row;}.md\:items-center{align-items:center;}.md\:justify-between{justify-content:space-between;}.md\:gap-4{gap:1rem;}.md\:p-5{padding:1.25rem;}.md\:p-6{padding:1.5rem;}.md\:p-8{padding:2rem;}.md\:px-0{padding-left:0px;padding-right:0px;}.md\:pb-0{padding-bottom:0px;}.md\:pr-1{padding-right:0.25rem;}.md\:pt-0{padding-top:0px;}.md\:text-2xl{font-size:1.5rem;line-height:2rem;}.md\:text-\[13px\]{font-size:13px;}.md\:text-base{font-size:1rem;line-height:1.5rem;}.md\:text-sm{font-size:0.875rem;line-height:1.25rem;}.md\:text-xl{font-size:1.25rem;line-height:1.75rem;}.md\:text-xs{font-size:0.75rem;line-height:1rem;}}@media (min-width:1024px){.lg\:inline{display:inline;}}@media (min-width:1280px){.xl\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}}</style></head>
 <body>
     <div class="hacker-bg"></div>
     <div class="hacker-scanline"></div>
@@ -18602,6 +19309,53 @@ const NODE_SECTION = {
   logs: 'logs',
   ledger: 'ledger',
   banking: 'protocol'
+};
+const NODE_OWNER = {
+  logs: 'it',
+  ledger: 'finance',
+  banking: 'compliance'
+};
+const NODE_NO = {
+  logs: 1,
+  ledger: 2,
+  banking: 3
+};
+const PENDING_SCAN_KEY = 'dl_pending_scan';
+function readPendingScan() {
+  try {
+    const p = JSON.parse(localStorage.getItem(PENDING_SCAN_KEY) || 'null');
+    if (p && NODE_KEYS.includes(p.node) && Date.now() - (p.at || 0) < 12 * 3600 * 1000) return p;
+  } catch (e) {}
+  return null;
+}
+function clearPendingScan() {
+  try {
+    localStorage.removeItem(PENDING_SCAN_KEY);
+  } catch (e) {}
+}
+const SCAN_TEXT = {
+  en: {
+    keyLabel: 'Key question',
+    taskLabel: 'Your task',
+    station: 'Station',
+    clueReady: 'Clue received. Answer the key question to decrypt this node.',
+    scanTip: 'Scan this node\'s QR code at its station to receive the clue.',
+    scanMine: 'Node {n} scanned. Your clue is ready.',
+    scanTheirs: 'Node {n} scanned. The clue went to your team\'s {role} phones.',
+    scanJoin: 'Node {n} scanned. Join your team below to see the clue.',
+    offline: 'Can\'t reach the game server. Check your connection and try again.'
+  },
+  zh: {
+    keyLabel: '密钥问题',
+    taskLabel: '你的任务',
+    station: '站点',
+    clueReady: '已收到线索。回答密钥问题即可解密此节点。',
+    scanTip: '在对应站点扫描此节点的二维码，即可获得线索。',
+    scanMine: '已扫描节点 {n}，线索已送达。',
+    scanTheirs: '已扫描节点 {n}，线索已发送给队内「{role}」角色的手机。',
+    scanJoin: '已扫描节点 {n}。请先在下方加入小组，即可查看线索。',
+    offline: '无法连接游戏服务器，请检查网络后重试。'
+  }
 };
 const ROLE_META = {
   it: {
@@ -20318,6 +21072,9 @@ function QuestView() {
     puzzle3: []
   });
   const [verifyingPuzzleKey, setVerifyingPuzzleKey] = useState(null);
+  const [teamClues, setTeamClues] = useState([]);
+  const [sxToast, setSxToast] = useState(null);
+  const [pendingScan, setPendingScan] = useState(() => readPendingScan());
   const [lang, setLang] = useState(saved.lang || 'en');
   const [registered, setRegistered] = useState(!!saved.registered);
   const [groupNumber, setGroupNumber] = useState(saved.groupNumber || '');
@@ -20388,6 +21145,14 @@ function QuestView() {
   const [unlockError, setUnlockError] = useState(false);
   const [verifyingNode, setVerifyingNode] = useState(false);
   const t = dict[lang] || dict.en;
+  const SX = SCAN_TEXT[lang] || SCAN_TEXT.en;
+  const showSx = (msg, tone = 'info', ms = 5000) => {
+    setSxToast({
+      msg,
+      tone
+    });
+    if (ms) setTimeout(() => setSxToast(s => s && s.msg === msg ? null : s), ms);
+  };
   const config = readGameConfig(appData && appData.game);
   const group = normalizeGroup(groupNumber);
   const nodeLockoutTimer = Math.max(0, Math.ceil((nodeLockoutUntil - now) / 1000));
@@ -20479,55 +21244,12 @@ function QuestView() {
         const parsed = parseInfoTxt(await res.text());
         setAppData(parsed);
         dataLoaded = true;
-        const fb1 = parsed.supabase.FALLBACK_NODE1_KEY || '';
-        const fb2 = parsed.supabase.FALLBACK_NODE2_KEY || '';
-        const fb3 = parsed.supabase.FALLBACK_NODE3_KEY || '';
-        setNodePasswords({
-          logs: fb1 ? [fb1] : [],
-          ledger: fb2 ? [fb2] : [],
-          banking: fb3 ? [fb3, fb3.replace(/\s+/g, '')] : []
-        });
-        if (parsed.overrideAnswers && Object.keys(parsed.overrideAnswers).length > 0) {
-          setOverrideCodes(prev => ({
-            ...prev,
-            ...parsed.overrideAnswers
-          }));
-        }
         const sbUrl = parsed.supabase.SUPABASE_URL;
         const sbKey = parsed.supabase.SUPABASE_ANON_KEY;
         if (sbUrl && sbKey && !sbUrl.includes('your-project-id') && window.supabase) {
-          const client = window.supabase.createClient(sbUrl, sbKey);
+          const client = window.DLH && window.DLH.supabase && window.DLH.supabase(sbUrl, sbKey) || window.supabase.createClient(sbUrl, sbKey);
           setSbClient(client);
-          const {
-            data: nodeData,
-            error: nodeErr
-          } = await client.from('sunrise_nodes').select('node_key, password');
-          if (!nodeErr && nodeData && nodeData.length > 0) {
-            const supaNodes = {};
-            nodeData.forEach(row => {
-              if (row.node_key && row.password) supaNodes[row.node_key] = [row.password, row.password.replace(/\s+/g, '')];
-            });
-            setNodePasswords(prev => ({
-              ...prev,
-              ...supaNodes
-            }));
-            setSbConnected(true);
-          }
-          const {
-            data: haltData,
-            error: haltErr
-          } = await client.from('sunrise_override_codes').select('puzzle_key, accepted_answers');
-          if (!haltErr && haltData && haltData.length > 0) {
-            const supaHalt = {};
-            haltData.forEach(row => {
-              if (row.puzzle_key && row.accepted_answers) supaHalt[row.puzzle_key] = row.accepted_answers.split('|').map(s => s.trim()).filter(Boolean);
-            });
-            setOverrideCodes(prev => ({
-              ...prev,
-              ...supaHalt
-            }));
-            setSbConnected(true);
-          }
+          setSbConnected(true);
         }
       } catch (err) {
         console.error("Error loading info.txt or Supabase:", err);
@@ -20591,9 +21313,6 @@ function QuestView() {
       const ts = Date.now();
       setFinishedAt(ts);
       if (!completionTime) setCompletionTime(formatUTC8Time(new Date(ts)));
-      logEvent('finish', '', {
-        elapsed: elapsedSecAt(ts)
-      });
     }
   }, [allPuzzlesSolved, finishedAt, appData]);
   useEffect(() => () => {
@@ -20684,6 +21403,82 @@ function QuestView() {
       clearInterval(again);
     };
   }, [finishedAt, sbClient, group]);
+  const unlockedRef = useRef(unlockedNodes);
+  unlockedRef.current = unlockedNodes;
+  const roleRef = useRef(role);
+  roleRef.current = role;
+  useEffect(() => {
+    if (registered || !pendingScan) return;
+    showSx(fmt(SX.scanJoin, {
+      n: NODE_NO[pendingScan.node]
+    }), 'info', 0);
+  }, [registered, pendingScan, lang]);
+  useEffect(() => {
+    if (!registered || !sbClient || !group) return;
+    let alive = true,
+      busy = false;
+    const wantsClues = () => NODE_KEYS.some(k => !unlockedRef.current[k] && (!config.roleMode || NODE_OWNER[k] === roleRef.current));
+    const pull = async force => {
+      if (busy) return;
+      const p = readPendingScan();
+      if (!p && !force && !wantsClues()) return;
+      busy = true;
+      try {
+        const base = {
+          p_session: config.session,
+          p_group: group,
+          p_role: role || null
+        };
+        const {
+          data,
+          error
+        } = p ? await sbClient.rpc('sunrise_scan', {
+          ...base,
+          p_node: p.node,
+          p_client: clientId,
+          p_elapsed: elapsedSecAt(Date.now()),
+          p_secrets: secretsRef.current.length
+        }) : await sbClient.rpc('sunrise_team_clues', base);
+        if (!alive || error || !Array.isArray(data)) return;
+        setTeamClues(data);
+        if (p) {
+          clearPendingScan();
+          setPendingScan(null);
+          const mine = !config.roleMode || NODE_OWNER[p.node] === role;
+          if (mine) {
+            setActiveTab(p.node);
+            setUnlockInput('');
+            showSx(fmt(SX.scanMine, {
+              n: NODE_NO[p.node]
+            }), 'ok');
+          } else showSx(fmt(SX.scanTheirs, {
+            n: NODE_NO[p.node],
+            role: roleName(t, NODE_OWNER[p.node])
+          }), 'info', 7000);
+        }
+      } catch (e) {} finally {
+        busy = false;
+      }
+    };
+    pull(true);
+    const tick = setInterval(() => {
+      if (!document.hidden) pull(false);
+    }, 20000);
+    const onVis = () => {
+      if (!document.hidden) pull(false);
+    };
+    const onStore = ev => {
+      if (ev.key === PENDING_SCAN_KEY && ev.newValue) pull(true);
+    };
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('storage', onStore);
+    return () => {
+      alive = false;
+      clearInterval(tick);
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('storage', onStore);
+    };
+  }, [registered, sbClient, group, role, appData]);
   const getNextFreezeThreshold = strikes => {
     if (strikes < 5) return 5;
     if (strikes < 8) return 8;
@@ -20691,8 +21486,8 @@ function QuestView() {
     if (strikes < 15) return 15;
     return Math.ceil((strikes + 1) / 5) * 5;
   };
-  const applyHaltStrike = key => {
-    logEvent('strike', key);
+  const applyHaltStrike = (key, serverLogged = false) => {
+    if (!serverLogged) logEvent('strike', key);
     if (config.strikePenaltySec > 0) {
       setPenaltyToast(fmt(t.strikePenaltyToast, {
         cost: formatClock(config.strikePenaltySec)
@@ -20777,30 +21572,38 @@ function QuestView() {
   };
 
   // ─── Node unlock ───
+  const rpcArgs = () => ({
+    p_session: config.session,
+    p_group: group || '',
+    p_role: role || null,
+    p_client: clientId,
+    p_elapsed: elapsedSecAt(Date.now()),
+    p_secrets: secretsRef.current.length
+  });
   const handleUnlock = async (e, nodeKey) => {
     e.preventDefault();
     if (nodeLockoutTimer > 0 || verifyingNode) return;
+    if (!(unlockInput || '').trim()) return;
     setVerifyingNode(true);
-    let expectedList = nodePasswords[nodeKey] || [];
+    let isMatch = null;
     if (sbClient) {
       try {
         const {
           data,
           error
-        } = await sbClient.from('sunrise_nodes').select('password').eq('node_key', nodeKey).maybeSingle();
-        if (!error && data && data.password) {
-          expectedList = [data.password, data.password.replace(/\s+/g, '')];
-          setSbConnected(true);
-        }
+        } = await sbClient.rpc('sunrise_check_node', {
+          ...rpcArgs(),
+          p_node: nodeKey,
+          p_answer: unlockInput
+        });
+        if (!error) isMatch = data === true;
       } catch (err) {}
     }
     setVerifyingNode(false);
-    const cleanInput = (unlockInput || '').trim().toUpperCase().replace(/,/g, '');
-    const noSpaceInput = cleanInput.replace(/\s+/g, '');
-    const isMatch = expectedList.some(ans => {
-      const cleanAns = ans.toUpperCase().trim().replace(/,/g, '');
-      return cleanInput === cleanAns || noSpaceInput === cleanAns.replace(/\s+/g, '');
-    });
+    if (isMatch === null) {
+      showSx(SX.offline, 'warn');
+      return;
+    }
     if (isMatch) {
       setUnlockError(false);
       setUnlockInput('');
@@ -20811,7 +21614,6 @@ function QuestView() {
       };
       setUnlockedNodes(next);
       setBeatQueue(q => [...q, nodeKey, ...(NODE_KEYS.every(k => next[k]) ? ['all'] : [])]);
-      logEvent('node', nodeKey);
       if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     } else {
       setUnlockError(true);
@@ -20887,26 +21689,26 @@ function QuestView() {
       return;
     }
     setVerifyingPuzzleKey(key);
-    let acceptedAnswers = overrideCodes[key] || [];
+    let res = null;
     if (sbClient) {
       try {
         const {
           data,
           error
-        } = await sbClient.from('sunrise_override_codes').select('accepted_answers').eq('puzzle_key', key).maybeSingle();
-        if (!error && data && data.accepted_answers) {
-          acceptedAnswers = data.accepted_answers.split('|').map(s => s.trim()).filter(Boolean);
-          setOverrideCodes(prev => ({
-            ...prev,
-            [key]: acceptedAnswers
-          }));
-          setSbConnected(true);
-        }
+        } = await sbClient.rpc('sunrise_check_puzzle', {
+          ...rpcArgs(),
+          p_puzzle: key,
+          p_answer: rawVal
+        });
+        if (!error && data && typeof data === 'object') res = data;
       } catch (err) {}
     }
     setVerifyingPuzzleKey(null);
-    const isMatch = (acceptedAnswers || []).some(ans => userVal === ans.toUpperCase().trim().replace(/[#\-_/]/g, '').replace(/\s+/g, ''));
-    if (isMatch) {
+    if (!res) {
+      showSx(SX.offline, 'warn');
+      return;
+    }
+    if (res.ok) {
       setSolvedPuzzles(prev => ({
         ...prev,
         [key]: true
@@ -20915,7 +21717,6 @@ function QuestView() {
         ...prev,
         [key]: false
       }));
-      logEvent('puzzle', key);
     } else {
       setPuzzleErrors(prev => ({
         ...prev,
@@ -20925,7 +21726,7 @@ function QuestView() {
         ...prev,
         [key]: false
       })), 1500);
-      applyHaltStrike(key);
+      applyHaltStrike(key, true);
     }
   };
 
@@ -21145,7 +21946,16 @@ function QuestView() {
   if (!registered) {
     return /*#__PURE__*/React.createElement("div", {
       className: "safe-pad scroll-area relative z-10 h-full w-full overflow-y-auto"
-    }, /*#__PURE__*/React.createElement("form", {
+    }, sxToast && /*#__PURE__*/React.createElement("div", {
+      className: `toast-in fixed left-1/2 z-[60] flex max-w-[92vw] items-start gap-2 rounded-2xl border px-4 py-2.5 text-xs font-semibold shadow-2xl ${sxToast.tone === 'warn' ? 'border-red-500 bg-red-950/95 text-red-200' : sxToast.tone === 'ok' ? 'border-deloitte-green bg-slate-950/95 text-deloitte-green' : 'border-cyan-400 bg-slate-950/95 text-cyan-200'}`,
+      style: {
+        top: 'calc(var(--safe-t) + 12px)'
+      },
+      role: "status",
+      onClick: () => setSxToast(null)
+    }, /*#__PURE__*/React.createElement("i", {
+      className: `fa-solid ${sxToast.tone === 'warn' ? 'fa-circle-exclamation' : 'fa-qrcode'} mt-0.5 shrink-0`
+    }), /*#__PURE__*/React.createElement("span", null, sxToast.msg)), /*#__PURE__*/React.createElement("form", {
       onSubmit: startMission,
       className: "pop-in mx-auto w-full max-w-md py-2"
     }, /*#__PURE__*/React.createElement("div", {
@@ -21316,6 +22126,29 @@ function QuestView() {
   };
 
   // ─── Unlock screen ───
+  const clueFor = nodeKey => teamClues.find(c => c && c.node === nodeKey) || null;
+  const clueText = (c, f) => (lang === 'zh' ? c[f + '_zh'] || c[f + '_en'] : c[f + '_en'] || c[f + '_zh']) || '';
+  const renderClueCard = c => /*#__PURE__*/React.createElement("div", {
+    className: "mb-5 space-y-2.5 text-left"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rounded-xl border border-deloitte-green/40 bg-deloitte-green/10 p-3.5"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "caps mb-1.5 flex items-center justify-between gap-2 font-mono text-[10px] text-deloitte-green"
+  }, /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-key mr-1.5"
+  }), SX.keyLabel), c.station ? /*#__PURE__*/React.createElement("span", {
+    className: "text-slate-400"
+  }, SX.station, " ", c.station) : null), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm font-semibold leading-relaxed text-white"
+  }, clueText(c, 'key'))), /*#__PURE__*/React.createElement("div", {
+    className: "rounded-xl border border-slate-700/80 bg-slate-900/80 p-3.5"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "caps mb-1.5 font-mono text-[10px] text-cyan-300"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-crosshairs mr-1.5"
+  }), SX.taskLabel), /*#__PURE__*/React.createElement("p", {
+    className: "text-sm leading-relaxed text-slate-200"
+  }, clueText(c, 'task'))));
   const renderUnlock = (title, hint, nodeKey) => /*#__PURE__*/React.createElement("div", {
     className: "fade-in flex min-h-full items-center justify-center py-4"
   }, /*#__PURE__*/React.createElement("div", {
@@ -21333,8 +22166,10 @@ function QuestView() {
   }), sbConnected ? 'SUPABASE AUTH GATEWAY' : 'ENCRYPTED NODE GATEWAY'), /*#__PURE__*/React.createElement("h2", {
     className: "mb-1.5 text-lg font-bold text-white md:text-xl"
   }, title), /*#__PURE__*/React.createElement("p", {
-    className: "mb-6 text-sm leading-relaxed text-slate-400"
-  }, hint), nodeLockoutTimer > 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "mb-5 text-sm leading-relaxed text-slate-400"
+  }, clueFor(nodeKey) ? SX.clueReady : /*#__PURE__*/React.createElement(React.Fragment, null, hint, " ", /*#__PURE__*/React.createElement("span", {
+    className: "text-slate-500"
+  }, SX.scanTip))), clueFor(nodeKey) && renderClueCard(clueFor(nodeKey)), nodeLockoutTimer > 0 ? /*#__PURE__*/React.createElement("div", {
     className: "rounded-xl border border-red-500/80 bg-red-950/80 p-4",
     role: "alert"
   }, /*#__PURE__*/React.createElement("p", {
@@ -22430,7 +23265,15 @@ function QuestView() {
   const renderNode = (nodeKey, title, hint, renderFn) => {
     if (!unlockedNodes[nodeKey]) return renderUnlock(title, hint, nodeKey);
     if (!canSee(NODE_SECTION[nodeKey])) return renderRestrictedNode(nodeKey, title);
-    return renderFn();
+    const c = clueFor(nodeKey);
+    if (!c) return renderFn();
+    return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      className: "fade-in mb-4 flex items-start gap-2.5 rounded-xl border border-cyan-400/30 bg-cyan-950/40 p-3 text-sm text-cyan-100"
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "fa-solid fa-crosshairs mt-0.5 shrink-0 text-cyan-300"
+    }), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", {
+      className: "caps mr-1.5 font-mono text-[10px] text-cyan-300"
+    }, SX.taskLabel), clueText(c, 'task'))), renderFn());
   };
   const renderContent = () => {
     if (activeTab === 'hub') {
@@ -22507,7 +23350,16 @@ function QuestView() {
     proof: proof,
     t: t,
     onClose: () => setProof(null)
-  }), secretToast && /*#__PURE__*/React.createElement("div", {
+  }), sxToast && /*#__PURE__*/React.createElement("div", {
+    className: `toast-in fixed left-1/2 z-[60] flex max-w-[92vw] items-start gap-2 rounded-2xl border px-4 py-2.5 text-xs font-semibold shadow-2xl ${sxToast.tone === 'warn' ? 'border-red-500 bg-red-950/95 text-red-200' : sxToast.tone === 'ok' ? 'border-deloitte-green bg-slate-950/95 text-deloitte-green' : 'border-cyan-400 bg-slate-950/95 text-cyan-200'}`,
+    style: {
+      top: 'calc(var(--safe-t) + 12px)'
+    },
+    role: "status",
+    onClick: () => setSxToast(null)
+  }, /*#__PURE__*/React.createElement("i", {
+    className: `fa-solid ${sxToast.tone === 'warn' ? 'fa-circle-exclamation' : 'fa-qrcode'} mt-0.5 shrink-0`
+  }), /*#__PURE__*/React.createElement("span", null, sxToast.msg)), secretToast && /*#__PURE__*/React.createElement("div", {
     className: "toast-in fixed left-1/2 z-[60] flex items-center gap-2 rounded-full border border-amber-400 bg-slate-950/95 px-4 py-2 font-mono text-xs font-bold text-amber-300 shadow-[0_0_25px_rgba(251,191,36,0.3)]",
     style: {
       top: 'calc(var(--safe-t) + 12px)'
@@ -22697,6 +23549,43 @@ if (rootContainer) ReactDOM.createRoot(rootContainer).render(/*#__PURE__*/React.
   };
   if (!H) return;
 
+  // ---------- language: follow the site-wide setting ----------
+  if (H.lang) {
+    var navLang = function () { var l = H.lang(); return l === 'en' ? 'en-US' : l === 'zh-Hant' ? 'zh-HK' : 'zh-CN'; };
+    try {
+      Object.defineProperty(navigator, 'language', { get: navLang, configurable: true });
+      Object.defineProperty(navigator, 'languages', { get: function () { return [navLang()]; }, configurable: true });
+    } catch (e) {}
+    // When a page's own language button is used, tell the rest of the site.
+    var LANG_KEYS = { participant_lang: 1, admin_lang: 1, kc_live_lang: 1, deloitte_journey_lang: 1 };
+    var wantFrom = function (two) { return two === 'en' ? 'en' : (H.lang() === 'zh-Hant' ? 'zh-Hant' : 'zh-Hans'); };
+    try {
+      var protoSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) {
+        protoSet.call(this, k, v);
+        try {
+          if (this !== window.localStorage) return;
+          var two = null;
+          if (LANG_KEYS[k] && (v === 'zh' || v === 'en')) two = v;
+          else if (k === 'PROJECT_SUNRISE_STATE_V3') { var o = JSON.parse(v); if (o && (o.lang === 'zh' || o.lang === 'en')) two = o.lang; }
+          if (two && wantFrom(two) !== H.lang()) H.setLang(wantFrom(two), window);
+        } catch (e) {}
+      };
+    } catch (e) {}
+    // Traditional Chinese is drawn from the Simplified text, live.
+    var hantDom = null;
+    var syncHant = function (l, prev) {
+      if (l === 'zh-Hant') {
+        if (!hantDom && window.DLHantDOM && H.toHant) hantDom = DLHantDOM(H.toHant);
+        if (hantDom) { if (document.body) hantDom.start(); else document.addEventListener('DOMContentLoaded', function () { hantDom.start(); }); }
+      } else if (prev === 'zh-Hant' && hantDom && hantDom.isOn()) {
+        location.reload();
+      }
+    };
+    syncHant(H.lang());
+    if (H.onLang) H.onLang(syncHant, window);
+  }
+
   var nativeFetch = window.fetch;
   // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
   // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
@@ -22853,7 +23742,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             title: 'Project Sunrise · Live Leaderboard', session: 'Session', colGroup: 'Group', colProgress: 'Progress',
             colSecrets: 'Secrets', colTime: 'Time', feed: 'Live Feed', empty: 'Waiting for the first team to join…',
             clockSettles: 'Wire settles in', clockOvertime: 'Settled · overtime', clockNow: 'Local time',
-            connected: 'Live', polling: 'Updating every 15s', noSupabase: 'Supabase not configured in info.txt', loadFail: 'Could not load info.txt',
+            connected: 'Live', polling: 'Updating every 10s', noSupabase: 'Supabase not configured in info.txt', loadFail: 'Could not load info.txt',
             halted: 'HALTED', join: (g, r) => `${g} joined${r ? ' · ' + r : ''}`,
             node: (g, n) => `${g} just decrypted Node ${n}`, puzzle: (g, n) => `${g} cracked override ${n}/3`,
             secret: (g, c) => `${g} found a secret (${c}/${SECRET_TOTAL})`, finish: (g, tm) => `${g} HALTED THE WIRE in ${tm}!`,
@@ -22864,7 +23753,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             title: '日出计划 · 实时排行榜', session: '场次', colGroup: '小组', colProgress: '进度',
             colSecrets: '彩蛋', colTime: '用时', feed: '实时动态', empty: '等待第一支队伍加入…',
             clockSettles: '汇款到账倒计时', clockOvertime: '已到账 · 超时', clockNow: '当前时间',
-            connected: '实时', polling: '每 15 秒更新', noSupabase: 'info.txt 中未配置 Supabase', loadFail: '无法读取 info.txt',
+            connected: '实时', polling: '每 10 秒更新', noSupabase: 'info.txt 中未配置 Supabase', loadFail: '无法读取 info.txt',
             halted: '已拦截', join: (g, r) => `${g} 已加入${r ? ' · ' + r : ''}`,
             node: (g, n) => `${g} 刚刚解密了节点 ${n}`, puzzle: (g, n) => `${g} 破解了覆盖代码 ${n}/3`,
             secret: (g, c) => `${g} 发现了一个彩蛋（${c}/${SECRET_TOTAL}）`, finish: (g, tm) => `${g} 拦截成功！用时 ${tm}`,
@@ -23114,7 +24003,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sunrise_events', filter: `session=eq.${config.session}` }, (payload) => addEvents([payload.new]))
             .subscribe((status) => { statusKey = status === 'SUBSCRIBED' ? 'connected' : 'polling'; render(); });
 
-        setInterval(fetchAll, 15000); // full re-read: catches missed realtime events and resets
+        const fetchNew = async () => {
+            if (sweeping) return;
+            const maxId = events.reduce((m, e) => Math.max(m, Number(e.id) || 0), 0);
+            const { data, error } = await client.from('sunrise_events').select('*').eq('session', config.session)
+                .gt('id', maxId).order('id', { ascending: true }).limit(1000);
+            if (!error && data) addEvents(data);
+        };
+        let ticks = 0;
+        setInterval(() => { ticks++; if (ticks % 12 === 0) fetchAll(); else fetchNew(); }, 10000);
     }
 
     $('langBtn').addEventListener('click', () => { lang = lang === 'en' ? 'zh' : 'en'; render(); tickClock(); });
@@ -23146,9 +24043,6 @@ SUPABASE_URL = https://pwnvkrrnxbpxignynvuh.supabase.co
 SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ
 
 # Fallback passwords (used automatically if Supabase is not configured yet)
-FALLBACK_NODE1_KEY = 1917
-FALLBACK_NODE2_KEY = GUARDIAN
-FALLBACK_NODE3_KEY = TOGETHER MAKES PROGRESS
 
 
 [GAME]
@@ -23716,11 +24610,6 @@ pTier5 | pCapAny       | pJur3 | SWIFT-EDD | pAnom6 | LOCKDOWN-GLOBAL-SANCTION |
 pTier5 | > $5,000,000  | pJur3 | FEDWIRE   | pAnom4 | TERMINATE-SESSION-DIRECT | GATE-OFAC-LOCKDOWN  | HASH-9915
 
 
-[OVERRIDE_ANSWERS]
-# HALT TRANSACTION — ACCEPTED OVERRIDE ANSWERS (Separated by |)
-puzzle1 | MARCUS BERGSTROM | MARCUS B. | M. BERGSTROM
-puzzle2 | TXN-8824 | TXN8824
-puzzle3 | VOID-WIRE-INTERCEPT | VOID WIRE INTERCEPT | VOIDWIREINTERCEPT | VOID-WIRE | VOID WIRE | VOIDWIRE
 </script>
 <script type="text/x-dl-module" id="dlm-hubinfo"># ==============================================================================
 # DELOITTELAND PARTICIPANT HUB - TEXT & MODERATION CONFIGURATION (info.txt)
@@ -23859,17 +24748,29 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
   var KEEP_ALIVE = 5;
   var SB_URL = 'https://pwnvkrrnxbpxignynvuh.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ';
-  // Staff lists come from src/patches.js at build time, so the shell, the admin console and the
-  // station login gates share one set of rules. Accounts on neither list are refused.
-  var SUPER_ADMINS = ["admin@deloitte.com.cn","weimeng@deloitte.com.cn","zhischen@deloitte.com.cn"];
-  var HOSTS = ["faculty@deloitte.com.cn","station@deloitte.com.cn","hr@deloitte.com.cn","org@deloitte.com.cn","rrg@deloitte.com.cn"];
-  var HOST_RE = /^(faculty|station)[a-z0-9._-]*@deloitte\.com\.cn$/;
+  // Who is staff is decided by the database (dl_my_role), so this public page carries no staff emails.
+  // The answer is remembered for the signed-in email only; every other account counts as a participant.
+  var ROLE_KEY = 'dl_staff_role';
+  var roleCache = (function () { try { var o = JSON.parse(localStorage.getItem(ROLE_KEY) || 'null'); return o && o.e && o.r ? o : null; } catch (e) { return null; } })();
   function roleOf(email) {
     var em = String(email || '').trim().toLowerCase();
-    if (!em) return null;
-    if (SUPER_ADMINS.indexOf(em) >= 0) return 'super';
-    if (HOSTS.indexOf(em) >= 0 || (HOST_RE && HOST_RE.test(em))) return 'host';
-    return null;
+    if (!em || !roleCache || roleCache.e !== em) return null;
+    return roleCache.r === 'super' || roleCache.r === 'host' ? roleCache.r : null;
+  }
+  function setRole(email, role) {
+    roleCache = role ? { e: String(email || '').trim().toLowerCase(), r: role } : null;
+    try { if (roleCache) localStorage.setItem(ROLE_KEY, JSON.stringify(roleCache)); else localStorage.removeItem(ROLE_KEY); } catch (e) {}
+  }
+  // Resolves to 'super' | 'host' | null; rejects only when the database can't be reached.
+  function fetchRole(s) {
+    var email = s && s.user && s.user.email;
+    if (!sb || !email) return Promise.resolve(null);
+    return sb.rpc('dl_my_role').then(function (res) {
+      if (res.error) throw res.error;
+      var r = res.data === 'super' || res.data === 'host' ? res.data : null;
+      setRole(email, r);
+      return r;
+    });
   }
 
   var C = { driver: '#86BC25', integrator: '#14B8A6', pioneer: '#00A3E0', guardian: '#A855F7', warn: '#F59E0B' };
@@ -24099,6 +25000,35 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
         emitLinks();
       }, function () {});
   }
+  // ---------- one status call (dl_pulse) for the shell and the hub ----------
+  var pulse = { data: null, at: 0 }, pulseListeners = [], pulseOk = null;
+  function loadPulse() {
+    if (!sb || pulseOk === false) return Promise.resolve(false);
+    return sb.rpc('dl_pulse').then(function (res) {
+      if (res.error) { if (/dl_pulse|PGRST202|42883|schema cache/i.test((res.error.message || '') + ' ' + (res.error.code || ''))) pulseOk = false; return false; }
+      var d = res.data || {};
+      pulseOk = true; pulse = { data: d, at: Date.now() };
+      visMeta.missing = false;
+      setVis(d.vis || {});
+      links = Array.isArray(d.links) ? d.links : [];
+      store('dl_suite_links', JSON.stringify(links));
+      emitLinks();
+      pulseListeners = pulseListeners.filter(function (l) {
+        try { if (l.win && (l.win.closed || !l.win.document)) return false; l.fn(d); return true; } catch (e) { return false; }
+      });
+      return true;
+    }, function () { return false; });
+  }
+  function refreshStatus() {
+    return loadPulse().then(function (ok) {
+      if (ok) return;
+      loadVis(); loadLinks();
+      // No status call: each page reads for itself.
+      pulseListeners = pulseListeners.filter(function (l) {
+        try { if (l.win && (l.win.closed || !l.win.document)) return false; l.fn(null); return true; } catch (e) { return false; }
+      });
+    });
+  }
   function loadAllLinks() {
     if (!sb) return Promise.resolve();
     return sb.from('portal_links').select('*').order('pushed_at', { ascending: false }).limit(100).then(function (res) {
@@ -24167,6 +25097,12 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
     allowed: function (r) { return allowedRoute(r); },
     deniedText: function () { return T.zh.errNoRole + ' / ' + T.en.errNoRole; },
     onVis: function (fn, win) { visListeners.push({ fn: fn, win: win || null }); try { fn(Object.assign({}, vis)); } catch (e) {} },
+    // Pages share this window's status call. (Each page keeps its own Supabase client here:
+    // staff pages sign in and out, and frames are rebuilt on sign-out.)
+    pulse: {
+      on: function (fn, win) { pulseListeners.push({ fn: fn, win: win || null }); },
+      refresh: refreshStatus
+    },
     map: function (href) {
       if (!href) return null;
       if (/^#\//.test(href)) return resolveRoute(href.slice(2).split('?')[0]);
@@ -24480,8 +25416,8 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
       showPage('links'); linksMeta.ok = ''; linksMeta.err = ''; renderLinks(); loadAllLinks(); return;
     }
     var base = ALIAS[route] || route;
-    if (base === 'hub' || canOpen(route)) { showModule(route); return; }
-    if (!staffRole() && participantAllowed(base)) { showModule(route); return; }
+    if (base === 'hub' || canOpen(route)) { if (!staffRole() && !EMBED && window.DLConsent) DLConsent.require(); showModule(route); return; }
+    if (!staffRole() && participantAllowed(base)) { if (!EMBED && window.DLConsent) DLConsent.require(); showModule(route); return; }
     if (!staffRole()) {
       if (modById(base) && modById(base).vis) { if (EMBED) { showModule(route); return; } toast(t('notVisible')); navigate('hub'); return; }
       pendingNext = route; showPage('login'); return;
@@ -24533,19 +25469,20 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
         msg.textContent = /fetch|network|Failed/i.test(m) && !/Invalid/i.test(m) ? t('errNet') : t('errCreds');
         msg.hidden = false; return;
       }
-      if (!roleOf(res.data.session.user && res.data.session.user.email)) {
-        msg.textContent = t('errNoRole'); msg.hidden = false;
-        sb.auth.signOut();
-        return;
-      }
-      session = res.data.session; $('loginPw').value = '';
-      dropAllFrames();
-      var next = pendingNext; pendingNext = null;
-      navigate(next && (canOpen(next) || next === 'visibility' || next === 'links') ? next : 'staff');
+      var fresh = res.data.session;
+      btn.disabled = true;
+      return fetchRole(fresh).then(function (role) {
+        btn.disabled = false;
+        if (!role) { setRole(null); msg.textContent = t('errNoRole'); msg.hidden = false; sb.auth.signOut(); return; }
+        session = fresh; $('loginPw').value = '';
+        dropAllFrames();
+        var next = pendingNext; pendingNext = null;
+        navigate(next && (canOpen(next) || next === 'visibility' || next === 'links') ? next : 'staff');
+      }, function () { btn.disabled = false; setRole(null); msg.textContent = t('errNet'); msg.hidden = false; sb.auth.signOut(); });
     }, function () { btn.disabled = false; btn.querySelector('span').textContent = t('signIn'); msg.textContent = t('errNet'); msg.hidden = false; });
   });
   $('signOutBtn').addEventListener('click', function () {
-    var done = function () { session = null; dropAllFrames(); navigate('start'); };
+    var done = function () { session = null; setRole(null); dropAllFrames(); navigate('start'); };
     if (sb) sb.auth.signOut().then(done, done); else done();
   });
   $('homeBtn').addEventListener('click', function () { navigate(staffRole() ? 'staff' : 'start'); });
@@ -24569,9 +25506,9 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
     if (session && !staffRole()) { session = null; try { sb.auth.signOut(); } catch (e) {} }
     apply();
     pollLive();
-    loadVis();
-    loadLinks();
-    setInterval(function () { if (!document.hidden) { loadVis(); loadLinks(); } }, 15000);
+    refreshStatus();
+    setInterval(function () { if (!document.hidden) refreshStatus(); }, 15000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && Date.now() - pulse.at > 8000) refreshStatus(); });
     setInterval(function () { if (route === 'start' && !document.hidden) { renderSlots(); pollLive(); } }, 60000);
     if (sb) {
       try {
@@ -24590,7 +25527,12 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
     }
   }
   if (sb) {
-    sb.auth.getSession().then(function (res) { session = res && res.data && res.data.session || null; boot(); }, function () { boot(); });
+    sb.auth.getSession().then(function (res) {
+      session = res && res.data && res.data.session || null;
+      if (!session) { setRole(null); boot(); return; }
+      // Re-check the stored session with the database; offline, the remembered answer for this email stands.
+      fetchRole(session).then(function () { boot(); }, function () { boot(); });
+    }, function () { boot(); });
   } else boot();
 })();
 </script>
