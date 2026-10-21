@@ -33,7 +33,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
 <script>(function () {
   // Participant notice and consent. Shown once per phone (per version) before anyone joins a team or posts.
   // Stored only on this phone: { v, at, lang }. Bump VERSION when the text changes materially.
-  var VERSION = '2026-10-a';
+  var VERSION = '2026-10-b';
   var KEY = 'dl_consent';
   var TXT = {
     en: {
@@ -43,7 +43,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
         ['fa-user-secret', 'Use a nickname', 'We never ask for your full name, staff ID, phone number or email, so please don’t type them anywhere in the game.'],
         ['fa-shield-halved', 'Keep it fictional', 'Every company, person and transaction in the game is made up. Never enter client names, client data or anything confidential.'],
         ['fa-bullhorn', 'Some things are public', 'Wall messages and D-Rush names are shown to everyone at the event, including on the big screen.'],
-        ['fa-database', 'What we save', 'Your nickname, team number, game progress and messages, on this phone and in the game’s cloud database (Supabase, hosted in Seoul, South Korea). They’re kept for this event only.']
+        ['fa-database', 'What we save', 'Your nickname, team number, game progress and messages, on this phone and in the game’s cloud database (Supabase, hosted in Seoul, South Korea). They’re deleted one week after the event.']
       ],
       small: 'Fonts and app code load from public networks (jsDelivr, cdnjs). Questions? Ask a facilitator.',
       check: 'I’ve read this and agree, including my game data being stored outside mainland China.',
@@ -58,7 +58,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
         ['fa-user-secret', '请使用昵称', '我们不会索取你的全名、员工编号、手机号或邮箱，也请不要在游戏中输入这些信息。'],
         ['fa-shield-halved', '内容均为虚构', '游戏中的公司、人物和交易都是虚构的。请勿输入任何客户名称、客户数据或保密信息。'],
         ['fa-bullhorn', '部分内容公开可见', '留言墙内容和 D-Rush 昵称会向全场展示，包括大屏幕。'],
-        ['fa-database', '我们保存的信息', '你的昵称、组号、游戏进度和留言，会保存在本机及游戏云数据库（Supabase，服务器位于韩国首尔），仅用于本次活动。']
+        ['fa-database', '我们保存的信息', '你的昵称、组号、游戏进度和留言，会保存在本机及游戏云数据库（Supabase，服务器位于韩国首尔），仅用于本次活动，并于活动结束一周后删除。']
       ],
       small: '字体和程序代码由公共网络（jsDelivr、cdnjs）加载。如有疑问，请咨询现场工作人员。',
       check: '我已阅读并同意，包括游戏数据存储于中国大陆境外。',
@@ -73,7 +73,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
         ['fa-user-secret', '請使用暱稱', '我們不會索取你的全名、員工編號、手機號碼或電郵，也請不要在遊戲中輸入這些資料。'],
         ['fa-shield-halved', '內容均屬虛構', '遊戲中的公司、人物和交易都是虛構的。請勿輸入任何客戶名稱、客戶資料或機密資訊。'],
         ['fa-bullhorn', '部分內容公開可見', '留言牆內容和 D-Rush 暱稱會向全場展示，包括大屏幕。'],
-        ['fa-database', '我們保存的資料', '你的暱稱、組號、遊戲進度和留言，會保存在本機及遊戲雲端資料庫（Supabase，伺服器位於韓國首爾），只用於今次活動。']
+        ['fa-database', '我們保存的資料', '你的暱稱、組號、遊戲進度和留言，會保存在本機及遊戲雲端資料庫（Supabase，伺服器位於韓國首爾），只用於今次活動，並於活動結束一星期後刪除。']
       ],
       small: '字型和程式碼經公共網絡（jsDelivr、cdnjs）載入。如有疑問，請向現場工作人員查詢。',
       check: '我已閱讀並同意，包括遊戲資料儲存於中國內地以外地區。',
