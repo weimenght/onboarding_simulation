@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/800.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+<head><script>window.DL_MODULE="leaderboard";</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/800.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 ::selection{background:rgba(134,188,37,.35);color:#fff}</style>
     <meta charset="UTF-8">
@@ -296,14 +296,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     async function boot() {
         let cfg;
         try {
-            // info.txt next to this file wins; otherwise use the settings built into this page.
+            // The site's main info.txt (one folder up when this file is in /sunrise/) wins, then one next to this file.
             let text = '';
-            try {
-                const res = await fetch(`./info.txt?v=${Date.now()}`, { cache: 'no-store' });
-                const ct = (res.headers && res.headers.get('content-type')) || '';
-                if (res.ok && !/html/i.test(ct)) text = await res.text();
-            } catch (err) {}
-            cfg = parseConfig(text && /\[GAME\]/i.test(text) ? text : BUILT_IN_CONFIG);
+            for (const name of ['../info.txt', './info.txt']) {
+                try {
+                    const res = await fetch(`${name}?v=${Date.now()}`, { cache: 'no-store' });
+                    const ct = (res.headers && res.headers.get('content-type')) || '';
+                    const t = res.ok && !/html/i.test(ct) ? await res.text() : '';
+                    if (/^\s*\[GAME\]\s*$/im.test(t)) { text = t; break; }
+                } catch (err) {}
+            }
+            cfg = parseConfig(text || BUILT_IN_CONFIG);
         } catch (e) { statusKey = 'loadFail'; render(); return; }
 
         const start = cfg.GAME_START ? Date.parse(cfg.GAME_START) : NaN;

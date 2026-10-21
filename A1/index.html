@@ -35,7 +35,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
 
 <script type="text/x-dl-module" id="dlm-hub"><!DOCTYPE html>
 <html lang="zh-CN">
-<head><@@DLS@@>(function () {
+<head><@@DLS@@>window.DL_MODULE="hub";<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -67,23 +67,37 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
   if (!H) return;
 
   var nativeFetch = window.fetch;
+  // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
+  // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
+  // otherwise from the copy built into the HTML.
+  function infoTxt(input, init) {
+    var hub = window.DL_MODULE === 'hub';
+    var q = (String(input).match(/\?.*$/) || [''])[0];
+    var names = hub ? ['info.txt', 'A1/info.txt'] : ['../info.txt', 'info.txt'];
+    function fits(txt) {
+      var game = /^\s*\[(GAME|SUPABASE)\]\s*$/im.test(txt);
+      return hub ? (!game && /=/.test(txt)) : game;
+    }
+    function reply(txt) { return new Response(txt, { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }); }
+    function next(i) {
+      if (i >= names.length) return Promise.resolve(reply(hub ? (H.hubInfo ? H.hubInfo() : '') : H.info()));
+      var abs = H.resolve(names[i]);
+      if (!abs) return next(i + 1);
+      return nativeFetch.call(window, abs + q, init).then(function (r) {
+        var ct = (r.headers && r.headers.get('content-type')) || '';
+        return r.ok && !/html/i.test(ct) ? r.text() : null;
+      }).then(function (txt) { return txt && fits(txt) ? reply(txt) : next(i + 1); }, function () { return next(i + 1); });
+    }
+    return next(0);
+  }
   if (nativeFetch) {
     window.fetch = function (input, init) {
       try {
         if (typeof input === 'string' && !/^(?:[a-z][a-z0-9+.\-]*:|\/\/)/i.test(input)) {
           var isInfo = /(^|\/)info\.txt([?#]|$)/i.test(input);
+          if (isInfo) return infoTxt(input, init);
           var abs = H.resolve(input);
-          var p = abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
-          if (isInfo) {
-            return p.then(function (r) {
-              var ct = (r.headers && r.headers.get('content-type')) || '';
-              if (r.ok && !/html/i.test(ct)) return r;
-              throw new Error('fallback');
-            })['catch'](function () {
-              return new Response(H.info(), { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-            });
-          }
-          return p;
+          return abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
         }
       } catch (e) {}
       return nativeFetch.apply(window, arguments);
@@ -3591,7 +3605,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 </script>
 <script type="text/x-dl-module" id="dlm-game"><!DOCTYPE html>
 <html lang="en">
-<head><@@DLS@@>(function () {
+<head><@@DLS@@>window.DL_MODULE="game";<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -3623,23 +3637,37 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   if (!H) return;
 
   var nativeFetch = window.fetch;
+  // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
+  // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
+  // otherwise from the copy built into the HTML.
+  function infoTxt(input, init) {
+    var hub = window.DL_MODULE === 'hub';
+    var q = (String(input).match(/\?.*$/) || [''])[0];
+    var names = hub ? ['info.txt', 'A1/info.txt'] : ['../info.txt', 'info.txt'];
+    function fits(txt) {
+      var game = /^\s*\[(GAME|SUPABASE)\]\s*$/im.test(txt);
+      return hub ? (!game && /=/.test(txt)) : game;
+    }
+    function reply(txt) { return new Response(txt, { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }); }
+    function next(i) {
+      if (i >= names.length) return Promise.resolve(reply(hub ? (H.hubInfo ? H.hubInfo() : '') : H.info()));
+      var abs = H.resolve(names[i]);
+      if (!abs) return next(i + 1);
+      return nativeFetch.call(window, abs + q, init).then(function (r) {
+        var ct = (r.headers && r.headers.get('content-type')) || '';
+        return r.ok && !/html/i.test(ct) ? r.text() : null;
+      }).then(function (txt) { return txt && fits(txt) ? reply(txt) : next(i + 1); }, function () { return next(i + 1); });
+    }
+    return next(0);
+  }
   if (nativeFetch) {
     window.fetch = function (input, init) {
       try {
         if (typeof input === 'string' && !/^(?:[a-z][a-z0-9+.\-]*:|\/\/)/i.test(input)) {
           var isInfo = /(^|\/)info\.txt([?#]|$)/i.test(input);
+          if (isInfo) return infoTxt(input, init);
           var abs = H.resolve(input);
-          var p = abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
-          if (isInfo) {
-            return p.then(function (r) {
-              var ct = (r.headers && r.headers.get('content-type')) || '';
-              if (r.ok && !/html/i.test(ct)) return r;
-              throw new Error('fallback');
-            })['catch'](function () {
-              return new Response(H.info(), { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-            });
-          }
-          return p;
+          return abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
         }
       } catch (e) {}
       return nativeFetch.apply(window, arguments);
@@ -5453,7 +5481,7 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 </script>
 <script type="text/x-dl-module" id="dlm-sunrise"><!DOCTYPE html>
 <html lang="en" class="dark">
-<head><@@DLS@@>(function () {
+<head><@@DLS@@>window.DL_MODULE="sunrise";<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -5485,23 +5513,37 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
   if (!H) return;
 
   var nativeFetch = window.fetch;
+  // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
+  // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
+  // otherwise from the copy built into the HTML.
+  function infoTxt(input, init) {
+    var hub = window.DL_MODULE === 'hub';
+    var q = (String(input).match(/\?.*$/) || [''])[0];
+    var names = hub ? ['info.txt', 'A1/info.txt'] : ['../info.txt', 'info.txt'];
+    function fits(txt) {
+      var game = /^\s*\[(GAME|SUPABASE)\]\s*$/im.test(txt);
+      return hub ? (!game && /=/.test(txt)) : game;
+    }
+    function reply(txt) { return new Response(txt, { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }); }
+    function next(i) {
+      if (i >= names.length) return Promise.resolve(reply(hub ? (H.hubInfo ? H.hubInfo() : '') : H.info()));
+      var abs = H.resolve(names[i]);
+      if (!abs) return next(i + 1);
+      return nativeFetch.call(window, abs + q, init).then(function (r) {
+        var ct = (r.headers && r.headers.get('content-type')) || '';
+        return r.ok && !/html/i.test(ct) ? r.text() : null;
+      }).then(function (txt) { return txt && fits(txt) ? reply(txt) : next(i + 1); }, function () { return next(i + 1); });
+    }
+    return next(0);
+  }
   if (nativeFetch) {
     window.fetch = function (input, init) {
       try {
         if (typeof input === 'string' && !/^(?:[a-z][a-z0-9+.\-]*:|\/\/)/i.test(input)) {
           var isInfo = /(^|\/)info\.txt([?#]|$)/i.test(input);
+          if (isInfo) return infoTxt(input, init);
           var abs = H.resolve(input);
-          var p = abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
-          if (isInfo) {
-            return p.then(function (r) {
-              var ct = (r.headers && r.headers.get('content-type')) || '';
-              if (r.ok && !/html/i.test(ct)) return r;
-              throw new Error('fallback');
-            })['catch'](function () {
-              return new Response(H.info(), { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-            });
-          }
-          return p;
+          return abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
         }
       } catch (e) {}
       return nativeFetch.apply(window, arguments);
@@ -9785,7 +9827,7 @@ if (rootContainer) ReactDOM.createRoot(rootContainer).render(/*#__PURE__*/React.
 </script>
 <script type="text/x-dl-module" id="dlm-clue1"><!DOCTYPE html>
 <html lang="en">
-<head><@@DLS@@>(function () {
+<head><@@DLS@@>window.DL_MODULE="clue1";<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -9817,23 +9859,37 @@ if (rootContainer) ReactDOM.createRoot(rootContainer).render(/*#__PURE__*/React.
   if (!H) return;
 
   var nativeFetch = window.fetch;
+  // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
+  // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
+  // otherwise from the copy built into the HTML.
+  function infoTxt(input, init) {
+    var hub = window.DL_MODULE === 'hub';
+    var q = (String(input).match(/\?.*$/) || [''])[0];
+    var names = hub ? ['info.txt', 'A1/info.txt'] : ['../info.txt', 'info.txt'];
+    function fits(txt) {
+      var game = /^\s*\[(GAME|SUPABASE)\]\s*$/im.test(txt);
+      return hub ? (!game && /=/.test(txt)) : game;
+    }
+    function reply(txt) { return new Response(txt, { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }); }
+    function next(i) {
+      if (i >= names.length) return Promise.resolve(reply(hub ? (H.hubInfo ? H.hubInfo() : '') : H.info()));
+      var abs = H.resolve(names[i]);
+      if (!abs) return next(i + 1);
+      return nativeFetch.call(window, abs + q, init).then(function (r) {
+        var ct = (r.headers && r.headers.get('content-type')) || '';
+        return r.ok && !/html/i.test(ct) ? r.text() : null;
+      }).then(function (txt) { return txt && fits(txt) ? reply(txt) : next(i + 1); }, function () { return next(i + 1); });
+    }
+    return next(0);
+  }
   if (nativeFetch) {
     window.fetch = function (input, init) {
       try {
         if (typeof input === 'string' && !/^(?:[a-z][a-z0-9+.\-]*:|\/\/)/i.test(input)) {
           var isInfo = /(^|\/)info\.txt([?#]|$)/i.test(input);
+          if (isInfo) return infoTxt(input, init);
           var abs = H.resolve(input);
-          var p = abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
-          if (isInfo) {
-            return p.then(function (r) {
-              var ct = (r.headers && r.headers.get('content-type')) || '';
-              if (r.ok && !/html/i.test(ct)) return r;
-              throw new Error('fallback');
-            })['catch'](function () {
-              return new Response(H.info(), { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-            });
-          }
-          return p;
+          return abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
         }
       } catch (e) {}
       return nativeFetch.apply(window, arguments);
@@ -10068,7 +10124,7 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
 </script>
 <script type="text/x-dl-module" id="dlm-clue2"><!DOCTYPE html>
 <html lang="en">
-<head><@@DLS@@>(function () {
+<head><@@DLS@@>window.DL_MODULE="clue2";<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -10100,23 +10156,37 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
   if (!H) return;
 
   var nativeFetch = window.fetch;
+  // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
+  // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
+  // otherwise from the copy built into the HTML.
+  function infoTxt(input, init) {
+    var hub = window.DL_MODULE === 'hub';
+    var q = (String(input).match(/\?.*$/) || [''])[0];
+    var names = hub ? ['info.txt', 'A1/info.txt'] : ['../info.txt', 'info.txt'];
+    function fits(txt) {
+      var game = /^\s*\[(GAME|SUPABASE)\]\s*$/im.test(txt);
+      return hub ? (!game && /=/.test(txt)) : game;
+    }
+    function reply(txt) { return new Response(txt, { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }); }
+    function next(i) {
+      if (i >= names.length) return Promise.resolve(reply(hub ? (H.hubInfo ? H.hubInfo() : '') : H.info()));
+      var abs = H.resolve(names[i]);
+      if (!abs) return next(i + 1);
+      return nativeFetch.call(window, abs + q, init).then(function (r) {
+        var ct = (r.headers && r.headers.get('content-type')) || '';
+        return r.ok && !/html/i.test(ct) ? r.text() : null;
+      }).then(function (txt) { return txt && fits(txt) ? reply(txt) : next(i + 1); }, function () { return next(i + 1); });
+    }
+    return next(0);
+  }
   if (nativeFetch) {
     window.fetch = function (input, init) {
       try {
         if (typeof input === 'string' && !/^(?:[a-z][a-z0-9+.\-]*:|\/\/)/i.test(input)) {
           var isInfo = /(^|\/)info\.txt([?#]|$)/i.test(input);
+          if (isInfo) return infoTxt(input, init);
           var abs = H.resolve(input);
-          var p = abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
-          if (isInfo) {
-            return p.then(function (r) {
-              var ct = (r.headers && r.headers.get('content-type')) || '';
-              if (r.ok && !/html/i.test(ct)) return r;
-              throw new Error('fallback');
-            })['catch'](function () {
-              return new Response(H.info(), { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-            });
-          }
-          return p;
+          return abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
         }
       } catch (e) {}
       return nativeFetch.apply(window, arguments);
@@ -10351,7 +10421,7 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
 </script>
 <script type="text/x-dl-module" id="dlm-clue3"><!DOCTYPE html>
 <html lang="en">
-<head><@@DLS@@>(function () {
+<head><@@DLS@@>window.DL_MODULE="clue3";<@@DLE@@><@@DLS@@>(function () {
   var H = null, w = window, i;
   for (i = 0; i < 8; i++) {
     try { if (w.DL && w.DL.__dl) { H = w.DL; break; } } catch (e) {}
@@ -10383,23 +10453,37 @@ root.render(/*#__PURE__*/React.createElement(ClueApp, null));<@@DLE@@>
   if (!H) return;
 
   var nativeFetch = window.fetch;
+  // Two different info.txt files exist: the game file (Sunrise data, [GAME] section) next to the suite,
+  // and the hub's text file (A1/info.txt). Each page gets the right one, from the server when present,
+  // otherwise from the copy built into the HTML.
+  function infoTxt(input, init) {
+    var hub = window.DL_MODULE === 'hub';
+    var q = (String(input).match(/\?.*$/) || [''])[0];
+    var names = hub ? ['info.txt', 'A1/info.txt'] : ['../info.txt', 'info.txt'];
+    function fits(txt) {
+      var game = /^\s*\[(GAME|SUPABASE)\]\s*$/im.test(txt);
+      return hub ? (!game && /=/.test(txt)) : game;
+    }
+    function reply(txt) { return new Response(txt, { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }); }
+    function next(i) {
+      if (i >= names.length) return Promise.resolve(reply(hub ? (H.hubInfo ? H.hubInfo() : '') : H.info()));
+      var abs = H.resolve(names[i]);
+      if (!abs) return next(i + 1);
+      return nativeFetch.call(window, abs + q, init).then(function (r) {
+        var ct = (r.headers && r.headers.get('content-type')) || '';
+        return r.ok && !/html/i.test(ct) ? r.text() : null;
+      }).then(function (txt) { return txt && fits(txt) ? reply(txt) : next(i + 1); }, function () { return next(i + 1); });
+    }
+    return next(0);
+  }
   if (nativeFetch) {
     window.fetch = function (input, init) {
       try {
         if (typeof input === 'string' && !/^(?:[a-z][a-z0-9+.\-]*:|\/\/)/i.test(input)) {
           var isInfo = /(^|\/)info\.txt([?#]|$)/i.test(input);
+          if (isInfo) return infoTxt(input, init);
           var abs = H.resolve(input);
-          var p = abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
-          if (isInfo) {
-            return p.then(function (r) {
-              var ct = (r.headers && r.headers.get('content-type')) || '';
-              if (r.ok && !/html/i.test(ct)) return r;
-              throw new Error('fallback');
-            })['catch'](function () {
-              return new Response(H.info(), { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-            });
-          }
-          return p;
+          return abs ? nativeFetch.call(window, abs, init) : Promise.reject(new Error('no-base'));
         }
       } catch (e) {}
       return nativeFetch.apply(window, arguments);
@@ -11227,6 +11311,136 @@ puzzle1 | MARCUS BERGSTROM | MARCUS B. | M. BERGSTROM
 puzzle2 | TXN-8824 | TXN8824
 puzzle3 | VOID-WIRE-INTERCEPT | VOID WIRE INTERCEPT | VOIDWIREINTERCEPT | VOID-WIRE | VOID WIRE | VOIDWIRE
 </script>
+<script type="text/x-dl-module" id="dlm-hubinfo"># ==============================================================================
+# DELOITTELAND PARTICIPANT HUB - TEXT & MODERATION CONFIGURATION (info.txt)
+# Format for bilingual text: key = Chinese Text | English Text
+# ==============================================================================
+
+# --- 1. Header & Onboarding Profile Modal ---
+subTitle = 学员端 | Participant
+modalHeaderTitle = 欢迎来到德勤乐园 | Welcome to DeloitteLand
+btnBackToHub = 返回 | Back
+btnRandomAll = 换一批 | Shuffle
+teamModalTitle = 你在哪一组？ | What is your team number?
+lblModalNickname = 起个好玩的花名吧 | Pick a fun nickname
+nickInputPlaceholder = 输入名字或点右边随机 | Type a name or tap Randomize
+btnRandomNick = 随机花名 | Randomize
+lblSelectAvatar = 选个代表你的头像 | Choose your avatar
+avatarSubHint = 点选你喜欢的风格 | Pick a style you like
+teamModalSaveBtn = 开启今日旅程 | Start Journey
+btnEditProfile = 换头像/花名 | Edit Profile
+
+# --- 2. Live Broadcast Banner ---
+announcementTag = 现场通知 | Live Updates
+noAnnouncement = 欢迎加入，祝大家今天玩得开心 | Welcome aboard, have a great session today
+
+# --- 3. FastPass Schedule & Live Tracker ---
+fastpassTitle = 我的专属行程 | My Schedule
+fpWindowNote = 实时导航 | Live Guide
+fpFullTableBtn = 全部 6 轮 | All 6 Rounds
+fpChangeTeamBtn = 换组 | Team
+fpDrawerBadge = 我的专属行程表 | My Team Itinerary
+fpDrawerLiveActive = 进行中 | LIVE
+fpDrawerLiveEnded = 已结束 | DONE
+statusNow = 正在进行 | IN PROGRESS
+statusNext = 下一站 | UP NEXT
+statusDone = 已打卡 | Completed
+statusWaiting = 待开启 | Upcoming
+fpFooterDuration = 每轮体验 30 分钟 · 换场休息 10 分钟 | 30 mins per station · 10 mins break to move
+fpCurrentLabel = 当前站点 | CURRENT
+fpNextLabel = 下一站点 | UP NEXT
+fpRound1Label = 第 1 轮站点 | ROUND 1
+fpRound2Label = 第 2 轮站点 | ROUND 2
+fpAfter1800 = 今日 6 大站点体验圆满结束 | All station rotations are complete
+fpBreakRotation = 换场休息中 | Rotation Break
+fpBreakSub = 请前往下一站场地 | Head over to your next room
+fpAllDone = 全部通关 | All Stations Done
+fpAllDoneSub = 为你们的默契点赞 | Great teamwork today
+fpSelectTeamPrompt = 点这里选组号，查看你的专属路线 | Tap here to pick your team and see your route
+
+# --- 4. Business Chemistry Module ---
+bcCardTitle = Business Chemistry 商业化学反应 | Business Chemistry
+bcCardSub = 探索四大职场风格与团队协同秘籍 | Explore the 4 working styles and team flex tips
+bcUnsetBadge = 测测风格 | Pick Style
+bcDrawerSubtitle = 点击卡片切换类型，下方查看详细解析 | Tap any style card to inspect traits and flex tips
+bcSetStyleBtn = 设为我的风格 | Set as My Style
+bcCurrentStyleBtn = 当前已选风格 | My Active Style
+bcTabTraits = 核心特质 | Traits
+bcTabStress = 动力与压力 | Dynamics
+bcTabFlex = 协同秘籍 | Flex Tips
+bcLabelMindset = 思维方式 | Mindset
+bcLabelFocus = 关注重心 | Core Focus
+bcLabelDecision = 决策风格 | Decision Style
+bcLabelEnergize = 赋能动力点 | What Energizes Them
+bcLabelDrain = 消耗雷区 | What Drains Them
+bcLabelFlexHeader = 如何与此风格高效沟通与协同 | How to Flex and Collaborate
+
+# --- 5. D-Rush & Project Sunrise ---
+drushCardTitle = D-Rush | D-Rush
+drushSub = 玩玩小游戏，冲榜拿第一 | Play the game and beat the high score
+drushNoRecord = 等你破纪录 | Be the first
+sunriseGateTitle = 隐藏关卡 | Hidden Quest
+badgeLocked = 待开启 | LOCKED
+badgeUnlocked = 已开启 | READY
+sunrisePasscodePrompt = 输入主持人口令，开启神秘任务： | Enter the MC secret code to unlock:
+sunrisePlaceholder = 输入 14 位神秘口令 | 14-letter secret code
+btnUnlock = 解锁 | Unlock
+errPasscode = 口令不对，请留意主持人的提示 | Code incorrect, listen for the MC hint
+unlockedSuccess = 神秘任务已开启 | Secret Quest Unlocked
+launchMainSunrise = 进入日出计划 | Start Project Sunrise
+portalHome = 主页面 | Main Hub
+srNode1 = 第一关 | Node 1
+srNode2 = 第二关 | Node 2
+srNode3 = 第三关 | Node 3
+
+# --- 6. Top 10 Leaderboard & Station Names ---
+leaderboardTitle = 团队积分榜 Top 10 | Top 10 Teams
+clickToExpand = 展开看看 | Show Ranks
+clickToCollapse = 收起 | Hide
+leaderboardSub = 6 大站点实时总分排名 | Live scores across all 6 stations
+filterAll = 总分 | Overall
+st0 = 一起拼未来 | Piece by Piece
+st1 = 职业道德之树 | Ethical Tree
+st2 = 信号解密 | D.Signal
+st3 = 勤业智库 | Knowledge Clash
+st4 = 情商罗盘 | EQ Matrix
+st5 = AI 纪元 | The AI Era
+emptyLeaderboard = 比赛火热进行中，精彩排名马上揭晓 | Games are underway, live rankings coming soon
+
+# --- 7. Community Wall & Moderation ---
+msgBoardTitle = 大家都在聊 | Community Wall
+msgBoardSub = 给队友打气，分享你的现场高光时刻 | Cheer for your team and share the fun
+msgPlaceholder = 写句加油或点击上方快捷短语... | Write a shoutout or tap a quick cheer above...
+msgFriendlyTip = 每分钟可发 1 条留言 | 1 post per minute
+msgBlockedNotice = 让我们保持积极友善的交流氛围，换句话试试吧 | Let us keep the wall positive and supportive
+emptyMessages = 快来发出今天的第一条加油留言吧 | Be the first to post a team shoutout
+btnSendMsg = 发送 | Post
+
+# --- 8. Quick Cheer Chips (One-Tap Positive Messages) ---
+CHEER_1 = 团队默契满分，冲冲冲 | Awesome team synergy, let us go
+CHEER_2 = 这一站挑战太好玩了 | This station challenge is great
+CHEER_3 = 众行致远，为我们组点赞 | Together makes progress, go team
+CHEER_4 = 绿点能量拉满，全员加速中 | Full Green Dot energy, sprinting ahead
+
+# --- 9. Daily Energy Booster Tips ---
+TIP_1 = 绿点能量加持，今天也是成就不凡的一天 | Green Dot Energy Boost, make an impact that matters
+TIP_2 = 小贴士：在留言墙发一句「众行致远」可触发隐藏彩蛋 | Tip: Post Together makes progress on the wall for a secret
+TIP_3 = 了解队友的商业化学反应风格，合作效率翻倍 | Check your teammates Business Chemistry styles to collaborate faster
+TIP_4 = 试试连续点击左上角的小绿点 5 次？ | Try tapping the top-left green dot 5 times
+
+# --- 10. Easter Egg Messages ---
+eggFoundTitle = 发现隐藏彩蛋 | Secret Discovered
+btnCloseEgg = 收下祝福 | Awesome
+eggDotMsg = 【隐藏彩蛋】你发现了绿点能量开关，再次连点 5 次可切换特效。 | [Secret Mode] Green Dot Neon Pulse activated. Tap 5 times again to toggle.
+eggSecretMsg = 【极客彩蛋】DeloitteLand 2026 祝你入职快乐，前程似锦。 | [Easter Egg] Welcome to DeloitteLand 2026, have an unforgettable journey.
+eggValueMsg = 【价值观彩蛋】「众行致远 Together makes progress」祝你们团队勇夺桂冠。 | [Bonus Unlocked] Together makes progress. Best of luck to your team.
+
+# --- 11. Funny Random Nicknames (Comma-separatedZH | Comma-separatedEN) ---
+LIST_NICKNAMES = PPT纺织厂厂长, Excel野生驯兽师, Ctrl+S信仰者, 冰美式永动机, 茶水间潜伏者, 颗粒度对齐大师, 底层逻辑建筑师, 死线冲浪手, VLOOKUP魔法师, 会议室气氛组, 带薪思考家, 绿点守护者, 闭环捕手, 赋能先锋, 波霸奶茶股东, 全村的希望, 永不报错锦鲤, 键盘钢琴家, 早八特困生, 日出计划特工 | Deck Ninja, Pivot Wizard, Ctrl+S Believer, Espresso Engine, Snack Bar VIP, Granular Aligner, Synergy Master, Deadline Surfer, VLOOKUP Sorcerer, Vibe Manager, Thinker-in-Chief, Green Dot Hero, Loop Closer, Empower Pioneer, Boba Shareholder, Village Hope, Zero-Bug Koi, Keyboard Pianist, 8AM Survivor, Sunrise Agent
+
+# --- 12. Moderation Blocked Keywords (Comma-separated, case-insensitive) ---
+BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, 狗屁, 脑残, 神经病, 白痴, 讨厌, 无聊, 恶心, 去死, 辞职, 跑路, 加班到死, 破公司, 烂, 坑爹, fuck, shit, bitch, ass, damn, crap, stupid, idiot, dumb, trash, garbage, suck, sucks, hate, boring, wtf, stfu, bull, hell, die, kill, loser, ugly, scam,http://, https://, www., .com, .cn, .net
+</script>
 
 <script>
 (function () {
@@ -11302,6 +11516,7 @@ puzzle3 | VOID-WIRE-INTERCEPT | VOID WIRE INTERCEPT | VOIDWIREINTERCEPT | VOID-W
     asset: function (p) { try { return new URL(p, baseHref()).href; } catch (e) { return p; } },
     resolve: function (p) { if (!/^https?:/i.test(location.protocol)) return null; try { return new URL(p, baseHref()).href; } catch (e) { return null; } },
     info: function () { return source('info'); },
+    hubInfo: function () { return source('hubinfo'); },
     onVis: function (fn, win) { visL.push({ fn: fn, win: win || null }); try { fn(Object.assign({}, vis)); } catch (e) {} },
     onLinks: function (fn, win) { linkL.push({ fn: fn, win: win || null }); try { fn(links.slice()); } catch (e) {} },
     roleOf: function () { return null; },
