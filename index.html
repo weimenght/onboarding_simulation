@@ -321,6 +321,10 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
         <div class="broadcast" id="bcText"></div>
       </div>
     </section>
+    <footer class="foot">
+      <span data-t="footStart"></span>
+      <a href="https://wei-meng.org/free_builder" target="_blank" rel="noopener noreferrer">© 2026 FREE//BUILDER L&amp;D Solutions · Designed with AI &amp; ♥</a>
+    </footer>
   </div>
 </main>
 
@@ -21039,7 +21043,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             title: 'Project Sunrise · Live Leaderboard', session: 'Session', colGroup: 'Group', colProgress: 'Progress',
             colSecrets: 'Secrets', colTime: 'Time', feed: 'Live Feed', empty: 'Waiting for the first team to join…',
             clockSettles: 'Wire settles in', clockOvertime: 'Settled · overtime', clockNow: 'Local time',
-            connected: 'Live', polling: 'Updating every 10s', noSupabase: 'Supabase not configured in info.txt', loadFail: 'Could not load info.txt',
+            connected: 'Live', polling: 'Updating every 15s', noSupabase: 'Supabase not configured in info.txt', loadFail: 'Could not load info.txt',
             halted: 'HALTED', join: (g, r) => `${g} joined${r ? ' · ' + r : ''}`,
             node: (g, n) => `${g} just decrypted Node ${n}`, puzzle: (g, n) => `${g} cracked override ${n}/3`,
             secret: (g, c) => `${g} found a secret (${c}/${SECRET_TOTAL})`, finish: (g, tm) => `${g} HALTED THE WIRE in ${tm}!`,
@@ -21050,7 +21054,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             title: '日出计划 · 实时排行榜', session: '场次', colGroup: '小组', colProgress: '进度',
             colSecrets: '彩蛋', colTime: '用时', feed: '实时动态', empty: '等待第一支队伍加入…',
             clockSettles: '汇款到账倒计时', clockOvertime: '已到账 · 超时', clockNow: '当前时间',
-            connected: '实时', polling: '每 10 秒更新', noSupabase: 'info.txt 中未配置 Supabase', loadFail: '无法读取 info.txt',
+            connected: '实时', polling: '每 15 秒更新', noSupabase: 'info.txt 中未配置 Supabase', loadFail: '无法读取 info.txt',
             halted: '已拦截', join: (g, r) => `${g} 已加入${r ? ' · ' + r : ''}`,
             node: (g, n) => `${g} 刚刚解密了节点 ${n}`, puzzle: (g, n) => `${g} 破解了覆盖代码 ${n}/3`,
             secret: (g, c) => `${g} 发现了一个彩蛋（${c}/${SECRET_TOTAL}）`, finish: (g, tm) => `${g} 拦截成功！用时 ${tm}`,
