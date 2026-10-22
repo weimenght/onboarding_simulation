@@ -100,6 +100,21 @@ html[lang^="zh"] .eyebrow { letter-spacing: .06em; }
 .hero h1 em { font-style: normal; color: var(--green); }
 .hero p { margin: 0; color: var(--fg-2); font-size: 16px; max-width: 62ch; }
 
+.start { min-height: 100%; min-height: 100dvh; display: grid; grid-template-rows: auto 1fr auto 1.2fr; gap: 0; }
+.start .top { grid-row: 1; }
+.start-h { grid-row: 3; margin: 0 0 clamp(20px, 4vh, 36px); font-size: clamp(36px, 7vw, 64px); line-height: 1.05; font-weight: 800; letter-spacing: -.025em; text-wrap: balance; }
+.start-h em { font-style: normal; color: var(--green); }
+.start-doors { grid-row: 4; align-self: start; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; max-width: 760px; }
+.start-door { --c: var(--green); display: flex; align-items: center; gap: 16px; min-width: 0; padding: 20px 22px; border-radius: 20px; text-decoration: none;
+  border: 1px solid var(--line-2); background: linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.01) 60%), var(--panel);
+  transition: border-color .18s ease, transform .18s ease, background-color .18s ease; }
+.start-door .ic { width: 48px; height: 48px; flex: none; border-radius: 14px; display: grid; place-items: center; font-size: 20px; color: var(--c); background: rgba(255,255,255,.05); border: 1px solid var(--line-2); }
+.start-door .tx { flex: 1; min-width: 0; font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+.start-door .go { color: var(--c); font-size: 16px; transition: transform .18s ease; }
+@media (hover: hover) { .start-door:hover { border-color: var(--c); } .start-door:hover .go { transform: translateX(4px); } }
+.start-door:active { transform: scale(.99); }
+.start-door:focus-visible { outline: 2px solid var(--c); outline-offset: 3px; }
+@media (max-width: 640px) { .start-doors { grid-template-columns: minmax(0, 1fr); } .start-door { padding: 18px; } }
 .choose { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .door {
   --c: var(--green);
@@ -602,47 +617,24 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 
 <!-- 1. Role chooser -->
 <main id="pg-start" class="page" hidden>
-  <div class="wrap">
+  <div class="wrap start">
     <header class="top">
-      <div class="brand">DeloitteLand<span class="dot" aria-hidden="true"></span><small data-t="suite"></small></div>
+      <div class="brand">DeloitteLand<span class="dot" aria-hidden="true"></span></div>
       <div class="lang-seg js-langseg" role="group" aria-label="Language / 語言"><button type="button" data-l="en" lang="en">EN</button><button type="button" data-l="zh-Hans" lang="zh-CN" data-no-hant>简</button><button type="button" data-l="zh-Hant" lang="zh-HK" data-no-hant>繁</button></div>
     </header>
-    <section class="hero">
-      <div class="eyebrow" data-t="eyebrow"></div>
-      <h1 data-th="hero"></h1>
-      <p data-t="heroSub"></p>
-    </section>
-    <section class="choose">
-      <a class="door" href="#/hub" style="--c:var(--driver)">
+    <h1 class="start-h" data-th="hero"></h1>
+    <nav class="start-doors" aria-label="Choose">
+      <a class="start-door" href="#/hub" style="--c:var(--driver)">
         <span class="ic" aria-hidden="true"><i class="fa-solid fa-user-group"></i></span>
-        <h2><span data-t="pTitle"></span><small data-t="pAlt"></small></h2>
-        <p data-t="pDesc"></p>
-        <span class="go"><span data-t="pGo"></span><i class="fa-solid fa-arrow-right"></i></span>
+        <span class="tx" data-t="pTitle"></span>
+        <i class="fa-solid fa-arrow-right go" aria-hidden="true"></i>
       </a>
-      <a class="door" href="#/staff" style="--c:var(--guardian)">
+      <a class="start-door" href="#/staff" style="--c:var(--guardian)">
         <span class="ic" aria-hidden="true"><i class="fa-solid fa-id-badge"></i></span>
-        <h2><span data-t="sTitle"></span><small data-t="sAlt"></small></h2>
-        <p data-t="sDesc"></p>
-        <span class="go"><span id="staffGo"></span><i class="fa-solid fa-arrow-right"></i></span>
+        <span class="tx" data-t="sTitle"></span>
+        <i class="fa-solid fa-arrow-right go" aria-hidden="true"></i>
       </a>
-    </section>
-    <section class="live" aria-live="polite">
-      <div class="card">
-        <div class="card-h">
-          <span class="label"><span class="live-dot" aria-hidden="true"></span><span data-t="rotation"></span></span>
-          <span class="muted" id="slotSource"></span>
-        </div>
-        <div class="slots" id="slots"></div>
-        <div class="slot-status" id="slotStatus"></div>
-      </div>
-      <div class="card">
-        <div class="card-h">
-          <span class="label"><i class="fa-solid fa-bullhorn" style="color:var(--green)"></i><span data-t="broadcast"></span></span>
-          <span class="muted" id="bcTime"></span>
-        </div>
-        <div class="broadcast" id="bcText"></div>
-      </div>
-    </section>
+    </nav>
   </div>
 </main>
 
@@ -27294,7 +27286,6 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
     { k: 'node2', icon: 'fa-2', c: C.pioneer, zh: '节点二 线索卡', en: 'Node 2 clue card', dzh: '在 Sunrise 页面内显示为标签', den: 'Shown as a tab inside Sunrise' },
     { k: 'node3', icon: 'fa-3', c: C.pioneer, zh: '节点三 线索卡', en: 'Node 3 clue card', dzh: '在 Sunrise 页面内显示为标签', den: 'Shown as a tab inside Sunrise' }
   ];
-  var DEFAULT_SLOTS = [['13:50', '14:20'], ['14:30', '15:00'], ['15:10', '15:40'], ['16:00', '16:30'], ['16:40', '17:10'], ['17:20', '17:50']];
 
   var T = {
     zh: {
@@ -27606,53 +27597,7 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
   }
 
   // ---------- start page ----------
-  var slots = null, slotsLive = false, bc = null;
-  function toMin(s) { var p = String(s).split(':'); return (+p[0]) * 60 + (+p[1] || 0); }
-  function renderStart() {
-    $('staffGo').textContent = session ? t('sGoBack', { e: session.user.email }) : t('sGoIn');
-    renderSlots(); renderBroadcast();
-  }
-  function renderSlots() {
-    var list = slots || DEFAULT_SLOTS;
-    var nm = new Date().getHours() * 60 + new Date().getMinutes();
-    var html = '', status = '';
-    list.forEach(function (s, i) {
-      var a = toMin(s[0]), b = toMin(s[1]);
-      html += '<div class="slot ' + (nm >= b ? 'past' : (nm >= a ? 'now' : '')) + '"><b>' + esc(t('slot', { n: i + 1 })) + '</b><span>' + esc(s[0]) + '–' + esc(s[1]) + '</span></div>';
-    });
-    var first = toMin(list[0][0]), last = toMin(list[list.length - 1][1]);
-    if (nm < first) status = t('before', { t: '<strong>' + esc(list[0][0]) + '</strong>' });
-    else if (nm >= last) status = t('after');
-    else for (var i = 0; i < list.length; i++) {
-      var a = toMin(list[i][0]), b = toMin(list[i][1]);
-      if (nm >= a && nm < b) { status = t('during', { n: i + 1, t: '<strong>' + esc(list[i][1]) + '</strong>' }); break; }
-      if (nm < a) { status = t('between', { n: i + 1, t: '<strong>' + esc(list[i][0]) + '</strong>' }); break; }
-    }
-    $('slots').innerHTML = html;
-    $('slotStatus').innerHTML = status;
-    $('slotSource').textContent = slotsLive ? t('live') : t('fallback');
-  }
-  function renderBroadcast() {
-    var text = '';
-    if (bc) text = (lang === 'zh' ? (bc.text_zh || bc.text) : (bc.text_en || bc.text)) || bc.text || bc.text_zh || bc.text_en || '';
-    $('bcText').textContent = text || t('noBroadcast');
-    $('bcText').style.color = text ? '' : 'var(--fg-3)';
-    var d = bc && bc.updated_at ? new Date(bc.updated_at) : null;
-    $('bcTime').textContent = d && !isNaN(d) ? hhmm(d) : '';
-  }
-  function pollLive() {
-    if (!sb) return;
-    sb.from('fastpass_config').select('time_slots').eq('id', 1).maybeSingle().then(function (res) {
-      var ts = res && res.data && res.data.time_slots;
-      if (Array.isArray(ts) && ts.length === 6 && ts.every(function (s) { return s && s.start && s.end; })) {
-        slots = ts.map(function (s) { return [s.start, s.end]; }); slotsLive = true;
-      }
-      if (route === 'start') renderSlots();
-    }, function () {});
-    sb.from('portal_announcements').select('text, text_zh, text_en, updated_at').eq('id', 1).maybeSingle().then(function (res) {
-      bc = (res && res.data) || null; if (route === 'start') renderBroadcast();
-    }, function () {});
-  }
+  function renderStart() {}
 
   // ---------- staff launcher ----------
   function tileHtml(m, role) {
@@ -27987,11 +27932,9 @@ BLOCKED_WORDS = 傻, 蠢, 笨, 垃圾, 废物, 滚, 妈的, 卧槽, 操, 靠, �
     // A stored session for an account that isn't on the staff lists counts as signed out.
     if (session && !staffRole()) { session = null; try { sb.auth.signOut(); } catch (e) {} }
     apply();
-    pollLive();
     refreshStatus();
     setInterval(function () { if (!document.hidden) refreshStatus(); }, 15000);
     document.addEventListener('visibilitychange', function () { if (!document.hidden && Date.now() - pulse.at > 8000) refreshStatus(); });
-    setInterval(function () { if (route === 'start' && !document.hidden) { renderSlots(); pollLive(); } }, 60000);
     if (sb) {
       try {
         sb.channel('dl-suite-vis').on('postgres_changes', { event: '*', schema: 'public', table: 'portal_visibility' }, function (p) {
