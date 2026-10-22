@@ -2,7 +2,9 @@
 <html lang="en">
 <head><meta name="robots" content="noindex, nofollow"><script>window.DL_MODULE="leaderboard";</script><script>(function () {
   // Keeps a page's text in Traditional Chinese while it is on: text nodes, a few attributes, the title and canvas text.
-  window.DLHantDOM = function (convert) {
+  // opts.hk === false: plain text replacement (used for English), no Hong Kong font or <html lang> change.
+  window.DLHantDOM = function (convert, opts) {
+    var HK = !(opts && opts.hk === false);
     var on = false, mo = null, busy = false, lastTitle = null;
     var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, NOSCRIPT: 1, CODE: 1, PRE: 1 };
     var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
@@ -40,7 +42,7 @@
     }
     function fixLang() {
       var h = document.documentElement;
-      if (/^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
+      if (HK && /^zh/i.test(h.lang) && h.lang !== 'zh-HK') h.lang = 'zh-HK';
       if (CJK.test(document.title) && document.title !== lastTitle) { lastTitle = convert(document.title); if (lastTitle !== document.title) document.title = lastTitle; }
     }
     var drawPatched = false;
@@ -67,7 +69,7 @@
       });
     }
     function start() {
-      if (on) return; on = true; patchCanvas(); hkFont();
+      if (on) return; on = true; if (HK) { patchCanvas(); hkFont(); }
       busy = true; walk(document.body || document.documentElement); fixLang(); busy = false;
       if (!window.MutationObserver) return;
       mo = new MutationObserver(function (muts) {
@@ -377,7 +379,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         if (added) { events.sort((a, b) => (Date.parse(a.created_at) - Date.parse(b.created_at)) || (a.id - b.id)); render(); }
     }
 
-    // Built from info.txt on 2026-10-21: [SUPABASE] and [GAME] only.
+    // Built from info.txt on 2026-10-22: [SUPABASE] and [GAME] only.
     const BUILT_IN_CONFIG = "[SUPABASE]\nSUPABASE_URL = https://pwnvkrrnxbpxignynvuh.supabase.co\nSUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ\n[GAME]\nGAME_SESSION = DU-2026-DAY2\nGAME_START =\nSETTLEMENT_MINUTES = 120\nROLE_MODE = on\nROLE_SWITCH_COOLDOWN = 300\nSTRIKE_PENALTY_SECONDS = 60\nHINT_PENALTIES = 60, 120, 180";
 
     async function boot() {

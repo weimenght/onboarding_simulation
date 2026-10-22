@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><script>window.DL_MODULE="kclive";</script><script src="rt.fa1846e13f.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/800.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+::selection{background:rgba(134,188,37,.35);color:#fff}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>勤业智库 · 抢答 Knowledge Clash Live</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
+<style>
+/* Layout: projector stage (question + A-D grid) beside a live team column; host controls dock at the bottom. */
+:root {
+  --green: #86BC25; --green-dk: #568819; --teal: #004F59; --navy: #002776;
+  --ink: #070a10; --panel: #0f141d; --panel-2: #151b26; --line: rgba(255,255,255,.08); --line-2: rgba(255,255,255,.16);
+  --fg: #F3F5F7; --fg-2: #AEB6C1; --fg-3: #6B7480;
+  --ok: #86BC25; --bad: #F43F5E; --warn: #F59E0B; --cyan: #22D3EE;
+  --sans: Aptos, 'Aptos Display', 'Segoe UI Variable Text', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto, Arial, 'Noto Sans SC', sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --safe-t: env(safe-area-inset-top, 0px); --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px); --safe-r: env(safe-area-inset-right, 0px);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--ink); color: var(--fg); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow: hidden; }
+html[lang^="zh"] body { line-height: 1.5; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(1100px 600px at 105% -10%, rgba(0,79,89,.55), transparent 60%), radial-gradient(900px 520px at -10% 110%, rgba(0,39,118,.42), transparent 60%); }
+
+.app { position: relative; z-index: 1; height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: max(14px, var(--safe-t)) max(18px, var(--safe-r)) max(12px, var(--safe-b)) max(18px, var(--safe-l)); gap: 14px; }
+
+/* ---------- header ---------- */
+.top { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand .ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 20px; color: var(--green);
+  background: rgba(134,188,37,.12); border: 1px solid rgba(134,188,37,.4); flex: none; }
+.brand b { display: block; font-size: clamp(17px, 1.6vw, 24px); font-weight: 900; letter-spacing: -.01em; white-space: nowrap; }
+.brand small { display: block; font-size: 12px; color: var(--fg-3); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.pill { height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(255,255,255,.04);
+  display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; white-space: nowrap; }
+.pill .mono { font-family: var(--mono); }
+.pill.dim { color: var(--fg-3); }
+.spacer { flex: 1; }
+.code { display: flex; align-items: center; gap: 12px; padding: 6px 8px 6px 14px; border-radius: 14px; background: #fff; color: #080b11; }
+.code span { font-size: 12px; font-weight: 800; line-height: 1.15; }
+.code span small { display: block; font-weight: 600; color: #4b5563; font-size: 11px; }
+.code b { font-family: var(--mono); font-size: clamp(26px, 2.6vw, 38px); letter-spacing: .14em; background: #080b11; color: var(--green); padding: 2px 12px; border-radius: 10px; }
+.code.locked { background: var(--bad); color: #fff; }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(255,255,255,.04); color: var(--fg-2); display: grid; place-items: center; flex: none; }
+.icon-btn:hover { color: var(--fg); border-color: rgba(255,255,255,.3); }
+
+/* ---------- stage ---------- */
+.main { display: grid; grid-template-columns: minmax(0, 1fr) clamp(280px, 24vw, 380px); gap: 14px; min-height: 0; }
+.stage { position: relative; display: flex; flex-direction: column; gap: clamp(12px, 1.6vh, 22px); min-height: 0; padding: clamp(16px, 2vw, 30px);
+  border-radius: 24px; background: rgba(15,20,29,.86); border: 1px solid var(--line); overflow: hidden; }
+.stage-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border-radius: 999px; font-size: 13px; font-weight: 800; border: 1px solid var(--line-2); color: var(--fg-2); }
+.chip.live { color: #0b0f06; background: var(--green); border-color: var(--green); }
+.chip.q { color: var(--cyan); border-color: rgba(34,211,238,.45); background: rgba(34,211,238,.08); }
+.chip.rev { color: var(--warn); border-color: rgba(245,158,11,.45); background: rgba(245,158,11,.08); }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.chip.live .dot { animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+.rules { font-size: 12.5px; color: var(--fg-3); font-weight: 700; }
+.stage > * { flex-shrink: 0; }
+.stage { overflow: auto; scrollbar-width: thin; }
+.qtext { min-height: 0; }
+.qtext .zh { font-size: clamp(22px, min(3.1vw, 5.4vh), 50px); font-weight: 900; line-height: 1.22; letter-spacing: -.01em; text-wrap: balance; }
+.qtext .en { margin-top: 8px; font-size: clamp(13px, min(1.45vw, 2.6vh), 23px); color: var(--fg-2); font-weight: 600; line-height: 1.35; text-wrap: balance; }
+.qtext.empty .zh { color: var(--fg-3); font-size: clamp(20px, 2.2vw, 34px); }
+.opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(10px, 1.2vw, 18px); margin-top: auto; }
+.opt { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; padding: clamp(10px, min(1.4vw, 2.2vh), 20px);
+  border-radius: 18px; background: var(--panel-2); border: 1.5px solid var(--line); min-height: clamp(58px, 9vh, 120px); transition: border-color .2s, background-color .2s, opacity .2s; }
+.opt .k { width: clamp(42px, 3.6vw, 58px); height: clamp(42px, 3.6vw, 58px); border-radius: 14px; display: grid; place-items: center;
+  font-family: var(--mono); font-weight: 800; font-size: clamp(20px, 2vw, 30px); background: rgba(255,255,255,.06); border: 1px solid var(--line-2); }
+.opt .t .zh { display: block; font-size: clamp(15px, 1.5vw, 24px); font-weight: 800; line-height: 1.3; }
+.opt .t .en { display: block; font-size: clamp(12px, 1vw, 16px); color: var(--fg-2); line-height: 1.3; margin-top: 2px; }
+.opt .marks { position: absolute; right: 12px; top: 10px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; max-width: 50%; }
+.mark { font-family: var(--mono); font-size: 12px; font-weight: 800; padding: 3px 8px; border-radius: 8px; background: rgba(244,63,94,.18); color: #FDA4AF; border: 1px solid rgba(244,63,94,.45); }
+.mark.okm { background: var(--green); color: #0b0f06; border-color: var(--green); }
+.opt.correct { border-color: var(--green); background: rgba(134,188,37,.14); }
+.opt.correct .k { background: var(--green); color: #0b0f06; border-color: var(--green); }
+.opt.dim { opacity: .45; }
+.opt.hit { border-color: rgba(244,63,94,.6); }
+.timer { height: 10px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; }
+.timer i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), #b8e05a); transform-origin: left; }
+.timer.low i { background: linear-gradient(90deg, var(--bad), #fb7185); }
+.timer-row { display: flex; align-items: center; gap: 12px; }
+.timer-row .timer { flex: 1; }
+.timer-row b { font-family: var(--mono); font-size: 20px; min-width: 64px; text-align: right; font-variant-numeric: tabular-nums; }
+
+.overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(7,10,16,.82); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 5; text-align: center; }
+.count { font-family: var(--mono); font-weight: 800; font-size: clamp(140px, 22vw, 340px); line-height: 1; color: var(--green); text-shadow: 0 0 60px rgba(134,188,37,.45); }
+.count.go { font-size: clamp(110px, 16vw, 260px); }
+.count-sub { font-size: clamp(16px, 1.6vw, 24px); color: var(--fg-2); font-weight: 800; margin-top: 10px; }
+@keyframes pop { from { transform: scale(1.35); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.pop { animation: pop .35s cubic-bezier(.16,1,.3,1); }
+.banner { display: flex; align-items: center; gap: 16px; padding: clamp(10px, 1.6vh, 14px) 18px; border-radius: 18px; font-weight: 900; font-size: clamp(17px, min(1.8vw, 3.2vh), 28px); }
+.banner.win { background: rgba(134,188,37,.16); border: 1.5px solid rgba(134,188,37,.6); color: #d9f99d; }
+.banner.none { background: rgba(245,158,11,.1); border: 1.5px solid rgba(245,158,11,.45); color: #fde68a; }
+.banner i { font-size: 1.2em; }
+.banner small { display: block; font-size: 13px; font-weight: 700; color: var(--fg-2); }
+
+/* ---------- team column ---------- */
+.side { display: flex; flex-direction: column; gap: 10px; min-height: 0; padding: 16px; border-radius: 24px; background: rgba(15,20,29,.86); border: 1px solid var(--line); }
+.side h3 { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-3); display: flex; justify-content: space-between; }
+html[lang^="zh"] .side h3 { letter-spacing: .04em; }
+.teams { display: grid; gap: 8px; overflow: auto; min-height: 0; }
+.team { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: clamp(6px, 1.1vh, 10px) 12px; border-radius: 14px; background: var(--panel-2); border: 1px solid var(--line); }
+.team.win { border-color: var(--green); background: rgba(134,188,37,.12); }
+.team .no { font-family: var(--mono); font-weight: 800; font-size: clamp(18px, 1.6vw, 24px); min-width: 2.2em; }
+.team .st { min-width: 0; font-size: 12.5px; color: var(--fg-3); font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.team .st .phones { display: inline-flex; gap: 3px; }
+.team .st .phones i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); display: inline-block; }
+.team .st .ans { font-family: var(--mono); font-size: 12.5px; font-weight: 800; padding: 2px 7px; border-radius: 7px; white-space: nowrap; }
+.team .st .ans.ok { background: var(--green); color: #0b0f06; }
+.team .st .ans.bad { background: rgba(244,63,94,.18); color: #FDA4AF; }
+.team .st .ans.wait { background: rgba(255,255,255,.08); color: var(--fg-2); }
+.team .pts { font-family: var(--mono); font-weight: 800; font-size: clamp(18px, 1.6vw, 26px); text-align: right; font-variant-numeric: tabular-nums; }
+.team .pts.neg { color: #FDA4AF; }
+.team .rel { width: 26px; height: 26px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--fg-3); font-size: 11px; display: inline-grid; place-items: center; }
+.side .hint { font-size: 12px; color: var(--fg-3); line-height: 1.45; }
+.empty-note { padding: 18px 8px; color: var(--fg-3); font-size: 13.5px; text-align: center; }
+
+/* ---------- host dock ---------- */
+.dock { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px; border-radius: 18px; background: rgba(15,20,29,.92); border: 1px solid var(--line); }
+.btn { height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(255,255,255,.05); font-weight: 800; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.btn:hover:not(:disabled) { border-color: rgba(255,255,255,.32); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn.primary { background: var(--green); color: #0b0f06; border-color: var(--green); }
+.btn.cyan { background: rgba(34,211,238,.14); color: #a5f3fc; border-color: rgba(34,211,238,.5); }
+.btn.warn { background: rgba(245,158,11,.14); color: #fde68a; border-color: rgba(245,158,11,.5); }
+.btn.danger { color: #FDA4AF; }
+.btn.danger.armed { background: rgba(244,63,94,.2); border-color: rgba(244,63,94,.7); color: #ffe4e6; }
+.btn kbd { font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 6px; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.15); }
+.btn.primary kbd { border-color: rgba(0,0,0,.25); }
+.qnav { display: inline-flex; align-items: center; gap: 6px; }
+.qnav select { height: 44px; border-radius: 12px; border: 1px solid var(--line-2); background: #0b1018; padding: 0 10px; max-width: 280px; font-weight: 700; }
+.dock .sep { width: 1px; height: 28px; background: var(--line-2); }
+.dock .msg { font-size: 13px; color: var(--fg-2); font-weight: 700; margin-left: auto; }
+.dock .msg.err { color: #FDA4AF; }
+
+/* ---------- settings drawer ---------- */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 20; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(560px, 100%); z-index: 21; background: #0c1119; border-left: 1px solid var(--line-2);
+  display: flex; flex-direction: column; padding: max(18px, var(--safe-t)) max(20px, var(--safe-r)) max(18px, var(--safe-b)) 20px; gap: 16px; overflow: auto; }
+.drawer h2 { margin: 0; font-size: 22px; font-weight: 900; }
+.sec { display: grid; gap: 10px; padding: 16px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); }
+.sec h4 { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-3); }
+html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
+.rounds { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.rounds button { padding: 8px 4px; border-radius: 10px; border: 1px solid var(--line-2); background: rgba(255,255,255,.03); display: grid; gap: 2px; text-align: center; }
+.rounds button b { font-family: var(--mono); font-size: 15px; }
+.rounds button small { font-size: 10.5px; color: var(--fg-3); font-family: var(--mono); }
+.rounds button[aria-pressed="true"] { background: var(--green); color: #0b0f06; border-color: var(--green); }
+.rounds button[aria-pressed="true"] small { color: #1a2a05; }
+.rounds button .now { color: var(--cyan); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tchip { height: 34px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line-2); background: rgba(255,255,255,.04); font-family: var(--mono); font-weight: 800; display: inline-flex; align-items: center; gap: 8px; }
+.tchip i { font-size: 11px; color: var(--fg-3); }
+.tchip.extra { border-color: rgba(34,211,238,.5); color: #a5f3fc; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.row .grow { flex: 1; }
+.inp { height: 40px; border-radius: 10px; border: 1px solid var(--line-2); background: #070b11; padding: 0 12px; width: 100%; font-family: var(--mono); font-weight: 700; }
+.inp:focus { border-color: var(--green); outline: none; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 12.5px; font-weight: 700; color: var(--fg-2); }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.seg button { padding: 10px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(255,255,255,.03); text-align: left; display: grid; gap: 2px; }
+.seg button b { font-size: 14px; }
+.seg button small { font-size: 12px; color: var(--fg-3); }
+.seg button[aria-pressed="true"] { border-color: var(--green); background: rgba(134,188,37,.12); }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.switch span { font-size: 13.5px; font-weight: 700; }
+.switch span small { display: block; font-size: 12px; color: var(--fg-3); font-weight: 600; }
+.toggle { position: relative; width: 50px; height: 28px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(255,255,255,.08); flex: none; }
+.toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #C9CFD6; transition: transform .18s; }
+.toggle[aria-checked="true"] { background: var(--green); border-color: var(--green); }
+.toggle[aria-checked="true"]::after { transform: translateX(22px); background: #0b0f06; }
+.note { font-size: 12.5px; color: var(--fg-3); line-height: 1.5; }
+.note b { color: var(--fg-2); }
+.okline { font-size: 13px; font-weight: 700; color: #d9f99d; }
+.errline { font-size: 13px; font-weight: 700; color: #FDA4AF; }
+
+.gate { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: var(--ink); padding: 24px; text-align: center; }
+.gate .box { max-width: 460px; display: grid; gap: 14px; justify-items: center; }
+.gate h1 { margin: 0; font-size: 26px; font-weight: 900; }
+.gate p { margin: 0; color: var(--fg-2); }
+.toast { position: fixed; left: 50%; bottom: calc(96px + var(--safe-b)); transform: translateX(-50%); z-index: 30; background: var(--panel-2); border: 1px solid var(--line-2); padding: 10px 16px; border-radius: 12px; font-size: 14px; font-weight: 800; box-shadow: 0 12px 40px rgba(0,0,0,.5); }
+
+@media (max-width: 1360px) {
+  .btn kbd { display: none; }
+  .btn { padding: 0 12px; }
+  .qnav select { max-width: 220px; }
+  .dock { gap: 8px; }
+}
+@media (max-width: 1120px) {
+  .main { grid-template-columns: minmax(0, 1fr) 250px; }
+  .btn { padding: 0 10px; font-size: 13px; }
+  .qnav select { max-width: 170px; }
+  .dock .sep { display: none; }
+  .side .hint { display: none; }
+}
+@media (max-height: 760px) {
+  .app { gap: 10px; padding-top: max(10px, var(--safe-t)); padding-bottom: max(8px, var(--safe-b)); }
+  .brand .ic { width: 40px; height: 40px; }
+  .btn, .qnav select { height: 40px; }
+  .side .hint { display: none; }
+}
+@media (max-width: 980px) {
+  html, body { overflow: auto; }
+  .app { height: auto; min-height: 100%; }
+  .main { grid-template-columns: minmax(0, 1fr); }
+  .top { flex-wrap: wrap; }
+  .opts { grid-template-columns: minmax(0, 1fr); }
+  .dock .msg { margin-left: 0; width: 100%; }
+}
+@media (max-width: 600px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .top > *, .main > *, .stage > * { min-width: 0; }
+  select { max-width: 100%; }
+  .app { padding-left: max(12px, var(--safe-l)); padding-right: max(12px, var(--safe-r)); gap: 10px; }
+  .top { gap: 8px; }
+  .brand small { display: none; }
+  .pill { height: 36px; padding: 0 10px; font-size: 13px; }
+  .qnav { flex: 1 1 100%; min-width: 0; display: flex; gap: 6px; }
+  .qnav select { flex: 1; min-width: 0; max-width: none; }
+  .dock > * { min-width: 0; }
+  .dock .sep { display: none; }
+  .side h3 { flex-wrap: wrap; gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { .pop, .chip.live .dot { animation: none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="ic"><i class="fa-solid fa-brain"></i></span><span><b data-t="title"></b><small>Knowledge Clash Live</small></span></div>
+    <span class="pill" id="roundPill"></span>
+    <span class="pill dim" id="qPill"></span>
+    <span class="spacer"></span>
+    <div class="code" id="codeBox" hidden><span id="codeLabel"></span><b id="codeVal">----</b></div>
+    <button class="icon-btn" id="langBtn" type="button" aria-label="Language"><i class="fa-solid fa-language"></i></button>
+    <button class="icon-btn" id="fsBtn" type="button" aria-label="Full screen"><i class="fa-solid fa-expand"></i></button>
+    <button class="icon-btn" id="setBtn" type="button" aria-label="Settings"><i class="fa-solid fa-sliders"></i></button>
+  </header>
+
+  <div class="main">
+    <section class="stage" aria-live="polite">
+      <div class="stage-top"><span class="chip" id="stateChip"><span class="dot"></span><span></span></span><span class="rules" id="rulesLine"></span></div>
+      <div class="qtext" id="qText"></div>
+      <div class="timer-row" id="timerRow" hidden><div class="timer" id="timer"><i id="timerBar"></i></div><b id="timerNum">0.0</b></div>
+      <div id="banner"></div>
+      <div class="opts" id="opts"></div>
+      <div class="overlay" id="overlay" hidden><div><div class="count pop" id="countNum">3</div><div class="count-sub" id="countSub"></div></div></div>
+    </section>
+    <aside class="side">
+      <h3><span data-t="teams"></span><span id="sessionLbl"></span></h3>
+      <div class="teams" id="teams"></div>
+      <div class="hint" id="sideHint"></div>
+    </aside>
+  </div>
+
+  <footer class="dock" id="dock">
+    <div class="qnav">
+      <button class="btn" id="prevBtn" type="button" aria-label="Previous question"><i class="fa-solid fa-chevron-left"></i></button>
+      <select id="qSelect" aria-label="Question"></select>
+      <button class="btn" id="nextBtn" type="button"><span data-t="next"></span><kbd>N</kbd></button>
+    </div>
+    <span class="sep"></span>
+    <button class="btn cyan" id="showBtn" type="button"><i class="fa-solid fa-display"></i><span data-t="show"></span><kbd>S</kbd></button>
+    <button class="btn primary" id="startBtn" type="button"><i class="fa-solid fa-play"></i><span data-t="start"></span><kbd>Space</kbd></button>
+    <button class="btn warn" id="revealBtn" type="button"><i class="fa-solid fa-eye"></i><span data-t="reveal"></span><kbd>R</kbd></button>
+    <button class="btn danger" id="voidBtn" type="button"><i class="fa-solid fa-rotate-left"></i><span></span></button>
+    <button class="btn" id="idleBtn" type="button"><i class="fa-solid fa-mobile-screen"></i><span data-t="idle"></span></button>
+    <span class="msg" id="dockMsg"></span>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Settings">
+  <div class="row"><h2 class="grow" data-t="settings"></h2><button class="icon-btn" id="closeSet" type="button" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+
+  <section class="sec">
+    <h4 data-t="secRound"></h4>
+    <div class="rounds" id="roundBtns"></div>
+    <div class="row"><span class="note grow" id="fpNote"></span>
+      <label class="note" for="cohortSel" data-t="cohort"></label>
+      <select class="inp" id="cohortSel" style="width:auto"><option value="24">24</option><option value="36">36</option><option value="48">48</option></select></div>
+    <div class="chips" id="teamChips"></div>
+    <div class="row">
+      <input class="inp grow" id="addTeam" inputmode="numeric" maxlength="2" placeholder="+ 组号 Team #" style="max-width:180px">
+      <button class="btn" id="addTeamBtn" type="button"><i class="fa-solid fa-plus"></i><span data-t="add"></span></button>
+      <button class="btn" id="fpResetBtn" type="button"><i class="fa-solid fa-route"></i><span data-t="fromFp"></span></button>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="applyRound" type="button"><i class="fa-solid fa-check"></i><span data-t="applyRound"></span></button>
+      <button class="btn" id="newCode" type="button"><i class="fa-solid fa-key"></i><span data-t="newCode"></span></button>
+      <button class="btn danger" id="releaseAll" type="button"><i class="fa-solid fa-mobile-screen"></i><span></span></button>
+    </div>
+    <div id="roundMsg"></div>
+  </section>
+
+  <section class="sec">
+    <h4 data-t="secRules"></h4>
+    <div class="seg" id="modeSeg">
+      <button type="button" data-mode="team"><b data-t="modeTeam"></b><small data-t="modeTeamD"></small></button>
+      <button type="button" data-mode="device"><b data-t="modeDevice"></b><small data-t="modeDeviceD"></small></button>
+    </div>
+    <div class="grid2">
+      <div class="field"><label for="ptsOk" data-t="ptsOk"></label><input class="inp" id="ptsOk" type="number" min="0" max="1000"></div>
+      <div class="field"><label for="ptsBad" data-t="ptsBad"></label><input class="inp" id="ptsBad" type="number" min="0" max="1000"></div>
+      <div class="field"><label for="ansSec" data-t="ansSec"></label><input class="inp" id="ansSec" type="number" min="3" max="300"></div>
+      <div class="field"><label for="cdSec" data-t="cdSec"></label><input class="inp" id="cdSec" type="number" min="1" max="10"></div>
+    </div>
+    <div class="switch"><span><span data-t="rebound"></span><small data-t="reboundD"></small></span><button class="toggle" id="reboundTgl" type="button" role="switch" aria-checked="true" aria-label="Rebound"></button></div>
+    <div class="row"><button class="btn primary" id="saveRules" type="button"><i class="fa-solid fa-floppy-disk"></i><span data-t="saveRules"></span></button><span class="note" data-t="rulesNote"></span></div>
+    <div id="rulesMsg"></div>
+  </section>
+
+  <section class="sec">
+    <h4 data-t="secSession"></h4>
+    <div class="row"><span class="pill"><i class="fa-solid fa-tag"></i><span class="mono" id="sessName"></span></span><span class="grow"></span>
+      <button class="btn danger" id="newSess" type="button"><i class="fa-solid fa-flag-checkered"></i><span></span></button></div>
+    <p class="note" data-t="sessNote"></p>
+  </section>
+
+  <section class="sec">
+    <h4 data-t="secBank"></h4>
+    <p class="note" id="bankNote"></p>
+  </section>
+</aside>
+
+<div class="gate" id="gate" hidden><div class="box"><i class="fa-solid fa-lock" style="font-size:30px;color:var(--green)"></i><h1 data-t="gateTitle"></h1><p id="gateText"></p></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>(function () {
+  // FastPass schedule shared by the hub, the admin console and Knowledge Clash Live.
+  // M[cohort][team - 1][round - 1] = station index (0-5).
+  var M = {"24":[[0,1,2,3,4,5],[3,0,1,5,4,2],[5,3,4,2,0,1],[2,0,3,5,1,4],[4,2,0,5,1,3],[0,5,1,4,2,3],[4,0,2,1,3,5],[3,4,5,0,2,1],[2,1,3,4,0,5],[1,2,0,3,5,4],[5,3,0,2,4,1],[1,0,3,5,2,4],[5,4,2,1,3,0],[3,1,5,2,4,0],[0,4,1,3,5,2],[2,5,4,0,1,3],[5,3,4,1,2,0],[0,3,5,2,1,4],[2,1,4,0,5,3],[4,2,3,1,0,5],[1,5,0,4,3,2],[1,4,5,3,0,2],[4,5,2,0,3,1],[3,2,1,4,5,0]],"36":[[0,1,2,3,4,5],[1,2,3,4,5,0],[2,3,4,5,0,1],[3,4,5,0,1,2],[4,5,0,1,2,3],[5,0,1,2,3,4],[0,2,4,1,3,5],[1,3,5,2,4,0],[2,4,0,3,5,1],[3,5,1,4,0,2],[4,0,2,5,1,3],[5,1,3,0,2,4],[0,3,5,4,2,1],[1,4,0,5,3,2],[2,5,1,0,4,3],[3,0,2,1,5,4],[4,1,3,2,0,5],[5,2,4,3,1,0],[0,4,1,2,5,3],[1,5,2,3,0,4],[2,0,3,4,1,5],[3,1,4,5,2,0],[4,2,5,0,3,1],[5,3,0,1,4,2],[0,5,3,4,1,2],[1,0,4,5,2,3],[2,1,5,0,3,4],[3,2,0,1,4,5],[4,3,1,2,5,0],[5,4,2,3,0,1],[0,2,5,1,4,3],[1,3,0,2,5,4],[2,4,1,3,0,5],[3,5,2,4,1,0],[4,0,3,5,2,1],[5,1,4,0,3,2]],"48":[[0,1,2,3,4,5],[3,0,1,5,4,2],[5,3,4,2,0,1],[2,0,3,5,1,4],[4,2,0,5,1,3],[0,5,1,4,2,3],[4,0,2,1,3,5],[3,4,5,0,2,1],[2,1,3,4,0,5],[1,2,0,3,5,4],[5,3,0,2,4,1],[1,0,3,5,2,4],[5,4,2,1,3,0],[3,1,5,2,4,0],[0,4,1,3,5,2],[2,5,4,0,1,3],[5,3,4,1,2,0],[0,3,5,2,1,4],[2,1,4,0,5,3],[4,2,3,1,0,5],[1,5,0,4,3,2],[1,4,5,3,0,2],[4,5,2,0,3,1],[3,2,1,4,5,0],[0,1,2,3,4,5],[3,0,1,5,4,2],[5,3,4,2,0,1],[2,0,3,5,1,4],[4,2,0,5,1,3],[0,5,1,4,2,3],[4,0,2,1,3,5],[3,4,5,0,2,1],[2,1,3,4,0,5],[1,2,0,3,5,4],[5,3,0,2,4,1],[1,0,3,5,2,4],[5,4,2,1,3,0],[3,1,5,2,4,0],[0,4,1,3,5,2],[2,5,4,0,1,3],[5,3,4,1,2,0],[0,3,5,2,1,4],[2,1,4,0,5,3],[4,2,3,1,0,5],[1,5,0,4,3,2],[1,4,5,3,0,2],[4,5,2,0,3,1],[3,2,1,4,5,0]]};
+  var DEFAULT_SLOTS = [['13:50', '14:20'], ['14:30', '15:00'], ['15:10', '15:40'], ['16:00', '16:30'], ['16:40', '17:10'], ['17:20', '17:50']];
+  function cohortOf(n) { n = parseInt(n, 10); return n === 24 || n === 48 ? n : 36; }
+  function toMin(s) { var p = String(s || '').split(':'); return (+p[0]) * 60 + (+p[1] || 0); }
+  window.DL_FP = {
+    matrix: M,
+    cohortOf: cohortOf,
+    // Teams at a station (0-5) in a round (1-6), ascending.
+    teamsAt: function (station, round, cohort) {
+      var m = M[cohortOf(cohort)] || [], out = [];
+      for (var t = 0; t < m.length; t++) if (m[t][round - 1] === station) out.push(t + 1);
+      return out;
+    },
+    // Normalised [[start, end] x6] from fastpass_config.time_slots (or the defaults).
+    slots: function (timeSlots) {
+      if (Array.isArray(timeSlots) && timeSlots.length === 6 && timeSlots.every(function (s) { return s && s.start && s.end; })) {
+        return timeSlots.map(function (s) { return [s.start, s.end]; });
+      }
+      return DEFAULT_SLOTS.slice();
+    },
+    // The round being played now, or the last one that started (1-6); 1 before the first round.
+    currentRound: function (slots, date) {
+      var d = date || new Date(), now = d.getHours() * 60 + d.getMinutes(), r = 1;
+      for (var i = 0; i < slots.length; i++) if (now >= toMin(slots[i][0])) r = i + 1;
+      return r;
+    },
+    isLive: function (slots, round, date) {
+      var d = date || new Date(), now = d.getHours() * 60 + d.getMinutes(), s = slots[round - 1];
+      return !!s && now >= toMin(s[0]) && now <= toMin(s[1]);
+    }
+  };
+})();
+</script>
+<script>
+(function () {
+  'use strict';
+  var SB_URL = 'https://pwnvkrrnxbpxignynvuh.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ';
+  var KC_STATION = 3; // 勤业智库 is the 4th station (index 3) in FastPass
+  var LETTERS = ['A', 'B', 'C', 'D'];
+
+  var T = {
+    zh: {
+      title: '勤业智库 · 抢答', teams: '本轮队伍', next: '下一题', show: '展示题目', start: '开始 3-2-1', reveal: '揭晓', voidQ: '作废重答', voidArm: '确认作废？', idle: '收起手机端',
+      settings: '抢答设置', secRound: '轮次与队伍（跟随 FastPass）', cohort: '全场组数', add: '加入', fromFp: '按 FastPass 重置', applyRound: '应用到本轮', newCode: '换加入码',
+      releaseAll: '让所有队伍重新加入', releaseArm: '确认全部重新加入？',
+      secRules: '答题规则', modeTeam: '全员可答', modeTeamD: '同队任意手机可答，队伍以第一份答案为准', modeDevice: '每队一台设备', modeDeviceD: '每队只有第一台加入的手机可以作答',
+      ptsOk: '答对得分', ptsBad: '答错扣分', ansSec: '作答时间（秒）', cdSec: '倒计时（秒）', rebound: '首答错误后其他队伍可继续抢答', reboundD: '关闭时：第一个答案答错，本题立即结束',
+      saveRules: '保存规则', rulesNote: '从下一道展示的题目起生效', secSession: '场次', newSess: '开始新场次', newSessArm: '确认开始新场次？',
+      sessNote: '新场次会清空当前轮次和加入码；之前的成绩保留在数据库，但不再计入本场。', secBank: '题库',
+      bankNote: '共 {n} 题，来自管理后台 / 勤业智库题库。在管理后台「配置 → 勤业智库」修改题目，保存后这里自动更新。',
+      roundPill: '第 {r} 轮 · {t}', noRound: '未设置轮次', qPill: '第 {i} / {n} 题', codeLabel: '加入码<small>学员门户输入</small>', codeLocked: '尝试过多<small>请换加入码</small>',
+      stIdle: '待命', stQuestion: '已展示 · 等待开始', stLive: '抢答中', stRevealed: '已揭晓',
+      rules: '{mode} · 答对 +{ok} · 答错 −{bad} · {reb}', reb1: '可接力抢答', reb0: '首答定胜负',
+      noQuestion: '点「展示题目」把第 {i} 题发到大屏和手机', noBank: '题库为空，请先在管理后台添加题目', noRoundQ: '先在右上角设置中选择轮次和队伍',
+      get: '准备抢答', go: 'GO', winner: '第 {t} 组最快答对', winnerSub: '+{p} 分 · 用时 {s} 秒', nobody: '本题无人答对', nobodySub: '正确答案：{k}',
+      joined: '{n} 台已加入', notJoined: '未加入', waiting: '等待作答', pts: '分',
+      sideHint: '学员在学员门户输入加入码即可加入本轮。若有队伍的手机被别人占用，点 ⟲ 让该队重新加入。',
+      fpNote: 'FastPass 第 {r} 轮在勤业智库的队伍', fpNow: '现在', applied: '已应用：第 {r} 轮，{n} 支队伍', saved: '规则已保存',
+      newSessDone: '已开始新场次：{s}', released: '已让第 {t} 组重新加入', releasedAll: '所有队伍需要重新加入', codeNew: '新加入码：{c}',
+      gateTitle: '仅限工作人员', gateNoAuth: '请先在 DeloitteLand Suite 以工作人员身份登录，再打开抢答大屏。', gateNoSb: '无法连接数据库，请检查网络后刷新。',
+      errSetup: '数据库还没有抢答功能。请在 Supabase SQL Editor 运行最新的 supabase_setup.sql。', errGeneric: '操作失败：{m}', needRound: '请先设置轮次和队伍',
+      voided: '已作废本题答案，可以重新开始'
+    },
+    en: {
+      title: 'Knowledge Clash · Live', teams: 'Teams this round', next: 'Next', show: 'Show question', start: 'Start 3-2-1', reveal: 'Reveal', voidQ: 'Void & re-ask', voidArm: 'Void it?', idle: 'Hide on phones',
+      settings: 'Buzzer settings', secRound: 'Round and teams (follows FastPass)', cohort: 'Total teams', add: 'Add', fromFp: 'Reset to FastPass', applyRound: 'Apply to round', newCode: 'New join code',
+      releaseAll: 'Make every team rejoin', releaseArm: 'Everyone rejoins?',
+      secRules: 'Answer rules', modeTeam: 'Whole team', modeTeamD: 'Any phone in the team can answer; the team’s first answer counts', modeDevice: 'One phone per team', modeDeviceD: 'Only the first phone that joined can answer',
+      ptsOk: 'Points for correct', ptsBad: 'Points off for wrong', ansSec: 'Answer time (s)', cdSec: 'Countdown (s)', rebound: 'Others can answer after a wrong first answer', reboundD: 'Off: a wrong first answer ends the question',
+      saveRules: 'Save rules', rulesNote: 'Applies from the next question you show', secSession: 'Session', newSess: 'Start new session', newSessArm: 'Start a new session?',
+      sessNote: 'A new session clears the round and join code. Earlier scores stay in the database but no longer count.', secBank: 'Question bank',
+      bankNote: '{n} questions from the admin console’s Knowledge Clash bank. Edit them in Admin › Config › Knowledge Clash; this screen updates when saved.',
+      roundPill: 'Round {r} · {t}', noRound: 'No round set', qPill: 'Question {i} / {n}', codeLabel: 'Join code<small>enter in the hub</small>', codeLocked: 'Too many tries<small>make a new code</small>',
+      stIdle: 'Standby', stQuestion: 'Shown · waiting to start', stLive: 'Answering', stRevealed: 'Revealed',
+      rules: '{mode} · correct +{ok} · wrong −{bad} · {reb}', reb1: 'rebound on', reb0: 'first answer decides',
+      noQuestion: 'Press “Show question” to send question {i} to the screen and phones', noBank: 'The question bank is empty. Add questions in the admin console.', noRoundQ: 'Choose the round and teams in settings first',
+      get: 'Answer now!', go: 'GO', winner: 'Team {t} was fastest', winnerSub: '+{p} points · {s} s', nobody: 'Nobody got it', nobodySub: 'Correct answer: {k}',
+      joined: '{n} joined', notJoined: 'not joined', waiting: 'waiting', pts: 'pts',
+      sideHint: 'Teams join by entering the join code in the participant hub. If someone else took a team’s phone slot, press ⟲ to let that team rejoin.',
+      fpNote: 'FastPass round {r} teams at Knowledge Clash', fpNow: 'now', applied: 'Applied: round {r}, {n} teams', saved: 'Rules saved',
+      newSessDone: 'New session: {s}', released: 'Team {t} can rejoin', releasedAll: 'Every team needs to rejoin', codeNew: 'New join code: {c}',
+      gateTitle: 'Staff only', gateNoAuth: 'Sign in to DeloitteLand Suite as staff, then open this screen.', gateNoSb: 'Can’t reach the database. Check the connection and reload.',
+      errSetup: 'The database doesn’t have the buzzer yet. Run the latest supabase_setup.sql in the Supabase SQL Editor.', errGeneric: 'Didn’t work: {m}', needRound: 'Set the round and teams first',
+      voided: 'Answers voided; start again when ready'
+    }
+  };
+  var lang = (function () { try { var l = localStorage.getItem('kc_live_lang') || localStorage.getItem('admin_lang'); if (l === 'zh' || l === 'en') return l; } catch (e) {} return /^zh/i.test(navigator.language || 'zh') ? 'zh' : 'en'; })();
+  function t(k, v) { var s = (T[lang] && T[lang][k]) || T.zh[k] || k; if (v) for (var x in v) s = s.split('{' + x + '}').join(v[x]); return s; }
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function split(raw) { var m = String(raw || '').match(/^(.*?)\s*[/／]\s*(.*)$/); return m ? [m[1].trim(), m[2].trim()] : [String(raw || ''), '']; }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+
+  var sb = null;
+  try { sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) {}
+  var S = {
+    settings: null, live: null, secret: null, joins: [], answers: [], bank: [],
+    qIndex: parseInt(store('kc_live_qindex') || '0', 10) || 0,
+    cohort: 36, slots: window.DL_FP ? DL_FP.slots(null) : [], offset: 0,
+    draftRound: null, draftTeams: null, busy: false, setupMissing: false
+  };
+
+  // ---------- clock: database time ----------
+  function serverNow() { return Date.now() + S.offset; }
+  function syncClock() {
+    if (!sb) return;
+    var t0 = Date.now();
+    sb.rpc('kc_now').then(function (res) {
+      var t1 = Date.now();
+      if (res.error || !res.data) return;
+      S.offset = Date.parse(res.data) - (t0 + t1) / 2;
+    });
+  }
+
+  // ---------- data ----------
+  function isMissing(err) { return err && /kc_|function .* does not exist|PGRST20[0-9]|42P01|42883|schema cache/i.test((err.message || '') + ' ' + (err.code || '')); }
+  function loadLive() {
+    return sb.from('kc_live').select('*').eq('id', 1).maybeSingle().then(function (res) {
+      if (res.error) { if (isMissing(res.error)) S.setupMissing = true; return; }
+      var prev = S.live; S.live = res.data;
+      if (!prev || !S.live || prev.seq !== S.live.seq || prev.state !== S.live.state || prev.round_no !== S.live.round_no || String(prev.teams) !== String(S.live.teams)) { loadSecret(); loadRoundData(); }
+      render();
+    });
+  }
+  function loadSecret() { return sb.from('kc_secret').select('join_code, join_fails').eq('id', 1).maybeSingle().then(function (res) { if (!res.error) { S.secret = res.data; renderTop(); } }); }
+  function loadSettings() {
+    return sb.from('kc_settings').select('*').eq('id', 1).maybeSingle().then(function (res) {
+      if (res.error) { if (isMissing(res.error)) S.setupMissing = true; render(); return; }
+      S.settings = res.data; fillRules(); render();
+    });
+  }
+  function loadRoundData() {
+    var L = S.live; if (!L || !L.round_no) { S.joins = []; S.answers = []; renderTeams(); return Promise.resolve(); }
+    return Promise.all([
+      sb.from('kc_joins').select('team, device_id, joined_at').eq('session', L.session).eq('round_no', L.round_no),
+      sb.from('kc_answers').select('seq, team, choice, is_correct, points, rank, ms').eq('session', L.session).eq('round_no', L.round_no).order('id')
+    ]).then(function (r) {
+      if (!r[0].error) S.joins = r[0].data || [];
+      if (!r[1].error) S.answers = r[1].data || [];
+      render();
+    });
+  }
+  function loadBank() {
+    return sb.from('knowledge_config').select('questions').eq('id', 1).maybeSingle().then(function (res) {
+      var q = res && res.data && res.data.questions;
+      S.bank = Array.isArray(q) ? q.filter(function (x) { return x && x.question && Array.isArray(x.options) && x.options.length >= 2; }) : [];
+      if (S.qIndex >= S.bank.length) S.qIndex = 0;
+      renderDockSelect(); render();
+    });
+  }
+  function loadFastPass() {
+    return Promise.all([
+      sb.from('portal_announcements').select('fastpass_target').eq('id', 1).maybeSingle(),
+      sb.from('fastpass_config').select('time_slots').eq('id', 1).maybeSingle()
+    ]).then(function (r) {
+      var c = r[0] && r[0].data && r[0].data.fastpass_target;
+      var stored = store('kc_live_cohort');
+      S.cohort = DL_FP.cohortOf(stored || c || 36);
+      S.fpCohortCloud = DL_FP.cohortOf(c || 36);
+      S.slots = DL_FP.slots(r[1] && r[1].data && r[1].data.time_slots);
+      renderTop(); if (!$('drawer').hidden) renderDrawer();
+    });
+  }
+
+  function rpc(name, args) {
+    return sb.rpc(name, args || {}).then(function (res) {
+      if (res.error) throw res.error;
+      return res.data;
+    });
+  }
+  function fail(err) {
+    S.busy = false;
+    var msg = isMissing(err) ? t('errSetup') : t('errGeneric', { m: (err && (err.message || err.code)) || '?' });
+    setDock(msg, true); renderDock();
+  }
+
+  // ---------- derived ----------
+  function current() { return S.bank[S.qIndex] || null; }
+  function liveQ() { return S.live && S.live.state !== 'idle' && S.live.question ? S.live : null; }
+  function seqAnswers() { var L = S.live; return L ? S.answers.filter(function (a) { return a.seq === L.seq; }) : []; }
+  function teamPoints(team) { var p = 0; S.answers.forEach(function (a) { if (a.team === team) p += a.points; }); return p; }
+  function joinsFor(team) { return S.joins.filter(function (j) { return j.team === team; }).length; }
+
+  // ---------- render ----------
+  function paintStatic() {
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    var n = document.querySelectorAll('[data-t]');
+    for (var i = 0; i < n.length; i++) n[i].textContent = t(n[i].getAttribute('data-t'));
+    document.title = t('title') + ' · Knowledge Clash Live';
+  }
+  function renderTop() {
+    var L = S.live;
+    var rp = $('roundPill');
+    if (L && L.round_no) { var sl = S.slots[L.round_no - 1] || ['', '']; rp.innerHTML = '<i class="fa-solid fa-route"></i>' + esc(t('roundPill', { r: L.round_no, t: sl[0] + '–' + sl[1] })); rp.className = 'pill'; }
+    else { rp.innerHTML = '<i class="fa-solid fa-route"></i>' + esc(t('noRound')); rp.className = 'pill dim'; }
+    var lq = liveQ();
+    $('qPill').textContent = lq ? t('qPill', { i: (lq.q_index || 0) + 1, n: lq.q_total || S.bank.length }) : (S.bank.length ? t('qPill', { i: S.qIndex + 1, n: S.bank.length }) : '');
+    var cb = $('codeBox');
+    if (L && L.round_no && S.secret && S.secret.join_code) {
+      cb.hidden = false;
+      var locked = (S.secret.join_fails || 0) >= 30;
+      cb.className = 'code' + (locked ? ' locked' : '');
+      $('codeLabel').innerHTML = locked ? t('codeLocked') : t('codeLabel');
+      $('codeVal').textContent = S.secret.join_code;
+    } else cb.hidden = true;
+    $('sessionLbl').textContent = S.settings ? S.settings.session : '';
+  }
+  function rulesText(src) {
+    if (!src) return '';
+    return t('rules', { mode: src.team_mode === 'device' ? t('modeDevice') : t('modeTeam'), ok: src.points_correct, bad: src.points_wrong, reb: src.allow_rebound ? t('reb1') : t('reb0') });
+  }
+  var lastStateKey = '';
+  function renderStage() {
+    var L = S.live, lq = liveQ(), now = serverNow();
+    var state = L ? L.state : 'idle';
+    var chip = $('stateChip');
+    chip.className = 'chip' + (state === 'live' ? ' live' : state === 'question' ? ' q' : state === 'revealed' ? ' rev' : '');
+    chip.lastChild.textContent = t(state === 'live' ? 'stLive' : state === 'question' ? 'stQuestion' : state === 'revealed' ? 'stRevealed' : 'stIdle');
+    $('rulesLine').textContent = rulesText(lq || S.settings);
+
+    var qEl = $('qText'), optsEl = $('opts');
+    var q, opts, correct = null;
+    if (lq) { q = lq.question; opts = lq.options || []; if (state === 'revealed') correct = lq.correct_index; }
+    else {
+      var c = current();
+      q = null; opts = [];
+      qEl.className = 'qtext empty';
+      qEl.innerHTML = '<div class="zh">' + esc(!S.bank.length ? t('noBank') : !(L && L.round_no) ? t('noRoundQ') : t('noQuestion', { i: S.qIndex + 1 })) + '</div>' +
+        (c && L && L.round_no ? '<div class="en">' + esc(split(c.question)[0]) + '</div>' : '');
+      optsEl.innerHTML = ''; $('banner').innerHTML = ''; $('timerRow').hidden = true; $('overlay').hidden = true;
+      return;
+    }
+    var parts = split(q);
+    qEl.className = 'qtext';
+    qEl.innerHTML = '<div class="zh">' + esc(parts[0]) + '</div>' + (parts[1] ? '<div class="en">' + esc(parts[1]) + '</div>' : '');
+
+    var ans = seqAnswers();
+    var html = '';
+    opts.forEach(function (o, i) {
+      var op = split(o);
+      var hits = ans.filter(function (a) { return a.choice === i; });
+      var cls = 'opt';
+      if (correct !== null && correct !== undefined) cls += i === correct ? ' correct' : ' dim';
+      else if (hits.some(function (a) { return !a.is_correct; })) cls += ' hit';
+      var marks = hits.map(function (a) { return '<span class="mark' + (a.is_correct ? ' okm' : '') + '">' + esc((lang === 'zh' ? '第' + a.team + '组' : 'T' + a.team)) + (a.is_correct ? ' ✓' : ' ✗') + '</span>'; }).join('');
+      html += '<div class="' + cls + '"><span class="k">' + LETTERS[i] + '</span><span class="t"><span class="zh">' + esc(op[0]) + '</span>' + (op[1] ? '<span class="en">' + esc(op[1]) + '</span>' : '') + '</span>' +
+        (marks ? '<span class="marks">' + marks + '</span>' : '') + '</div>';
+    });
+    optsEl.innerHTML = html;
+
+    // banner
+    var b = '';
+    if (state === 'revealed') {
+      var win = ans.filter(function (a) { return a.is_correct; })[0];
+      if (L.winner_team && win) b = '<div class="banner win"><i class="fa-solid fa-trophy"></i><span>' + esc(t('winner', { t: L.winner_team })) + '<small>' + esc(t('winnerSub', { p: win.points, s: (win.ms / 1000).toFixed(2) })) + '</small></span></div>';
+      else b = '<div class="banner none"><i class="fa-solid fa-circle-info"></i><span>' + esc(t('nobody')) + '<small>' + esc(t('nobodySub', { k: LETTERS[L.correct_index] || '?' })) + '</small></span></div>';
+    }
+    $('banner').innerHTML = b;
+    tick(now);
+  }
+  function tick(now) {
+    var L = S.live; if (!L) return;
+    now = now || serverNow();
+    var ov = $('overlay'), row = $('timerRow');
+    if (L.state === 'live' && L.opens_at && L.closes_at) {
+      var open = Date.parse(L.opens_at), close = Date.parse(L.closes_at);
+      if (now < open) {
+        var n = Math.ceil((open - now) / 1000);
+        ov.hidden = false; row.hidden = true;
+        var el = $('countNum');
+        if (el.textContent !== String(n)) { el.textContent = String(n); el.className = 'count'; void el.offsetWidth; el.className = 'count pop'; beep(n); }
+        $('countSub').textContent = t('get');
+      } else if (now < open + 700) {
+        ov.hidden = false; row.hidden = false;
+        var g = $('countNum'); if (g.textContent !== t('go')) { g.textContent = t('go'); g.className = 'count go pop'; beep(0); }
+        $('countSub').textContent = '';
+      } else ov.hidden = true;
+      if (now >= open) {
+        row.hidden = false;
+        var left = Math.max(0, close - now), frac = left / Math.max(1, close - open);
+        $('timerBar').style.transform = 'scaleX(' + frac.toFixed(4) + ')';
+        $('timer').className = 'timer' + (left < 3000 ? ' low' : '');
+        $('timerNum').textContent = (left / 1000).toFixed(1);
+        if (left <= 0 && !S.autoRevealSent) { S.autoRevealSent = L.seq; setTimeout(function () { rpc('kc_admin_reveal').then(loadLive, function () {}); }, 400); }
+      }
+    } else { ov.hidden = true; row.hidden = true; }
+    if (L.state !== 'live') S.autoRevealSent = null;
+  }
+  function renderTeams() {
+    var L = S.live, box = $('teams');
+    if (!L || !L.round_no || !L.teams || !L.teams.length) { box.innerHTML = '<div class="empty-note">' + esc(t('noRoundQ')) + '</div>'; $('sideHint').textContent = ''; return; }
+    var ans = seqAnswers(), rows = L.teams.map(function (tm) { return { t: tm, pts: teamPoints(tm), j: joinsFor(tm), a: ans.filter(function (x) { return x.team === tm; })[0] }; });
+    rows.sort(function (a, b) { return b.pts - a.pts || a.t - b.t; });
+    box.innerHTML = rows.map(function (r) {
+      var phones = r.j ? '<span class="phones">' + new Array(Math.min(r.j, 6) + 1).join('<i></i>') + '</span>' + esc(t('joined', { n: r.j })) : esc(t('notJoined'));
+      var a = '';
+      if (L.state !== 'idle' && L.state !== 'question') {
+        if (r.a) a = '<span class="ans ' + (r.a.is_correct ? 'ok' : 'bad') + '">' + LETTERS[r.a.choice] + (r.a.is_correct ? ' ✓ ' : ' ✗ ') + (r.a.ms / 1000).toFixed(2) + 's</span>';
+        else if (L.state === 'live' && r.j) a = '<span class="ans wait">' + esc(t('waiting')) + '</span>';
+      }
+      // Once a team has an answer, the phone dots alone say it's connected: keeps every row on one line.
+      if (a && r.j) phones = '<span class="phones" title="' + esc(t('joined', { n: r.j })) + '">' + new Array(Math.min(r.j, 6) + 1).join('<i></i>') + '</span>';
+      return '<div class="team' + (L.winner_team === r.t && L.state === 'revealed' ? ' win' : '') + '"><span class="no">' + String(r.t).padStart(2, '0') + '</span>' +
+        '<span class="st">' + phones + a + '</span>' +
+        '<span class="row" style="gap:8px;flex-wrap:nowrap"><span class="pts' + (r.pts < 0 ? ' neg' : '') + '">' + (r.pts > 0 ? '+' : '') + r.pts + '</span>' +
+        '<button class="rel" type="button" data-release="' + r.t + '" title="' + esc(t('released', { t: r.t })) + '" aria-label="Release team ' + r.t + '">⟲</button></span></div>';
+    }).join('');
+    $('sideHint').textContent = t('sideHint');
+  }
+  var dockMsg = { text: '', err: false, at: 0 };
+  function setDock(text, err) { dockMsg = { text: text, err: !!err, at: Date.now() }; renderDock(); }
+  var voidArmed = false, voidTimer;
+  function renderDock() {
+    var L = S.live, st = L ? L.state : 'idle', hasRound = !!(L && L.round_no), lq = liveQ();
+    $('showBtn').disabled = S.busy || !hasRound || !current() || st === 'live';
+    $('startBtn').disabled = S.busy || st !== 'question';
+    $('revealBtn').disabled = S.busy || !(st === 'live' || st === 'question');
+    $('voidBtn').disabled = S.busy || !lq;
+    $('voidBtn').className = 'btn danger' + (voidArmed ? ' armed' : '');
+    $('voidBtn').lastChild.textContent = voidArmed ? t('voidArm') : t('voidQ');
+    $('idleBtn').disabled = S.busy || st === 'idle';
+    $('nextBtn').disabled = S.busy || !S.bank.length || st === 'live';
+    $('prevBtn').disabled = S.busy || !S.bank.length || st === 'live';
+    $('qSelect').disabled = st === 'live';
+    var m = $('dockMsg');
+    if (S.setupMissing) { m.textContent = t('errSetup'); m.className = 'msg err'; }
+    else if (dockMsg.text && Date.now() - dockMsg.at < 6000) { m.textContent = dockMsg.text; m.className = 'msg' + (dockMsg.err ? ' err' : ''); }
+    else m.textContent = '';
+  }
+  function renderDockSelect() {
+    var sel = $('qSelect');
+    sel.innerHTML = S.bank.map(function (q, i) { var sp = split(q.question), z = (lang === 'en' && sp[1]) ? sp[1] : sp[0]; return '<option value="' + i + '">' + (i + 1) + '. ' + esc(z.length > 26 ? z.slice(0, 26) + '…' : z) + '</option>'; }).join('');
+    sel.value = String(S.qIndex);
+  }
+  function render() { paintStatic(); renderTop(); renderStage(); renderTeams(); renderDock(); }
+
+  // ---------- countdown beeps (start after a host click, so audio is allowed) ----------
+  var actx = null;
+  function beep(n) {
+    try {
+      if (!actx) return;
+      var o = actx.createOscillator(), g = actx.createGain();
+      o.frequency.value = n === 0 ? 1046 : 660; o.type = 'sine';
+      g.gain.setValueAtTime(0.0001, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.25, actx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + (n === 0 ? 0.6 : 0.25));
+      o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + 0.65);
+    } catch (e) {}
+  }
+  function unlockAudio() { try { if (!actx) { var A = window.AudioContext || window.webkitAudioContext; if (A) actx = new A(); } if (actx && actx.state === 'suspended') actx.resume(); } catch (e) {} }
+
+  // ---------- host actions ----------
+  function act(p, okMsg) {
+    S.busy = true; renderDock();
+    return p.then(function (d) { S.busy = false; if (okMsg) setDock(okMsg); return Promise.all([loadLive(), loadRoundData()]).then(function () { return d; }); }, fail);
+  }
+  function showCurrent() {
+    var q = current(), L = S.live;
+    if (!q) return;
+    if (!L || !L.round_no) { setDock(t('needRound'), true); return; }
+    var correct = Math.min(Math.max(0, q.correctIndex | 0), q.options.length - 1);
+    act(rpc('kc_admin_show', { p_q_index: S.qIndex, p_q_total: S.bank.length, p_question: q.question, p_options: q.options.slice(0, 4), p_correct: correct }));
+  }
+  function setQ(i) { if (!S.bank.length) return; S.qIndex = (i + S.bank.length) % S.bank.length; store('kc_live_qindex', String(S.qIndex)); $('qSelect').value = String(S.qIndex); render(); }
+  $('showBtn').onclick = function () { unlockAudio(); showCurrent(); };
+  $('startBtn').onclick = function () { unlockAudio(); act(rpc('kc_admin_start')); };
+  $('revealBtn').onclick = function () { act(rpc('kc_admin_reveal')); };
+  $('idleBtn').onclick = function () { act(rpc('kc_admin_idle')); };
+  $('nextBtn').onclick = function () { unlockAudio(); setQ(S.qIndex + 1); if (S.live && S.live.round_no) showCurrent(); };
+  $('prevBtn').onclick = function () { setQ(S.qIndex - 1); };
+  $('qSelect').onchange = function () { setQ(parseInt(this.value, 10) || 0); };
+  $('voidBtn').onclick = function () {
+    if (!voidArmed) { voidArmed = true; clearTimeout(voidTimer); voidTimer = setTimeout(function () { voidArmed = false; renderDock(); }, 4000); renderDock(); return; }
+    voidArmed = false; act(rpc('kc_admin_void'), t('voided'));
+  };
+  $('teams').onclick = function (ev) {
+    var b = ev.target.closest && ev.target.closest('[data-release]'); if (!b) return;
+    var tm = parseInt(b.getAttribute('data-release'), 10);
+    act(rpc('kc_admin_release', { p_team: tm }), t('released', { t: tm }));
+  };
+  document.addEventListener('keydown', function (e) {
+    if (!$('drawer').hidden || /INPUT|SELECT|TEXTAREA/.test((e.target && e.target.tagName) || '')) return;
+    var st = S.live ? S.live.state : 'idle';
+    if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); if (st === 'question') $('startBtn').click(); else if (st === 'live') $('revealBtn').click(); }
+    else if (e.key === 's' || e.key === 'S') $('showBtn').click();
+    else if (e.key === 'r' || e.key === 'R') $('revealBtn').click();
+    else if (e.key === 'n' || e.key === 'N') $('nextBtn').click();
+    else if (e.key === 'ArrowRight' && st !== 'live') setQ(S.qIndex + 1);
+    else if (e.key === 'ArrowLeft' && st !== 'live') setQ(S.qIndex - 1);
+  });
+  $('langBtn').onclick = function () { lang = lang === 'zh' ? 'en' : 'zh'; store('kc_live_lang', lang); renderDockSelect(); render(); if (!$('drawer').hidden) renderDrawer(); };
+  $('fsBtn').onclick = function () { var d = document.documentElement; try { if (!document.fullscreenElement) (d.requestFullscreen || d.webkitRequestFullscreen).call(d); else document.exitFullscreen(); } catch (e) {} };
+
+  // ---------- settings drawer ----------
+  function openDrawer() {
+    var L = S.live;
+    S.draftRound = (L && L.round_no) || DL_FP.currentRound(S.slots);
+    S.draftTeams = (L && L.round_no === S.draftRound && L.teams && L.teams.length) ? L.teams.slice() : DL_FP.teamsAt(KC_STATION, S.draftRound, S.cohort);
+    $('drawer').hidden = false; $('scrim').hidden = false; renderDrawer(); fillRules();
+  }
+  function closeDrawer() { $('drawer').hidden = true; $('scrim').hidden = true; }
+  $('setBtn').onclick = openDrawer; $('closeSet').onclick = closeDrawer; $('scrim').onclick = closeDrawer;
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('drawer').hidden) closeDrawer(); });
+
+  var armed = { all: false, sess: false };
+  function renderDrawer() {
+    paintStatic();
+    var cur = DL_FP.currentRound(S.slots), html = '';
+    for (var r = 1; r <= 6; r++) {
+      var sl = S.slots[r - 1] || ['', ''];
+      html += '<button type="button" data-round="' + r + '" aria-pressed="' + (r === S.draftRound) + '"><b>R' + r + (r === cur && DL_FP.isLive(S.slots, r) ? ' <span class="now">●</span>' : '') + '</b><small>' + esc(sl[0]) + '</small></button>';
+    }
+    $('roundBtns').innerHTML = html;
+    $('cohortSel').value = String(S.cohort);
+    var fpTeams = DL_FP.teamsAt(KC_STATION, S.draftRound, S.cohort);
+    $('fpNote').textContent = t('fpNote', { r: S.draftRound }) + ': ' + fpTeams.join(', ');
+    $('teamChips').innerHTML = S.draftTeams.map(function (tm) {
+      return '<button class="tchip' + (fpTeams.indexOf(tm) < 0 ? ' extra' : '') + '" type="button" data-rm="' + tm + '">' + String(tm).padStart(2, '0') + '<i class="fa-solid fa-xmark"></i></button>';
+    }).join('');
+    $('releaseAll').className = 'btn danger' + (armed.all ? ' armed' : '');
+    $('releaseAll').lastChild.textContent = armed.all ? t('releaseArm') : t('releaseAll');
+    $('newSess').className = 'btn danger' + (armed.sess ? ' armed' : '');
+    $('newSess').lastChild.textContent = armed.sess ? t('newSessArm') : t('newSess');
+    $('sessName').textContent = S.settings ? S.settings.session : '—';
+    $('bankNote').textContent = t('bankNote', { n: S.bank.length });
+  }
+  function fillRules() {
+    var s = S.settings; if (!s) return;
+    if (document.activeElement && document.activeElement.closest && document.activeElement.closest('#drawer')) return;
+    $('ptsOk').value = s.points_correct; $('ptsBad').value = s.points_wrong; $('ansSec').value = s.answer_seconds; $('cdSec').value = s.countdown_seconds;
+    $('reboundTgl').setAttribute('aria-checked', String(!!s.allow_rebound));
+    var bs = $('modeSeg').querySelectorAll('button');
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute('aria-pressed', String(bs[i].getAttribute('data-mode') === s.team_mode));
+  }
+  $('roundBtns').onclick = function (e) {
+    var b = e.target.closest && e.target.closest('[data-round]'); if (!b) return;
+    S.draftRound = parseInt(b.getAttribute('data-round'), 10);
+    S.draftTeams = DL_FP.teamsAt(KC_STATION, S.draftRound, S.cohort); renderDrawer();
+  };
+  $('cohortSel').onchange = function () { S.cohort = DL_FP.cohortOf(this.value); store('kc_live_cohort', String(S.cohort)); S.draftTeams = DL_FP.teamsAt(KC_STATION, S.draftRound, S.cohort); renderDrawer(); renderTop(); };
+  $('teamChips').onclick = function (e) {
+    var b = e.target.closest && e.target.closest('[data-rm]'); if (!b) return;
+    var tm = parseInt(b.getAttribute('data-rm'), 10);
+    S.draftTeams = S.draftTeams.filter(function (x) { return x !== tm; }); renderDrawer();
+  };
+  function addTeam() {
+    var v = parseInt($('addTeam').value, 10);
+    if (v >= 1 && v <= 48 && S.draftTeams.indexOf(v) < 0) { S.draftTeams.push(v); S.draftTeams.sort(function (a, b) { return a - b; }); }
+    $('addTeam').value = ''; renderDrawer();
+  }
+  $('addTeamBtn').onclick = addTeam;
+  $('addTeam').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); addTeam(); } };
+  $('fpResetBtn').onclick = function () { S.draftTeams = DL_FP.teamsAt(KC_STATION, S.draftRound, S.cohort); renderDrawer(); };
+  function secMsg(id, text, err) { $(id).innerHTML = text ? '<div class="' + (err ? 'errline' : 'okline') + '">' + esc(text) + '</div>' : ''; }
+  $('applyRound').onclick = function () {
+    if (!S.draftTeams.length) return;
+    rpc('kc_admin_round', { p_round: S.draftRound, p_teams: S.draftTeams, p_new_code: false }).then(function () {
+      secMsg('roundMsg', t('applied', { r: S.draftRound, n: S.draftTeams.length })); loadLive();
+    }, function (e) { secMsg('roundMsg', isMissing(e) ? t('errSetup') : t('errGeneric', { m: e.message || e.code }), true); });
+  };
+  $('newCode').onclick = function () {
+    rpc('kc_admin_new_code').then(function (d) { secMsg('roundMsg', t('codeNew', { c: d.join_code })); loadSecret(); },
+      function (e) { secMsg('roundMsg', t('errGeneric', { m: e.message || e.code }), true); });
+  };
+  $('releaseAll').onclick = function () {
+    if (!armed.all) { armed.all = true; setTimeout(function () { armed.all = false; renderDrawer(); }, 4000); renderDrawer(); return; }
+    armed.all = false;
+    rpc('kc_admin_release', { p_team: null }).then(function () { secMsg('roundMsg', t('releasedAll')); loadRoundData(); renderDrawer(); },
+      function (e) { secMsg('roundMsg', t('errGeneric', { m: e.message || e.code }), true); });
+  };
+  $('modeSeg').onclick = function (e) {
+    var b = e.target.closest && e.target.closest('[data-mode]'); if (!b) return;
+    var bs = $('modeSeg').querySelectorAll('button');
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute('aria-pressed', String(bs[i] === b));
+  };
+  $('reboundTgl').onclick = function () { this.setAttribute('aria-checked', String(this.getAttribute('aria-checked') !== 'true')); };
+  function clampInt(v, lo, hi, d) { v = parseInt(v, 10); return isNaN(v) ? d : Math.max(lo, Math.min(hi, v)); }
+  $('saveRules').onclick = function () {
+    var modeBtn = $('modeSeg').querySelector('[aria-pressed="true"]');
+    var row = {
+      team_mode: modeBtn ? modeBtn.getAttribute('data-mode') : 'team',
+      points_correct: clampInt($('ptsOk').value, 0, 1000, 10), points_wrong: clampInt($('ptsBad').value, 0, 1000, 5),
+      answer_seconds: clampInt($('ansSec').value, 3, 300, 15), countdown_seconds: clampInt($('cdSec').value, 1, 10, 3),
+      allow_rebound: $('reboundTgl').getAttribute('aria-checked') === 'true', updated_at: new Date().toISOString()
+    };
+    sb.from('kc_settings').update(row).eq('id', 1).select('*').then(function (res) {
+      if (res.error || !res.data || !res.data.length) { secMsg('rulesMsg', res.error && isMissing(res.error) ? t('errSetup') : t('errGeneric', { m: (res.error && res.error.message) || 'no permission' }), true); return; }
+      S.settings = res.data[0]; secMsg('rulesMsg', t('saved')); fillRules(); render();
+    });
+  };
+  $('newSess').onclick = function () {
+    if (!armed.sess) { armed.sess = true; setTimeout(function () { armed.sess = false; renderDrawer(); }, 4000); renderDrawer(); return; }
+    armed.sess = false;
+    rpc('kc_admin_new_session', { p_session: null }).then(function (d) {
+      setDock(t('newSessDone', { s: d.session })); return Promise.all([loadSettings(), loadLive()]);
+    }).then(function () { renderDrawer(); }, fail);
+  };
+
+  // ---------- boot ----------
+  var gateShown = false;
+  function gate(text) { gateShown = true; $('gate').hidden = false; $('gateText').textContent = text; paintStatic(); }
+  function boot() {
+    paintStatic();
+    if (!sb) { gate(t('gateNoSb')); return; }
+    sb.auth.getSession().then(function (res) {
+      var u = res && res.data && res.data.session && res.data.session.user;
+      var role = u && window.DLH && DLH.roleOf ? DLH.roleOf(u.email) : (u ? 'host' : null);
+      if (!u || !role) { gate(t('gateNoAuth')); return; }
+      syncClock(); setInterval(syncClock, 60000);
+      Promise.all([loadSettings(), loadBank(), loadFastPass()]).then(loadLive);
+      try {
+        sb.channel('kc-live-host')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'kc_live' }, function () { loadLive(); })
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'kc_answers' }, function () { loadRoundData(); })
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'kc_joins' }, function () { loadRoundData(); })
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'knowledge_config' }, function () { loadBank(); })
+          .subscribe();
+      } catch (e) {}
+      // Safety net if realtime is slow: quick while answering, relaxed otherwise.
+      var lastPoll = 0;
+      setInterval(function () {
+        if (document.hidden || gateShown) return;
+        var st = S.live ? S.live.state : 'idle', gap = st === 'live' ? 900 : 3000;
+        if (Date.now() - lastPoll < gap) return;
+        lastPoll = Date.now(); loadLive(); if (S.live && S.live.round_no) loadRoundData();
+      }, 300);
+      var lastDock = 0;
+      (function frame() {
+        if (S.live && S.live.state === 'live') tick();
+        if (Date.now() - lastDock > 500) { lastDock = Date.now(); renderDock(); }
+        requestAnimationFrame(frame);
+      })();
+    });
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

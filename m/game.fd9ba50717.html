@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>window.DL_MODULE="game";</script><script src="rt.fa1846e13f.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/press-start-2p@5.2.7/400.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+::selection{background:rgba(134,188,37,.35);color:#fff}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#070a0f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>D-Rush: A1 Onboarding Edition</title>
+<!-- Optional pixel font: loaded non-blocking so the game never waits on it (Google Fonts can be slow/blocked on some networks) -->
+<style>
+:root{
+  --green:#86BC25;--dgreen:#568819;--teal:#004F59;--navy:#002776;--bg:#070a0f;--card:#11151c;--slate:#1E232A;
+  --line:rgba(255,255,255,.12);--muted:#9aa3ad;--gold:#F59E0B;--cyan:#38BDF8;--red:#F43F5E;
+  --pixel:"Press Start 2P",ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;
+  --sans:Aptos, "Aptos Display", "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Roboto, Arial,system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input{-webkit-user-select:text;user-select:text}
+button{font-family:inherit;color:inherit;margin:0}
+html,body{margin:0;padding:0;height:100%;width:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg)}
+body{
+  position:fixed;inset:0;display:flex;flex-direction:column;color:#fff;font-family:var(--sans);
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;
+  background-image:radial-gradient(circle at 50% 8%,rgba(134,188,37,.14) 0%,transparent 55%),radial-gradient(circle at 50% 92%,rgba(0,79,89,.25) 0%,transparent 65%);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.app{flex:1;min-height:0;width:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:6px;padding:6px 8px 8px}
+
+/* Header */
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:8px;cursor:pointer;min-width:0}
+.logo{width:32px;height:32px;border-radius:9px;background:rgba(134,188,37,.18);border:1px solid rgba(134,188,37,.45);color:var(--green);font:900 11px var(--pixel);display:grid;place-items:center;transition:transform .12s,color .12s,border-color .12s;flex-shrink:0}
+.logo.tap{transform:scale(1.18);border-color:var(--gold);color:var(--gold)}
+.brand .name{font:11px var(--pixel);letter-spacing:1px;display:flex;align-items:center;white-space:nowrap}
+.dot{display:inline-block;width:.55em;height:.55em;background:var(--green);margin-left:.2em;box-shadow:0 0 8px rgba(134,188,37,.9)}
+.brand .sub{font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:.3px;white-space:nowrap}
+.dock{display:flex;gap:5px;flex-shrink:0}
+.icon-btn{min-width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#e5e7eb;font-size:15px;display:grid;place-items:center;padding:0 7px;cursor:pointer;touch-action:manipulation;line-height:1}
+.icon-btn:active{transform:translateY(1px);background:rgba(255,255,255,.12)}
+.icon-btn.gold{border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.12)}
+.icon-btn.lang{font:800 11px var(--sans);color:var(--green);border-color:rgba(134,188,37,.45);background:rgba(134,188,37,.12)}
+
+/* HUD */
+.hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;background:#090c12;border:1px solid var(--line);border-radius:12px;padding:6px 6px 5px;flex-shrink:0}
+.stat{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.stat .k{font:7px var(--pixel);color:var(--muted);white-space:nowrap}
+.stat .v{font:10px var(--pixel);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.stat.rank{cursor:pointer}
+.stat.rank .v{color:#67e8f9;font-size:8px;line-height:10px}
+#hudScore{color:var(--green)}
+.meta{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#cbd5e1;border-top:1px solid var(--line);padding-top:5px;margin-top:1px;gap:8px;min-width:0}
+.meta .loc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.meta .right{display:flex;align-items:center;gap:8px;flex-shrink:0;font:8px var(--pixel)}
+#hudCombo{color:var(--gold)}
+#hudClock{color:#e2e8f0}
+
+/* Stage */
+.stage{flex:1;min-height:150px;position:relative;border-radius:14px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;touch-action:none;isolation:isolate;transform:translateZ(0);-webkit-mask-image:-webkit-radial-gradient(white,black)}
+canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none}
+canvas.green{filter:grayscale(1) sepia(1) hue-rotate(45deg) saturate(3.5) brightness(.95)}
+canvas.sepia{filter:sepia(.75) contrast(1.05)}
+.crt{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.28) 50%);background-size:100% 4px;opacity:.4;z-index:5}
+.pause-fab{position:absolute;top:6px;right:6px;z-index:15;width:36px;height:36px;border-radius:10px;background:rgba(0,0,0,.55);border:1px solid var(--line);color:#fff;font-size:13px;display:grid;place-items:center;cursor:pointer;touch-action:manipulation}
+.toast{position:absolute;top:8px;left:50%;transform:translate(-50%,-160%);z-index:16;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.9);border:1px solid rgba(134,188,37,.7);color:var(--green);font-size:11px;font-weight:800;transition:transform .22s ease;max-width:78%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.toast.show{transform:translate(-50%,0)}
+.banner{position:absolute;left:0;right:0;top:30%;z-index:14;text-align:center;pointer-events:none;opacity:0;padding:0 10px}
+.banner .b1{font:14px var(--pixel);color:var(--gold);text-shadow:2px 2px 0 #000;line-height:1.5}
+.banner .b2{font:9px var(--pixel);color:#fff;text-shadow:1px 1px 0 #000;margin-top:6px;line-height:1.5}
+.banner.show{animation:bannerAnim 1.9s ease-out forwards}
+@keyframes bannerAnim{0%{opacity:0;transform:scale(.6)}12%{opacity:1;transform:scale(1.08)}22%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-12px)}}
+.pills{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);z-index:15;display:flex;gap:4px;pointer-events:none}
+.pill{font:7px var(--pixel);padding:4px 7px;border-radius:999px;background:rgba(0,0,0,.82);border:1px solid;white-space:nowrap}
+
+/* Overlays inside the stage */
+.overlay{position:absolute;inset:0;z-index:20;display:none;flex-direction:column;padding:12px;background:rgba(7,10,15,.95);overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.overlay.show{display:flex}
+.inner{margin:auto;width:100%;max-width:330px;display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;background:rgba(134,188,37,.1);border:1px solid rgba(134,188,37,.3);color:var(--green);font-size:9px;font-weight:800;letter-spacing:.4px}
+.title{font:22px var(--pixel);letter-spacing:2px;animation:glow 2s infinite;cursor:pointer;display:flex;align-items:center}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 3px rgba(134,188,37,.4))}50%{filter:drop-shadow(0 0 10px rgba(134,188,37,.9))}}
+.lbl{width:100%;display:flex;justify-content:space-between;font-size:10px;color:#cbd5e1;padding:0 2px}
+#nameInput{width:100%;font-size:16px;padding:9px 10px;border-radius:10px;background:#000;border:1px solid rgba(255,255,255,.22);color:#fff;text-align:center;font-family:ui-monospace,Menlo,Consolas,monospace;outline:none}
+#nameInput:focus{border-color:var(--green)}
+.sub-txt{font-size:12px;color:#d1d5db;line-height:1.45;margin:0}
+.sub-txt b{color:#fcd34d}
+.hint{font-size:10px;color:var(--muted);line-height:1.4}
+.btn{border:0;border-radius:12px;padding:13px 14px;font:11px var(--pixel);cursor:pointer;width:100%;touch-action:manipulation;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:var(--green);color:#081002;box-shadow:inset -2px -3px 0 #385e0c,inset 2px 2px 0 #b6f047,0 3px 0 #05080b}
+.btn.primary:active{transform:translateY(2px);box-shadow:inset -1px -1px 0 #385e0c,0 1px 0 #05080b}
+.btn.ghost{background:rgba(255,255,255,.07);border:1px solid var(--line);color:#fff}
+.btn.goldb{background:rgba(245,158,11,.16);border:1px solid rgba(245,158,11,.4);color:#fcd34d}
+.row{display:flex;gap:8px;width:100%}
+.row .btn{flex:1}
+.go-title{font:12px var(--pixel);color:#fb7185;line-height:1.5}
+.go-reason{font-size:12px;color:#d1d5db;margin:0;line-height:1.4}
+.metrics{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.metric{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;padding:7px 4px}
+.metric .k{font:7px var(--pixel);color:var(--muted)}
+.metric .v{font:10px var(--pixel);margin-top:5px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.newbest{font:9px var(--pixel);color:var(--gold);animation:glow 1.2s infinite}
+.sync{font-size:10px;color:#cbd5e1}
+.tip{width:100%;background:#121924;border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:8px 10px;text-align:left}
+.tip .h{font-size:9px;font-weight:800;color:var(--green);letter-spacing:.5px;text-transform:uppercase}
+.tip p{margin:4px 0 0;font-size:11.5px;color:#e5e7eb;line-height:1.45}
+.newach{font-size:11px;color:#fcd34d;line-height:1.5}
+
+/* Quiz */
+.quiz-head{font:9px var(--pixel);color:var(--gold)}
+.quiz-q{font-size:14px;font-weight:800;line-height:1.4;color:#fff;margin:0}
+.qbar{width:100%;height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+.qbar i{display:block;height:100%;width:100%;background:var(--green);transform-origin:left center}
+.opts{width:100%;display:flex;flex-direction:column;gap:7px}
+.opt{width:100%;text-align:left;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:13px;line-height:1.35;font-family:var(--sans);font-weight:600;cursor:pointer;touch-action:manipulation}
+.opt:active{background:rgba(255,255,255,.12)}
+.opt.right{background:rgba(134,188,37,.22);border-color:var(--green)}
+.opt.wrong{background:rgba(244,63,94,.18);border-color:var(--red)}
+.quiz-ex{font-size:12px;color:#d1d5db;line-height:1.45;min-height:1em;margin:0}
+
+/* Controls */
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;height:clamp(64px,12vh,92px);flex-shrink:0;touch-action:none}
+.ctrl{border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font:11px var(--pixel);touch-action:none;cursor:pointer;transition:transform .05s}
+.ctrl .ar{font-size:20px;line-height:1;font-family:var(--sans);font-weight:900}
+.ctrl.slide{background:var(--slate);border:1px solid rgba(56,189,248,.35);color:#7dd3fc;box-shadow:inset -2px -2px 0 rgba(0,0,0,.6),inset 2px 2px 0 rgba(255,255,255,.12),0 3px 0 #000}
+.ctrl.jump{background:var(--green);border:1px solid #a3e635;color:#081002;box-shadow:inset -2px -3px 0 #385e0c,inset 2px 2px 0 #b6f047,0 3px 0 #05080b}
+.ctrl.down{transform:translateY(2px);filter:brightness(1.18)}
+
+/* Modals */
+.modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.84);padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom))}
+.modal.show{display:flex}
+.sheet{background:var(--card);border:1px solid var(--line);border-radius:18px;width:100%;max-width:420px;max-height:100%;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);font:10px var(--pixel);line-height:1.4}
+.sheet-b{padding:12px 14px;overflow-y:auto;-webkit-overflow-scrolling:touch;font-size:13px;line-height:1.5;color:#d1d5db;touch-action:pan-y;flex:1;min-height:0}
+.sheet-f{padding:10px 14px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;justify-content:space-between;font-size:10px;color:var(--muted)}
+.close-x{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:16px;cursor:pointer;flex-shrink:0}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tab{flex:1;padding:8px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);font:8px var(--pixel);cursor:pointer}
+.tab.on{background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.5);color:#fcd34d}
+.lb-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);margin-bottom:6px}
+.lb-row.me{border-color:rgba(134,188,37,.6);background:rgba(134,188,37,.1)}
+.lb-pos{width:24px;text-align:center;font:10px var(--pixel);color:var(--muted);flex-shrink:0}
+.lb-main{flex:1;min-width:0}
+.lb-name{font-weight:800;color:#fff;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-sub{font-size:10px;color:#67e8f9}
+.lb-score{font:10px var(--pixel);color:var(--green);flex-shrink:0}
+.center-msg{text-align:center;padding:28px 0;color:var(--muted);font-size:12px}
+.sheet-b h4{margin:12px 0 6px;font-size:12px;color:#fff}
+.sheet-b h4:first-child{margin-top:0}
+.sheet-b ul{margin:0;padding-left:18px}
+.sheet-b li{margin-bottom:4px}
+.g{color:var(--green)}.r{color:#fb7185}.c{color:#7dd3fc}.y{color:#fcd34d}
+.ach{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:6px}
+.ach .e{font-size:22px;line-height:1;width:28px;text-align:center;flex-shrink:0}
+.ach.locked .e{filter:grayscale(1);opacity:.35}
+.ach .n{font-weight:800;color:#fff;font-size:13px}
+.ach.locked .n{color:#9ca3af}
+.ach .d{font-size:11px;color:#cbd5e1;line-height:1.4}
+.ach .tag{font:7px var(--pixel);color:var(--gold);margin-left:4px}
+.setting-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.mini{padding:7px 12px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.06);font-size:12px;font-weight:700;cursor:pointer}
+
+/* Phone in landscape: controls move to the sides of the playfield */
+@media (orientation:landscape) and (max-height:540px){
+  .app{max-width:none;display:grid;grid-template-columns:minmax(82px,13vw) minmax(0,1fr) minmax(82px,13vw);grid-template-rows:auto auto minmax(0,1fr);gap:5px;padding:4px 8px 6px}
+  header{grid-column:1/-1}
+  .hud{grid-column:1/-1;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,2.2fr);padding:4px 6px}
+  .meta{grid-column:auto;border:0;padding:0;margin:0}
+  .brand .sub{display:none}
+  .icon-btn{height:30px;min-width:32px}
+  .logo{width:28px;height:28px}
+  .stage{grid-column:2;grid-row:3;min-height:0}
+  .controls{display:contents}
+  .ctrl.slide{grid-column:1;grid-row:3}
+  .ctrl.jump{grid-column:3;grid-row:3}
+}
+@media (max-width:350px){
+  .icon-btn{min-width:32px;height:32px;font-size:13px;padding:0 5px}
+  .brand .name{font-size:9px}
+}
+@media (prefers-reduced-motion:reduce){
+  .title,.newbest{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand" id="brand" role="button" aria-label="D-Rush">
+      <div class="logo" id="logo">D.</div>
+      <div>
+        <div class="name">D-RUSH<span class="dot"></span></div>
+        <div class="sub" data-i18n="sub">A1 ONBOARDING</div>
+      </div>
+    </div>
+    <div class="dock">
+      <button class="icon-btn gold" id="btnLb" aria-label="Leaderboard">🏆</button>
+      <button class="icon-btn" id="btnAch" aria-label="Achievements">🏅</button>
+      <button class="icon-btn lang" id="btnLang">中文</button>
+      <button class="icon-btn" id="btnSound" aria-label="Sound">🔊</button>
+      <button class="icon-btn" id="btnHelp" aria-label="Help">❓</button>
+    </div>
+  </header>
+
+  <section class="hud">
+    <div class="stat"><span class="k" data-i18n="kScore">SCORE</span><span class="v" id="hudScore">000000</span></div>
+    <div class="stat"><span class="k" data-i18n="kBest">BEST</span><span class="v" id="hudBest">000000</span></div>
+    <div class="stat rank" id="hudRankBox"><span class="k" data-i18n="kRank">RANK</span><span class="v" id="hudRank">DAY 1</span></div>
+    <div class="stat"><span class="k" data-i18n="kDist">SPRINT</span><span class="v" id="hudDist">0m</span></div>
+    <div class="meta">
+      <span class="loc" id="hudLoc">Hong Kong</span>
+      <span class="right"><span id="hudCombo"></span><span id="hudClock">09:00</span></span>
+    </div>
+  </section>
+
+  <section class="stage" id="stage">
+    <canvas id="game" width="480" height="270"></canvas>
+    <div class="crt"></div>
+    <button class="pause-fab" id="btnPause" aria-label="Pause">❚❚</button>
+    <div class="toast" id="toast"></div>
+    <div class="banner" id="banner"><div class="b1" id="bannerTop"></div><div class="b2" id="bannerSub"></div></div>
+    <div class="pills" id="pills"></div>
+
+    <!-- START -->
+    <div class="overlay show" id="startOverlay">
+      <div class="inner">
+        <span class="chip">🎓 <span data-i18n="startBadge">DELOITTE ONBOARDING ARCADE</span></span>
+        <div class="title" id="titleTap">D-RUSH<span class="dot"></span></div>
+        <div class="lbl"><span data-i18n="nick">Your nickname</span><span class="g" id="netBadge">☁︎</span></div>
+        <input id="nameInput" type="text" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" placeholder="A1 Analyst">
+        <p class="sub-txt" data-i18n-html="startSub"></p>
+        <button class="btn primary" id="btnStart">▶ <span data-i18n="startBtn">START SPRINT</span></button>
+        <div class="hint" data-i18n="startHint"></div>
+        <div class="hint" id="startStats"></div>
+      </div>
+    </div>
+
+    <!-- PAUSE -->
+    <div class="overlay" id="pauseOverlay">
+      <div class="inner">
+        <div class="go-title" style="color:var(--green)" data-i18n="pause">PAUSED</div>
+        <p class="sub-txt" data-i18n="pauseSub"></p>
+        <button class="btn primary" id="btnResume" data-i18n="resume">RESUME</button>
+        <button class="btn ghost" id="btnQuit" data-i18n="quit">END SPRINT</button>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="overlay" id="quizOverlay">
+      <div class="inner">
+        <div class="quiz-head" data-i18n="quizHead">❓ POP QUIZ</div>
+        <p class="quiz-q" id="quizQ"></p>
+        <div class="qbar"><i id="quizBar"></i></div>
+        <div class="opts" id="quizOpts"></div>
+        <p class="quiz-ex" id="quizEx"></p>
+      </div>
+    </div>
+
+    <!-- GAME OVER -->
+    <div class="overlay" id="goOverlay">
+      <div class="inner">
+        <div class="go-title" data-i18n="goTitle">PROJECT RETROSPECTIVE</div>
+        <p class="go-reason" id="goReason"></p>
+        <div class="newbest" id="goNewBest" style="display:none"></div>
+        <div class="metrics">
+          <div class="metric"><div class="k" data-i18n="kScore">SCORE</div><div class="v g" id="goScore">0</div></div>
+          <div class="metric"><div class="k" data-i18n="kDist">SPRINT</div><div class="v" id="goDist">0m</div></div>
+          <div class="metric"><div class="k" data-i18n="kRank">RANK</div><div class="v c" id="goRank">-</div></div>
+        </div>
+        <div class="sync" id="goSync"></div>
+        <div class="newach" id="goAch"></div>
+        <div class="tip"><div class="h" data-i18n="tipHead">Fresh Grad Pro-Tip</div><p id="goTip"></p></div>
+        <div class="row">
+          <button class="btn primary" id="btnRetry">↻ <span data-i18n="retry">TRY AGAIN</span></button>
+        </div>
+        <div class="row">
+          <button class="btn goldb" id="btnGoLb">🏆 <span data-i18n="ranksBtn">RANKS</span></button>
+          <button class="btn ghost" id="btnShare">↗ <span data-i18n="share">SHARE</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="controls">
+    <button class="ctrl slide" id="btnSlide"><span class="ar">▼</span><span data-i18n="slide">SLIDE</span></button>
+    <button class="ctrl jump" id="btnJump"><span class="ar">▲</span><span data-i18n="jump">JUMP</span></button>
+  </section>
+</div>
+
+<!-- Leaderboard -->
+<div class="modal" id="lbModal">
+  <div class="sheet">
+    <div class="sheet-h"><span class="y">🏆 <span data-i18n="lbTitle">HIGH ACHIEVERS</span></span><button class="close-x" data-close="lbModal">✕</button></div>
+    <div class="sheet-b">
+      <div class="tabs">
+        <button class="tab on" id="tabGlobal" data-i18n="lbGlobal">GLOBAL</button>
+        <button class="tab" id="tabLocal" data-i18n="lbLocal">THIS DEVICE</button>
+      </div>
+      <div id="lbRows"></div>
+    </div>
+    <div class="sheet-f"><span id="lbNote"></span><button class="mini" id="lbRefresh">↻ <span data-i18n="refresh">Refresh</span></button></div>
+  </div>
+</div>
+
+<!-- Help -->
+<div class="modal" id="helpModal">
+  <div class="sheet">
+    <div class="sheet-h"><span class="g">🎮 <span data-i18n="helpTitle">ONBOARDING BRIEFING</span></span><button class="close-x" data-close="helpModal">✕</button></div>
+    <div class="sheet-b">
+      <div id="helpBody"></div>
+      <div class="setting-row"><span data-i18n="vibration">Vibration</span><button class="mini" id="btnHaptics">ON</button></div>
+    </div>
+    <div class="sheet-f" style="justify-content:stretch"><button class="btn primary" data-close="helpModal" data-i18n="helpClose">READY TO DELIVER</button></div>
+  </div>
+</div>
+
+<!-- Achievements -->
+<div class="modal" id="achModal">
+  <div class="sheet">
+    <div class="sheet-h"><span class="y">🏅 <span data-i18n="achTitle">ACHIEVEMENTS</span> <span id="achCount"></span></span><button class="close-x" data-close="achModal">✕</button></div>
+    <div class="sheet-b" id="achBody"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = (id) => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+
+/* ============================================================
+   STORAGE (all access guarded: private mode / blocked storage)
+   ============================================================ */
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  json(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  setJson(k, v) { this.set(k, JSON.stringify(v)); }
+};
+const settings = Object.assign({
+  lang: /^zh/i.test(navigator.language || '') ? 'zh' : 'en',
+  sound: true, haptics: true, mode: ''
+}, LS.json('drush_settings', {}));
+if (window.DLTwo) settings.lang = DLTwo(settings.lang);
+const saveSettings = () => LS.setJson('drush_settings', settings);
+const stats = Object.assign({ runs: 0, quizRight: 0 }, LS.json('drush_stats', {}));
+const saveStats = () => LS.setJson('drush_stats', stats);
+const achieved = LS.json('drush_ach', {});
+let bestScore = parseInt(LS.get('drush_fg_high', '0'), 10) || 0;
+let playerName = (LS.get('drush_player_name', 'A1 Analyst') || 'A1 Analyst').slice(0, 16);
+
+/* ============================================================
+   TEXT (EN / 中文)
+   ============================================================ */
+const T = {
+  en: {
+    sub: 'A1 ONBOARDING', kScore: 'SCORE', kBest: 'BEST', kRank: 'RANK', kDist: 'SPRINT',
+    startBadge: 'DELOITTE ONBOARDING ARCADE', nick: 'Your nickname (shown on the leaderboard)',
+    startSub: 'High-five your <b>Buddy &amp; Coach</b>, dodge <b>#REF!</b> errors and reply-all storms, ace pop quizzes and run all the way to <b>Partner</b>.',
+    startBtn: 'START SPRINT', startHint: 'Tap top half = jump (hold = higher) · bottom half = slide',
+    startStats: 'Best {b} · Secrets {n}/{t}',
+    pause: 'PAUSED', pauseSub: 'Aligning on next steps with the engagement team…', resume: 'RESUME', quit: 'END SPRINT',
+    slide: 'SLIDE', jump: 'JUMP',
+    goTitle: 'PROJECT RETROSPECTIVE', retry: 'TRY AGAIN', ranksBtn: 'RANKS', share: 'SHARE', tipHead: 'Fresh Grad Pro-Tip',
+    newBest: '★ NEW PERSONAL BEST ★', syncing: 'Syncing to leaderboard…', synced: '✓ Synced to the global leaderboard',
+    savedLocal: '⚠ Offline — saved on this device', newAch: 'Unlocked: {list}',
+    lbTitle: 'HIGH ACHIEVERS', lbGlobal: 'GLOBAL', lbLocal: 'THIS DEVICE', lbEmpty: 'No entries yet. Be the first!',
+    lbLoading: 'Retrieving rankings…', lbOffline: 'Global board unreachable — showing this device', lbCloud: 'Cloud synced', lbDevice: 'Stored on this device', refresh: 'Refresh',
+    helpTitle: 'ONBOARDING BRIEFING', helpClose: 'READY TO DELIVER', vibration: 'Vibration',
+    achTitle: 'ACHIEVEMENTS', locked: 'Hint:', eggTag: 'EGG',
+    quizHead: '❓ POP QUIZ', quizRight: '✓ Correct! +500', quizWrong: '✗ Not quite.', quizTime: '⏱ Time’s up!', tapContinue: 'Tap to continue',
+    busy: 'BUSY SEASON!', busySub: 'Faster pace · score ×1.5', leave: 'ANNUAL LEAVE', leaveSub: 'No hazards · recharge & collect',
+    promoted: 'PROMOTED!', partnerSub: 'Since 1845 · +1845 bonus', sixpm: '18:00 — the reply-alls begin 📧',
+    buddy: '🤝 Buddy alignment! +250', coach: '🧭 Coach has your back! +400 & shield', partner: '⭐ Partner endorsement! +800',
+    coffee: '☕ Coffee chat: invincible!', shield: '🛡️ Senior review: one free mistake', shieldSaved: '🛡️ Review caught it — saved!',
+    magnet: '🧲 Networking: dots come to you', timesheet: '✅ Timesheet submitted on time! +500', golden: '✨ GOLDEN COFFEE! +1845',
+    closeCall: 'CLOSE CALL', exec: '👑 EXECUTIVE SUITE! +1845', audit: '🥚 1845 AUDIT: hazards cleared!', konami: '🕹️ Cheat code consultant! Rainbow tie',
+    outfit1845: '🎩 Since 1845 — Victorian outfit!', outfitGreen: '💚 Green Dot pride outfit!', greenOn: '🖥️ Green screen mode ON', greenOff: '🖥️ Green screen mode OFF',
+    nightOwl: '🦉 Night owl! Great run — then please get some sleep.', friday: '📧 Friday 6PM detected: reply-all storms incoming!',
+    onceRun: 'Easter egg already used this sprint', startFirst: 'Start a sprint first 😉', copied: 'Copied to clipboard!',
+    shareText: 'I reached {rank} in D-Rush with {score} pts ({dist}m). Can you beat me?',
+    pills: { coffee: '☕ {s}s', magnet: '🧲 {s}s', shield: '🛡️ SHIELD', mult: '×{m}' },
+    combo: '×{m} COMBO {c}',
+    reasons: {
+      REF: 'Caught by an unexpected #REF! error in the model.',
+      DREF: 'A double #REF! — the whole model broke.',
+      FILE: 'Lost in FINAL_v7_really_final.pptx version chaos.',
+      SCOPE: 'Stumbled into unaligned scope creep.',
+      EMAIL: 'Swamped by a Friday 6PM reply-all storm.',
+      DEADLINE: 'Tripped over a deadline that moved up a week.',
+      QUIT: 'Sprint ended early — time to regroup.'
+    },
+    ranks: ['DAY 1 NEW HIRE', 'A1 ANALYST', 'A2 CONSULTANT', 'SENIOR CONSULTANT', 'MANAGER', 'SENIOR MANAGER', 'DIRECTOR', 'PARTNER'],
+    help: `<h4>How to play</h4><ul>
+<li><b class="g">Jump</b>: JUMP button, top half of the screen, or Space/↑. <b>Hold</b> to jump higher.</li>
+<li><b class="c">Slide</b>: SLIDE button, bottom half, or ↓. Hold to keep sliding. Press in mid-air to drop fast.</li>
+<li>Grab <b class="g">green dots</b> in quick succession for a combo multiplier (up to ×5).</li>
+<li>Brush past a hazard for a <b class="y">Close Call</b> bonus.</li></ul>
+<h4>Allies &amp; power-ups</h4><ul>
+<li>🤝 <b>Buddy</b> +250 · 🧭 <b>Coach</b> +400 and a shield · ⭐ <b>Partner</b> +800</li>
+<li>☕ <b>Coffee Chat</b> — invincible, smash through hazards</li>
+<li>🛡️ <b>Senior Review</b> — survive one mistake</li>
+<li>🧲 <b>Networking</b> — dots fly to you</li>
+<li>✅ <b>Timesheet</b> — +500 for submitting on time</li>
+<li>❓ <b>Pop Quiz</b> — answer correctly for +500</li></ul>
+<h4>Hazards</h4><ul>
+<li><b class="r">#REF!</b> and <b class="r">FINAL_v7.pptx</b> — jump</li>
+<li><b class="r">Scope creep</b> — grows as it approaches, jump early</li>
+<li><b class="c">Reply-all storm</b> — slide under</li>
+<li><b class="r">Moving deadline</b> — bounces, time your jump</li></ul>
+<h4>Career path</h4><ul>
+<li>Distance earns promotions. Make <b class="y">Partner at 1845m</b>.</li>
+<li><b>Busy Season</b> is faster with ×1.5 score, then <b>Annual Leave</b> gives you a breather.</li>
+<li>The office clock runs too. After 18:00, expect more emails.</li></ul>
+<h4>Secrets</h4><ul><li>16 achievements, 9 of them hidden easter eggs. Open 🏅 for hints. Egg bonuses work once per sprint.</li></ul>`
+  },
+  zh: {
+    sub: '校招新人跑酷', kScore: '积分', kBest: '最佳', kRank: '职级', kDist: '冲刺',
+    startBadge: '德勤新人破冰街机', nick: '你的昵称（排行榜可见）',
+    startSub: '与<b>导师和伙伴</b>击掌，躲开 <b>#REF!</b> 报错和全员回复风暴，答对快问快答，一路冲到<b>合伙人</b>！',
+    startBtn: '开始冲刺', startHint: '点上半屏＝起跳（长按跳更高）· 点下半屏＝滑行',
+    startStats: '最佳 {b} · 已发现秘密 {n}/{t}',
+    pause: '暂停对齐', pauseSub: '喝杯咖啡，理清思路再出发…', resume: '继续游戏', quit: '结束冲刺',
+    slide: '滑行', jump: '起跳',
+    goTitle: '项目复盘', retry: '再来一次', ranksBtn: '排行榜', share: '分享', tipHead: '职场萌新实用锦囊',
+    newBest: '★ 刷新个人纪录 ★', syncing: '正在同步排行榜…', synced: '✓ 已同步至全球排行榜',
+    savedLocal: '⚠ 离线状态 — 已保存在本机', newAch: '解锁成就：{list}',
+    lbTitle: '高绩效榜', lbGlobal: '全球', lbLocal: '本机', lbEmpty: '暂无记录，快来争第一！',
+    lbLoading: '正在获取排名…', lbOffline: '无法连接全球榜 — 显示本机记录', lbCloud: '云端同步', lbDevice: '保存在本机', refresh: '刷新',
+    helpTitle: '新人上岗指南', helpClose: '准备好交付了！', vibration: '震动反馈',
+    achTitle: '成就', locked: '提示：', eggTag: '彩蛋',
+    quizHead: '❓ 快问快答', quizRight: '✓ 回答正确！+500', quizWrong: '✗ 差一点。', quizTime: '⏱ 时间到！', tapContinue: '点击继续',
+    busy: '忙季来袭！', busySub: '节奏加快 · 积分×1.5', leave: '年假时光', leaveSub: '没有障碍 · 放松收集',
+    promoted: '晋升啦！', partnerSub: '始于1845 · 奖励+1845', sixpm: '18:00 — 全员回复开始了 📧',
+    buddy: '🤝 伙伴对齐！+250', coach: '🧭 导师护航！+400 并获得护盾', partner: '⭐ 合伙人点赞！+800',
+    coffee: '☕ 咖啡社交：无敌！', shield: '🛡️ 主管复核：可犯错一次', shieldSaved: '🛡️ 复核发现问题 — 化险为夷！',
+    magnet: '🧲 人脉拓展：绿点自动吸附', timesheet: '✅ 工时表按时提交！+500', golden: '✨ 黄金咖啡！+1845',
+    closeCall: '惊险擦过', exec: '👑 合伙人套房！+1845', audit: '🥚 1845 审计：障碍清空！', konami: '🕹️ 秘籍顾问！彩虹领带',
+    outfit1845: '🎩 始于1845 — 维多利亚套装！', outfitGreen: '💚 绿点套装！', greenOn: '🖥️ 绿屏模式已开启', greenOff: '🖥️ 绿屏模式已关闭',
+    nightOwl: '🦉 夜猫子！玩完记得早点睡。', friday: '📧 检测到周五傍晚：全员回复风暴来袭！',
+    onceRun: '本局已触发过该彩蛋', startFirst: '先开始冲刺吧 😉', copied: '已复制到剪贴板！',
+    shareText: '我在 D-Rush 中晋升到「{rank}」，得分 {score}（{dist}米）。你能超过我吗？',
+    pills: { coffee: '☕ {s}秒', magnet: '🧲 {s}秒', shield: '🛡️ 护盾', mult: '×{m}' },
+    combo: '×{m} 连击 {c}',
+    reasons: {
+      REF: '被财务模型中突发的 #REF! 引用错误绊住了脚步。',
+      DREF: '连环 #REF! — 整个模型崩了。',
+      FILE: '迷失在 FINAL_v7_最终版.pptx 的版本混乱中。',
+      SCOPE: '在冲刺阶段遭遇未经对齐的需求蔓延。',
+      EMAIL: '在周五傍晚被全员回复的邮件风暴淹没。',
+      DEADLINE: '截止日期突然提前一周，被绊倒了。',
+      QUIT: '提前结束冲刺 — 调整好再出发。'
+    },
+    ranks: ['入职第1天', 'A1 分析师', 'A2 顾问', '高级顾问', '经理', '高级经理', '总监', '合伙人'],
+    help: `<h4>玩法</h4><ul>
+<li><b class="g">起跳</b>：起跳键、点上半屏或空格/↑。<b>长按</b>跳得更高。</li>
+<li><b class="c">滑行</b>：滑行键、点下半屏或↓。长按持续滑行；空中按下可快速落地。</li>
+<li>快速连续收集<b class="g">绿点</b>可叠加连击倍率（最高×5）。</li>
+<li>贴着障碍擦过可获得<b class="y">惊险擦过</b>奖励。</li></ul>
+<h4>助力与道具</h4><ul>
+<li>🤝 <b>伙伴</b> +250 · 🧭 <b>导师</b> +400 并送护盾 · ⭐ <b>合伙人</b> +800</li>
+<li>☕ <b>咖啡社交</b> — 无敌，直接撞碎障碍</li>
+<li>🛡️ <b>主管复核</b> — 可抵挡一次失误</li>
+<li>🧲 <b>人脉拓展</b> — 绿点自动飞向你</li>
+<li>✅ <b>工时表</b> — 按时提交 +500</li>
+<li>❓ <b>快问快答</b> — 答对 +500</li></ul>
+<h4>职场陷阱</h4><ul>
+<li><b class="r">#REF!</b> 与 <b class="r">FINAL_v7.pptx</b> — 跳过</li>
+<li><b class="r">需求蔓延</b> — 越靠近越高，提前起跳</li>
+<li><b class="c">全员回复风暴</b> — 滑行通过</li>
+<li><b class="r">提前的截止日</b> — 会弹跳，把握时机</li></ul>
+<h4>职业路径</h4><ul>
+<li>跑得越远晋升越高，<b class="y">1845米晋升合伙人</b>。</li>
+<li><b>忙季</b>速度更快、积分×1.5，之后是<b>年假</b>休整。</li>
+<li>办公室时钟也在走，18:00 之后邮件会更多。</li></ul>
+<h4>秘密</h4><ul><li>共16个成就，其中9个是隐藏彩蛋。打开 🏅 查看提示。彩蛋奖励每局限一次。</li></ul>`
+  }
+};
+const t = (k) => (T[settings.lang][k] !== undefined ? T[settings.lang][k] : T.en[k]);
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => (o[k] !== undefined ? o[k] : ''));
+
+const TIPS = [
+  { en: 'Pyramid Principle: state your recommendation in sentence one. Context and supporting numbers come after.', zh: '金字塔原理：第一句先说结论，背景和数据支撑放在后面。' },
+  { en: 'The 30% check-in: show a rough structure early instead of disappearing for three days to build the “perfect” deck.', zh: '30% 对齐法则：完成框架草稿时就找主管确认方向，不要闭门造车三天做“完美版”。' },
+  { en: 'Learn the Excel shortcuts: Ctrl+[ traces precedents, Ctrl+] traces dependents, Ctrl+Shift+L toggles filters.', zh: 'Excel 快捷键：Ctrl+[ 追踪引用单元格，Ctrl+] 追踪从属单元格，Ctrl+Shift+L 开关筛选。' },
+  { en: 'If missing client data threatens a deadline, flag it early and bring two contingency options.', zh: '若缺少客户数据可能导致延期，提前预警并带上两套备选方案。' },
+  { en: 'Version control: name files clearly (date_topic_v3) and never overwrite your senior’s mark-ups.', zh: '版本管理：文件命名清晰（日期_主题_v3），不要覆盖主管的批注。' },
+  { en: 'Try for 15 minutes, then ask — and share what you have already tried.', zh: '先自己尝试15分钟再提问，并说明你已经尝试过的方法。' },
+  { en: 'After every meeting, send a short recap: decisions, action items, owners, dates.', zh: '每次会议后发一封简短纪要：决定事项、行动项、负责人和时间。' },
+  { en: 'Protect your energy: sleep, breaks and boundaries are part of high performance.', zh: '照顾好自己：睡眠、休息与边界感，本身就是高绩效的一部分。' }
+];
+
+const QUIZ = [
+  { q: { en: 'Your senior asks for an update when you’re 30% done. Best move?', zh: '主管在你完成30%时询问进度，最佳做法是？' },
+    a: [{ en: 'Share the rough draft now to align on direction', zh: '现在就分享草稿框架，对齐方向' }, { en: 'Wait until it’s perfect, then show it', zh: '等做到完美再给他看' }],
+    ex: { en: 'Early check-ins save hours of rework.', zh: '尽早对齐，能省下大量返工时间。' } },
+  { q: { en: 'You spot an error in a file already sent to the client.', zh: '你发现已发给客户的文件里有错误。' },
+    a: [{ en: 'Flag it to your senior right away with a proposed fix', zh: '立即告知主管并附上修正方案' }, { en: 'Quietly fix it in the next version', zh: '悄悄在下个版本里改掉' }],
+    ex: { en: 'Raising issues early builds trust. Hiding them destroys it.', zh: '及早暴露问题能建立信任，隐瞒只会破坏信任。' } },
+  { q: { en: 'Missing client data might delay your work. When do you raise it?', zh: '客户数据缺失可能导致延期，何时提出？' },
+    a: [{ en: 'Now, with two contingency options', zh: '现在，并附上两个备选方案' }, { en: 'On the deadline day', zh: '截止当天再说' }],
+    ex: { en: 'No surprises: early warnings give the team room to react.', zh: '不制造意外：提前预警让团队有时间应对。' } },
+  { q: { en: 'Writing a status email. What goes first?', zh: '写进度邮件，第一句写什么？' },
+    a: [{ en: 'Your key conclusion or ask', zh: '核心结论或请求' }, { en: 'The full background story', zh: '完整的背景介绍' }],
+    ex: { en: 'Pyramid Principle: answer first, then support it.', zh: '金字塔原理：先给答案，再给支撑。' } },
+  { q: { en: 'Excel (Windows): trace a formula’s precedents?', zh: 'Excel（Windows）：追踪公式的引用单元格？' },
+    a: [{ en: 'Ctrl + [', zh: 'Ctrl + [' }, { en: 'Ctrl + ;', zh: 'Ctrl + ;' }],
+    ex: { en: 'Ctrl+; inserts today’s date. Ctrl+] traces dependents.', zh: 'Ctrl+; 是插入当天日期；Ctrl+] 追踪从属单元格。' } },
+  { q: { en: 'Excel (Windows): toggle filters on a table?', zh: 'Excel（Windows）：开关表格筛选？' },
+    a: [{ en: 'Ctrl + Shift + L', zh: 'Ctrl + Shift + L' }, { en: 'Ctrl + Shift + F', zh: 'Ctrl + Shift + F' }],
+    ex: { en: 'Ctrl+Shift+F opens font formatting instead.', zh: 'Ctrl+Shift+F 打开的是字体格式设置。' } },
+  { q: { en: 'Three urgent asks land at once. You…', zh: '三个紧急任务同时到来，你会……' },
+    a: [{ en: 'Tell your seniors and ask them to help prioritise', zh: '告知主管，请他们协助排优先级' }, { en: 'Say yes to all and pull an all-nighter', zh: '全部答应，然后通宵' }],
+    ex: { en: 'Visibility of your workload is part of the job.', zh: '让团队看到你的工作量，本身就是工作的一部分。' } },
+  { q: { en: 'A client sends confidential files to your personal email.', zh: '客户把保密文件发到了你的私人邮箱。' },
+    a: [{ en: 'Don’t use it; tell your senior and move to approved firm channels', zh: '不使用该渠道，告知主管并改用公司认可的方式' }, { en: 'Download them to your own laptop to work faster', zh: '下载到个人电脑上加快进度' }],
+    ex: { en: 'Confidentiality and data policies always come first.', zh: '保密与数据政策永远优先。' } },
+  { q: { en: 'Best way to fill in timesheets?', zh: '填写工时表的最佳方式？' },
+    a: [{ en: 'Accurately and as you go, before the deadline', zh: '如实、及时，在截止前提交' }, { en: 'All at month-end from memory', zh: '月底凭记忆一次补完' }],
+    ex: { en: 'Accurate time records matter for billing and planning.', zh: '准确的工时记录关系到计费和项目规划。' } },
+  { q: { en: 'In a meeting you don’t know an acronym.', zh: '会议中遇到听不懂的缩写。' },
+    a: [{ en: 'Note it and ask your buddy or senior afterwards', zh: '记下来，会后请教伙伴或主管' }, { en: 'Nod along and keep guessing', zh: '一直点头，继续靠猜' }],
+    ex: { en: 'Everyone was new once. Asking is how you ramp up.', zh: '每个人都曾是新人，提问是成长最快的方式。' } },
+  { q: { en: 'In which year was Deloitte founded in London?', zh: '德勤于哪一年在伦敦创立？' },
+    a: [{ en: '1845', zh: '1845' }, { en: '1945', zh: '1945' }, { en: '1895', zh: '1895' }],
+    ex: { en: 'William Welch Deloitte opened his office in London in 1845.', zh: '1845年，William Welch Deloitte 在伦敦开设事务所。' } },
+  { q: { en: 'A project just wrapped up. Fastest way to grow?', zh: '项目刚结束，如何成长最快？' },
+    a: [{ en: 'Ask for specific feedback now', zh: '现在就主动请求具体反馈' }, { en: 'Wait for the year-end review', zh: '等年终考评再说' }],
+    ex: { en: 'Timely, specific feedback is the best development tool.', zh: '及时、具体的反馈是最好的成长工具。' } }
+];
+
+const ACH = [
+  { id: 'first', e: '🎓', n: { en: 'Day One', zh: '入职第一天' }, d: { en: 'Finish your first sprint.', zh: '完成第一次冲刺。' } },
+  { id: 'manager', e: '📈', n: { en: 'Making Manager', zh: '晋升经理' }, d: { en: 'Reach Manager (700m).', zh: '跑到经理职级（700米）。' } },
+  { id: 'partner', e: '👔', n: { en: 'Partner Track', zh: '合伙人之路' }, d: { en: 'Make Partner at 1845m.', zh: '在1845米晋升合伙人。' } },
+  { id: 'combo', e: '🟢', n: { en: 'Green Dot Streak', zh: '绿点连击' }, d: { en: 'Hit a 25× dot combo.', zh: '达成25连击。' } },
+  { id: 'quiz', e: '🧠', n: { en: 'Knowledge Sharer', zh: '知识分享者' }, d: { en: 'Answer 5 pop quizzes correctly (all-time).', zh: '累计答对5道快问快答。' } },
+  { id: 'buddy', e: '🤝', n: { en: 'Buddy System', zh: '伙伴体系' }, d: { en: 'Meet 4 buddies, coaches or partners in one sprint.', zh: '单局遇到4位伙伴、导师或合伙人。' } },
+  { id: 'close', e: '😅', n: { en: 'Living Dangerously', zh: '惊险过关' }, d: { en: '8 close calls in one sprint.', zh: '单局8次惊险擦过。' } },
+  { id: 'exec', egg: 1, e: '👑', n: { en: 'Executive Suite', zh: '合伙人套房' }, d: { en: 'Tapped the logo three times mid-sprint.', zh: '冲刺中连点标志三下。' }, h: { en: 'The logo in the corner likes attention… three times.', zh: '左上角的标志，似乎喜欢被连点三下……' } },
+  { id: 'audit', egg: 1, e: '🥚', n: { en: '1845 Audit', zh: '1845 审计' }, d: { en: 'Double-tapped your rank to clear the hazards.', zh: '双击职级清空障碍。' }, h: { en: 'Your rank badge hides a secret. Double-tap it mid-sprint.', zh: '职级标签藏着秘密，冲刺中双击试试。' } },
+  { id: 'konami', egg: 1, e: '🕹️', n: { en: 'Cheat Code Consultant', zh: '秘籍顾问' }, d: { en: 'Entered ↑↑↓↓←→←→.', zh: '输入了 ↑↑↓↓←→←→。' }, h: { en: 'A classic gamer code. Swipe it on the playfield or use arrow keys.', zh: '经典游戏秘籍，在游戏画面上滑动或用方向键输入。' } },
+  { id: 'since1845', egg: 1, e: '🎩', n: { en: 'Since 1845', zh: '始于1845' }, d: { en: 'Played with the founding year as your nickname.', zh: '用创立年份作为昵称游玩。' }, h: { en: 'Try the firm’s founding year as your nickname.', zh: '把公司创立年份设为昵称试试。' } },
+  { id: 'greendot', egg: 1, e: '💚', n: { en: 'Green Dot Pride', zh: '绿点骄傲' }, d: { en: 'Played with the firm’s name as your nickname.', zh: '用公司名字作为昵称游玩。' }, h: { en: 'Wear the brand: put the firm’s name in your nickname.', zh: '把公司名字放进昵称里。' } },
+  { id: 'golden', egg: 1, e: '✨', n: { en: 'Golden Coffee', zh: '黄金咖啡' }, d: { en: 'Found the rare golden coffee.', zh: '找到了稀有的黄金咖啡。' }, h: { en: 'Very rarely, the coffee is gold.', zh: '极少数情况下，咖啡会是金色的。' } },
+  { id: 'nightowl', egg: 1, e: '🦉', n: { en: 'Night Owl', zh: '夜猫子' }, d: { en: 'Played between 11pm and 5am.', zh: '在深夜11点到凌晨5点之间游玩。' }, h: { en: 'Some runs happen very late at night (then go to sleep!).', zh: '深夜时分来一局（然后快去睡觉！）。' } },
+  { id: 'friday', egg: 1, e: '📧', n: { en: 'Friday 6PM', zh: '周五傍晚' }, d: { en: 'Played on a Friday evening.', zh: '在周五傍晚游玩。' }, h: { en: 'Everyone dreads one particular time of the week.', zh: '每周总有一个让人头疼的时刻。' } },
+  { id: 'greenscreen', egg: 1, e: '🖥️', n: { en: 'Green Screen', zh: '绿屏模式' }, d: { en: 'Toggled retro green-screen mode.', zh: '切换了复古绿屏模式。' }, h: { en: 'The big title on the start screen responds to five taps.', zh: '开始界面的大标题，连点五下有惊喜。' } }
+];
+
+/* ============================================================
+   AUDIO (tiny WebAudio synth — no library, iOS/Android safe)
+   ============================================================ */
+const Sfx = {
+  ctx: null, master: null, nb: null,
+  unlock() {
+    try {
+      if (!this.ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        this.ctx = new AC();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = 0.22;
+        this.master.connect(this.ctx.destination);
+        const b = this.ctx.createBuffer(1, 1, 22050), s = this.ctx.createBufferSource();
+        s.buffer = b; s.connect(this.ctx.destination); s.start(0);
+      }
+      if (this.ctx.state !== 'running') this.ctx.resume();
+    } catch (e) {}
+  },
+  tone(f, dur, type = 'square', vol = 0.5, f2 = 0, delay = 0) {
+    const c = this.ctx, tt = c.currentTime + delay;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, tt);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, tt + dur);
+    g.gain.setValueAtTime(0.0001, tt);
+    g.gain.exponentialRampToValueAtTime(vol, tt + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, tt + dur);
+    o.connect(g); g.connect(this.master); o.start(tt); o.stop(tt + dur + 0.03);
+  },
+  noise(dur, vol = 0.4) {
+    const c = this.ctx;
+    if (!this.nb) {
+      this.nb = c.createBuffer(1, Math.floor(c.sampleRate * 0.5), c.sampleRate);
+      const d = this.nb.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const s = c.createBufferSource(), g = c.createGain(), f = c.createBiquadFilter(), tt = c.currentTime;
+    s.buffer = this.nb; f.type = 'lowpass'; f.frequency.value = 1800;
+    g.gain.setValueAtTime(vol, tt); g.gain.exponentialRampToValueAtTime(0.0001, tt + dur);
+    s.connect(f); f.connect(g); g.connect(this.master); s.start(tt); s.stop(tt + dur);
+  },
+  seq(notes, step, type = 'square', vol = 0.3) { notes.forEach((f, i) => this.tone(f, step * 1.4, type, vol, 0, i * step)); },
+  play(name, arg) {
+    if (!settings.sound || !this.ctx || this.ctx.state !== 'running') return;
+    try {
+      switch (name) {
+        case 'jump': this.tone(420, 0.12, 'square', 0.3, 860); break;
+        case 'slide': this.noise(0.14, 0.3); break;
+        case 'dot': this.tone(660 * Math.pow(2, Math.min(arg || 0, 24) / 24), 0.07, 'triangle', 0.4); break;
+        case 'power': this.seq([523, 659, 784, 1047], 0.06); break;
+        case 'promo': this.seq([392, 523, 659, 784, 659, 784, 1047], 0.075); break;
+        case 'egg': this.seq([784, 988, 1175, 1568, 1319, 1568, 2093], 0.06); break;
+        case 'good': this.seq([659, 880, 1175], 0.07, 'triangle', 0.4); break;
+        case 'bad': this.tone(300, 0.2, 'square', 0.25, 180); break;
+        case 'hit': this.tone(220, 0.35, 'sawtooth', 0.45, 55); this.noise(0.25, 0.35); break;
+        case 'smash': this.noise(0.08, 0.3); this.tone(180, 0.08, 'square', 0.25, 90); break;
+        case 'near': this.tone(988, 0.05, 'square', 0.18); this.tone(1319, 0.06, 'square', 0.18, 0, 0.05); break;
+        case 'shield': this.tone(880, 0.2, 'triangle', 0.4, 440); break;
+      }
+    } catch (e) {}
+  }
+};
+const buzz = (p) => { if (settings.haptics && navigator.vibrate) { try { navigator.vibrate(p); } catch (e) {} } };
+['pointerdown', 'touchend', 'keydown'].forEach((ev) => document.addEventListener(ev, () => Sfx.unlock(), { passive: true }));
+
+/* ============================================================
+   SUPABASE (lazy, non-blocking, game works fully offline)
+   ============================================================ */
+const SUPABASE_URL = 'https://pwnvkrrnxbpxignynvuh.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ';
+const TABLE = 'leaderboard';
+let supaPromise = null;
+function getSupa() {
+  if (supaPromise) return supaPromise;
+  supaPromise = new Promise((resolve) => {
+    const make = () => { try { resolve((window.DLH && DLH.supabase && DLH.supabase(SUPABASE_URL, SUPABASE_ANON_KEY)) || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)); } catch (e) { resolve(null); } };
+    if (window.supabase && window.supabase.createClient) return make();
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js';
+    s.async = true;
+    s.onload = () => (window.supabase && window.supabase.createClient ? make() : resolve(null));
+    s.onerror = () => resolve(null);
+    document.head.appendChild(s);
+    setTimeout(() => resolve(null), 8000);
+  });
+  supaPromise.then((c) => { const b = $('netBadge'); if (b) { b.textContent = c ? '☁︎ online' : '⌂ offline'; b.className = c ? 'g' : 'y'; } });
+  return supaPromise;
+}
+const withTimeout = (p, ms = 4000) => Promise.race([Promise.resolve(p), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+
+function saveLocalScore(entry) {
+  const list = LS.json('drush_local_lb', []);
+  list.push(entry);
+  list.sort((a, b) => b.score - a.score);
+  LS.setJson('drush_local_lb', list.slice(0, 20));
+}
+async function submitScore(entry) {
+  saveLocalScore(Object.assign({ created_at: new Date().toISOString() }, entry));
+  const el = $('goSync');
+  el.textContent = t('syncing');
+  const c = await getSupa();
+  if (!c) { el.textContent = t('savedLocal'); return; }
+  try {
+    const r = await withTimeout(c.from(TABLE).insert([entry]));
+    if (r && r.error) throw r.error;
+    el.textContent = t('synced');
+  } catch (e) { el.textContent = t('savedLocal'); }
+}
+const esc = (s) => String(s).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+let lbTab = 'global';
+async function fetchLb() {
+  const box = $('lbRows'), note = $('lbNote');
+  box.innerHTML = `<div class="center-msg">${t('lbLoading')}</div>`;
+  let recs = null;
+  if (lbTab === 'global') {
+    const c = await getSupa();
+    if (c) {
+      try {
+        const r = await withTimeout(c.from(TABLE).select('player_name,score,distance,career_rank').order('score', { ascending: false }).limit(20));
+        if (r.error) throw r.error;
+        recs = r.data || [];
+        note.textContent = t('lbCloud');
+      } catch (e) { recs = null; }
+    }
+    if (!recs) note.textContent = t('lbOffline');
+  } else note.textContent = t('lbDevice');
+  if (!recs) recs = LS.json('drush_local_lb', []);
+  if (!recs.length) { box.innerHTML = `<div class="center-msg">${t('lbEmpty')}</div>`; return; }
+  box.innerHTML = recs.map((r, i) => {
+    const pos = i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1);
+    const me = (r.player_name || '') === playerName ? ' me' : '';
+    return `<div class="lb-row${me}"><div class="lb-pos">${pos}</div><div class="lb-main"><div class="lb-name">${esc(r.player_name || 'Consultant')}</div><div class="lb-sub">${esc(r.career_rank || '')} · ${Math.floor(r.distance || 0)}m</div></div><div class="lb-score">${Number(r.score || 0).toLocaleString()}</div></div>`;
+  }).join('');
+}
+
+/* ============================================================
+   CANVAS & WORLD SETUP
+   ============================================================ */
+const canvas = $('game');
+const ctx = canvas.getContext('2d', { alpha: false });
+const stage = $('stage');
+const W = 480;
+let H = 270, FLOOR = H - 46;
+const STEP = 1000 / 60;
+const BASE_SPEED = 3.4, MAX_SPEED = 8.6, RAMP = 0.0031;
+const GRAV = 0.62, GRAV_HOLD = 0.46, JUMP_V = -9.7;
+const RANK_AT = [0, 90, 240, 450, 700, 1000, 1400, 1845];
+
+const LOCS = [
+  { en: 'Hong Kong', zh: '香港', sky: ['#030712', '#002776', '#004F59'], far: '#0d1c30', near: '#0a131e', win: ['#86BC25', '#38BDF8', '#F59E0B'], ground: '#111720', accent: '#86BC25' },
+  { en: 'Shanghai', zh: '上海', sky: ['#05040d', '#1b1240', '#4c1d4f'], far: '#1c1634', near: '#120e22', win: ['#F472B6', '#38BDF8', '#FCD34D'], ground: '#141022', accent: '#E879F9' },
+  { en: 'Beijing', zh: '北京', sky: ['#07060a', '#2a1a12', '#7c2d12'], far: '#2a1a14', near: '#1a110d', win: ['#FBBF24', '#F87171', '#FDE68A'], ground: '#1a1310', accent: '#F59E0B' },
+  { en: 'Singapore', zh: '新加坡', sky: ['#08020f', '#2b0938', '#004F59'], far: '#1d1430', near: '#140e21', win: ['#38BDF8', '#E879F9', '#86BC25'], ground: '#151021', accent: '#38BDF8' },
+  { en: 'London', zh: '伦敦', sky: ['#050811', '#151e2e', '#2c3b52'], far: '#1a2232', near: '#121721', win: ['#F59E0B', '#FCD34D', '#94A3B8'], ground: '#1a1f29', accent: '#568819' },
+  { en: 'New York', zh: '纽约', sky: ['#020617', '#0f172a', '#1e293b'], far: '#131a2a', near: '#090d16', win: ['#FBBF24', '#F59E0B', '#E2E8F0'], ground: '#0d111a', accent: '#F59E0B' }
+];
+const WEATHERS = [
+  { type: 'CLEAR', en: 'Clear', zh: '晴', icon: '🌙' },
+  { type: 'RAIN', en: 'Rain', zh: '雨', icon: '🌧️' },
+  { type: 'SPARKLE', en: 'Matrix', zh: '数据流', icon: '✨' },
+  { type: 'SUNSET', en: 'Sunset', zh: '晚霞', icon: '🌇' }
+];
+let loc = LOCS[0], weather = WEATHERS[0];
+let farLayer = null, nearLayer = null, skyGrad = null, stars = [];
+const weatherP = [];
+
+function mulberry(a) { return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let x = Math.imul(a ^ (a >>> 15), 1 | a); x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x; return ((x ^ (x >>> 14)) >>> 0) / 4294967296; }; }
+function makeLayer(color, wins, minH, maxH, seed, winAlpha) {
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d'); const r = mulberry(seed);
+  let x = 0;
+  while (x < W) {
+    let bw = 26 + Math.floor(r() * 36);
+    if (W - x < 34) bw = W - x;
+    const bh = Math.floor(minH + r() * (maxH - minH)), top = FLOOR - bh;
+    g.fillStyle = color; g.fillRect(x, top, bw, bh);
+    if (r() < 0.3 && bw > 10) g.fillRect(x + (bw >> 1) - 1, top - 10, 2, 10);
+    if (r() < 0.25) g.fillRect(x + 3, top - 4, bw - 6, 4);
+    for (let wy = top + 6; wy < FLOOR - 6; wy += 9) {
+      for (let wx = x + 4; wx < x + bw - 5; wx += 7) {
+        if (r() < 0.5) { g.globalAlpha = winAlpha * (0.5 + r() * 0.5); g.fillStyle = wins[Math.floor(r() * wins.length)]; g.fillRect(wx, wy, 3, 4); }
+      }
+    }
+    g.globalAlpha = 1;
+    x += bw + 2 + Math.floor(r() * 5);
+  }
+  return c;
+}
+function buildBackdrop() {
+  const seed = LOCS.indexOf(loc) * 977 + 13;
+  farLayer = makeLayer(loc.far, loc.win, 70, Math.max(90, Math.min(190, FLOOR - 40)), seed, 0.45);
+  nearLayer = makeLayer(loc.near, loc.win, 36, 110, seed + 7, 0.9);
+  skyGrad = ctx.createLinearGradient(0, 0, 0, FLOOR);
+  skyGrad.addColorStop(0, loc.sky[0]); skyGrad.addColorStop(0.55, loc.sky[1]); skyGrad.addColorStop(1, loc.sky[2]);
+  const r = mulberry(seed + 99);
+  stars = [];
+  for (let i = 0; i < 40; i++) stars.push({ x: r() * W, y: r() * (FLOOR * 0.6), s: r() < 0.15 ? 2 : 1, tw: r() * 6 });
+}
+function setupWeather() {
+  weatherP.length = 0;
+  if (weather.type === 'RAIN') for (let i = 0; i < 45; i++) weatherP.push({ x: Math.random() * W, y: Math.random() * FLOOR, vy: 5 + Math.random() * 4, vx: -2, l: 6 + Math.random() * 4 });
+  else if (weather.type === 'SPARKLE') for (let i = 0; i < 26; i++) weatherP.push({ x: Math.random() * W, y: Math.random() * FLOOR, vy: -0.3 - Math.random() * 0.5, vx: -0.5 + Math.random(), s: 1 + Math.floor(Math.random() * 2) });
+}
+function randomizeSession(forceNight) {
+  loc = LOCS[Math.floor(Math.random() * LOCS.length)];
+  weather = WEATHERS[Math.floor(Math.random() * WEATHERS.length)];
+  if (forceNight && weather.type === 'SUNSET') weather = WEATHERS[0];
+  buildBackdrop(); setupWeather();
+}
+
+/* ============================================================
+   GAME STATE
+   ============================================================ */
+let state = 'START';
+let score = 0, dist = 0, speed = BASE_SPEED, scroll = 0, frame = 0;
+let coffee = 0, magnet = 0, combo = 0, comboT = 0, shake = 0, dyingT = 0, deathType = '', gameOverAt = 0;
+let spawnGap = 300, phase = { type: 'NORMAL', t: 0 }, nextBusyAt = 330;
+let next = { npc: 70, quiz: 150, power: 110 };
+let run = freshRun();
+const obstacles = [], items = [], npcs = [], particles = [], floats = [];
+const input = { jumpHeld: false, slideHeld: false, jumpBuf: 0 };
+let quiz = null;
+
+function freshRun() {
+  return { rank: 0, eggs: {}, buddies: 0, close: 0, maxCombo: 0, outfit: '', rainbow: false, emailBoost: false, nightOwl: false, sixpm: false, partner: false, gold: false, newAch: [], startHour: 9 };
+}
+function rankIndex(d) { let i = 0; for (let k = 0; k < RANK_AT.length; k++) if (d >= RANK_AT[k]) i = k; return i; }
+const rankName = (i, lang) => T[lang || settings.lang].ranks[i];
+const comboMult = () => 1 + Math.min(combo, 40) * 0.1;
+
+/* ============================================================
+   PLAYER
+   ============================================================ */
+const P = {
+  x: 60, y: 0, w: 16, h: 34, vy: 0, grounded: true, sliding: false, slideT: 0, coyote: 0, run: 0, invuln: 0, shield: false,
+  reset() { this.h = 34; this.w = 16; this.y = FLOOR - 34; this.vy = 0; this.grounded = true; this.sliding = false; this.slideT = 0; this.coyote = 0; this.invuln = 0; this.shield = false; },
+  startSlide() { this.sliding = true; this.slideT = 0; this.h = 18; this.w = 24; this.y = FLOOR - 18; Sfx.play('slide'); },
+  endSlide() { this.sliding = false; this.h = 34; this.w = 16; this.y = FLOOR - 34; },
+  update() {
+    if (input.jumpBuf > 0) input.jumpBuf--;
+    if (this.grounded) this.coyote = 6; else if (this.coyote > 0) this.coyote--;
+    if (input.jumpBuf > 0 && this.coyote > 0) {
+      if (this.sliding) this.endSlide();
+      this.vy = JUMP_V; this.grounded = false; this.coyote = 0; input.jumpBuf = 0;
+      Sfx.play('jump'); dust(this.x + 8, FLOOR);
+    }
+    if (!this.grounded) {
+      let g = (this.vy < 0 && input.jumpHeld) ? GRAV_HOLD : GRAV;
+      if (input.slideHeld) { g *= 1.6; if (this.vy < 6) this.vy = Math.max(this.vy, 2); }
+      this.vy += g;
+      this.y += this.vy;
+      if (this.y >= FLOOR - this.h) {
+        this.y = FLOOR - this.h; this.vy = 0; this.grounded = true;
+        dust(this.x + 8, FLOOR);
+        if (input.slideHeld) this.startSlide();
+      }
+    }
+    if (this.sliding) {
+      this.slideT++;
+      if ((this.slideT >= 22 && !input.slideHeld) || this.slideT > 75) this.endSlide();
+    } else if (this.grounded && input.slideHeld && this.slideT === 0) {
+      this.startSlide();
+    } else {
+      this.run += 0.25 * (speed / BASE_SPEED);
+    }
+    if (!input.slideHeld && !this.sliding) this.slideT = 0;
+    if (this.invuln > 0) this.invuln--;
+  },
+  draw() {
+    if (this.invuln > 0 && state === 'PLAYING' && frame % 6 < 3) return;
+    const px = Math.floor(this.x), py = Math.floor(this.y);
+    let suit = '#002776', tie = '#86BC25', skin = '#f3c299', hair = '#2d1d14';
+    if (run.look) ({ suit, tie, skin, hair } = run.look);
+    if (run.outfit === 'green') { suit = '#2f5d0a'; tie = '#b6f047'; }
+    if (run.outfit === 'victorian') { suit = '#3b2a1a'; tie = '#7c2d12'; }
+    if (run.rainbow) tie = `hsl(${(frame * 8) % 360},90%,55%)`;
+    if (state === 'DYING') { suit = frame % 8 < 4 ? '#7f1d1d' : suit; }
+
+    if (coffee > 0 && frame % 4 < 2) {
+      ctx.fillStyle = 'rgba(134,188,37,0.55)';
+      ctx.fillRect(px - 3, py - 3, this.w + 6, 2); ctx.fillRect(px - 3, py + this.h + 1, this.w + 6, 2);
+      ctx.fillRect(px - 3, py - 3, 2, this.h + 6); ctx.fillRect(px + this.w + 1, py - 3, 2, this.h + 6);
+    }
+    if (this.sliding) {
+      ctx.fillStyle = suit; ctx.fillRect(px, py + 6, 26, 8);
+      ctx.fillStyle = '#fff'; ctx.fillRect(px + 4, py + 5, 5, 4);
+      ctx.fillStyle = tie; ctx.fillRect(px + 7, py + 7, 6, 3);
+      ctx.fillStyle = skin; ctx.fillRect(px + 18, py + 2, 8, 7);
+      ctx.fillStyle = hair; ctx.fillRect(px + 20, py, 7, 4);
+      ctx.fillStyle = '#1e293b'; ctx.fillRect(px + 10, py + 12, 8, 5);
+      if (run.outfit === 'victorian') { ctx.fillStyle = '#111'; ctx.fillRect(px + 20, py - 7, 8, 7); ctx.fillRect(px + 18, py - 1, 12, 2); }
+    } else {
+      const lp = Math.floor(this.run) % 4;
+      ctx.fillStyle = hair; ctx.fillRect(px + 3, py, 11, 5);
+      ctx.fillStyle = skin; ctx.fillRect(px + 4, py + 4, 10, 8);
+      ctx.fillStyle = '#0a0e14'; ctx.fillRect(px + 11, py + 6, 2, 2);
+      ctx.fillStyle = suit; ctx.fillRect(px + 2, py + 12, 13, 11);
+      ctx.fillStyle = '#fff'; ctx.fillRect(px + 6, py + 12, 5, 7);
+      ctx.fillStyle = tie; ctx.fillRect(px + 7, py + 13, 3, 7);
+      if (run.look && run.look.bag === 'BACKPACK') {
+        const by = this.grounded ? py + 14 + (lp % 2) : py + 10;
+        ctx.fillStyle = '#374151'; ctx.fillRect(px - 4, by, 7, 8);
+        ctx.fillStyle = '#86BC25'; ctx.fillRect(px - 1, by + 2, 2, 2);
+      } else {
+        const cy = this.grounded ? py + 18 + (lp % 2) : py + 15;
+        ctx.fillStyle = '#78350f'; ctx.fillRect(px + 11, cy, 8, 6);
+        ctx.fillStyle = '#F59E0B'; ctx.fillRect(px + 14, cy + 1, 2, 1);
+      }
+      ctx.fillStyle = '#0c1015';
+      if (!this.grounded) { ctx.fillRect(px + 1, py + 23, 5, 7); ctx.fillRect(px + 9, py + 21, 6, 6); }
+      else if (lp === 0) { ctx.fillRect(px + 3, py + 23, 4, 8); ctx.fillRect(px + 9, py + 23, 4, 7); }
+      else if (lp === 1) { ctx.fillRect(px, py + 23, 4, 7); ctx.fillRect(px + 11, py + 23, 4, 9); }
+      else if (lp === 2) { ctx.fillRect(px + 3, py + 23, 4, 7); ctx.fillRect(px + 8, py + 23, 4, 8); }
+      else { ctx.fillRect(px + 6, py + 23, 4, 9); ctx.fillRect(px + 1, py + 23, 4, 6); }
+      if (run.outfit === 'victorian') {
+        ctx.fillStyle = '#111'; ctx.fillRect(px + 4, py - 8, 10, 8); ctx.fillRect(px + 1, py - 1, 16, 2);
+        ctx.fillStyle = '#7c2d12'; ctx.fillRect(px + 4, py - 3, 10, 2);
+      }
+    }
+    if (this.shield) {
+      ctx.strokeStyle = frame % 20 < 10 ? 'rgba(56,189,248,0.9)' : 'rgba(56,189,248,0.5)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px - 4.5, py - 4.5, this.w + 9, this.h + 9);
+    }
+  }
+};
+
+/* ============================================================
+   ENTITIES
+   ============================================================ */
+const OB = { REF: { w: 30, h: 18 }, DREF: { w: 62, h: 18 }, FILE: { w: 20, h: 26 }, SCOPE: { w: 20, h: 16 }, EMAIL: { w: 26, h: 14, fly: 24 }, DEADLINE: { w: 16, h: 20 } };
+function setFont(px) { ctx.font = `${px}px "Press Start 2P", ui-monospace, Menlo, monospace`; }
+function drawText(txt, x, y, color, size = 7, align = 'center') {
+  setFont(size); ctx.textAlign = align; ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#000'; ctx.fillText(txt, x + 1, y + 1);
+  ctx.fillStyle = color; ctx.fillText(txt, x, y);
+}
+
+class Obstacle {
+  constructor(type, x) {
+    const d = OB[type];
+    this.type = type; this.x = x; this.w = d.w; this.h = d.h; this.fly = d.fly || 0;
+    this.y = FLOOR - this.h - this.fly; this.t = Math.random() * 6; this.passed = false; this.minGap = 99; this.dead = false;
+  }
+  update(sp) {
+    this.x -= sp; this.t += 0.12;
+    if (this.type === 'SCOPE') {
+      const k = clamp((W - this.x) / (W - P.x - 90), 0, 1);
+      this.h = Math.round(16 + k * 16); this.y = FLOOR - this.h;
+    } else if (this.type === 'DEADLINE') {
+      this.y = FLOOR - this.h - Math.abs(Math.sin(this.t * 0.9)) * 20;
+    }
+    if (this.x < -80) this.dead = true;
+  }
+  draw() {
+    const x = Math.floor(this.x), y = Math.floor(this.y);
+    switch (this.type) {
+      case 'REF': case 'DREF': {
+        const n = this.type === 'DREF' ? 2 : 1;
+        for (let i = 0; i < n; i++) {
+          const ox = x + i * 32;
+          ctx.fillStyle = '#7f1d1d'; ctx.fillRect(ox, y, 30, 18);
+          ctx.fillStyle = '#E11D48'; ctx.fillRect(ox + 1, y + 1, 28, 16);
+          ctx.fillStyle = '#1D6F42'; ctx.fillRect(ox + 1, y + 1, 28, 3);
+          setFont(6); ctx.textAlign = 'left'; ctx.fillStyle = '#fff'; ctx.fillText('#REF!', ox + 1, y + 14);
+        }
+        break;
+      }
+      case 'FILE': {
+        ctx.fillStyle = '#e5e7eb'; ctx.fillRect(x, y, 15, 26); ctx.fillRect(x + 15, y + 5, 5, 21);
+        ctx.fillStyle = '#9ca3af'; ctx.fillRect(x + 15, y, 5, 5);
+        ctx.fillStyle = '#C2410C'; ctx.fillRect(x, y + 3, 15, 5);
+        ctx.fillStyle = '#9ca3af'; for (let i = 0; i < 4; i++) ctx.fillRect(x + 3, y + 11 + i * 3, 13 - (i % 2) * 4, 1);
+        setFont(5); ctx.textAlign = 'left'; ctx.fillStyle = '#dc2626'; ctx.fillText('v7', x + 3, y + 25);
+        break;
+      }
+      case 'SCOPE': {
+        for (let yy = 0; yy < this.h; yy += 6) {
+          ctx.fillStyle = (yy / 6) % 2 ? '#F472B6' : '#FBBF24';
+          ctx.fillRect(x + 1 + ((yy / 6) % 2), y + this.h - yy - 6, 18, 5);
+          ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fillRect(x + 4, y + this.h - yy - 4, 10, 1);
+        }
+        drawText('+', x + 10, y - 2 + Math.sin(this.t * 2) * 2, '#fca5a5', 7);
+        break;
+      }
+      case 'EMAIL': {
+        const flap = Math.floor(this.t * 3) % 2;
+        ctx.fillStyle = '#94a3b8'; ctx.fillRect(x - 3, y + (flap ? 1 : 5), 4, 3); ctx.fillRect(x + 25, y + (flap ? 1 : 5), 4, 3);
+        ctx.fillStyle = '#0284C7'; ctx.fillRect(x, y + 1, 26, 13);
+        ctx.fillStyle = '#e0f2fe'; ctx.fillRect(x + 2, y + 3, 22, 9);
+        ctx.fillStyle = '#0284C7'; for (let i = 0; i < 6; i++) ctx.fillRect(x + 3 + i * 2, y + 4 + i, 2, 1), ctx.fillRect(x + 21 - i * 2, y + 4 + i, 2, 1);
+        ctx.fillStyle = '#EF4444'; ctx.fillRect(x + 19, y - 4, 9, 7);
+        setFont(5); ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.fillText('!', x + 24, y + 2);
+        break;
+      }
+      case 'DEADLINE': {
+        ctx.fillStyle = '#b91c1c'; ctx.fillRect(x + 1, y + 3, 14, 15); ctx.fillRect(x, y + 6, 16, 9);
+        ctx.fillStyle = '#fef2f2'; ctx.fillRect(x + 3, y + 6, 10, 9);
+        ctx.fillStyle = '#111'; ctx.fillRect(x + 7, y + 7, 2, 5); ctx.fillRect(x + 8, y + 10, 4, 2);
+        ctx.fillStyle = '#FBBF24'; ctx.fillRect(x, y, 5, 3); ctx.fillRect(x + 11, y, 5, 3);
+        ctx.fillStyle = '#7f1d1d'; ctx.fillRect(x + 2, y + 18, 3, 2); ctx.fillRect(x + 11, y + 18, 3, 2);
+        ctx.fillStyle = 'rgba(0,0,0,0.35)'; const sh = FLOOR - (y + this.h); ctx.fillRect(x + 2 + (sh > 10 ? 2 : 0), FLOOR - 2, 12 - (sh > 10 ? 4 : 0), 2);
+        break;
+      }
+    }
+  }
+}
+
+class Item {
+  constructor(type, x, y) { this.type = type; this.x = x; this.y = y; this.w = 12; this.h = 12; this.dead = false; this.ph = Math.random() * 6; }
+  update(sp) {
+    this.x -= sp;
+    if (magnet > 0 && this.type === 'DOT') {
+      const dx = (P.x + P.w / 2) - (this.x + 6), dy = (P.y + P.h / 2) - (this.y + 6), d = Math.hypot(dx, dy);
+      if (d < 130 && d > 1) { const v = Math.min(7, 2 + (130 - d) / 18); this.x += (dx / d) * v; this.y += (dy / d) * v; }
+    }
+    if (this.x < -30) this.dead = true;
+  }
+  draw() {
+    const x = Math.floor(this.x), y = Math.floor(this.y + (this.type === 'DOT' ? Math.sin(frame * 0.12 + this.ph) * 2 : Math.sin(frame * 0.1) * 3));
+    switch (this.type) {
+      case 'DOT':
+        ctx.fillStyle = '#568819'; ctx.fillRect(x + 2, y + 1, 8, 10); ctx.fillRect(x + 1, y + 2, 10, 8);
+        ctx.fillStyle = '#86BC25'; ctx.fillRect(x + 2, y + 2, 8, 8);
+        ctx.fillStyle = '#d9f99d'; ctx.fillRect(x + 3, y + 3, 2, 2);
+        break;
+      case 'COFFEE': case 'GOLD': {
+        const gold = this.type === 'GOLD';
+        ctx.fillStyle = gold ? '#FCD34D' : '#fff'; ctx.fillRect(x + 2, y + 3, 8, 9); ctx.fillRect(x + 10, y + 5, 2, 4);
+        ctx.fillStyle = gold ? '#B45309' : '#86BC25'; ctx.fillRect(x + 2, y + 6, 8, 2);
+        ctx.fillStyle = '#78350f'; ctx.fillRect(x + 3, y + 4, 6, 1);
+        ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillRect(x + 4 + (frame >> 3) % 2, y - 1, 1, 3); ctx.fillRect(x + 7 - (frame >> 3) % 2, y - 2, 1, 3);
+        if (gold && frame % 10 < 5) { ctx.fillStyle = '#fff'; ctx.fillRect(x - 2, y, 2, 2); ctx.fillRect(x + 12, y + 10, 2, 2); }
+        break;
+      }
+      case 'SHIELD':
+        ctx.fillStyle = '#0369a1'; ctx.fillRect(x + 1, y, 10, 8); ctx.fillRect(x + 2, y + 8, 8, 2); ctx.fillRect(x + 4, y + 10, 4, 2);
+        ctx.fillStyle = '#38BDF8'; ctx.fillRect(x + 2, y + 1, 8, 7);
+        ctx.fillStyle = '#fff'; ctx.fillRect(x + 3, y + 5, 2, 2); ctx.fillRect(x + 5, y + 6, 2, 2); ctx.fillRect(x + 7, y + 3, 2, 3);
+        break;
+      case 'MAGNET':
+        ctx.fillStyle = '#dc2626'; ctx.fillRect(x + 1, y + 1, 4, 9); ctx.fillRect(x + 7, y + 1, 4, 9); ctx.fillRect(x + 1, y + 7, 10, 4);
+        ctx.fillStyle = '#e5e7eb'; ctx.fillRect(x + 1, y, 4, 3); ctx.fillRect(x + 7, y, 4, 3);
+        break;
+      case 'TIMESHEET':
+        ctx.fillStyle = '#92400e'; ctx.fillRect(x + 1, y + 1, 10, 11);
+        ctx.fillStyle = '#f8fafc'; ctx.fillRect(x + 2, y + 3, 8, 8);
+        ctx.fillStyle = '#9ca3af'; ctx.fillRect(x + 4, y, 4, 3);
+        ctx.fillStyle = '#16a34a'; ctx.fillRect(x + 3, y + 7, 2, 2); ctx.fillRect(x + 5, y + 8, 1, 2); ctx.fillRect(x + 6, y + 5, 2, 3); ctx.fillRect(x + 8, y + 4, 1, 2);
+        break;
+      case 'QUIZ':
+        ctx.fillStyle = '#92400e'; ctx.fillRect(x - 1, y - 1, 14, 14);
+        ctx.fillStyle = frame % 30 < 15 ? '#FBBF24' : '#F59E0B'; ctx.fillRect(x, y, 12, 12);
+        setFont(8); ctx.textAlign = 'center'; ctx.fillStyle = '#7c2d12'; ctx.fillText('?', x + 6, y + 11);
+        break;
+    }
+  }
+}
+
+class Npc {
+  constructor(x) {
+    const r = Math.random();
+    this.kind = r < 0.15 ? 'PARTNER' : r < 0.45 ? 'COACH' : 'BUDDY';
+    this.x = x; this.y = FLOOR - 34; this.w = 18; this.h = 34; this.met = false; this.dead = false;
+  }
+  update(sp) { this.x -= sp; if (this.x < -60) this.dead = true; }
+  draw() {
+    const x = Math.floor(this.x), y = Math.floor(this.y);
+    const c = { BUDDY: ['#38BDF8', '#004F59', '#86BC25', '#475569'], COACH: ['#a3e635', '#1E3A5F', '#38BDF8', '#78350f'], PARTNER: ['#F59E0B', '#002776', '#F59E0B', '#cbd5e1'] }[this.kind];
+    if (!this.met) drawText(`[${this.kind}]`, x + 9, y - 8 + Math.sin(frame * 0.1) * 1.5, c[0], 5);
+    else drawText('✓', x + 9, y - 8, '#86BC25', 7);
+    ctx.fillStyle = c[3]; ctx.fillRect(x + 3, y, 12, 5);
+    ctx.fillStyle = '#e8b48a'; ctx.fillRect(x + 4, y + 4, 10, 8);
+    ctx.fillStyle = '#0a0e14'; ctx.fillRect(x + 5, y + 6, 2, 2);
+    ctx.fillStyle = c[1]; ctx.fillRect(x + 3, y + 12, 13, 11);
+    ctx.fillStyle = c[2]; ctx.fillRect(x + 8, y + 12, 3, 7);
+    const wave = this.met ? (frame % 16 < 8 ? -4 : -2) : 0;
+    ctx.fillStyle = c[1]; ctx.fillRect(x, y + 13 + wave, 3, 7);
+    ctx.fillStyle = '#1E293B'; ctx.fillRect(x + 4, y + 23, 4, 9); ctx.fillRect(x + 10, y + 23, 4, 9);
+  }
+}
+
+function burst(x, y, color, n = 8) {
+  for (let i = 0; i < n; i++) particles.push({ x, y, vx: (Math.random() - 0.5) * 4 - speed * 0.2, vy: (Math.random() - 0.8) * 3, s: 2 + Math.floor(Math.random() * 3), life: 20, color });
+  if (particles.length > 160) particles.splice(0, particles.length - 160);
+}
+function dust(x, y) { for (let i = 0; i < 4; i++) particles.push({ x: x + rand(-4, 4), y: y - 2, vx: -speed * 0.3 - Math.random(), vy: -Math.random() * 0.8, s: 2, life: 14, color: 'rgba(203,213,225,0.6)' }); }
+function floatText(text, x, y, color = '#86BC25') { floats.push({ text, x, y, color, life: 48 }); if (floats.length > 12) floats.shift(); }
+
+function addScore(base, x, y, color, mult = false) {
+  let v = base * (mult ? comboMult() : 1) * (phase.type === 'BUSY' ? 1.5 : 1);
+  v = Math.round(v); score += v;
+  if (x !== undefined) floatText('+' + v, x, y, color);
+  return v;
+}
+
+/* ============================================================
+   SPAWNING
+   ============================================================ */
+function pickWeighted(pool) {
+  let total = 0; for (const p of pool) total += p[1];
+  let r = Math.random() * total;
+  for (const p of pool) { if ((r -= p[1]) <= 0) return p[0]; }
+  return pool[0][0];
+}
+function chooseObstacle() {
+  const pool = [['REF', 10]];
+  if (dist > 40) pool.push(['FILE', 7]);
+  if (dist > 80) pool.push(['EMAIL', run.emailBoost ? 12 : 6]);
+  if (dist > 140) pool.push(['SCOPE', 6]);
+  if (dist > 260) pool.push(['DREF', 4]);
+  if (dist > 380) pool.push(['DEADLINE', 5]);
+  if (dist > 480) pool.push(['COMBO', 4]);
+  return pickWeighted(pool);
+}
+function pickPower() {
+  const p = pickWeighted([['COFFEE', 28], ['SHIELD', 24], ['MAGNET', 26], ['TIMESHEET', 22]]);
+  if (p === 'COFFEE' && !run.gold && Math.random() < 0.06) return 'GOLD';
+  return p;
+}
+function dotLine(x, n = 5) { for (let i = 0; i < n; i++) items.push(new Item('DOT', x + i * 22, FLOOR - 24)); }
+function dotArc(cx) {
+  for (let i = 0; i < 5; i++) {
+    const dx = (i - 2) * 22, k = 1 - Math.pow(dx / 70, 2);
+    items.push(new Item('DOT', cx + dx - 6, FLOOR - 23 - 62 * k));
+  }
+}
+function spawnPattern() {
+  const sp = speed, air = 36, x = W + 20;
+  if (phase.type === 'LEAVE') {
+    Math.random() < 0.5 ? dotLine(x, 6) : dotArc(x + 50);
+    spawnGap = 150 + Math.random() * 60;
+    return;
+  }
+  const type = chooseObstacle();
+  let extra = 0, lastW = 30;
+  if (type === 'COMBO') {
+    obstacles.push(new Obstacle('REF', x));
+    const x2 = x + Math.round(sp * air) + 40;
+    obstacles.push(new Obstacle('EMAIL', x2));
+    extra = x2 - x; lastW = 26;
+  } else {
+    const o = new Obstacle(type, x); obstacles.push(o); lastW = o.w;
+    if (!o.fly && type !== 'DEADLINE' && Math.random() < 0.45) dotArc(x + o.w / 2);
+  }
+  const busy = phase.type === 'BUSY';
+  const minGap = sp * air + 70;
+  const gap = extra + minGap + Math.random() * sp * (busy ? 14 : 34);
+  spawnGap = gap;
+  const lastEnd = x + extra + lastW, nextStart = x + gap;
+  const mid = (lastEnd + nextStart) / 2;
+  if (nextStart - lastEnd < 110) return;
+  if (dist >= next.npc) { npcs.push(new Npc(mid - 9)); next.npc = dist + 120 + Math.random() * 90; }
+  else if (dist >= next.quiz) { items.push(new Item('QUIZ', mid - 6, FLOOR - 34)); next.quiz = dist + 260 + Math.random() * 160; }
+  else if (dist >= next.power) { items.push(new Item(pickPower(), mid - 6, FLOOR - 32)); next.power = dist + 100 + Math.random() * 110; }
+  else if (Math.random() < 0.55 && nextStart - lastEnd > 150) dotLine(mid - 44, 5);
+}
+
+/* ============================================================
+   COLLISION
+   ============================================================ */
+function hit(a, b, pad = 4) {
+  return a.x + pad < b.x + b.w - pad && a.x + a.w - pad > b.x + pad && a.y + pad < b.y + b.h - pad && a.y + a.h - pad > b.y + pad;
+}
+
+/* ============================================================
+   MAIN STEP
+   ============================================================ */
+function stepWorld() {
+  const phaseMul = phase.type === 'BUSY' ? 1.12 : phase.type === 'LEAVE' ? 0.92 : 1;
+  speed = Math.min(MAX_SPEED, BASE_SPEED + dist * RAMP) * phaseMul;
+  const dm = speed * 0.06;
+  dist += dm; scroll += speed;
+  score += dm * 5 * (phase.type === 'BUSY' ? 1.5 : 1);
+
+  if (coffee > 0) coffee--;
+  if (magnet > 0) magnet--;
+  if (comboT > 0) comboT--; else combo = 0;
+  if (shake > 0) shake *= 0.85;
+
+  // Phases: Busy Season -> Annual Leave -> Normal
+  if (phase.type === 'NORMAL' && dist >= nextBusyAt) { phase = { type: 'BUSY', t: 60 * 18 }; banner(t('busy'), t('busySub')); Sfx.play('power'); buzz(40); }
+  else if (phase.type === 'BUSY' && --phase.t <= 0) { phase = { type: 'LEAVE', t: 60 * 6 }; banner(t('leave'), t('leaveSub')); Sfx.play('good'); }
+  else if (phase.type === 'LEAVE' && --phase.t <= 0) { phase = { type: 'NORMAL', t: 0 }; nextBusyAt = dist + 380; }
+
+  // Promotions
+  const ri = rankIndex(dist);
+  if (ri > run.rank) {
+    run.rank = ri;
+    const isPartner = ri === RANK_AT.length - 1;
+    banner(t('promoted'), isPartner ? `${rankName(ri)} · ${t('partnerSub')}` : rankName(ri));
+    addScore(isPartner ? 1845 : 200, P.x + 8, P.y - 10, '#F59E0B');
+    Sfx.play('promo'); buzz([30, 40, 30]);
+    burst(P.x + 8, P.y, '#F59E0B', 16);
+    if (ri >= 4) unlock('manager');
+    if (isPartner) unlock('partner');
+  }
+
+  // Office clock
+  const hour = officeHour();
+  if (!run.sixpm && hour >= 18) { run.sixpm = true; run.emailBoost = true; toast(t('sixpm')); }
+
+  P.update();
+  spawnGap -= speed;
+  if (spawnGap <= 0) spawnPattern();
+
+  for (let i = npcs.length - 1; i >= 0; i--) {
+    const n = npcs[i]; n.update(speed);
+    if (!n.met && hit(P, n, 2)) {
+      n.met = true; run.buddies++;
+      const pts = n.kind === 'PARTNER' ? 800 : n.kind === 'COACH' ? 400 : 250;
+      addScore(pts, n.x + 9, n.y - 4, n.kind === 'PARTNER' ? '#F59E0B' : '#86BC25');
+      if (n.kind === 'COACH') P.shield = true;
+      toast(t(n.kind.toLowerCase()));
+      Sfx.play('power'); buzz(25); burst(n.x + 9, n.y + 10, n.kind === 'PARTNER' ? '#F59E0B' : '#86BC25', 12);
+      if (run.buddies >= 4) unlock('buddy');
+    }
+    if (n.dead) npcs.splice(i, 1);
+  }
+
+  for (let i = obstacles.length - 1; i >= 0; i--) {
+    const o = obstacles[i]; o.update(speed);
+    if (o.x < P.x + P.w && o.x + o.w > P.x) {
+      const gv = P.y + P.h <= o.y ? o.y - (P.y + P.h) : (P.y >= o.y + o.h ? P.y - (o.y + o.h) : 0);
+      if (gv < o.minGap) o.minGap = gv;
+    }
+    if (hit(P, o)) {
+      if (coffee > 0) { smash(o); obstacles.splice(i, 1); addScore(100, o.x, o.y - 4, '#fb7185'); continue; }
+      if (P.invuln > 0) continue;
+      if (P.shield) { P.shield = false; P.invuln = 70; smash(o); obstacles.splice(i, 1); toast(t('shieldSaved')); Sfx.play('shield'); buzz(60); continue; }
+      die(o.type); return;
+    }
+    if (!o.passed && o.x + o.w < P.x) {
+      o.passed = true; addScore(40);
+      if (o.minGap <= 7 && P.invuln <= 0 && coffee <= 0) {
+        run.close++; addScore(60, P.x + 8, P.y - 6, '#FCD34D');
+        floatText(t('closeCall'), P.x + 8, P.y - 16, '#FCD34D');
+        Sfx.play('near'); buzz(12);
+        if (run.close >= 8) unlock('close');
+      }
+    }
+    if (o.dead) obstacles.splice(i, 1);
+  }
+
+  for (let i = items.length - 1; i >= 0; i--) {
+    const it = items[i]; it.update(speed);
+    if (hit(P, it, 1)) { collect(it); items.splice(i, 1); if (state !== 'PLAYING') return; continue; }
+    if (it.dead) items.splice(i, 1);
+  }
+  updateParticles();
+}
+
+function smash(o) { burst(o.x + o.w / 2, o.y + o.h / 2, '#E11D48', 10); Sfx.play('smash'); shake = Math.max(shake, 3); }
+
+function collect(it) {
+  const cx = it.x + 6, cy = it.y;
+  switch (it.type) {
+    case 'DOT':
+      combo++; comboT = 100; run.maxCombo = Math.max(run.maxCombo, combo);
+      addScore(50, cx, cy - 4, '#86BC25', true); Sfx.play('dot', combo);
+      burst(cx, cy + 6, '#86BC25', 4);
+      if (combo >= 25) unlock('combo');
+      break;
+    case 'COFFEE': coffee = 240; addScore(150, cx, cy); toast(t('coffee')); Sfx.play('power'); buzz(30); break;
+    case 'GOLD': run.gold = true; coffee = 360; addScore(1845, cx, cy, '#FCD34D'); toast(t('golden')); Sfx.play('egg'); buzz([40, 30, 40]); burst(cx, cy, '#FCD34D', 18); unlock('golden'); break;
+    case 'SHIELD': P.shield = true; addScore(100, cx, cy, '#38BDF8'); toast(t('shield')); Sfx.play('power'); break;
+    case 'MAGNET': magnet = 420; addScore(100, cx, cy, '#f87171'); toast(t('magnet')); Sfx.play('power'); break;
+    case 'TIMESHEET': addScore(500, cx, cy, '#4ade80'); toast(t('timesheet')); Sfx.play('good'); buzz(20); break;
+    case 'QUIZ': openQuiz(); break;
+  }
+}
+
+function updateParticles() {
+  for (let i = particles.length - 1; i >= 0; i--) { const p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.08; if (--p.life <= 0) particles.splice(i, 1); }
+  for (let i = floats.length - 1; i >= 0; i--) { const f = floats[i]; f.y -= 0.6; if (--f.life <= 0) floats.splice(i, 1); }
+}
+function updateWeather() {
+  if (weather.type === 'RAIN') for (const p of weatherP) { p.x += p.vx; p.y += p.vy; if (p.y > FLOOR) { p.y = -10; p.x = Math.random() * (W + 40); } }
+  else if (weather.type === 'SPARKLE') for (const p of weatherP) { p.x += p.vx - 0.3; p.y += p.vy; if (p.y < 0 || p.x < 0) { p.y = FLOOR; p.x = Math.random() * W; } }
+}
+function officeHour() { return (run.startHour + dist / 110) % 24; }
+
+function tick() {
+  frame++;
+  updateWeather();
+  if (state === 'PLAYING') stepWorld();
+  else if (state === 'DYING') { updateParticles(); shake *= 0.9; if (--dyingT <= 0) showGameOver(); }
+  else if (state === 'QUIZ') stepQuiz();
+  else if (state === 'START' || state === 'GAMEOVER') { scroll += 1.2; if (state === 'START') P.run += 0.2; updateParticles(); }
+  if (frame % 5 === 0) updateHUD();
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render() {
+  ctx.save();
+  if (shake > 0.5) ctx.translate(Math.round(rand(-shake, shake)), Math.round(rand(-shake, shake)));
+  ctx.fillStyle = skyGrad; ctx.fillRect(-10, -10, W + 20, FLOOR + 10);
+
+  const h = state === 'START' ? 9 : officeHour();
+  let night = (h >= 18 || h < 6) ? 0.5 : h >= 16 ? (h - 16) / 2 * 0.5 : 0;
+  if (run.nightOwl) night = 0.55;
+
+  for (const s of stars) { ctx.globalAlpha = 0.25 + 0.5 * night + ((frame / 20 + s.tw) % 6 < 0.6 ? 0.3 : 0); ctx.fillStyle = '#fff'; ctx.fillRect(Math.floor((s.x - scroll * 0.02 + W * 10) % W), Math.floor(s.y), s.s, s.s); }
+  ctx.globalAlpha = 1;
+  // sun / moon
+  const by = 34 + night * 30;
+  if (night > 0.25 || weather.type === 'CLEAR') { ctx.fillStyle = '#e2e8f0'; ctx.fillRect(W - 72, by, 14, 14); ctx.fillRect(W - 74, by + 2, 18, 10); ctx.fillStyle = loc.sky[0]; ctx.fillRect(W - 66, by, 8, 8); }
+  else { ctx.fillStyle = weather.type === 'SUNSET' ? '#fb923c' : '#fde68a'; ctx.fillRect(W - 76, by, 18, 18); ctx.fillRect(W - 79, by + 3, 24, 12); ctx.fillRect(W - 73, by - 3, 12, 24); }
+
+  if (weather.type === 'SUNSET') { const g = ctx.createLinearGradient(0, FLOOR - 120, 0, FLOOR); g.addColorStop(0, 'rgba(251,146,60,0)'); g.addColorStop(1, 'rgba(251,146,60,0.35)'); ctx.fillStyle = g; ctx.fillRect(0, FLOOR - 120, W, 120); }
+
+  const fo = Math.floor((scroll * 0.2) % W);
+  ctx.globalAlpha = 0.7; ctx.drawImage(farLayer, -fo, 0); ctx.drawImage(farLayer, W - fo, 0); ctx.globalAlpha = 1;
+  const no = Math.floor((scroll * 0.55) % W);
+  ctx.drawImage(nearLayer, -no, 0); ctx.drawImage(nearLayer, W - no, 0);
+
+  if (night > 0) { ctx.fillStyle = `rgba(2,4,20,${night * 0.6})`; ctx.fillRect(0, 0, W, FLOOR); }
+
+  if (weather.type === 'RAIN') { ctx.strokeStyle = 'rgba(147,197,253,0.45)'; ctx.lineWidth = 1; ctx.beginPath(); for (const p of weatherP) { ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.vx, p.y + p.l); } ctx.stroke(); }
+  else if (weather.type === 'SPARKLE') { ctx.fillStyle = 'rgba(134,188,37,0.75)'; for (const p of weatherP) ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.s, p.s); }
+
+  // ground
+  ctx.fillStyle = loc.ground; ctx.fillRect(-10, FLOOR, W + 20, H - FLOOR + 10);
+  ctx.fillStyle = phase.type === 'BUSY' && frame % 30 < 15 ? '#F43F5E' : loc.accent; ctx.fillRect(-10, FLOOR, W + 20, 3);
+  ctx.fillStyle = '#1e293b'; ctx.fillRect(-10, FLOOR + 3, W + 20, 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  const go = Math.floor(scroll % 32);
+  for (let x = -go; x < W; x += 32) { ctx.fillRect(x, FLOOR + 14, 14, 2); ctx.fillRect(x + 16, FLOOR + 28, 10, 2); }
+
+  for (const it of items) it.draw();
+  for (const n of npcs) n.draw();
+  for (const o of obstacles) o.draw();
+  if (state !== 'GAMEOVER' || true) P.draw();
+  for (const p of particles) { ctx.globalAlpha = Math.min(1, p.life / 10); ctx.fillStyle = p.color; ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.s, p.s); }
+  ctx.globalAlpha = 1;
+  for (const f of floats) { ctx.globalAlpha = Math.min(1, f.life / 15); drawText(f.text, Math.floor(f.x), Math.floor(f.y), f.color, 6); }
+  ctx.globalAlpha = 1;
+  if (state === 'DYING') { ctx.fillStyle = `rgba(225,29,72,${dyingT / 45 * 0.35})`; ctx.fillRect(0, 0, W, H); }
+  ctx.restore();
+}
+
+/* ============================================================
+   LOOP (fixed 60 Hz timestep: same speed on 60/90/120/144 Hz screens)
+   ============================================================ */
+let lastT = 0, acc = 0;
+function loop(ts) {
+  requestAnimationFrame(loop);
+  if (!lastT) lastT = ts;
+  let dt = ts - lastT; lastT = ts;
+  if (dt > 200) dt = STEP;
+  acc += dt;
+  let n = 0;
+  while (acc >= STEP && n < 5) { tick(); acc -= STEP; n++; }
+  if (n === 5) acc = 0;
+  render();
+}
+
+/* ============================================================
+   UI HELPERS: toast, banner, HUD, pills
+   ============================================================ */
+const toastQ = []; let toastBusy = false;
+function toast(text) { if (toastQ.length > 3) toastQ.shift(); toastQ.push(text); if (!toastBusy) nextToast(); }
+function nextToast() {
+  const el = $('toast'); const msg = toastQ.shift();
+  if (!msg) { toastBusy = false; return; }
+  toastBusy = true; el.textContent = msg; el.classList.add('show');
+  setTimeout(() => { el.classList.remove('show'); setTimeout(nextToast, 230); }, 1700);
+}
+function banner(top, sub) {
+  const el = $('banner'); $('bannerTop').textContent = top; $('bannerSub').textContent = sub || '';
+  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+}
+const hudCache = {};
+function setText(id, v) { if (hudCache[id] !== v) { hudCache[id] = v; const el = $(id); if (el) el.textContent = v; } }
+function updateHUD() {
+  setText('hudScore', String(Math.floor(score)).padStart(6, '0'));
+  setText('hudBest', String(Math.max(bestScore, state === 'PLAYING' ? Math.floor(score) : 0)).padStart(6, '0'));
+  setText('hudDist', Math.floor(dist) + 'm');
+  setText('hudRank', rankName(state === 'START' ? 0 : rankIndex(dist)));
+  const hr = state === 'START' ? 9 : officeHour();
+  setText('hudClock', `${String(Math.floor(hr)).padStart(2, '0')}:${String(Math.floor((hr % 1) * 60)).padStart(2, '0')}`);
+  setText('hudCombo', combo >= 3 ? fmt(t('combo'), { m: comboMult().toFixed(1), c: combo }) : '');
+  setText('hudLoc', `${weather.icon} ${loc[settings.lang]} · ${weather[settings.lang]}`);
+  const p = [];
+  const pt = t('pills');
+  if (coffee > 0) p.push(`<span class="pill" style="color:#86BC25;border-color:#86BC25">${fmt(pt.coffee, { s: Math.ceil(coffee / 60) })}</span>`);
+  if (magnet > 0) p.push(`<span class="pill" style="color:#f87171;border-color:#f87171">${fmt(pt.magnet, { s: Math.ceil(magnet / 60) })}</span>`);
+  if (P.shield && state === 'PLAYING') p.push(`<span class="pill" style="color:#38BDF8;border-color:#38BDF8">${pt.shield}</span>`);
+  const html = p.join('');
+  if (hudCache.pills !== html) { hudCache.pills = html; $('pills').innerHTML = html; }
+}
+
+/* ============================================================
+   ACHIEVEMENTS
+   ============================================================ */
+function unlock(id) {
+  if (achieved[id]) return;
+  achieved[id] = Date.now(); LS.setJson('drush_ach', achieved);
+  const a = ACH.find((x) => x.id === id);
+  if (a) { run.newAch.push(a); toast(`🏅 ${a.n[settings.lang]}`); }
+}
+function renderAch() {
+  const n = ACH.filter((a) => achieved[a.id]).length;
+  $('achCount').textContent = `${n}/${ACH.length}`;
+  $('achBody').innerHTML = ACH.map((a) => {
+    const got = !!achieved[a.id];
+    const desc = got ? a.d[settings.lang] : (a.h ? `${t('locked')} ${a.h[settings.lang]}` : a.d[settings.lang]);
+    return `<div class="ach${got ? '' : ' locked'}"><div class="e">${a.e}</div><div><div class="n">${got || !a.egg ? esc(a.n[settings.lang]) : '???'}${a.egg ? `<span class="tag">${t('eggTag')}</span>` : ''}</div><div class="d">${esc(desc)}</div></div></div>`;
+  }).join('');
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+let quizRecent = [];
+function openQuiz() {
+  let idx, guard = 0;
+  do { idx = Math.floor(Math.random() * QUIZ.length); } while (quizRecent.includes(idx) && ++guard < 30);
+  quizRecent.push(idx); if (quizRecent.length > 6) quizRecent.shift();
+  const q = QUIZ[idx];
+  const order = q.a.map((_, i) => i).sort(() => Math.random() - 0.5);
+  quiz = { q, order, t: 600, max: 600, done: false, after: 0 };
+  input.jumpHeld = input.slideHeld = false; input.jumpBuf = 0;
+  state = 'QUIZ';
+  $('quizQ').textContent = q.q[settings.lang];
+  $('quizEx').textContent = '';
+  $('quizBar').style.transform = 'scaleX(1)';
+  const box = $('quizOpts'); box.innerHTML = '';
+  order.forEach((ai, pos) => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = `${'ABC'[pos]}. ${q.a[ai][settings.lang]}`;
+    b.addEventListener('click', (e) => { e.stopPropagation(); answerQuiz(ai); });
+    box.appendChild(b);
+  });
+  show('quizOverlay');
+  Sfx.play('power');
+}
+function stepQuiz() {
+  if (!quiz) return;
+  if (quiz.done) { if (--quiz.after <= 0) closeQuiz(); return; }
+  quiz.t--;
+  $('quizBar').style.transform = `scaleX(${Math.max(0, quiz.t / quiz.max)})`;
+  if (quiz.t <= 0) answerQuiz(-1);
+}
+function answerQuiz(ai) {
+  if (!quiz || quiz.done) return;
+  quiz.done = true; quiz.after = 150;
+  const right = ai === 0;
+  [...$('quizOpts').children].forEach((b, pos) => {
+    const idx = quiz.order[pos];
+    if (idx === 0) b.classList.add('right'); else if (idx === ai) b.classList.add('wrong');
+  });
+  const head = right ? t('quizRight') : ai === -1 ? t('quizTime') : t('quizWrong');
+  $('quizEx').textContent = `${head} ${quiz.q.ex[settings.lang]} (${t('tapContinue')})`;
+  if (right) {
+    addScore(500, P.x + 8, P.y - 10, '#FCD34D');
+    stats.quizRight++; saveStats();
+    if (stats.quizRight >= 5) unlock('quiz');
+    Sfx.play('good'); buzz(25);
+  } else { Sfx.play('bad'); buzz(50); }
+}
+function closeQuiz() {
+  if (state !== 'QUIZ') return;
+  quiz = null; hide('quizOverlay');
+  state = 'PLAYING'; P.invuln = Math.max(P.invuln, 90);
+  lastT = 0;
+}
+$('quizOverlay').addEventListener('click', () => { if (quiz && quiz.done) closeQuiz(); });
+
+/* ============================================================
+   LIFECYCLE
+   ============================================================ */
+function show(id) { $(id).classList.add('show'); }
+function hide(id) { $(id).classList.remove('show'); }
+const anyModal = () => ['lbModal', 'helpModal', 'achModal'].some((id) => $(id).classList.contains('show'));
+function applyCanvasFx() {
+  canvas.classList.toggle('green', settings.mode === 'green');
+  canvas.classList.toggle('sepia', settings.mode !== 'green' && run.outfit === 'victorian' && state !== 'START');
+}
+
+function startGame() {
+  let nm = ($('nameInput').value || '').trim().slice(0, 16);
+  if (/@/.test(nm) || /\d{8,}/.test(nm.replace(/[\s\-().+]/g, ''))) nm = '';
+  nm = nm || 'A1 Analyst';
+  playerName = nm; LS.set('drush_player_name', nm);
+  $('nameInput').blur();
+  Sfx.unlock();
+
+  run = freshRun();
+  run.look = {
+    skin: ['#f3c299', '#fcd5b5', '#d49a6a', '#8d5524', '#ffdbac'][Math.floor(Math.random() * 5)],
+    hair: ['#2d1d14', '#111827', '#b45309', '#f59e0b', '#7c2d12'][Math.floor(Math.random() * 5)],
+    suit: ['#002776', '#1E232A', '#004F59', '#374151', '#1e1b4b'][Math.floor(Math.random() * 5)],
+    tie: ['#86BC25', '#38BDF8', '#F59E0B', '#EF4444', '#10B981'][Math.floor(Math.random() * 5)],
+    bag: Math.random() < 0.5 ? 'BACKPACK' : 'BRIEFCASE'
+  };
+  const now = new Date(), hr = now.getHours();
+  run.nightOwl = hr >= 23 || hr < 5;
+  randomizeSession(run.nightOwl);
+
+  score = 0; dist = 0; speed = BASE_SPEED; coffee = 0; magnet = 0; combo = 0; comboT = 0; shake = 0;
+  spawnGap = 260; phase = { type: 'NORMAL', t: 0 }; nextBusyAt = 330;
+  next = { npc: 60, quiz: 140, power: 100 };
+  obstacles.length = items.length = npcs.length = particles.length = floats.length = 0;
+  input.jumpHeld = input.slideHeld = false; input.jumpBuf = 0;
+  P.reset();
+  hudCache.pills = null;
+
+  ['startOverlay', 'goOverlay', 'pauseOverlay', 'quizOverlay'].forEach(hide);
+  $('btnPause').textContent = '❚❚';
+  state = 'PLAYING';
+  lastT = 0;
+
+  // Secret nicknames & time-based eggs
+  const N = nm.toUpperCase().replace(/[\s_.-]+/g, '');
+  if (N === '1845' || N === 'WELCH' || N === 'WILLIAMWELCHDELOITTE') { run.outfit = 'victorian'; setTimeout(() => toast(t('outfit1845')), 300); unlock('since1845'); }
+  else if (N.includes('DELOITTE') || N === 'GREENDOT') { run.outfit = 'green'; setTimeout(() => toast(t('outfitGreen')), 300); unlock('greendot'); }
+  if (run.nightOwl) { setTimeout(() => toast(t('nightOwl')), 600); unlock('nightowl'); }
+  if (now.getDay() === 5 && hr >= 18) { run.emailBoost = true; setTimeout(() => toast(t('friday')), 900); unlock('friday'); }
+  applyCanvasFx();
+  updateHUD();
+}
+
+function die(type) {
+  state = 'DYING'; dyingT = 45; shake = 10; deathType = type;
+  Sfx.play('hit'); buzz([60, 40, 120]);
+  burst(P.x + 8, P.y + P.h / 2, '#E11D48', 18);
+  input.jumpHeld = input.slideHeld = false;
+}
+
+function showGameOver() {
+  state = 'GAMEOVER'; gameOverAt = performance.now();
+  const final = Math.floor(score), d = Math.floor(dist), ri = rankIndex(dist);
+  stats.runs++; saveStats();
+  unlock('first');
+  const isBest = final > bestScore;
+  if (isBest) { bestScore = final; LS.set('drush_fg_high', String(final)); }
+  $('goReason').textContent = t('reasons')[deathType] || t('reasons').QUIT;
+  $('goScore').textContent = final.toLocaleString();
+  $('goDist').textContent = d + 'm';
+  $('goRank').textContent = rankName(ri);
+  const nb = $('goNewBest'); nb.style.display = isBest && final > 0 ? 'block' : 'none'; nb.textContent = t('newBest');
+  $('goTip').textContent = TIPS[Math.floor(Math.random() * TIPS.length)][settings.lang];
+  $('goAch').textContent = run.newAch.length ? fmt(t('newAch'), { list: run.newAch.map((a) => `${a.e} ${a.n[settings.lang]}`).join(' · ') }) : '';
+  $('goSync').textContent = '';
+  show('goOverlay');
+  $('goOverlay').scrollTop = 0;
+  if (deathType !== 'QUIT' && final > 0) submitScore({ player_name: playerName, score: final, distance: d, career_rank: rankName(ri, 'en') });
+  updateHUD();
+}
+
+function togglePause(force) {
+  if (state === 'PLAYING' && force !== false) {
+    state = 'PAUSED'; show('pauseOverlay'); $('btnPause').textContent = '▶';
+    input.jumpHeld = input.slideHeld = false;
+  } else if (state === 'PAUSED' && force !== true) {
+    state = 'PLAYING'; hide('pauseOverlay'); $('btnPause').textContent = '❚❚'; lastT = 0;
+  }
+}
+function quitRun() { hide('pauseOverlay'); deathType = 'QUIT'; showGameOver(); }
+function goToMenu() {
+  state = 'START'; ['goOverlay', 'pauseOverlay', 'quizOverlay'].forEach(hide); show('startOverlay');
+  run = freshRun(); applyCanvasFx(); refreshStartStats();
+}
+function refreshStartStats() {
+  const n = ACH.filter((a) => achieved[a.id]).length;
+  $('startStats').textContent = fmt(t('startStats'), { b: bestScore.toLocaleString(), n, t: ACH.length });
+}
+
+/* ============================================================
+   EASTER EGGS
+   ============================================================ */
+function eggOnce(id) {
+  if (state !== 'PLAYING') { toast(t('startFirst')); return false; }
+  if (run.eggs[id]) { toast(t('onceRun')); return false; }
+  run.eggs[id] = true; return true;
+}
+function eggExec() {
+  if (!eggOnce('exec')) return;
+  addScore(1845, P.x + 8, P.y - 10, '#F59E0B'); coffee = Math.max(coffee, 420);
+  toast(t('exec')); Sfx.play('egg'); buzz([30, 30, 60]); burst(P.x + 8, P.y + 10, '#F59E0B', 20); unlock('exec');
+}
+function eggAudit() {
+  if (!eggOnce('audit')) return;
+  for (const o of obstacles) { items.push(new Item('DOT', o.x + o.w / 2 - 6, FLOOR - 24)); burst(o.x + o.w / 2, o.y + o.h / 2, '#86BC25', 8); }
+  obstacles.length = 0;
+  addScore(600, P.x + 8, P.y - 10, '#86BC25');
+  toast(t('audit')); Sfx.play('egg'); buzz(40); unlock('audit');
+}
+function eggKonami() {
+  if (!eggOnce('konami')) return;
+  run.rainbow = true; coffee = Math.max(coffee, 300);
+  addScore(500, P.x + 8, P.y - 10, '#E879F9');
+  toast(t('konami')); Sfx.play('egg'); buzz([20, 20, 20, 20, 60]); unlock('konami');
+}
+let logoTaps = 0, logoTimer = 0;
+$('brand').addEventListener('click', () => {
+  const l = $('logo'); l.classList.add('tap'); setTimeout(() => l.classList.remove('tap'), 160);
+  logoTaps++; clearTimeout(logoTimer); logoTimer = setTimeout(() => (logoTaps = 0), 1300);
+  if (logoTaps >= 3) { logoTaps = 0; eggExec(); }
+});
+let rankTaps = 0, rankTimer = 0;
+$('hudRankBox').addEventListener('click', () => {
+  rankTaps++; clearTimeout(rankTimer); rankTimer = setTimeout(() => (rankTaps = 0), 450);
+  if (rankTaps >= 2) { rankTaps = 0; eggAudit(); }
+});
+let titleTaps = 0, titleTimer = 0;
+$('titleTap').addEventListener('click', () => {
+  titleTaps++; clearTimeout(titleTimer); titleTimer = setTimeout(() => (titleTaps = 0), 1500);
+  if (titleTaps >= 5) {
+    titleTaps = 0; settings.mode = settings.mode === 'green' ? '' : 'green'; saveSettings(); applyCanvasFx();
+    toast(settings.mode === 'green' ? t('greenOn') : t('greenOff')); Sfx.play('egg'); unlock('greenscreen'); refreshStartStats();
+  }
+});
+const KONAMI = 'UUDDLRLR'; let dirSeq = '';
+function pushDir(d) { dirSeq = (dirSeq + d).slice(-8); if (dirSeq === KONAMI) { dirSeq = ''; eggKonami(); } }
+
+/* ============================================================
+   INPUT (Pointer Events with touch/mouse fallback)
+   ============================================================ */
+function pressJump() {
+  if (anyModal()) return;
+  if (state === 'START') { startGame(); return; }
+  if (state === 'GAMEOVER') { if (performance.now() - gameOverAt > 700) startGame(); return; }
+  if (state !== 'PLAYING') return;
+  input.jumpHeld = true; input.jumpBuf = 8;
+}
+function releaseJump() { input.jumpHeld = false; }
+function pressSlide() {
+  if (anyModal() || state !== 'PLAYING') return;
+  input.slideHeld = true;
+  if (P.grounded && !P.sliding) P.startSlide();
+}
+function releaseSlide() { input.slideHeld = false; }
+
+function bindHold(el, down, up) {
+  const d = (e) => { if (e.cancelable) e.preventDefault(); Sfx.unlock(); el.classList.add('down'); down(); };
+  const u = () => { el.classList.remove('down'); up(); };
+  if (window.PointerEvent) {
+    el.addEventListener('pointerdown', (e) => { try { el.setPointerCapture(e.pointerId); } catch (_) {} d(e); });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((n) => el.addEventListener(n, u));
+  } else {
+    el.addEventListener('touchstart', d, { passive: false });
+    el.addEventListener('touchend', u); el.addEventListener('touchcancel', u);
+    el.addEventListener('mousedown', d); window.addEventListener('mouseup', u);
+  }
+  el.addEventListener('contextmenu', (e) => e.preventDefault());
+}
+bindHold($('btnJump'), pressJump, releaseJump);
+bindHold($('btnSlide'), pressSlide, releaseSlide);
+
+// Canvas: top zone = jump, bottom zone = slide; swipes feed the konami detector
+const touches = new Map();
+function canvasDown(id, cx, cy) {
+  Sfx.unlock();
+  if (state !== 'PLAYING') { if (state === 'GAMEOVER' || state === 'START') pressJump(); return; }
+  const r = canvas.getBoundingClientRect();
+  const zone = (cy - r.top) > r.height * 0.55 ? 'S' : 'J';
+  touches.set(id, { zone, x: cx, y: cy, t: performance.now() });
+  zone === 'J' ? pressJump() : pressSlide();
+}
+function canvasUp(id, cx, cy) {
+  const a = touches.get(id); if (!a) return; touches.delete(id);
+  a.zone === 'J' ? releaseJump() : releaseSlide();
+  const dx = cx - a.x, dy = cy - a.y;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) > 28 && performance.now() - a.t < 500) pushDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'R' : 'L') : (dy > 0 ? 'D' : 'U'));
+}
+if (window.PointerEvent) {
+  canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); try { canvas.setPointerCapture(e.pointerId); } catch (_) {} canvasDown(e.pointerId, e.clientX, e.clientY); });
+  canvas.addEventListener('pointerup', (e) => canvasUp(e.pointerId, e.clientX, e.clientY));
+  canvas.addEventListener('pointercancel', (e) => canvasUp(e.pointerId, e.clientX, e.clientY));
+} else {
+  canvas.addEventListener('touchstart', (e) => { e.preventDefault(); for (const tc of e.changedTouches) canvasDown(tc.identifier, tc.clientX, tc.clientY); }, { passive: false });
+  canvas.addEventListener('touchend', (e) => { for (const tc of e.changedTouches) canvasUp(tc.identifier, tc.clientX, tc.clientY); });
+  canvas.addEventListener('mousedown', (e) => canvasDown('m', e.clientX, e.clientY));
+  window.addEventListener('mouseup', (e) => canvasUp('m', e.clientX, e.clientY));
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.target && e.target.tagName === 'INPUT') { if (e.key === 'Enter') { e.preventDefault(); startGame(); } return; }
+  const k = e.code;
+  if (!e.repeat && state === 'PLAYING') {
+    if (k === 'ArrowUp') pushDir('U'); else if (k === 'ArrowDown') pushDir('D'); else if (k === 'ArrowLeft') pushDir('L'); else if (k === 'ArrowRight') pushDir('R');
+  }
+  if (k === 'Space' || k === 'ArrowUp' || k === 'KeyW') { e.preventDefault(); if (!e.repeat) pressJump(); }
+  else if (k === 'ArrowDown' || k === 'KeyS') { e.preventDefault(); if (!e.repeat) pressSlide(); }
+  else if (k === 'KeyP' || k === 'Escape') { if (anyModal()) closeAllModals(); else togglePause(); }
+  else if (k === 'Enter' && (state === 'START' || state === 'GAMEOVER')) pressJump();
+});
+window.addEventListener('keyup', (e) => {
+  if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') releaseJump();
+  else if (e.code === 'ArrowDown' || e.code === 'KeyS') releaseSlide();
+});
+
+// Block iOS pinch/double-tap zoom & long-press menus on the game
+['gesturestart', 'gesturechange'].forEach((n) => document.addEventListener(n, (e) => e.preventDefault()));
+document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
+stage.addEventListener('contextmenu', (e) => e.preventDefault());
+
+// Auto-pause when the app is backgrounded / phone locked / call comes in
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { if (state === 'PLAYING') togglePause(true); try { Sfx.ctx && Sfx.ctx.suspend(); } catch (e) {} }
+  else { lastT = 0; }
+});
+window.addEventListener('pagehide', () => { if (state === 'PLAYING') togglePause(true); });
+window.addEventListener('blur', () => { if (state === 'PLAYING') togglePause(true); });
+
+/* ============================================================
+   BUTTONS, MODALS, LANGUAGE
+   ============================================================ */
+$('btnStart').addEventListener('click', (e) => { e.stopPropagation(); startGame(); });
+$('btnRetry').addEventListener('click', startGame);
+$('btnResume').addEventListener('click', () => togglePause(false));
+$('btnQuit').addEventListener('click', quitRun);
+$('btnPause').addEventListener('click', () => { if (state === 'PLAYING' || state === 'PAUSED') togglePause(); });
+$('btnGoLb').addEventListener('click', () => openModal('lbModal'));
+$('btnLb').addEventListener('click', () => openModal('lbModal'));
+$('btnAch').addEventListener('click', () => openModal('achModal'));
+$('btnHelp').addEventListener('click', () => openModal('helpModal'));
+$('btnSound').addEventListener('click', () => { settings.sound = !settings.sound; saveSettings(); Sfx.unlock(); syncButtons(); });
+$('btnHaptics').addEventListener('click', () => { settings.haptics = !settings.haptics; saveSettings(); syncButtons(); buzz(30); });
+$('btnLang').addEventListener('click', () => { settings.lang = settings.lang === 'en' ? 'zh' : 'en'; saveSettings(); applyLang(); });
+$('tabGlobal').addEventListener('click', () => { lbTab = 'global'; syncTabs(); fetchLb(); });
+$('tabLocal').addEventListener('click', () => { lbTab = 'local'; syncTabs(); fetchLb(); });
+$('lbRefresh').addEventListener('click', fetchLb);
+$('btnShare').addEventListener('click', async () => {
+  const text = fmt(t('shareText'), { rank: rankName(rankIndex(dist)), score: Math.floor(score).toLocaleString(), dist: Math.floor(dist) });
+  const url = (window.DLLINK && DLLINK('game')) || (/^https?:/.test(location.href) ? location.href : '');
+  try {
+    if (navigator.share) { await navigator.share({ title: 'D-Rush', text, url: url || undefined }); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(url ? `${text} ${url}` : text); toast(t('copied')); }
+  catch (e) { toast(text); }
+});
+document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => hide(b.getAttribute('data-close'))));
+document.querySelectorAll('.modal').forEach((m) => m.addEventListener('click', (e) => { if (e.target === m) hide(m.id); }));
+function openModal(id) {
+  if (state === 'PLAYING') togglePause(true);
+  closeAllModals(); show(id);
+  if (id === 'lbModal') { syncTabs(); fetchLb(); }
+  if (id === 'achModal') renderAch();
+}
+function closeAllModals() { ['lbModal', 'helpModal', 'achModal'].forEach(hide); }
+function syncTabs() { $('tabGlobal').classList.toggle('on', lbTab === 'global'); $('tabLocal').classList.toggle('on', lbTab === 'local'); }
+function syncButtons() {
+  $('btnSound').textContent = settings.sound ? '🔊' : '🔇';
+  $('btnHaptics').textContent = settings.haptics ? 'ON' : 'OFF';
+  $('btnLang').textContent = settings.lang === 'en' ? '中文' : 'EN';
+}
+function applyLang() {
+  document.documentElement.lang = settings.lang === 'zh' ? 'zh-CN' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+  $('helpBody').innerHTML = t('help');
+  syncButtons(); refreshStartStats();
+  for (const k in hudCache) delete hudCache[k];
+  updateHUD();
+  if ($('achModal').classList.contains('show')) renderAch();
+}
+
+/* ============================================================
+   RESIZE: logical width fixed at 480px; height adapts to the
+   phone's shape so tall screens get a taller sky instead of black bars
+   ============================================================ */
+function resize() {
+  const r = stage.getBoundingClientRect();
+  const cw = Math.max(1, r.width), ch = Math.max(1, r.height);
+  const nh = Math.round(clamp(W * ch / cw, 230, 1100));
+  if (nh !== H || !farLayer) {
+    const oldFloor = FLOOR;
+    H = nh; FLOOR = H - 46;
+    canvas.width = W; canvas.height = H;
+    ctx.imageSmoothingEnabled = false;
+    const d = FLOOR - oldFloor;
+    if (d) {
+      P.y += d;
+      for (const o of obstacles) o.y += d;
+      for (const i of items) i.y += d;
+      for (const n of npcs) n.y += d;
+      for (const p of particles) p.y += d;
+      for (const f of floats) f.y += d;
+      for (const p of weatherP) p.y += d;
+    }
+    buildBackdrop();
+  }
+  const s = Math.min(cw / W, ch / H);
+  canvas.style.width = Math.floor(W * s) + 'px';
+  canvas.style.height = Math.floor(H * s) + 'px';
+}
+let resizeRaf = 0;
+const queueResize = () => { cancelAnimationFrame(resizeRaf); resizeRaf = requestAnimationFrame(resize); };
+window.addEventListener('resize', queueResize);
+window.addEventListener('orientationchange', () => setTimeout(resize, 250));
+if (window.visualViewport) window.visualViewport.addEventListener('resize', queueResize);
+if (window.ResizeObserver) new ResizeObserver(queueResize).observe(stage);
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function boot() {
+  $('nameInput').value = playerName;
+  randomizeSession(false);
+  resize();
+  P.reset();
+  applyLang();
+  applyCanvasFx();
+  requestAnimationFrame(loop);
+  setTimeout(getSupa, 1200); // warm up the leaderboard connection without blocking first paint
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>window.DL_MODULE="clue3";</script><script src="rt.fa1846e13f.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.2.8/800.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/special-elite@5.2.8/400.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+::selection{background:rgba(134,188,37,.35);color:#fff}</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Sunrise - Node 3 Clue</title>
+    
+    <!-- Core Styling & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- React, ReactDOM & Babel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Urbanist', 'sans-serif'],
+                            mono: ['JetBrains Mono', 'monospace'],
+                            typewriter: ['Special Elite', 'cursive'],
+                        },
+                        colors: {
+                            deloitte: {
+                                green: '#86BC25',
+                                dark: '#000000',
+                                panel: '#0F172A',
+                                border: '#1E293B'
+                            }
+                        }
+                    }
+                }
+            };
+        }
+    </script>
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #020617;
+            color: #F8FAFC;
+            font-family: Aptos, 'Aptos Display', 'Segoe UI Variable Text', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto, Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .cyber-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .cyber-glow {
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            max-width: 100vw;
+            background: radial-gradient(circle, rgba(134, 188, 37, 0.08) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+<link rel="stylesheet" href="tw.c53ad7aed1.css"><style data-dl="tailwind">code,kbd,samp,pre{font-family:JetBrains Mono,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em;}small{font-size:80%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sub{bottom:-0.25em;}sup{top:-0.5em;}table{text-indent:0;border-color:inherit;border-collapse:collapse;}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0;}button,select{text-transform:none;}button,input:where([type='button']),input:where([type='reset']),input:where([type='submit']){-webkit-appearance:button;background-color:transparent;background-image:none;}:-moz-focusring{outline:auto;}:-moz-ui-invalid{box-shadow:none;}progress{vertical-align:baseline;}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto;}[type='search']{-webkit-appearance:textfield;outline-offset:-2px;}::-webkit-search-decoration{-webkit-appearance:none;}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit;}summary{display:list-item;}blockquote,dl,dd,h1,h2,h3,h4,h5,h6,hr,figure,p,pre{margin:0;}fieldset{margin:0;padding:0;}legend{padding:0;}ol,ul,menu{list-style:none;margin:0;padding:0;}dialog{padding:0;}textarea{resize:vertical;}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af;}button,[role="button"]{cursor:pointer;}:disabled{cursor:default;}img,svg,video,canvas,audio,iframe,embed,object{display:block;vertical-align:middle;}img,video{max-width:100%;height:auto;}[hidden]:where(:not([hidden="until-found"])){display:none;}.fixed{position:fixed;}.absolute{position:absolute;}.relative{position:relative;}.left-0{left:0px;}.top-0{top:0px;}.mb-2{margin-bottom:0.5rem;}.mb-4{margin-bottom:1rem;}.mb-8{margin-bottom:2rem;}.mt-10{margin-top:2.5rem;}.flex{display:flex;}.inline-flex{display:inline-flex;}.hidden{display:none;}.h-1{height:0.25rem;}.h-16{height:4rem;}.min-h-\[100dvh\]{min-height:100dvh;}.w-16{width:4rem;}.w-full{width:100%;}.max-w-lg{max-width:32rem;}.transform{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}.cursor-pointer{cursor:pointer;}.items-center{align-items:center;}.justify-center{justify-content:center;}.justify-between{justify-content:space-between;}.gap-2{gap:0.5rem;}.gap-3{gap:0.75rem;}.space-y-4>:not([hidden]) ~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse));}.overflow-hidden{overflow:hidden;}.rounded{border-radius:0.25rem;}.rounded-full{border-radius:9999px;}.rounded-lg{border-radius:0.5rem;}.rounded-xl{border-radius:0.75rem;}.border{border-width:1px;}.border-b{border-bottom-width:1px;}.border-l-4{border-left-width:4px;}.border-t{border-top-width:1px;}.border-amber-500\/30{border-color:rgb(245 158 11 / 0.3);}.border-red-400\/50{border-color:rgb(248 113 113 / 0.5);}.border-red-500\/30{border-color:rgb(239 68 68 / 0.3);}.border-slate-600{--tw-border-opacity:1;border-color:rgb(71 85 105 / var(--tw-border-opacity,1));}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity,1));}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59 / var(--tw-border-opacity,1));}.border-l-amber-500{--tw-border-opacity:1;border-left-color:rgb(245 158 11 / var(--tw-border-opacity,1));}.border-l-red-500{--tw-border-opacity:1;border-left-color:rgb(239 68 68 / var(--tw-border-opacity,1));}.bg-red-600\/80{background-color:rgb(220 38 38 / 0.8);}.bg-red-950\/20{background-color:rgb(69 10 10 / 0.2);}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity,1));}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity,1));}.bg-slate-900\/80{background-color:rgb(15 23 42 / 0.8);}.bg-gradient-to-r{background-image:linear-gradient(to right,var(--tw-gradient-stops));}.from-amber-500{--tw-gradient-from:#f59e0b var(--tw-gradient-from-position);--tw-gradient-to:rgb(245 158 11 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to);}.via-orange-500{--tw-gradient-to:rgb(249 115 22 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),#f97316 var(--tw-gradient-via-position),var(--tw-gradient-to);}.to-amber-500{--tw-gradient-to:#f59e0b var(--tw-gradient-to-position);}.p-4{padding:1rem;}.p-6{padding:1.5rem;}.px-2{padding-left:0.5rem;padding-right:0.5rem;}.px-4{padding-left:1rem;padding-right:1rem;}.py-1{padding-top:0.25rem;padding-bottom:0.25rem;}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem;}.pb-4{padding-bottom:1rem;}.pt-4{padding-top:1rem;}.text-center{text-align:center;}.font-mono{font-family:JetBrains Mono,monospace;}.text-2xl{font-size:1.5rem;line-height:2rem;}.text-\[10px\]{font-size:10px;}.text-lg{font-size:1.125rem;line-height:1.75rem;}.text-sm{font-size:0.875rem;line-height:1.25rem;}.text-xl{font-size:1.25rem;line-height:1.75rem;}.text-xs{font-size:0.75rem;line-height:1rem;}.font-bold{font-weight:700;}.font-medium{font-weight:500;}.uppercase{text-transform:uppercase;}.leading-relaxed{line-height:1.625;}.tracking-wider{letter-spacing:0.05em;}.tracking-widest{letter-spacing:0.1em;}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity,1));}.text-amber-500{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity,1));}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity,1));}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240 / var(--tw-text-opacity,1));}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity,1));}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity,1));}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity,1));}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_10px_rgba\(239\2c 68\2c 68\2c 0\.3\)\]{--tw-shadow:0 0 10px rgba(239,68,68,0.3);--tw-shadow-colored:0 0 10px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_15px_rgba\(239\2c 68\2c 68\2c 0\.1\)\]{--tw-shadow:0 0 15px rgba(239,68,68,0.1);--tw-shadow-colored:0 0 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-\[0_0_15px_rgba\(245\2c 158\2c 11\2c 0\.1\)\]{--tw-shadow:0 0 15px rgba(245,158,11,0.1);--tw-shadow-colored:0 0 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.shadow-inner{--tw-shadow:inset 0 2px 4px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:inset 0 2px 4px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}.blur{--tw-blur:blur(8px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);}.backdrop-filter{-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(0.4,0,0.2,1);transition-duration:150ms;}.ease-out{transition-timing-function:cubic-bezier(0,0,0.2,1);}.hover\:bg-red-500:hover{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity,1));}.hover\:bg-red-950\/40:hover{background-color:rgb(69 10 10 / 0.4);}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity,1));}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity,1));}.hover\:shadow-\[0_0_15px_rgba\(239\2c 68\2c 68\2c 0\.5\)\]:hover{--tw-shadow:0 0 15px rgba(239,68,68,0.5);--tw-shadow-colored:0 0 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow);}@media (min-width:768px){.md\:p-10{padding:2.5rem;}.md\:p-5{padding:1.25rem;}.md\:text-2xl{font-size:1.5rem;line-height:2rem;}.md\:text-base{font-size:1rem;line-height:1.5rem;}.md\:text-sm{font-size:0.875rem;line-height:1.25rem;}.md\:text-xl{font-size:1.25rem;line-height:1.75rem;}.md\:text-xs{font-size:0.75rem;line-height:1rem;}}</style></head>
+<body class="flex items-center justify-center min-h-[100dvh] p-4">
+    <div class="cyber-grid"></div>
+    <div class="cyber-glow"></div>
+    <div id="root" class="w-full max-w-lg"></div>
+
+    <script>const {
+  useState
+} = React;
+const dict = {
+  en: {
+    projectTitle: "Project Sunrise",
+    station: "STATION_03",
+    instruction: "Here are the instructions for the third node.",
+    nodeTitle: "Node 3: Emergency Action Protocol",
+    secretTitle: "Key",
+    secretText: "What is Deloitte's latest global brand tagline? (Answer in English, no punctuation)",
+    taskTitle: "Task",
+    taskText: "Determine the system override action code required to halt the unauthorized transfer.",
+    mainSiteBtn: "Access Main Terminal",
+    awaiting: "Awaiting input at main terminal..."
+  },
+  zh: {
+    projectTitle: "日出计划",
+    station: "站点_03",
+    instruction: "这里是第三关的指示",
+    nodeTitle: "节点 3：紧急行动协议",
+    secretTitle: "密码",
+    secretText: "德勤最新的全球品牌标语是什么？（请用英文作答，无需标点符号）",
+    taskTitle: "任务",
+    taskText: "找出用于冻结此次违规转账的系统覆盖行动代码。",
+    mainSiteBtn: "访问主终端",
+    awaiting: "等待主终端输入..."
+  }
+};
+function ClueApp() {
+  const [lang, setLangRaw] = useState(window.DLTwo ? DLTwo('zh') : 'zh');
+  const setLang = l => {
+    setLangRaw(l);
+    if (window.DLLangSet) DLLangSet(l);
+  };
+  const t = dict[lang];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "w-full glass-panel border border-slate-700 rounded-xl shadow-2xl p-6 md:p-10 fade-in relative overflow-hidden"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between mb-8 border-b border-slate-800 pb-4"
+  }, /*#__PURE__*/React.createElement("h1", {
+    className: "text-lg md:text-xl font-bold text-amber-400 tracking-wider flex items-center gap-2 uppercase"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-fingerprint text-2xl"
+  }), " ", t.projectTitle), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-3"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px] md:text-xs font-mono text-slate-500 bg-slate-900 px-2 py-1 rounded border border-slate-800"
+  }, t.station), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setLang(lang === 'en' ? 'zh' : 'en'),
+    className: "bg-slate-800 hover:bg-slate-700 text-white text-[10px] px-2 py-1 rounded border border-slate-600 font-bold transition-colors cursor-pointer"
+  }, lang === 'en' ? '中文' : 'EN'))), /*#__PURE__*/React.createElement("div", {
+    className: "text-center mb-8"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-900 border border-slate-700 mb-4 shadow-inner"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-file-lines text-2xl text-slate-400"
+  })), /*#__PURE__*/React.createElement("h2", {
+    className: "text-xl md:text-2xl font-bold text-white mb-2 tracking-widest"
+  }, t.instruction), /*#__PURE__*/React.createElement("p", {
+    className: "text-slate-400 text-xs md:text-sm uppercase tracking-widest"
+  }, t.nodeTitle)), /*#__PURE__*/React.createElement("div", {
+    className: "space-y-4"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-slate-900/80 border border-amber-500/30 rounded-lg p-4 md:p-5 border-l-4 border-l-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.1)] transition-all hover:bg-slate-800"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-amber-500 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-2 flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-key"
+  }), " ", t.secretTitle), /*#__PURE__*/React.createElement("p", {
+    className: "text-slate-200 font-mono text-xs md:text-sm leading-relaxed"
+  }, t.secretText)), /*#__PURE__*/React.createElement("div", {
+    className: "bg-red-950/20 border border-red-500/30 rounded-lg p-4 md:p-5 border-l-4 border-l-red-500 shadow-[0_0_15px_rgba(239,68,68,0.1)] transition-all hover:bg-red-950/40"
+  }, /*#__PURE__*/React.createElement("h3", {
+    className: "text-red-400 font-bold text-[10px] md:text-xs uppercase tracking-widest mb-2 flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-crosshairs"
+  }), " ", t.taskTitle), /*#__PURE__*/React.createElement("p", {
+    className: "text-slate-200 text-sm md:text-base font-medium leading-relaxed mb-4"
+  }, t.taskText), /*#__PURE__*/React.createElement("a", {
+    href: "https://projectsunrise.win/sunrise",
+    target: "_blank",
+    rel: "noopener noreferrer",
+    className: "inline-flex items-center gap-2 bg-red-600/80 hover:bg-red-500 text-white text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded border border-red-400/50 shadow-[0_0_10px_rgba(239,68,68,0.3)] hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] transition-all cursor-pointer"
+  }, /*#__PURE__*/React.createElement("span", null, t.mainSiteBtn), /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-arrow-up-right-from-square text-[10px]"
+  })))), /*#__PURE__*/React.createElement("div", {
+    className: "mt-10 text-center border-t border-slate-800 pt-4"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-[10px] text-slate-500 font-mono uppercase tracking-widest flex items-center justify-center gap-2"
+  }, /*#__PURE__*/React.createElement("i", {
+    className: "fa-solid fa-circle-notch fa-spin text-amber-500"
+  }), " ", t.awaiting)));
+}
+const rootContainer = document.getElementById('root');
+const root = ReactDOM.createRoot(rootContainer);
+root.render(/*#__PURE__*/React.createElement(ClueApp, null));</script>
+</body>
+</html>
