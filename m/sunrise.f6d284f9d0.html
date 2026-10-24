@@ -171,6 +171,216 @@ const ROLE_ACCESS = {
   compliance: ['policy', 'chg', 'edd', 'protocol']
 };
 const SECTION_OWNER = Object.fromEntries(Object.entries(ROLE_ACCESS).flatMap(([r, secs]) => secs.map(s => [s, r])));
+const sunriseAggregate = (() => {
+  const window = {};
+  const NODE_NUM = {
+    logs: 1,
+    ledger: 2,
+    banking: 3
+  };
+  const PUZZLE_NUM = {
+    puzzle1: 1,
+    puzzle2: 2,
+    puzzle3: 3
+  };
+  // Pure aggregation (unit-tested). Events must be in chronological order.
+  // A team has finished at the earlier of: its first 'finish' event, or the moment its devices
+  // together have solved all three override puzzles (progress is stored per device, so a team
+  // that splits the puzzles across phones may never log a 'finish' event from any single phone).
+  // Team time = server time from the team's first join (or GAME_START) to that moment,
+  // plus penalties: 60s-style strikes per wrong answer, and each hint level charged once per team.
+  // Strikes and hints logged after the team finished do not count.
+  function aggregate(evts, cfg) {
+    const strikeSec = cfg && Number.isFinite(cfg.strikeSec) ? cfg.strikeSec : 60;
+    const hintSec = cfg && cfg.hintSec && cfg.hintSec.length === 3 ? cfg.hintSec : [60, 120, 180];
+    const sharedStart = cfg && Number.isFinite(cfg.startMs) ? cfg.startMs : null;
+    const groups = {};
+    const tsOf = e => {
+      const v = Date.parse(e.created_at);
+      return Number.isFinite(v) ? v : null;
+    };
+
+    // Pass 1: per-team clock anchors from server timestamps
+    for (const e of evts) {
+      const name = e.group_name;
+      if (!name) continue;
+      const g = groups[name] || (groups[name] = {
+        name,
+        nodes: new Set(),
+        puzzles: new Set(),
+        secrets: new Set(),
+        roles: new Set(),
+        hintKeys: new Set(),
+        firstJoinAt: null,
+        firstSeenAt: null,
+        finishAt: null,
+        finishElapsedRaw: null,
+        finishEventId: null,
+        puzzleSeen: new Set(),
+        finish: null,
+        penalty: 0,
+        strikes: 0,
+        hints: 0,
+        lastProgressAt: 0,
+        lastAt: 0
+      });
+      const at = tsOf(e);
+      if (at !== null) {
+        if (g.firstSeenAt === null || at < g.firstSeenAt) g.firstSeenAt = at;
+        if (e.event_type === 'join' && (g.firstJoinAt === null || at < g.firstJoinAt)) g.firstJoinAt = at;
+        if (e.event_type === 'finish' && (g.finishAt === null || at < g.finishAt)) {
+          g.finishAt = at;
+          g.finishEventId = e.id;
+        }
+        if (e.event_type === 'puzzle' && PUZZLE_NUM[e.detail] && !g.puzzleSeen.has(e.detail)) {
+          g.puzzleSeen.add(e.detail);
+          if (g.puzzleSeen.size === Object.keys(PUZZLE_NUM).length && (g.finishAt === null || at < g.finishAt)) {
+            g.finishAt = at;
+            g.finishEventId = e.id;
+          }
+        }
+      }
+      if (e.event_type === 'finish' && Number.isFinite(e.elapsed_seconds) && e.elapsed_seconds > 0) {
+        g.finishElapsedRaw = g.finishElapsedRaw === null ? e.elapsed_seconds : Math.min(g.finishElapsedRaw, e.elapsed_seconds);
+      }
+    }
+    for (const g of Object.values(groups)) {
+      if (g.finishAt === null && g.finishElapsedRaw === null) continue;
+      const startAt = sharedStart !== null ? sharedStart : g.firstJoinAt !== null ? g.firstJoinAt : g.firstSeenAt;
+      if (g.finishAt !== null && startAt !== null) g.finish = Math.max(0, Math.floor((g.finishAt - startAt) / 1000));else if (g.finishElapsedRaw !== null) g.finish = g.finishElapsedRaw;else g.finish = null;
+      g.startAt = startAt;
+    }
+    // Delivery delay: phones that lost the database keep their attempts and send them later, so the server
+    // stamps them late. When a team's server times and phone timings disagree by more than 5 minutes,
+    // that team is timed by its phones (time since the team started, reported with every answer).
+    const DRIFT = 300;
+    const okEl = e => Number.isFinite(e.elapsed_seconds) && e.elapsed_seconds > 0;
+    for (const e of evts) {
+      const g = groups[e.group_name];
+      if (!g || g.late || g.startAt === null || !okEl(e) || !/^(node|puzzle|finish|strike|hint)$/.test(e.event_type)) continue;
+      const at = tsOf(e);
+      if (at !== null && Math.abs((at - g.startAt) / 1000 - e.elapsed_seconds) > DRIFT) g.late = true;
+    }
+    for (const g of Object.values(groups)) {
+      if (!g.late) continue;
+      const firstSolve = {};
+      let fin = null;
+      for (const e of evts) {
+        var _firstSolve$e$detail;
+        if (e.group_name !== g.name || !okEl(e)) continue;
+        if (e.event_type === 'finish') fin = fin === null ? e.elapsed_seconds : Math.min(fin, e.elapsed_seconds);
+        if (e.event_type === 'puzzle' && PUZZLE_NUM[e.detail]) firstSolve[e.detail] = Math.min((_firstSolve$e$detail = firstSolve[e.detail]) !== null && _firstSolve$e$detail !== void 0 ? _firstSolve$e$detail : Infinity, e.elapsed_seconds);
+      }
+      const solves = Object.values(firstSolve);
+      if (solves.length === Object.keys(PUZZLE_NUM).length) fin = Math.min(fin !== null && fin !== void 0 ? fin : Infinity, Math.max(...solves));
+      if (fin !== null) g.finish = fin;
+    }
+
+    // Pass 2: progress, penalties and the feed
+    const feed = [];
+    for (const e of evts) {
+      const g = groups[e.group_name];
+      if (!g) continue;
+      const at = tsOf(e) || 0;
+      g.lastAt = Math.max(g.lastAt, at);
+      if (e.role) g.roles.add(e.role);
+      const afterFinish = g.late ? g.finish !== null && okEl(e) && e.elapsed_seconds > g.finish : g.finishAt !== null && at > g.finishAt;
+      let item = null;
+      if (e.event_type === 'join') item = {
+        kind: 'join',
+        role: e.role
+      };else if (e.event_type === 'node' && NODE_NUM[e.detail] && !g.nodes.has(e.detail)) {
+        g.nodes.add(e.detail);
+        g.lastProgressAt = at;
+        item = {
+          kind: 'node',
+          n: NODE_NUM[e.detail]
+        };
+      } else if (e.event_type === 'puzzle' && PUZZLE_NUM[e.detail] && !g.puzzles.has(e.detail)) {
+        g.puzzles.add(e.detail);
+        g.lastProgressAt = at;
+        item = {
+          kind: 'puzzle',
+          n: g.puzzles.size
+        };
+      } else if (e.event_type === 'secret' && e.detail && !g.secrets.has(e.detail)) {
+        g.secrets.add(e.detail);
+        item = {
+          kind: 'secret',
+          n: g.secrets.size
+        };
+      } else if (e.event_type === 'strike' && !afterFinish) {
+        g.penalty += strikeSec;
+        g.strikes += 1;
+        item = {
+          kind: 'strike',
+          cost: strikeSec
+        };
+      } else if (e.event_type === 'hint' && !afterFinish) {
+        const key = String(e.detail || '');
+        const lvl = parseInt(key.split(':')[1], 10);
+        if (lvl >= 1 && lvl <= 3 && !g.hintKeys.has(key)) {
+          g.hintKeys.add(key);
+          g.penalty += hintSec[lvl - 1];
+          g.hints += 1;
+          item = {
+            kind: 'hint',
+            cost: hintSec[lvl - 1]
+          };
+        }
+      }
+      if (item) feed.push({
+        ...item,
+        id: e.id,
+        group: g.name,
+        at
+      });
+      if (g.finishEventId !== null && e.id === g.finishEventId && !g._finishFed) {
+        g._finishFed = true;
+        g.lastProgressAt = at;
+        feed.push({
+          kind: 'finish',
+          groupRef: g,
+          id: e.id,
+          group: g.name,
+          at
+        });
+      }
+    }
+    const rows = Object.values(groups).map(g => ({
+      ...g,
+      stage: g.nodes.size + g.puzzles.size,
+      total: g.finish === null ? null : g.finish + g.penalty
+    }));
+    rows.sort((a, b) => {
+      const af = a.finish !== null,
+        bf = b.finish !== null;
+      if (af !== bf) return af ? -1 : 1;
+      if (af && bf && a.total !== b.total) return a.total - b.total;
+      if (!af && a.stage !== b.stage) return b.stage - a.stage;
+      if (a.secrets.size !== b.secrets.size) return b.secrets.size - a.secrets.size;
+      if (!af && a.penalty !== b.penalty) return a.penalty - b.penalty;
+      const ap = a.lastProgressAt || Infinity,
+        bp = b.lastProgressAt || Infinity;
+      if (ap !== bp) return ap - bp;
+      return a.name.localeCompare(b.name, undefined, {
+        numeric: true
+      });
+    });
+    feed.forEach(f => {
+      if (f.kind === 'finish') {
+        f.elapsed = (f.groupRef.finish || 0) + f.groupRef.penalty;
+        delete f.groupRef;
+      }
+    });
+    return {
+      rows,
+      feed: feed.reverse()
+    };
+  }
+  window.__sunriseAggregate = aggregate;
+  return aggregate;
+})();
 const NODE_SECTION = {
   logs: 'logs',
   ledger: 'ledger',
@@ -264,6 +474,76 @@ function clearPendingScan() {
     localStorage.removeItem(PENDING_SCAN_KEY);
   } catch (e) {}
 }
+// Station clues (key question + task; never the answer), used only when the database can't be reached.
+const LOCAL_CLUES = [{
+  "node": "logs",
+  "role": "it",
+  "station": "01",
+  "title_en": "Node 1: Server Logs",
+  "title_zh": "节点 1：服务器日志",
+  "key_en": "When did Deloitte open the first office in China?",
+  "key_zh": "德勤最早在中国开设办公室的年份是？",
+  "task_en": "Find the name of the employee who committed the violation.",
+  "task_zh": "找出违规操作的员工的姓名。"
+}, {
+  "node": "ledger",
+  "role": "finance",
+  "station": "02",
+  "title_en": "Node 2: Offshore Ledger",
+  "title_zh": "节点 2：离岸账本",
+  "key_en": "What is the Business Chemistry type of the Summit & Co. CFO? (Answer in English)",
+  "key_zh": "Summit & Co. CFO 的 Business Chemistry（商业化学反应）类型是什么？（请用英文作答）",
+  "task_en": "Identify the Transaction ID (TXN ID) of the illicit fund transfer.",
+  "task_zh": "找出非法资金转移的确切交易流水号 (TXN ID)。"
+}, {
+  "node": "banking",
+  "role": "compliance",
+  "station": "03",
+  "title_en": "Node 3: Emergency Action Protocol",
+  "title_zh": "节点 3：紧急行动协议",
+  "key_en": "What is Deloitte's latest global brand tagline? (Answer in English, no punctuation)",
+  "key_zh": "德勤最新的全球品牌标语是什么？（请用英文作答，无需标点符号）",
+  "task_en": "Determine the system override action code that halts the unauthorized transfer.",
+  "task_zh": "找出用于冻结此次违规转账的系统覆盖行动代码。"
+}];
+const LOCAL_CLUE_KEY = 'dl_sunrise_local_clues';
+const SCAN_QUEUE_KEY = 'dl_sunrise_scan_queue';
+const EVENT_QUEUE_KEY = 'dl_sunrise_event_queue';
+function readQ(k) {
+  try {
+    const q = JSON.parse(localStorage.getItem(k) || '[]');
+    return Array.isArray(q) ? q : [];
+  } catch (e) {
+    return [];
+  }
+}
+function writeQ(k, q) {
+  try {
+    if (q.length) localStorage.setItem(k, JSON.stringify(q));else localStorage.removeItem(k);
+  } catch (e) {}
+}
+const localClues = () => readQ(LOCAL_CLUE_KEY).map(n => LOCAL_CLUES.find(c => c.node === n)).filter(Boolean);
+const mergeClues = list => {
+  const have = new Set((list || []).map(c => c && c.node));
+  return (list || []).concat(localClues().filter(c => !have.has(c.node)));
+};
+// Retry only when the server never answered (network, timeout, overload); a refused row is dropped.
+const retryable = r => !r || !r.status || r.status >= 500 || r.status === 408 || r.status === 429;
+// Joins, secrets and hints: sent straight away, kept on the phone and sent later if the database is down.
+function sendEvent(client, row) {
+  const keep = () => writeQ(EVENT_QUEUE_KEY, readQ(EVENT_QUEUE_KEY).concat([row]).slice(-80));
+  if (!client) {
+    keep();
+    return;
+  }
+  try {
+    client.from('sunrise_events').insert(row).then(r => {
+      if (r && r.error && retryable(r)) keep();
+    }, keep);
+  } catch (e) {
+    keep();
+  }
+}
 const SCAN_TEXT = {
   en: {
     keyLabel: 'Key question',
@@ -275,7 +555,8 @@ const SCAN_TEXT = {
     scanTheirs: 'Node {n} scanned. The clue went to your team\'s {role} phones.',
     scanJoin: 'Node {n} scanned. Join your team below to see the clue.',
     offline: 'Can\'t reach the game server. Check your connection and try again.',
-    offlineOk: 'Unlocked offline. Your progress reaches the live board when the connection is back.'
+    offlineOk: 'Unlocked offline. Your progress reaches the live board when the connection is back.',
+    scanTheirsOffline: 'Node {n} scanned, but the game server is offline. A {role} phone in your team needs to scan this code itself.'
   },
   zh: {
     keyLabel: '密钥问题',
@@ -287,7 +568,8 @@ const SCAN_TEXT = {
     scanTheirs: '已扫描节点 {n}，线索已发送给队内「{role}」角色的手机。',
     scanJoin: '已扫描节点 {n}。请先在下方加入小组，即可查看线索。',
     offline: '无法连接游戏服务器，请检查网络后重试。',
-    offlineOk: '已离线解锁。网络恢复后，进度会自动同步到排行榜。'
+    offlineOk: '已离线解锁。网络恢复后，进度会自动同步到排行榜。',
+    scanTheirsOffline: '已扫描节点 {n}，但游戏服务器暂时离线。请队内「{role}」角色的手机亲自扫描此二维码。'
   }
 };
 const ROLE_META = {
@@ -2005,7 +2287,7 @@ function QuestView() {
     puzzle3: []
   });
   const [verifyingPuzzleKey, setVerifyingPuzzleKey] = useState(null);
-  const [teamClues, setTeamClues] = useState([]);
+  const [teamClues, setTeamClues] = useState(() => localClues());
   const [sxToast, setSxToast] = useState(null);
   const [pendingScan, setPendingScan] = useState(() => readPendingScan());
   const [lang, setLang] = useState(window.DLTwo ? DLTwo(saved.lang || 'en') : saved.lang || 'en');
@@ -2115,19 +2397,17 @@ function QuestView() {
 
   // ─── Live event feed (Supabase 'sunrise_events') ───
   const logEvent = (type, detail = '', extra = {}) => {
-    if (!sbClient || !group) return;
-    try {
-      sbClient.from('sunrise_events').insert({
-        session: config.session,
-        group_name: group,
-        role: role || null,
-        event_type: type,
-        detail: String(detail || '').slice(0, 60),
-        elapsed_seconds: extra.elapsed !== undefined ? extra.elapsed : elapsedSecAt(Date.now()),
-        secrets: extra.secrets !== undefined ? extra.secrets : secretsRef.current.length,
-        client_id: clientId
-      }).then(() => {}, () => {});
-    } catch (e) {}
+    if (!group) return;
+    sendEvent(sbClient, {
+      session: config.session,
+      group_name: group,
+      role: role || null,
+      event_type: type,
+      detail: String(detail || '').slice(0, 60),
+      elapsed_seconds: extra.elapsed !== undefined ? extra.elapsed : elapsedSecAt(Date.now()),
+      secrets: extra.secrets !== undefined ? extra.secrets : secretsRef.current.length,
+      client_id: clientId
+    });
   };
   const foundSecret = id => {
     if (secretsRef.current.includes(id)) return;
@@ -2197,20 +2477,27 @@ function QuestView() {
   // Without GAME_START, share the team's clock: earliest 'join' event for this group wins
   useEffect(() => {
     if (!registered || !sbClient || !group || !appData || config.startMs) return;
-    (async () => {
+    let done = false,
+      tries = 0;
+    const once = async () => {
+      if (done || tries++ > 20) return;
       try {
         const {
           data,
           error
-        } = await sbClient.from('sunrise_events').select('created_at').eq('session', config.session).eq('group_name', group).eq('event_type', 'join').order('created_at', {
+        } = await withTimeout(sbClient.from('sunrise_events').select('created_at').eq('session', config.session).eq('group_name', group).eq('event_type', 'join').order('created_at', {
           ascending: true
-        }).limit(1);
+        }).limit(1), 8000);
+        if (!error) done = true;
         if (!error && data && data[0]) {
           const first = Date.parse(data[0].created_at);
           if (Number.isFinite(first)) setStartedAt(prev => prev ? Math.min(prev, first) : first);
         }
       } catch (e) {}
-    })();
+    };
+    once();
+    const iv = setInterval(once, 60000);
+    return () => clearInterval(iv);
   }, [registered, sbClient, group, appData]);
 
   // Persist progress
@@ -2256,66 +2543,27 @@ function QuestView() {
     try {
       const data = [];
       for (let from = 0; from < 20000; from += 1000) {
-        const res = await sbClient.from('sunrise_events').select('event_type, detail, elapsed_seconds, created_at').eq('session', config.session).eq('group_name', group).order('id', {
+        const res = await sbClient.from('sunrise_events').select('id, group_name, role, event_type, detail, elapsed_seconds, created_at').eq('session', config.session).eq('group_name', group).order('id', {
           ascending: true
         }).range(from, from + 999);
         if (res.error || !res.data) return null;
         data.push(...res.data);
         if (res.data.length < 1000) break;
       }
-      const ts = e => {
-        const v = Date.parse(e.created_at);
-        return Number.isFinite(v) ? v : null;
-      };
-      let firstJoin = null,
-        firstSeen = null,
-        finishAt = null,
-        finishRaw = null;
-      const solved = new Set();
-      data.slice().sort((x, y) => (ts(x) || 0) - (ts(y) || 0)).forEach(e => {
-        const at = ts(e);
-        if (at !== null) {
-          if (firstSeen === null || at < firstSeen) firstSeen = at;
-          if (e.event_type === 'join' && (firstJoin === null || at < firstJoin)) firstJoin = at;
-          if (e.event_type === 'finish' && (finishAt === null || at < finishAt)) finishAt = at;
-          // Same rule as the live board: the team is done once its phones together solved all three puzzles.
-          if (e.event_type === 'puzzle' && PUZZLE_KEYS.includes(e.detail) && !solved.has(e.detail)) {
-            solved.add(e.detail);
-            if (solved.size === PUZZLE_KEYS.length && (finishAt === null || at < finishAt)) finishAt = at;
-          }
-        }
-        if (e.event_type === 'finish' && Number.isFinite(e.elapsed_seconds) && e.elapsed_seconds > 0) finishRaw = finishRaw === null ? e.elapsed_seconds : Math.min(finishRaw, e.elapsed_seconds);
-      });
-      if (finishAt === null && finishRaw === null) return null;
-      const startAt = config.startMs || (firstJoin !== null ? firstJoin : firstSeen);
-      const finish = finishAt !== null && startAt ? Math.max(0, Math.floor((finishAt - startAt) / 1000)) : finishRaw;
-      const sec = new Set(secretsRef.current);
-      const hintKeys = new Set();
-      let strikes = 0,
-        hintSec = 0,
-        hints = 0;
-      data.forEach(e => {
-        const at = ts(e);
-        const afterFinish = finishAt !== null && at !== null && at > finishAt;
-        if (e.event_type === 'secret' && e.detail) sec.add(e.detail);
-        if (e.event_type === 'strike' && !afterFinish) strikes++;
-        if (e.event_type === 'hint' && !afterFinish) {
-          const key = String(e.detail || '');
-          const lvl = parseInt(key.split(':')[1], 10);
-          if (lvl >= 1 && lvl <= 3 && !hintKeys.has(key)) {
-            hintKeys.add(key);
-            hintSec += config.hintPenaltiesSec[lvl - 1];
-            hints++;
-          }
-        }
-      });
-      const penalty = strikes * config.strikePenaltySec + hintSec;
+      data.sort((x, y) => Date.parse(x.created_at) - Date.parse(y.created_at) || x.id - y.id);
+      const row = sunriseAggregate(data, {
+        strikeSec: config.strikePenaltySec,
+        hintSec: config.hintPenaltiesSec,
+        startMs: config.startMs || null
+      }).rows[0];
+      if (!row || row.finish === null) return null;
+      const sec = new Set([...secretsRef.current, ...row.secrets]);
       return {
         secrets: sec.size,
-        strikes,
-        hints,
-        penalty,
-        time: finish + penalty
+        strikes: row.strikes,
+        hints: row.hints,
+        penalty: row.penalty,
+        time: row.total
       };
     } catch (e) {
       return null;
@@ -2347,14 +2595,29 @@ function QuestView() {
     }), 'info', 0);
   }, [registered, pendingScan, lang]);
   useEffect(() => {
-    if (!registered || !sbClient || !group) return;
+    if (!registered || !group || loadingInfo) return; // wait for the boot (info.txt + database client)
     let alive = true,
       busy = false;
     const wantsClues = () => NODE_KEYS.some(k => !unlockedRef.current[k] && (!config.roleMode || NODE_OWNER[k] === roleRef.current));
+    const announce = (node, offline) => {
+      const mine = !config.roleMode || NODE_OWNER[node] === roleRef.current;
+      if (mine) {
+        setActiveTab(node);
+        setUnlockInput('');
+        showSx(fmt(SX.scanMine, {
+          n: NODE_NO[node]
+        }), 'ok');
+      } else showSx(fmt(offline ? SX.scanTheirsOffline : SX.scanTheirs, {
+        n: NODE_NO[node],
+        role: roleName(t, NODE_OWNER[node])
+      }), 'info', offline ? 9000 : 7000);
+      return mine;
+    };
+    // Returns false when the database didn't answer (used for the back-off below).
     const pull = async force => {
-      if (busy) return;
+      if (busy) return true;
       const p = readPendingScan();
-      if (!p && !force && !wantsClues()) return;
+      if (!p && !force && !wantsClues()) return true;
       busy = true;
       try {
         const base = {
@@ -2362,41 +2625,90 @@ function QuestView() {
           p_group: group,
           p_role: role || null
         };
-        const {
-          data,
-          error
-        } = p ? await sbClient.rpc('sunrise_scan', {
-          ...base,
-          p_node: p.node,
-          p_client: clientId,
-          p_elapsed: elapsedSecAt(Date.now()),
-          p_secrets: secretsRef.current.length
-        }) : await sbClient.rpc('sunrise_team_clues', base);
-        if (!alive || error || !Array.isArray(data)) return;
-        setTeamClues(data);
+        let data = null;
+        if (sbClient) {
+          try {
+            const r = await withTimeout(p ? sbClient.rpc('sunrise_scan', {
+              ...base,
+              p_node: p.node,
+              p_client: clientId,
+              p_elapsed: elapsedSecAt(Date.now()),
+              p_secrets: secretsRef.current.length
+            }) : sbClient.rpc('sunrise_team_clues', base), 8000);
+            if (!r.error && Array.isArray(r.data)) data = r.data;
+          } catch (e) {}
+        }
+        if (!alive) return true;
+        if (data) {
+          setTeamClues(mergeClues(data));
+          if (p) {
+            clearPendingScan();
+            setPendingScan(null);
+            announce(p.node, false);
+          }
+          return true;
+        }
         if (p) {
+          // Offline scan: show this phone's clue from the page, and tell the database later.
           clearPendingScan();
           setPendingScan(null);
-          const mine = !config.roleMode || NODE_OWNER[p.node] === role;
-          if (mine) {
-            setActiveTab(p.node);
-            setUnlockInput('');
-            showSx(fmt(SX.scanMine, {
-              n: NODE_NO[p.node]
-            }), 'ok');
-          } else showSx(fmt(SX.scanTheirs, {
-            n: NODE_NO[p.node],
-            role: roleName(t, NODE_OWNER[p.node])
-          }), 'info', 7000);
+          writeQ(SCAN_QUEUE_KEY, readQ(SCAN_QUEUE_KEY).filter(x => x.node !== p.node).concat([{
+            node: p.node,
+            elapsed: elapsedSecAt(Date.now())
+          }]));
+          if (announce(p.node, true)) {
+            writeQ(LOCAL_CLUE_KEY, readQ(LOCAL_CLUE_KEY).filter(n => n !== p.node).concat([p.node]));
+            setTeamClues(prev => mergeClues(prev));
+          }
         }
-      } catch (e) {} finally {
+        return false;
+      } finally {
         busy = false;
       }
+    };
+    const flushEvents = async () => {
+      const q = readQ(EVENT_QUEUE_KEY);
+      if (!q.length) return true;
+      if (!sbClient) return false;
+      try {
+        const r = await withTimeout(sbClient.from('sunrise_events').insert(q.map(x => ({
+          ...x,
+          group_name: x.group_name || group
+        }))), 8000);
+        if (r.error && retryable(r)) return false;
+      } catch (e) {
+        return false;
+      }
+      writeQ(EVENT_QUEUE_KEY, readQ(EVENT_QUEUE_KEY).slice(q.length));
+      return true;
+    };
+    const flushScans = async () => {
+      if (!sbClient) return !readQ(SCAN_QUEUE_KEY).length;
+      for (const x of readQ(SCAN_QUEUE_KEY)) {
+        try {
+          const r = await withTimeout(sbClient.rpc('sunrise_scan', {
+            p_session: config.session,
+            p_group: group,
+            p_role: role || null,
+            p_node: x.node,
+            p_client: clientId,
+            p_elapsed: x.elapsed || 0,
+            p_secrets: secretsRef.current.length
+          }), 8000);
+          if (r.error) return false;
+          if (alive && Array.isArray(r.data)) setTeamClues(mergeClues(r.data));
+        } catch (e) {
+          return false;
+        }
+        writeQ(SCAN_QUEUE_KEY, readQ(SCAN_QUEUE_KEY).filter(y => y.node !== x.node));
+      }
+      return true;
     };
     // Offline unlocks waiting to be reported to the live board.
     const flushNodes = async () => {
       const q = readNodeQueue();
       if (!q.length) return true;
+      if (!sbClient) return false;
       for (const a of q) {
         try {
           const {
@@ -2416,6 +2728,7 @@ function QuestView() {
     };
     const flushPuzzles = async () => {
       let q = readPuzzleQueue();
+      if (q.length && !sbClient) return false;
       while (q.length) {
         try {
           const {
@@ -2434,19 +2747,25 @@ function QuestView() {
       }
       return true;
     };
+    // Every 20 s while healthy; after failures wait 40 s, 80 s, 160 s, 320 s (with jitter).
+    // Order matters: hints and joins first, then nodes, scans and finally the Halt answers.
     let fails = 0,
       nextAt = 0;
-    const tickFn = async () => {
-      if (document.hidden || Date.now() < nextAt) return;
-      const ok = (await flushNodes()) && (await flushPuzzles());
+    const settle = ok => {
       fails = ok ? 0 : Math.min(fails + 1, 4);
       nextAt = Date.now() + (fails ? 20000 * Math.pow(2, fails) * (1 + Math.random() * 0.3) : 0);
-      if (!fails) pull(false);
     };
-    pull(true);
+    const tickFn = async () => {
+      if (document.hidden || Date.now() < nextAt) return;
+      const ok = (await flushEvents()) && (await flushNodes()) && (await flushScans()) && (await flushPuzzles()) && (await pull(false));
+      settle(ok);
+    };
+    pull(true).then(ok => {
+      if (!ok) settle(false);
+    });
     const tick = setInterval(tickFn, 20000);
     const onVis = () => {
-      if (!document.hidden) pull(false);
+      if (!document.hidden && Date.now() >= nextAt) pull(false);
     };
     const onStore = ev => {
       if (ev.key === PENDING_SCAN_KEY && ev.newValue) pull(true);
@@ -2459,7 +2778,7 @@ function QuestView() {
       document.removeEventListener('visibilitychange', onVis);
       window.removeEventListener('storage', onStore);
     };
-  }, [registered, sbClient, group, role, appData]);
+  }, [registered, sbClient, group, role, appData, loadingInfo]);
   const getNextFreezeThreshold = strikes => {
     if (strikes < 5) return 5;
     if (strikes < 8) return 8;
@@ -2531,20 +2850,16 @@ function QuestView() {
     if (!startedAt) setStartedAt(ts);
     setRegistered(true);
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-    if (sbClient) {
-      try {
-        sbClient.from('sunrise_events').insert({
-          session: config.session,
-          group_name: normalizeGroup(groupNumber),
-          role: role || null,
-          event_type: 'join',
-          detail: '',
-          elapsed_seconds: 0,
-          secrets: secretsRef.current.length,
-          client_id: clientId
-        }).then(() => {}, () => {});
-      } catch (err) {}
-    }
+    sendEvent(sbClient, {
+      session: config.session,
+      group_name: normalizeGroup(groupNumber),
+      role: role || null,
+      event_type: 'join',
+      detail: '',
+      elapsed_seconds: 0,
+      secrets: secretsRef.current.length,
+      client_id: clientId
+    });
   };
   const switchRole = r => {
     setRole(r);

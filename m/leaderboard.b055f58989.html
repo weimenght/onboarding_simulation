@@ -170,6 +170,31 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             if (g.finishAt !== null && startAt !== null) g.finish = Math.max(0, Math.floor((g.finishAt - startAt) / 1000));
             else if (g.finishElapsedRaw !== null) g.finish = g.finishElapsedRaw;
             else g.finish = null;
+            g.startAt = startAt;
+        }
+        // Delivery delay: phones that lost the database keep their attempts and send them later, so the server
+        // stamps them late. When a team's server times and phone timings disagree by more than 5 minutes,
+        // that team is timed by its phones (time since the team started, reported with every answer).
+        const DRIFT = 300;
+        const okEl = (e) => Number.isFinite(e.elapsed_seconds) && e.elapsed_seconds > 0;
+        for (const e of evts) {
+            const g = groups[e.group_name];
+            if (!g || g.late || g.startAt === null || !okEl(e) || !/^(node|puzzle|finish|strike|hint)$/.test(e.event_type)) continue;
+            const at = tsOf(e);
+            if (at !== null && Math.abs((at - g.startAt) / 1000 - e.elapsed_seconds) > DRIFT) g.late = true;
+        }
+        for (const g of Object.values(groups)) {
+            if (!g.late) continue;
+            const firstSolve = {};
+            let fin = null;
+            for (const e of evts) {
+                if (e.group_name !== g.name || !okEl(e)) continue;
+                if (e.event_type === 'finish') fin = fin === null ? e.elapsed_seconds : Math.min(fin, e.elapsed_seconds);
+                if (e.event_type === 'puzzle' && PUZZLE_NUM[e.detail]) firstSolve[e.detail] = Math.min(firstSolve[e.detail] ?? Infinity, e.elapsed_seconds);
+            }
+            const solves = Object.values(firstSolve);
+            if (solves.length === Object.keys(PUZZLE_NUM).length) fin = Math.min(fin ?? Infinity, Math.max(...solves));
+            if (fin !== null) g.finish = fin;
         }
 
         // Pass 2: progress, penalties and the feed
@@ -180,7 +205,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             const at = tsOf(e) || 0;
             g.lastAt = Math.max(g.lastAt, at);
             if (e.role) g.roles.add(e.role);
-            const afterFinish = g.finishAt !== null && at > g.finishAt;
+            const afterFinish = g.late
+                ? g.finish !== null && okEl(e) && e.elapsed_seconds > g.finish
+                : g.finishAt !== null && at > g.finishAt;
             let item = null;
             if (e.event_type === 'join') item = { kind: 'join', role: e.role };
             else if (e.event_type === 'node' && NODE_NUM[e.detail] && !g.nodes.has(e.detail)) { g.nodes.add(e.detail); g.lastProgressAt = at; item = { kind: 'node', n: NODE_NUM[e.detail] }; }
