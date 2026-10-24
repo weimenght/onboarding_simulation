@@ -207,6 +207,38 @@ async function localNodeCheck(node, answer) {
     return null;
   }
 }
+// Same for the Halt override codes: fingerprints of every accepted answer, used only when offline.
+const PUZZLE_HASH = {
+  "puzzle1": ["9bb8afdeaa56b8b876b6c0379874d17192e10ca5d811ccc1a2b0b125e5f2ec2c", "6781cf165e7f650c3855a1cff465b2b2e6c89983f150553c8e103ada4779e37e", "1b9e8988caff505e3793a1f51fafc3f518a91d31e1255352eb75c14c03e081c9"],
+  "puzzle2": ["679061baaf5a506a43d1d0d5a9f13a92df5c53a40cfb0cbba45d8f89a14d2986"],
+  "puzzle3": ["65a904af9f8c4de763d3033a6046e070e9e7ea83c8eddeed5156abc9c30c988b", "fa6e246c1153abf15ae2c65765910780df464e683c06de46510d175fb660da4e"]
+};
+const PUZZLE_QUEUE_KEY = 'dl_sunrise_puzzle_queue';
+const normCode = s => String(s || '').trim().toUpperCase().replace(/[#/_\s-]/g, '');
+async function localPuzzleCheck(key, answer) {
+  try {
+    const list = PUZZLE_HASH[key];
+    if (!list || !normCode(answer) || !window.crypto || !crypto.subtle || !window.TextEncoder) return null;
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dlsr-p|' + key + '|' + normCode(answer)));
+    const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    return list.includes(hex);
+  } catch (e) {
+    return null;
+  }
+}
+function readPuzzleQueue() {
+  try {
+    const q = JSON.parse(localStorage.getItem(PUZZLE_QUEUE_KEY) || '[]');
+    return Array.isArray(q) ? q : [];
+  } catch (e) {
+    return [];
+  }
+}
+function writePuzzleQueue(q) {
+  try {
+    if (q.length) localStorage.setItem(PUZZLE_QUEUE_KEY, JSON.stringify(q));else localStorage.removeItem(PUZZLE_QUEUE_KEY);
+  } catch (e) {}
+}
 function readNodeQueue() {
   try {
     const q = JSON.parse(localStorage.getItem(NODE_QUEUE_KEY) || '[]');
@@ -2382,11 +2414,31 @@ function QuestView() {
       }
       return true;
     };
+    const flushPuzzles = async () => {
+      let q = readPuzzleQueue();
+      while (q.length) {
+        try {
+          const {
+            error
+          } = await withTimeout(sbClient.rpc('sunrise_check_puzzle', {
+            ...q[0],
+            p_session: config.session,
+            p_group: group
+          }), 8000);
+          if (error) return false;
+        } catch (e) {
+          return false;
+        }
+        q = readPuzzleQueue().slice(1);
+        writePuzzleQueue(q);
+      }
+      return true;
+    };
     let fails = 0,
       nextAt = 0;
     const tickFn = async () => {
       if (document.hidden || Date.now() < nextAt) return;
-      const ok = await flushNodes();
+      const ok = (await flushNodes()) && (await flushPuzzles());
       fails = ok ? 0 : Math.min(fails + 1, 4);
       nextAt = Date.now() + (fails ? 20000 * Math.pow(2, fails) * (1 + Math.random() * 0.3) : 0);
       if (!fails) pull(false);
@@ -2629,18 +2681,32 @@ function QuestView() {
     }
     setVerifyingPuzzleKey(key);
     let res = null;
+    const pargs = {
+      ...rpcArgs(),
+      p_puzzle: key,
+      p_answer: rawVal
+    };
     if (sbClient) {
       try {
         const {
           data,
           error
-        } = await sbClient.rpc('sunrise_check_puzzle', {
-          ...rpcArgs(),
-          p_puzzle: key,
-          p_answer: rawVal
-        });
+        } = await withTimeout(sbClient.rpc('sunrise_check_puzzle', pargs), 6000);
         if (!error && data && typeof data === 'object') res = data;
       } catch (err) {}
+    }
+    if (!res) {
+      // Database unreachable: check against the fingerprints, and keep the attempt so the database can
+      // replay it later (it then logs the solved puzzle, the finish or the wrong-answer penalty with this time).
+      const local = await localPuzzleCheck(key, rawVal);
+      if (local !== null) {
+        res = {
+          ok: local,
+          offline: true
+        };
+        writePuzzleQueue(readPuzzleQueue().concat([pargs]));
+        if (local) showSx(SX.offlineOk, 'info', 6000);
+      }
     }
     setVerifyingPuzzleKey(null);
     if (!res) {
