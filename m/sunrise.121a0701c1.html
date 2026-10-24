@@ -187,6 +187,39 @@ const NODE_NO = {
   banking: 3
 };
 const PENDING_SCAN_KEY = 'dl_pending_scan';
+// Offline node check: SHA-256 fingerprints of the node passwords (never the passwords), used only when
+// the database can't be reached. Offline unlocks are queued and reported once the connection is back.
+const NODE_HASH = {
+  "logs": "c479cc68a23da6c78b9b569599a31cc54375b190cecb32c35c49b0ea66d88dd1",
+  "ledger": "e4b22da75e3b65e4b56efc548c15b407ecc38334c958d23137c4a8f436222952",
+  "banking": "7fa4c31be92bca8eac971dd2dc7c8a803f5c7caae21414803c0e38b5b66b2ff5"
+};
+const NODE_QUEUE_KEY = 'dl_sunrise_node_queue';
+const normNode = s => String(s || '').trim().toUpperCase().replace(/,/g, '').replace(/\s+/g, '');
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+async function localNodeCheck(node, answer) {
+  try {
+    if (!NODE_HASH[node] || !window.crypto || !crypto.subtle || !window.TextEncoder) return null;
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dlsr|' + node + '|' + normNode(answer)));
+    const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    return hex === NODE_HASH[node];
+  } catch (e) {
+    return null;
+  }
+}
+function readNodeQueue() {
+  try {
+    const q = JSON.parse(localStorage.getItem(NODE_QUEUE_KEY) || '[]');
+    return Array.isArray(q) ? q : [];
+  } catch (e) {
+    return [];
+  }
+}
+function writeNodeQueue(q) {
+  try {
+    if (q.length) localStorage.setItem(NODE_QUEUE_KEY, JSON.stringify(q));else localStorage.removeItem(NODE_QUEUE_KEY);
+  } catch (e) {}
+}
 function readPendingScan() {
   try {
     const p = JSON.parse(localStorage.getItem(PENDING_SCAN_KEY) || 'null');
@@ -209,7 +242,8 @@ const SCAN_TEXT = {
     scanMine: 'Node {n} scanned. Your clue is ready.',
     scanTheirs: 'Node {n} scanned. The clue went to your team\'s {role} phones.',
     scanJoin: 'Node {n} scanned. Join your team below to see the clue.',
-    offline: 'Can\'t reach the game server. Check your connection and try again.'
+    offline: 'Can\'t reach the game server. Check your connection and try again.',
+    offlineOk: 'Unlocked offline. Your progress reaches the live board when the connection is back.'
   },
   zh: {
     keyLabel: '密钥问题',
@@ -220,7 +254,8 @@ const SCAN_TEXT = {
     scanMine: '已扫描节点 {n}，线索已送达。',
     scanTheirs: '已扫描节点 {n}，线索已发送给队内「{role}」角色的手机。',
     scanJoin: '已扫描节点 {n}。请先在下方加入小组，即可查看线索。',
-    offline: '无法连接游戏服务器，请检查网络后重试。'
+    offline: '无法连接游戏服务器，请检查网络后重试。',
+    offlineOk: '已离线解锁。网络恢复后，进度会自动同步到排行榜。'
   }
 };
 const ROLE_META = {
@@ -2326,10 +2361,38 @@ function QuestView() {
         busy = false;
       }
     };
+    // Offline unlocks waiting to be reported to the live board.
+    const flushNodes = async () => {
+      const q = readNodeQueue();
+      if (!q.length) return true;
+      for (const a of q) {
+        try {
+          const {
+            error
+          } = await withTimeout(sbClient.rpc('sunrise_check_node', {
+            ...a,
+            p_session: config.session,
+            p_group: group
+          }), 8000);
+          if (error) return false;
+          writeNodeQueue(readNodeQueue().filter(x => x.p_node !== a.p_node));
+        } catch (e) {
+          return false;
+        }
+      }
+      return true;
+    };
+    let fails = 0,
+      nextAt = 0;
+    const tickFn = async () => {
+      if (document.hidden || Date.now() < nextAt) return;
+      const ok = await flushNodes();
+      fails = ok ? 0 : Math.min(fails + 1, 4);
+      nextAt = Date.now() + (fails ? 20000 * Math.pow(2, fails) * (1 + Math.random() * 0.3) : 0);
+      if (!fails) pull(false);
+    };
     pull(true);
-    const tick = setInterval(() => {
-      if (!document.hidden) pull(false);
-    }, 20000);
+    const tick = setInterval(tickFn, 20000);
     const onVis = () => {
       if (!document.hidden) pull(false);
     };
@@ -2451,24 +2514,34 @@ function QuestView() {
     if (nodeLockoutTimer > 0 || verifyingNode) return;
     if (!(unlockInput || '').trim()) return;
     setVerifyingNode(true);
-    let isMatch = null;
+    let isMatch = null,
+      offline = false;
+    const args = {
+      ...rpcArgs(),
+      p_node: nodeKey,
+      p_answer: unlockInput
+    };
     if (sbClient) {
       try {
         const {
           data,
           error
-        } = await sbClient.rpc('sunrise_check_node', {
-          ...rpcArgs(),
-          p_node: nodeKey,
-          p_answer: unlockInput
-        });
+        } = await withTimeout(sbClient.rpc('sunrise_check_node', args), 6000);
         if (!error) isMatch = data === true;
       } catch (err) {}
+    }
+    if (isMatch === null) {
+      isMatch = await localNodeCheck(nodeKey, unlockInput);
+      offline = isMatch !== null;
     }
     setVerifyingNode(false);
     if (isMatch === null) {
       showSx(SX.offline, 'warn');
       return;
+    }
+    if (isMatch && offline) {
+      writeNodeQueue(readNodeQueue().filter(x => x.p_node !== nodeKey).concat([args]));
+      showSx(SX.offlineOk, 'info', 6000);
     }
     if (isMatch) {
       setUnlockError(false);

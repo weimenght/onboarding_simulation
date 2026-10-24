@@ -729,7 +729,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.782b480edb.html","admin":"admin.da7fbeb2e5.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.49611121a3.html","fastpass36":"fastpass36.e54bf04dc5.html","fastpass48":"fastpass48.2880a00f32.html","game":"game.fd9ba50717.html","knowledge":"knowledge.eedcdacc02.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.78261b0daf.html","kclive":"kclive.e696dfe009.html","sunrise":"sunrise.3388170a20.html","leaderboard":"leaderboard.aa52d5f090.html"}};</script>
+<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.1bf7835a90.html","admin":"admin.da7fbeb2e5.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.49611121a3.html","fastpass36":"fastpass36.e54bf04dc5.html","fastpass48":"fastpass48.2880a00f32.html","game":"game.fd9ba50717.html","knowledge":"knowledge.eedcdacc02.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.78261b0daf.html","kclive":"kclive.e696dfe009.html","sunrise":"sunrise.121a0701c1.html","leaderboard":"leaderboard.aa52d5f090.html"}};</script>
 
 <script>
 (function () {
@@ -998,9 +998,12 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
       return true;
     }, function () { return false; });
   }
+  var statusFails = 0;
   function refreshStatus() {
     return loadPulse().then(function (ok) {
-      if (ok) return;
+      if (ok) { statusFails = 0; return; }
+      // Busy or unreachable server: wait longer next time instead of firing separate reads.
+      if (pulseOk !== false) { statusFails = Math.min(statusFails + 1, 5); return; }
       loadVis(); loadLinks();
       // No status call: each page reads for itself.
       pulseListeners = pulseListeners.filter(function (l) {
@@ -1464,9 +1467,9 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     // A stored session for an account that isn't on the staff lists counts as signed out.
     if (session && !staffRole()) { session = null; try { sb.auth.signOut(); } catch (e) {} }
     apply();
-    refreshStatus();
-    setInterval(function () { if (!document.hidden) refreshStatus(); }, 15000);
-    document.addEventListener('visibilitychange', function () { if (!document.hidden && Date.now() - pulse.at > 8000) refreshStatus(); });
+    var statusLoop = function () { setTimeout(function () { (document.hidden ? Promise.resolve() : refreshStatus()).then(statusLoop, statusLoop); }, Math.min(15000 * Math.pow(2, statusFails), 240000) * (1 + Math.random() * 0.3)); };
+    refreshStatus().then(statusLoop, statusLoop);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && !statusFails && Date.now() - pulse.at > 8000) refreshStatus(); });
     if (sb) {
       try {
         sb.channel('dl-suite-vis').on('postgres_changes', { event: '*', schema: 'public', table: 'portal_visibility' }, function (p) {

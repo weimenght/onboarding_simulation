@@ -3502,14 +3502,16 @@ window.DLCanto = {
   }
   function loadLive() {
     return sb.from('kc_live').select('round_no, teams, seq, q_index, q_total, question, options, state, opens_at, closes_at, correct_index, winner_team, team_mode').eq('id', 1).maybeSingle().then(function (res) {
-      if (res.error || !res.data) return;
+      if (res.error) { kcFails = Math.min(kcFails + 1, 6); return; }
+      kcFails = 0;
+      if (!res.data) return;
       var prev = L; L = res.data;
       var changed = !prev || prev.seq !== L.seq || prev.state !== L.state || prev.round_no !== L.round_no || String(prev.teams) !== String(L.teams);
       if (!prev || prev.seq !== L.seq) { mine = null; pending = false; }
       if (prev && prev.state !== L.state && (L.state === 'live' || L.state === 'question')) minimized = false;
       if (changed) loadStatus();
       render();
-    }, function () {});
+    }, function () { kcFails = Math.min(kcFails + 1, 6); });
   }
 
   // ---------- actions ----------
@@ -3555,7 +3557,11 @@ window.DLCanto = {
   if (typeof origSetLang === 'function') window.setLanguage = function () { var r = origSetLang.apply(this, arguments); render(); return r; };
 
   // ---------- boot ----------
-  syncClock(); setInterval(syncClock, 60000);
+  // When the server struggles, every phone waits longer between tries (doubling, up to a few minutes),
+  // so failures don't turn into a flood of retries.
+  var kcFails = 0;
+  function backoff(ms, cap) { return Math.min(ms * Math.pow(2, kcFails), cap) * (1 + Math.random() * 0.3); }
+  syncClock(); setInterval(function () { if (!kcFails && !document.hidden) syncClock(); }, 60000);
   loadLive();
   // Instant updates come through realtime; polling is only the safety net (slower while realtime is up).
   var rtUp = false;
@@ -3565,8 +3571,9 @@ window.DLCanto = {
     if (document.hidden) return;
     if (team() !== lastTeam) { lastTeam = team(); ST = null; mine = null; loadStatus(); }
     var active = inRound() && L && (L.state === 'question' || L.state === 'live');
-    if (Date.now() - lastPoll > (active ? 1500 : rtUp ? 20000 : 5000)) { lastPoll = Date.now(); loadLive(); }
-    if (inRound() && Date.now() - lastStatus > 6000) { lastStatus = Date.now(); loadStatus(); }
+    // Fast only while this team has a question on screen; otherwise realtime does the work and polling is a slow safety net.
+    if (Date.now() - lastPoll > (active ? backoff(1500, 20000) : backoff(rtUp ? 45000 : 20000, 240000))) { lastPoll = Date.now(); loadLive(); }
+    if (active && Date.now() - lastStatus > backoff(6000, 60000)) { lastStatus = Date.now(); loadStatus(); }
   }, 500);
 })();
 </script><script>(function () {
