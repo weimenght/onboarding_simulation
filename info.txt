@@ -21,7 +21,7 @@ SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 
 [GAME]
 # GAME_SESSION: a label for this run. Change it for each event so the leaderboard starts empty.
-GAME_SESSION = DU-Oct-2026-Day2
+GAME_SESSION = Demo
 # GAME_START: the moment the facilitator says "go" (ISO format with time zone).
 # Every team's 120-minute settlement clock counts down from here.
 # Leave blank to start each team's clock when its first member joins.
