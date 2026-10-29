@@ -729,7 +729,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.1bf7835a90.html","admin":"admin.da7fbeb2e5.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.49611121a3.html","fastpass36":"fastpass36.e54bf04dc5.html","fastpass48":"fastpass48.2880a00f32.html","game":"game.fd9ba50717.html","knowledge":"knowledge.eedcdacc02.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.78261b0daf.html","kclive":"kclive.e696dfe009.html","sunrise":"sunrise.f6d284f9d0.html","leaderboard":"leaderboard.b055f58989.html"}};</script>
+<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.381fba38f3.html","admin":"admin.da7fbeb2e5.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.49611121a3.html","fastpass36":"fastpass36.e54bf04dc5.html","fastpass48":"fastpass48.2880a00f32.html","game":"game.fd9ba50717.html","knowledge":"knowledge.eedcdacc02.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.78261b0daf.html","kclive":"kclive.e696dfe009.html","sunrise":"sunrise.f6d284f9d0.html","leaderboard":"leaderboard.b055f58989.html"}};</script>
 
 <script>
 (function () {
@@ -767,7 +767,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     { id: 'hub', icon: 'fa-house-signal', c: C.driver, zh: 'DeloitteLand 学员门户', en: 'DeloitteLand Hub', dzh: '学员看到的页面（按开关显示）', den: 'What participants see, filtered by the switches' },
     { id: 'admin', icon: 'fa-sliders', c: C.guardian, zh: '管理后台', en: 'Admin Console', dzh: '计分、Sunrise 成绩、广播、排程与重置', den: 'Scoring, Sunrise scores, broadcast, schedule and reset', dzhHost: '站点计分与 Sunrise 成绩录入', denHost: 'Station scoring and Sunrise score entry' },
     { id: 'links', icon: 'fa-link', c: C.pioneer, zh: '推送链接', en: 'Push links', dzh: '向学员门户发送链接，点击即在新标签页打开', den: 'Send links to the participant hub; they open in a new tab', page: true },
-    { id: 'visibility', icon: 'fa-toggle-on', c: C.guardian, zh: '学员端显示开关', en: 'Participant Switches', dzh: '决定学员门户显示哪些内容', den: 'Choose what the participant hub shows', page: true },
+    { id: 'visibility', icon: 'fa-toggle-on', c: C.guardian, zh: '节点线索卡开关', en: 'Node Switches', dzh: '决定学员能否看到节点一至三的线索卡', den: 'Choose which node clue cards participants see', page: true },
     { id: 'kclive', icon: 'fa-bolt', c: C.integrator, zh: '勤业智库 · 抢答大屏', en: 'Knowledge Clash Live', dzh: '大屏出题、3-2-1 开始，学员用手机抢答', den: 'Questions on the big screen, 3-2-1 start, teams buzz in on phones' },
     { id: 'knowledge', icon: 'fa-brain', c: C.integrator, zh: '勤业智库 · 经典模式', en: 'Knowledge Clash Classic', dzh: '引导师点选答案，三次机会', den: 'Facilitator taps the answers; three attempts' },
     { id: 'signal', icon: 'fa-tower-broadcast', c: C.integrator, zh: '信号解密', en: 'D.Signal', dzh: '三轮解码，60 秒倒计时', den: 'Three decoding rounds on a 60-second clock' },
@@ -806,16 +806,11 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   };
   var PAGES = { start: 'pg-start', staff: 'pg-staff', login: 'pg-login', visibility: 'pg-vis', links: 'pg-links' };
   var VIS_DEFAULT = { fastpass: true, bc: true, drush: true, sunrise: true, node1: false, node2: false, node3: false, top10: true, wall: true, links: true };
+  // Only the three node clue cards have switches; everything else is always shown.
+  var VIS_SWITCHES = ['node1', 'node2', 'node3'];
+  function visOnly(s) { var v = Object.assign({}, VIS_DEFAULT); VIS_SWITCHES.forEach(function (k) { if (s && typeof s[k] === 'boolean') v[k] = s[k]; }); return v; }
   var VIS_ITEMS = [
-    { sec: 'secHub' },
-    { k: 'fastpass', icon: 'fa-route', c: '#A3E635', zh: 'FastPass 行程卡', en: 'FastPass card', dzh: '当前与下一站、全部 6 轮', den: 'Current and next station, all 6 slots' },
-    { k: 'bc', icon: 'fa-flask', c: '#22D3EE', zh: '商业化学', en: 'Business Chemistry', dzh: '四种风格与“设为我的风格”', den: 'The four styles and “set as my style”' },
-    { k: 'drush', icon: 'fa-gamepad', c: C.driver, zh: 'D-Rush 跑酷', en: 'D-Rush', dzh: '小游戏与最高分', den: 'The mini game and its high score' },
-    { k: 'top10', icon: 'fa-ranking-star', c: C.driver, zh: 'Top 10 团队积分榜', en: 'Top 10 ranking', dzh: '6 大站点总分排名', den: 'Combined score across the six stations' },
-    { k: 'links', icon: 'fa-link', c: '#38BDF8', zh: '资料链接', en: 'Links', dzh: '“推送链接”页面发出的链接卡片', den: 'The card with links sent from “Push links”' },
-    { k: 'wall', icon: 'fa-comments', c: C.integrator, zh: '留言墙', en: 'Community wall', dzh: '学员留言与快捷打气', den: 'Participant messages and quick cheers' },
     { sec: 'secSunrise' },
-    { k: 'sunrise', icon: 'fa-sun', c: '#FBBF24', zh: 'Sunrise 终端', en: 'Sunrise terminal', dzh: '主页面：角色、节点与覆写谜题', den: 'Main page: roles, nodes and override puzzles' },
     { k: 'node1', icon: 'fa-1', c: C.pioneer, zh: '节点一 线索卡', en: 'Node 1 clue card', dzh: '在 Sunrise 页面内显示为标签', den: 'Shown as a tab inside Sunrise' },
     { k: 'node2', icon: 'fa-2', c: C.pioneer, zh: '节点二 线索卡', en: 'Node 2 clue card', dzh: '在 Sunrise 页面内显示为标签', den: 'Shown as a tab inside Sunrise' },
     { k: 'node3', icon: 'fa-3', c: C.pioneer, zh: '节点三 线索卡', en: 'Node 3 clue card', dzh: '在 Sunrise 页面内显示为标签', den: 'Shown as a tab inside Sunrise' }
@@ -834,9 +829,9 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
       superTitle: '管理员工作台', superSub: '管理计分与广播，并决定学员端显示哪些内容。',
       hostTitle: '引导师工作台', hostSub: '录入本站成绩，打开站点工具与大屏排行。',
       roleSuper: '管理员', roleHost: '引导师',
-      visEyebrow: '仅管理员', visTitle: '学员端显示开关', visSub: '关闭后，学员门户会立即隐藏对应内容（已打开的页面最多 15 秒内同步）。',
+      visEyebrow: '仅管理员', visTitle: '节点线索卡开关', visSub: '开启后，学员可在 Sunrise 页面看到对应节点的线索卡（已打开的页面最多 15 秒内同步）。',
       secHub: '学员门户', secSunrise: 'Project Sunrise',
-      visNote: 'Sunrise 入口在终端或任一节点开启时显示，学员仍需输入 Sunrise 口令。这些开关只控制显示，不是保密措施。',
+      visNote: '学员门户的其他内容始终显示。这些开关只控制显示，不是保密措施。',
       saving: '正在保存…', savedAt: '已保存 {t}', loadedAt: '当前设置（{t} 更新）', defaults: '尚未保存过，正在显示默认设置',
       errTable: '还没有创建 portal_visibility 数据表。请在 Supabase SQL Editor 中运行随附的 supabase_setup.sql。',
       errDenied: '保存失败：当前账号没有修改权限（仅管理员）。', errSave: '保存失败，请检查网络后重试。',
@@ -862,9 +857,9 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
       superTitle: 'Admin home', superSub: 'Run scoring and broadcasts, and choose what participants can see.',
       hostTitle: 'Facilitator home', hostSub: 'Enter your station’s scores and open the station tools and live board.',
       roleSuper: 'ADMIN', roleHost: 'FACILITATOR',
-      visEyebrow: 'Admins only', visTitle: 'Participant switches', visSub: 'Switching something off hides it from the participant hub right away. Pages already open catch up within 15 seconds.',
+      visEyebrow: 'Admins only', visTitle: 'Node switches', visSub: 'Switch a node on to show its clue card inside Sunrise. Pages already open catch up within 15 seconds.',
       secHub: 'Participant hub', secSunrise: 'Project Sunrise',
-      visNote: 'The Sunrise entry shows when the terminal or any node is on, and participants still need the Sunrise passcode. These switches control what is shown; they don’t make content secret.',
+      visNote: 'Everything else in the participant hub is always shown. These switches control what is shown; they don’t make content secret.',
       saving: 'Saving…', savedAt: 'Saved {t}', loadedAt: 'Current settings (updated {t})', defaults: 'Never saved yet, showing the defaults',
       errTable: 'The portal_visibility table doesn’t exist yet. Run the included supabase_setup.sql in the Supabase SQL Editor.',
       errDenied: 'Not saved: this account can’t change the switches (admins only).', errSave: 'Not saved. Check the connection and try again.',
@@ -921,7 +916,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     return participantAllowed(base);
   }
 
-  var vis = (function () { try { var s = JSON.parse(store('dl_suite_vis') || 'null'); if (s && typeof s === 'object') return Object.assign({}, VIS_DEFAULT, s); } catch (e) {} return Object.assign({}, VIS_DEFAULT); })();
+  var vis = (function () { try { var s = JSON.parse(store('dl_suite_vis') || 'null'); if (s && typeof s === 'object') return visOnly(s); } catch (e) {} return visOnly({}); })();
   var visMeta = { state: 'idle', updatedAt: null, missing: false, err: '' };
   var visListeners = [];
   function emitVis() {
@@ -930,7 +925,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     });
   }
   function setVis(next, updatedAt) {
-    vis = Object.assign({}, VIS_DEFAULT, next || {});
+    vis = visOnly(next);
     visMeta.updatedAt = updatedAt || visMeta.updatedAt;
     store('dl_suite_vis', JSON.stringify(vis));
     emitVis();

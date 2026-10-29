@@ -3224,7 +3224,8 @@ window.DLCanto = {
   }
 
   if (window.DLH && DLH.onVis) {
-    DLH.onVis(function (next) { vis = Object.assign({}, DEF, next || {}); apply(); }, window);
+    // Only node1-3 are switchable; everything else stays on.
+    DLH.onVis(function (next) { vis = Object.assign({}, DEF); ['node1', 'node2', 'node3'].forEach(function (k) { if (next && typeof next[k] === 'boolean') vis[k] = next[k]; }); apply(); }, window);
   } else {
     apply();
   }

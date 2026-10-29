@@ -350,7 +350,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
 <div id="frames"></div>
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script>window.DL_SPLIT = {"base":"../m/","files":{"hub":"hub.1bf7835a90.html","game":"game.fd9ba50717.html","sunrise":"sunrise.f6d284f9d0.html","clue1":"clue1.7065f55350.html","clue2":"clue2.472b76012c.html","clue3":"clue3.60c8573343.html"}};</script>
+<script>window.DL_SPLIT = {"base":"../m/","files":{"hub":"hub.381fba38f3.html","game":"game.fd9ba50717.html","sunrise":"sunrise.f6d284f9d0.html","clue1":"clue1.7065f55350.html","clue2":"clue2.472b76012c.html","clue3":"clue3.60c8573343.html"}};</script>
 
 <script>
 (function () {
@@ -362,6 +362,9 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
   var PAGES = { hub: null, game: 'drush', sunrise: 'sunrise', clue1: 'node1', clue2: 'node2', clue3: 'node3' };
   var PATHS = { '': 'hub', 'a1': 'hub', 'hub': 'hub', 'game': 'game', 'sunrise': 'sunrise', 'diyiguan': 'clue1', 'niveldos': 'clue2', 'sankyu': 'clue3', 'clue1': 'clue1', 'clue2': 'clue2', 'clue3': 'clue3' };
   var VIS_DEFAULT = { fastpass: true, bc: true, drush: true, sunrise: true, node1: false, node2: false, node3: false, top10: true, wall: true, links: true };
+  // Only the three node clue cards have switches; everything else is always shown.
+  var VIS_SWITCHES = ['node1', 'node2', 'node3'];
+  function visOnly(s) { var v = Object.assign({}, VIS_DEFAULT); VIS_SWITCHES.forEach(function (k) { if (s && typeof s[k] === 'boolean') v[k] = s[k]; }); return v; }
   var TXT = { zh: { loading: '正在加载…', notVisible: '这个内容暂未开放。' }, en: { loading: 'Loading…', notVisible: 'That isn’t open yet.' } };
 
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
@@ -374,7 +377,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
 
   // ---------- switches + pushed links (read-only) ----------
   function readJSON(k, fb) { try { var v = JSON.parse(store(k) || 'null'); return v == null ? fb : v; } catch (e) { return fb; } }
-  var vis = Object.assign({}, VIS_DEFAULT, readJSON('dl_suite_vis', {}));
+  var vis = visOnly(readJSON('dl_suite_vis', {}));
   var links = readJSON('dl_suite_links', []); if (!Array.isArray(links)) links = [];
   var visL = [], linkL = [];
   function emit(list, val) {
@@ -383,7 +386,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
     });
   }
   function setVis(next) {
-    vis = Object.assign({}, VIS_DEFAULT, next || {});
+    vis = visOnly(next);
     store('dl_suite_vis', JSON.stringify(vis));
     visL = emit(visL, Object.assign({}, vis));
     if (route !== 'hub' && !EMBED && !allowed(route)) navigate('hub', true);
