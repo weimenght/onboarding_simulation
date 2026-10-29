@@ -403,7 +403,7 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
       sideHint: '学员在学员门户输入加入码即可加入本轮。若有队伍的手机被别人占用，点 ⟲ 让该队重新加入。',
       fpNote: 'FastPass 第 {r} 轮在勤业智库的队伍', fpNow: '现在', applied: '已应用：第 {r} 轮，{n} 支队伍', saved: '规则已保存',
       newSessDone: '已开始新场次：{s}', released: '已让第 {t} 组重新加入', releasedAll: '所有队伍需要重新加入', codeNew: '新加入码：{c}',
-      gateTitle: '仅限工作人员', gateNoAuth: '请先在 DeloitteLand Suite 以工作人员身份登录，再打开抢答大屏。', gateNoSb: '无法连接数据库，请检查网络后刷新。',
+      gateTitle: '仅限工作人员', gateNoAuth: '请先在 DeloitteLand Suite 以工作人员身份登录，再打开抢答大屏。', gateNoSb: '无法连接数据库，请检查网络后刷新。', kcOff: '勤业智库抢答目前已关闭，学员手机不会连接。请在 DeloitteLand Suite「学员端开关」中开启，再开始本轮。',
       errSetup: '数据库还没有抢答功能。请在 Supabase SQL Editor 运行最新的 supabase_setup.sql。', errGeneric: '操作失败：{m}', needRound: '请先设置轮次和队伍',
       voided: '已作废本题答案，可以重新开始'
     },
@@ -425,7 +425,7 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
       sideHint: 'Teams join by entering the join code in the participant hub. If someone else took a team’s phone slot, press ⟲ to let that team rejoin.',
       fpNote: 'FastPass round {r} teams at Knowledge Clash', fpNow: 'now', applied: 'Applied: round {r}, {n} teams', saved: 'Rules saved',
       newSessDone: 'New session: {s}', released: 'Team {t} can rejoin', releasedAll: 'Every team needs to rejoin', codeNew: 'New join code: {c}',
-      gateTitle: 'Staff only', gateNoAuth: 'Sign in to DeloitteLand Suite as staff, then open this screen.', gateNoSb: 'Can’t reach the database. Check the connection and reload.',
+      gateTitle: 'Staff only', gateNoAuth: 'Sign in to DeloitteLand Suite as staff, then open this screen.', gateNoSb: 'Can’t reach the database. Check the connection and reload.', kcOff: 'Knowledge Clash is switched off, so phones won’t connect. Turn it on under Switches in DeloitteLand Suite, then start the round.',
       errSetup: 'The database doesn’t have the buzzer yet. Run the latest supabase_setup.sql in the Supabase SQL Editor.', errGeneric: 'Didn’t work: {m}', needRound: 'Set the round and teams first',
       voided: 'Answers voided; start again when ready'
     }
@@ -853,6 +853,10 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
       if (!u || !role) { gate(t('gateNoAuth')); return; }
       syncClock(); setInterval(syncClock, 60000);
       Promise.all([loadSettings(), loadBank(), loadFastPass()]).then(loadLive);
+      // Live updates only while Knowledge Clash is switched on; the polling below keeps the screen current either way.
+      sb.from('portal_visibility').select('settings').eq('id', 1).maybeSingle().then(function (res) {
+        var on = !!(res && res.data && res.data.settings && res.data.settings.kc === true);
+        if (!on) { setDock(t('kcOff'), true); return; }
       try {
         sb.channel('kc-live-host')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'kc_live' }, function () { loadLive(); })
@@ -861,6 +865,7 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
           .on('postgres_changes', { event: '*', schema: 'public', table: 'knowledge_config' }, function () { loadBank(); })
           .subscribe();
       } catch (e) {}
+      }, function () {});
       // Safety net if realtime is slow: quick while answering, relaxed otherwise.
       var lastPoll = 0;
       setInterval(function () {

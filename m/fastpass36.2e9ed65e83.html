@@ -489,7 +489,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       }
     }
 
-    function subscribeRealtimeConfig() {
+    function subscribeRealtimeConfig() { return; // live updates off (saves server work)
       if (!supabaseClient) return;
       try {
         supabaseClient

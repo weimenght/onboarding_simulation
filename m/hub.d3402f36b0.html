@@ -2604,7 +2604,7 @@ window.DLCanto = {
         if (supabaseClient) {
           const { data, error } = dlPulse('board') || await supabaseClient
             .from('station_leaderboards')
-            .select('*')
+            .select('team_scores:published_scores, updated_at:published_at')
             .eq('id', 1)
             .maybeSingle();
 
@@ -3148,11 +3148,13 @@ window.DLCanto = {
       selectBcType(participantBcStyle || 'driver', true);
       startCooldownTimer();
 
-      await loadPortalAnnouncement();
-      await loadFastpassVenueAndTimeConfig();
-      loadDrushHighScore();
-      fetchLiveLeaderboard();
-      loadMessages();
+      if (!(window.DLH && DLH.pulse)) {
+        await loadPortalAnnouncement();
+        await loadFastpassVenueAndTimeConfig();
+        loadDrushHighScore();
+        fetchLiveLeaderboard();
+        loadMessages();
+      }
 
       if (!participantTeamNumber || participantTeamNumber > currentCohortScale || !participantNickname) {
         openTeamGateModal();
@@ -3558,23 +3560,40 @@ window.DLCanto = {
   if (typeof origSetLang === 'function') window.setLanguage = function () { var r = origSetLang.apply(this, arguments); render(); return r; };
 
   // ---------- boot ----------
-  // When the server struggles, every phone waits longer between tries (doubling, up to a few minutes),
-  // so failures don't turn into a flood of retries.
+  // No KC requests at all unless Knowledge Clash is switched on AND this phone's team is in the current round.
+  // The status call every phone already makes (dl_pulse, every 30 s) says both; only then does this phone check
+  // the round, sync its clock and listen for live updates. Leaving the round (or KC off) stops all of it.
+  // When the server struggles, every phone waits longer between tries (doubling, up to a few minutes).
   var kcFails = 0;
   function backoff(ms, cap) { return Math.min(ms * Math.pow(2, kcFails), cap) * (1 + Math.random() * 0.3); }
-  syncClock(); setInterval(function () { if (!kcFails && !document.hidden) syncClock(); }, 60000);
-  loadLive();
-  // Instant updates come through realtime; polling is only the safety net (slower while realtime is up).
-  var rtUp = false;
-  try { sb.channel('dl-kc-live').on('postgres_changes', { event: '*', schema: 'public', table: 'kc_live' }, function () { loadLive(); }).subscribe(function (st) { rtUp = st === 'SUBSCRIBED'; }); } catch (e) {}
-  var lastPoll = Date.now(), lastStatus = Date.now(), lastTeam = team();
+  var engaged = false, ch = null, rtUp = false, sum = null;
+  var lastPoll = 0, lastStatus = 0, lastClock = 0, lastTeam = team();
+  function teamIn(s) { var tm = team(); return !!(s && s.round_no && tm && s.teams && s.teams.indexOf(tm) >= 0); }
+  function engage() {
+    engaged = true; kcFails = 0; lastPoll = lastClock = Date.now();
+    syncClock(); loadLive();
+    try { ch = sb.channel('dl-kc-live').on('postgres_changes', { event: '*', schema: 'public', table: 'kc_live' }, function () { loadLive(); }).subscribe(function (st) { rtUp = st === 'SUBSCRIBED'; }); } catch (e) {}
+  }
+  function disengage() {
+    engaged = false; rtUp = false;
+    if (ch) { try { sb.removeChannel(ch); } catch (e) {} ch = null; }
+    L = null; ST = null; mine = null; pending = false; render();
+  }
+  function check() {
+    var want = teamIn(sum);
+    if (want && !engaged) engage();
+    else if (!want && engaged) disengage();
+    else if (want && L && (sum.seq !== L.seq || sum.state !== L.state || sum.round_no !== L.round_no)) { lastPoll = Date.now(); loadLive(); }
+  }
+  if (window.DLH && DLH.pulse) DLH.pulse.on(function (d) { sum = d && d.kc ? d.kc : null; check(); }, window);
   setInterval(function () {
-    if (document.hidden) return;
-    if (team() !== lastTeam) { lastTeam = team(); ST = null; mine = null; loadStatus(); }
+    if (team() !== lastTeam) { lastTeam = team(); ST = null; mine = null; check(); if (engaged) loadStatus(); }
+    if (!engaged || document.hidden) return;
     var active = inRound() && L && (L.state === 'question' || L.state === 'live');
-    // Fast only while this team has a question on screen; otherwise realtime does the work and polling is a slow safety net.
-    if (Date.now() - lastPoll > (active ? backoff(1500, 20000) : backoff(rtUp ? 45000 : 20000, 240000))) { lastPoll = Date.now(); loadLive(); }
+    // In a round: fast while a question is on screen; between questions live updates do the work (3 s checks if they aren't connected).
+    if (Date.now() - lastPoll > (active ? backoff(1500, 20000) : backoff(rtUp ? 20000 : 3000, 240000))) { lastPoll = Date.now(); loadLive(); }
     if (active && Date.now() - lastStatus > backoff(6000, 60000)) { lastStatus = Date.now(); loadStatus(); }
+    if (!kcFails && Date.now() - lastClock > 60000) { lastClock = Date.now(); syncClock(); }
   }, 500);
 })();
 </script><script>(function () {

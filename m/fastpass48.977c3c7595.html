@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head><script>window.DL_MODULE="fastpass24";</script><script src="rt.fa1846e13f.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+<head><script>window.DL_MODULE="fastpass48";</script><script src="rt.fa1846e13f.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 ::selection{background:rgba(134,188,37,.35);color:#fff}</style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FastPass | 24 Teams Schedule</title>
+  <title>FastPass | 48 Teams Schedule</title>
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
   <script>window.DLTone = (function () {
@@ -80,14 +80,14 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3 cursor-pointer" onclick="showInputScreen()">
         <div class="w-9 h-9 rounded-xl bg-deloitte-green/15 border border-deloitte-green/30 flex items-center justify-center text-deloitte-green font-extrabold text-sm">
-          24
+          48
         </div>
         <div class="flex flex-col">
           <div class="flex items-center leading-tight">
             <span class="font-extrabold text-lg tracking-tight text-white">FastPass<span class="deloitte-dot"></span></span>
           </div>
           <span id="headerSubtitle" class="text-[11px] text-deloitte-green font-semibold tracking-wider">
-            团队日程追踪 (24组)
+            团队日程追踪 (48组)
           </span>
         </div>
       </div>
@@ -120,7 +120,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
           请输入您的组号
         </h1>
         <p id="promptSubtitle" class="text-xs text-gray-400">
-          支持第 1 - 24 组，输入后即可直接查看专属活动日程
+          支持第 1 - 48 组，输入后即可直接查看专属活动日程
         </p>
       </div>
 
@@ -134,14 +134,14 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
               type="number" 
               id="teamInputNumber" 
               min="1" 
-              max="24" 
-              placeholder="1 - 24"
+              max="48" 
+              placeholder="1 - 48"
               class="w-full bg-deloitte-slate border border-white/20 rounded-xl px-4 py-3.5 text-center text-2xl font-black text-deloitte-green focus:outline-none focus:border-deloitte-green transition-all"
               autofocus
               required
             >
             <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-xs text-gray-500 font-mono">
-              / 24
+              / 48
             </div>
           </div>
           <p id="inputErrorMsg" class="hidden text-xs text-rose-400 font-semibold mt-2 text-center"></p>
@@ -213,7 +213,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
         <div class="px-5 py-3 border-t border-white/10 bg-black/30 flex items-center justify-between text-xs text-gray-400">
           <span id="footerDuration">每环节 30 分钟 · 轮转 10 分钟 (含茶歇)</span>
-          <span class="font-mono text-[11px] text-deloitte-gray">24-Team FastPass</span>
+          <span class="font-mono text-[11px] text-deloitte-gray">48-Team FastPass</span>
         </div>
       </section>
     </div>
@@ -227,7 +227,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
       : null;
 
-    const TOTAL_TEAMS = 24;
+    const TOTAL_TEAMS = 48;
     let currentLang = window.DLTwo ? DLTwo('zh') : 'zh';
     let currentTeam = null;
     let audioEnabled = true;
@@ -261,7 +261,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       5: { zh: '场地 6', en: 'Venue 6' }
     };
 
-    const SCHEDULE_MATRIX_24 = [
+    const SCHEDULE_BASE_24 = [
       [0, 1, 2, 3, 4, 5],
       [3, 0, 1, 5, 4, 2],
       [5, 3, 4, 2, 0, 1],
@@ -288,15 +288,20 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       [3, 2, 1, 4, 5, 0]
     ];
 
+    function getTeamSchedule(teamNum) {
+      const idx = (teamNum - 1) % 24;
+      return SCHEDULE_BASE_24[idx];
+    }
+
     const I18N = {
       zh: {
-        subtitle: '团队日程追踪 (24组)',
+        subtitle: '团队日程追踪 (48组)',
         promptTitle: '请输入您的组号',
-        promptSubtitle: '支持第 1 - 24 组，输入后即可直接查看专属活动日程',
+        promptSubtitle: '支持第 1 - 48 组，输入后即可直接查看专属活动日程',
         inputLabel: '团队编号',
         submitBtn: '查看我的日程',
         backBtn: '更换组号',
-        errorRange: '请输入 1 至 24 之间的有效组号',
+        errorRange: '请输入 1 至 48 之间的有效组号',
         scheduleBadge: '日程详情',
         scheduleTitle: (i) => `第 ${i} 组 · 活动日程`,
         teamBadge: (i) => `第 ${i} 组`,
@@ -313,13 +318,13 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         liveActive: '进行中'
       },
       en: {
-        subtitle: 'Team Schedule Tracker (24 Teams)',
+        subtitle: 'Team Schedule Tracker (48 Teams)',
         promptTitle: 'Enter Your Team Number',
-        promptSubtitle: 'Teams 1 - 24 supported. Enter to directly load your schedule.',
+        promptSubtitle: 'Teams 1 - 48 supported. Enter to directly load your schedule.',
         inputLabel: 'Team Number',
         submitBtn: 'View Schedule',
         backBtn: 'Change Team',
-        errorRange: 'Please enter a valid team number between 1 and 24',
+        errorRange: 'Please enter a valid team number between 1 and 48',
         scheduleBadge: 'Schedule Route',
         scheduleTitle: (i) => `Team ${i} · Schedule`,
         teamBadge: (i) => `TEAM #${i}`,
@@ -477,11 +482,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       }
     }
 
-    function subscribeRealtimeConfig() {
+    function subscribeRealtimeConfig() { return; // live updates off (saves server work)
       if (!supabaseClient) return;
       try {
         supabaseClient
-          .channel('fastpass_config_live_24')
+          .channel('fastpass_config_live_48')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'fastpass_config' }, (payload) => {
             if (payload.new) {
               applyConfigPayload(payload.new);
@@ -612,7 +617,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     function renderScheduleView() {
       if (!currentTeam) return;
       const t = I18N[currentLang];
-      const schedule = SCHEDULE_MATRIX_24[currentTeam - 1];
+      const schedule = getTeamSchedule(currentTeam);
       const activeSlot = getActiveSlotIndex();
 
       document.getElementById("scheduleTitle").textContent = t.scheduleTitle(currentTeam);
