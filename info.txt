@@ -30,7 +30,7 @@ GAME_START =
 SETTLEMENT_MINUTES = 120
 # ROLE_MODE = on  -> each player picks Forensic IT, Finance or Compliance and sees only that evidence.
 # ROLE_MODE = off -> everyone sees everything.
-ROLE_MODE = on
+ROLE_MODE = off
 # Seconds a player is locked out of evidence after switching role (discourages role-hopping).
 ROLE_SWITCH_COOLDOWN = 300
 # Seconds added to the team's time for each wrong override answer.
