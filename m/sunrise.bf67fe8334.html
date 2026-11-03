@@ -720,14 +720,14 @@ const dict = {
     ghostTitle: "SPECTRAL ENTITY DETECTED",
     ghostRole: "Chief Snack Officer & Cookie Guardian",
     ghostDept: "DU Midnight Operations / Barn Hospitality",
-    ghostNote: "Lore: this auditor reportedly survived on DU Barn cookies and 2 AM espresso shots, and hoards dry-erase markers from every breakout room.",
+    ghostNote: "Lore: nobody knows which service line this associate is in. Audit says Tax, Tax says Consulting, Consulting says “we’ll circle back”. Survives on DU Barn cookies and 2 AM espresso, and hoards dry-erase markers from every breakout room.",
     memoHeader: "RESTRICTED // INTERNAL DISCIPLINARY MEMO",
     memoSub: "DU Campus Facilities & Engagement Ethics Taskforce",
     memoTo: "All Engagement Teams, Day 2 Cohorts",
     memoFrom: "Office of the DU Managing Director of Hospitality",
     memoSubject: "Ongoing Breakout Room & Expense Violations",
-    memoPoint1: "1. Under Policy EXP-DU-01, iced caramel macchiatos may not be charged as 'urgent audit evidence assets'.",
-    memoPoint2: "2. Hoarding dry-erase markers in breakout rooms is a material audit impediment. Return them immediately.",
+    memoPoint1: "1. Under Policy EXP-DU-01, iced caramel macchiatos may not be charged as “audit evidence”, “tax-deductible client entertainment” or “strategic workshop catering”.",
+    memoPoint2: "2. Hoarding dry-erase markers in breakout rooms is a material weakness, a compliance risk and a scope creep all at once. Return them immediately.",
     memoPoint3: "3. Facilities confirms a 400-cookie deficit at the DU Barn between 23:00 and 02:00, logged as Incident #BARN-COOKIE-404.",
     memoFooter: "NOTICE: Disclosed for regulatory amusement only. Contains zero override codes.",
     closeMemo: "Acknowledge & Close",
@@ -792,7 +792,7 @@ const dict = {
     secretFound: "Secret found",
     secrets: {
       shell: ["Retro Shell", "The logo hides an old game. It rewards persistence."],
-      ghost: ["The Ghost Auditor", "Some employees only exist on error pages."],
+      ghost: ["The Ghost Associate", "Some employees only exist on error pages."],
       coffee: ["Kernel Panic", "The servers run on caffeine. Ask the logs."],
       pizza: ["Midnight Syndicate", "Not every late-night order was approved. Ask the ledger about dinner."],
       oven: ["Oven Cam", "Someone wanted root at 02:26. Keep asking why."],
@@ -813,9 +813,9 @@ const dict = {
     n1RootModalSub: "Automated packet capture on port 22 (SSH)",
     n1RootModalBody: "EMP042's 02:26 ROOT_LOGIN_ATTEMPT shows zero financial malice. Daniel Patel was trying to SSH into the DU Barn kitchen's IoT oven cam to see whether fresh double-chocolate-chip cookies had been deployed.",
     n1RootModalCmd: "$ ssh root@barn-oven-cam.du.local --watch-cookies --alert-when-warm",
-    n1CoffeeLogEvent: "COFFEE_MACHINE_KERNEL_PANIC: Oat milk reservoir depleted in Building B. Audit Senior productivity down 94%.",
+    n1CoffeeLogEvent: "COFFEE_MACHINE_KERNEL_PANIC: Oat milk reservoir depleted in Building B. Audit tick marks, tax returns and client decks all down 94%.",
     n2PizzaVendor: "The DU Barn Midnight Cookie Syndicate",
-    n2PizzaApprover: "Hungry Audit Senior",
+    n2PizzaApprover: "Hungry Engagement Senior",
     n2PizzaStatus: "REJECTED (NICE TRY)",
     n3Tier6: "Tier 6: Apocalyptic",
     n3Tier6Jur: "DU Barn Cookie Jar",
@@ -824,7 +824,7 @@ const dict = {
     n3DefconBody: "Hold on! Executing LOCKDOWN-GLOBAL-SANCTION (HASH-9900) will lock every revolving door at Deloitte University, cut power to the espresso machines, and auto-order 10,000 Hawaiian pizzas (extra pineapple) to the Partner Lounge.",
     n3DefconBtn: "Abort! Save the Espresso!",
     haltJokeVance: "Nice try! Victoria Vance is the CEO who signed the wire, not the engineer who scrubbed the server logs. Arresting the CEO without reading Node 1 will definitely hurt your year-end utilization! (0 strikes added)",
-    haltJokePartner: "Whoa! Blaming the Engagement Partner or the Intern is a bold career move, but they didn't scrub the server logs. (0 strikes added)",
+    haltJokePartner: "Whoa! Blaming the Partner, the tax adviser, the consultant or the intern is a bold career move, but none of them scrubbed the server logs. (0 strikes added)",
     haltJokePlsFix: "'Pls fix, thx' works on slide decks at 1:00 AM, but the firewall needs an actual override code! (0 strikes added)",
     haltJokePassword: "Seriously? 'PASSWORD'? Even the DU Barn Wi-Fi has better security than that! (0 strikes added)",
     haltJokeCoffee: "Bribing the firewall with DU Barn cookies and coffee? Tempting… but it only accepts forensic codes! (0 strikes added)",
@@ -843,10 +843,10 @@ const dict = {
       puzzle3: ["You need four facts: the amount, where the money is going, the channel, and the anomaly.", "IT's log line for the wire shows where it was sent and through which channel. Compliance's watchlist says whether that place is EDD.", "$22M to the British Virgin Islands via SWIFT-EDD. Several anomalies apply, so use rule 3: act on the most severe."]
     },
     // Debrief
-    debriefTitle: "Debrief: what a real auditor would have caught",
-    debriefIntro: "Every clue in this case is a real control failure. These are the ones to remember on your first engagement.",
-    debrief: [["Segregation of duties", "The CEO approved her own $22M wire. Payment approval should sit with Finance under a delegation of authority, never with the person who benefits from it."], ["Vendor master match", "The payment went to “APEX Logistic Ltd” under vendor ID V8824, which belongs to “APEX Logistics Ltd”. One missing letter is a classic shell-company trick. Always match name, ID and bank details to the vendor master."], ["Purchase order matching", "There was no purchase order for the name that was paid. A payment without an exact PO match is a red flag on its own."], ["Enhanced due diligence", "The funds were routed to the British Virgin Islands, an EDD jurisdiction, which needed Compliance sign-off before release."], ["Privileged change control (ISS-04)", "A production data scrub ran in the same minute as the wire, under a ticket with no VP approval. Approval must come before the work, not after."], ["Audit log integrity and standing access", "The audit trail was truncated a minute later, using standing admin rights shown on the access map. Logs should be tamper-proof, and admin rights should be granted only when needed."]],
-    victoryBlessing: "PARTNER'S SECRET BLESSING UNLOCKED: May your spreadsheets always balance, your VLOOKUPs never return #N/A, and your expense reports auto-approve within 24 hours!"
+    debriefTitle: "Debrief: what a sharp eye in Audit, Tax or Consulting would have caught",
+    debriefIntro: "Every clue in this case is a real control failure. Auditors test these controls, tax advisers meet them in every cross-border payment, and consultants design and fix them. Whatever your service line, remember these on your first engagement.",
+    debrief: [["Segregation of duties", "The CEO approved her own $22M wire. Payment approval should sit with Finance under a delegation of authority, never with the person who benefits from it. Consulting: a clear approval matrix in the finance process prevents this by design."], ["Vendor master match", "The payment went to “APEX Logistic Ltd” under vendor ID V8824, which belongs to “APEX Logistics Ltd”. One missing letter is a classic shell-company trick. Always match name, ID and bank details to the vendor master. Tax: a payee that doesn’t match its invoice can’t support a deductible expense or a valid VAT invoice."], ["Purchase order matching", "There was no purchase order for the name that was paid. A payment without an exact PO match is a red flag on its own. Consulting: a three-way match (order, receipt, invoice) is the standard procure-to-pay control."], ["Enhanced due diligence", "The funds were routed to the British Virgin Islands, an EDD jurisdiction, which needed Compliance sign-off before release. Tax: payments to low-tax jurisdictions also raise withholding tax, transfer pricing and substance questions."], ["Privileged change control (ISS-04)", "A production data scrub ran in the same minute as the wire, under a ticket with no VP approval. Approval must come before the work, not after. Technology consulting builds this gate into the release process."], ["Log integrity and standing access", "The audit trail was truncated a minute later, using standing admin rights shown on the access map. Logs should be tamper-proof, and admin rights should be granted only when needed. Forensic and risk advisory teams depend on intact logs to rebuild what happened."]],
+    victoryBlessing: "PARTNER’S SECRET BLESSING UNLOCKED: May your working papers always tie out, your tax filings land before every deadline, your client decks get signed off in one round, your VLOOKUPs never return #N/A, and your expense reports auto-approve within 24 hours!"
   },
   zh: {
     projectSunrise: "日出计划",
@@ -974,14 +974,14 @@ const dict = {
     ghostTitle: "检测到幽灵实体",
     ghostRole: "首席零食官兼饼干守护者",
     ghostDept: "DU 深夜运营处 / 谷仓餐饮部",
-    ghostNote: "传说：这位审计师只靠 DU 谷仓饼干和凌晨两点的意式浓缩续命，还把所有研讨室的白板笔都囤了起来。",
+    ghostNote: "传说：没人知道这位同事属于哪条业务线。审计说在税务，税务说在咨询，咨询说“回头再对齐”。只靠 DU 谷仓饼干和凌晨两点的意式浓缩续命，还把所有研讨室的白板笔都囤了起来。",
     memoHeader: "机密 // 内部纪律备忘录",
     memoSub: "德勤大学校区后勤与项目道德工作组",
     memoTo: "全体项目团队，第二天全体学员",
     memoFrom: "德勤大学餐饮后勤管理处",
     memoSubject: "关于研讨室及报销违规行为的通报",
-    memoPoint1: "1. 依据 EXP-DU-01 规定，冰焦糖玛奇朵不得作为“紧急审计证据资产”报销。",
-    memoPoint2: "2. 在研讨室囤积白板笔已构成重大审计阻碍，请立即归还。",
+    memoPoint1: "1. 依据 EXP-DU-01 规定，冰焦糖玛奇朵不得作为“审计证据”“可税前扣除的业务招待费”或“战略研讨会餐饮”报销。",
+    memoPoint2: "2. 在研讨室囤积白板笔，已同时构成重大缺陷、合规风险和范围蔓延，请立即归还。",
     memoPoint3: "3. 后勤核查确认，23:00 至 02:00 期间 DU 谷仓饼干短缺 400 块，已记为 #BARN-COOKIE-404 事件。",
     memoFooter: "提示：本备忘录仅供娱乐，不含任何覆盖代码。",
     closeMemo: "知悉并关闭",
@@ -1043,7 +1043,7 @@ const dict = {
     secretFound: "发现彩蛋",
     secrets: {
       shell: ["复古终端", "标志里藏着一个老游戏，坚持就有回报。"],
-      ghost: ["幽灵审计师", "有些员工只存在于错误页面里。"],
+      ghost: ["幽灵同事", "有些员工只存在于错误页面里。"],
       coffee: ["内核崩溃", "服务器靠咖啡续命，去日志里问问。"],
       pizza: ["午夜辛迪加", "不是每笔深夜订单都获批了，去账本里问问晚饭。"],
       oven: ["烤箱摄像头", "有人在 02:26 想要 root 权限，多问几次为什么。"],
@@ -1063,9 +1063,9 @@ const dict = {
     n1RootModalSub: "端口 22（SSH）自动抓包分析",
     n1RootModalBody: "EMP042 于 02:26 发起的 ROOT_LOGIN_ATTEMPT 并无财务恶意。Daniel Patel 只是想 SSH 登录 DU 谷仓后厨的智能烤箱摄像头，看看新鲜的双倍巧克力曲奇出炉了没有。",
     n1RootModalCmd: "$ ssh root@barn-oven-cam.du.local --watch-cookies --alert-when-warm",
-    n1CoffeeLogEvent: "COFFEE_MACHINE_KERNEL_PANIC：B 座咖啡机燕麦奶耗尽，高级审计师生产力骤降 94%。",
+    n1CoffeeLogEvent: "COFFEE_MACHINE_KERNEL_PANIC：B 座咖啡机燕麦奶耗尽，审计底稿、税务申报和客户方案的进度同时骤降 94%。",
     n2PizzaVendor: "The DU Barn Midnight Cookie Syndicate",
-    n2PizzaApprover: "饥肠辘辘的高级审计师",
+    n2PizzaApprover: "饥肠辘辘的项目高级顾问",
     n2PizzaStatus: "已驳回（想得美）",
     n3Tier6: "末日级（Tier 6）",
     n3Tier6Jur: "DU 谷仓曲奇罐",
@@ -1074,7 +1074,7 @@ const dict = {
     n3DefconBody: "等等！执行 LOCKDOWN-GLOBAL-SANCTION（HASH-9900）将锁死德勤大学所有旋转门、切断全部意式咖啡机电源，并自动向合伙人休息室下单 10,000 份夏威夷披萨（双倍菠萝）！",
     n3DefconBtn: "立即中止！保住咖啡机！",
     haltJokeVance: "差一点！Victoria Vance 是签批汇款的 CEO，并不是篡改服务器日志的技术人员。不看节点 1 就抓 CEO，年终 Utilization 可要受影响了！（不计告警）",
-    haltJokePartner: "胆子不小！把锅甩给合伙人或实习生是个大胆的职业决定，但真凶另有其人！（不计告警）",
+    haltJokePartner: "胆子不小！把锅甩给合伙人、税务顾问、咨询顾问或实习生，都是大胆的职业决定，但真凶另有其人！（不计告警）",
     haltJokePlsFix: "凌晨一点在邮件里写 “Pls fix, thx” 也许管用，但防火墙只认真正的覆盖代码！（不计告警）",
     haltJokePassword: "认真的吗？输入 “PASSWORD”？连 DU 谷仓的公共 Wi-Fi 密码都比这复杂！（不计告警）",
     haltJokeCoffee: "想用 DU 谷仓的曲奇和咖啡贿赂防火墙？系统很心动……但只认取证代码！（不计告警）",
@@ -1091,10 +1091,10 @@ const dict = {
       puzzle2: ["有好几笔大额汇款仍在待结算。非法的那一笔，和服务器日志里某个可疑操作发生在同一分钟。", "把每笔付款的供应商名称和供应商主数据比对。有一个名称和它的供应商编号对不上，而且不是财务批的。", "看 6 月 15 日 03:00，再看是谁批准了那笔付款。"],
       puzzle3: ["你需要四项信息：金额、资金去向、结算渠道和异常类型。", "IT 日志里这笔汇款的记录显示了汇往何处、走哪个渠道。合规的观察名单能告诉你那里是否属于 EDD。", "2,200 万美元经 SWIFT-EDD 汇往英属维尔京群岛。存在多种异常，按规则 3 只处理最严重的一种。"]
     },
-    debriefTitle: "复盘：真正的审计师会发现什么",
-    debriefIntro: "本案的每条线索都是一项真实的控制缺陷。第一次进项目时，记住这几条。",
-    debrief: [["职责分离", "CEO 亲自批准了自己发起的 2,200 万美元汇款。付款审批应按授权制度交由财务负责，绝不能由受益人本人批准。"], ["供应商主数据比对", "这笔款付给了“APEX Logistic Ltd”，用的却是“APEX Logistics Ltd”的供应商编号 V8824。少一个字母，是空壳公司的经典伎俩。务必核对名称、编号和银行信息是否与主数据一致。"], ["采购订单匹配", "收款名称没有对应的采购订单。付款无法与采购订单精确匹配，本身就是危险信号。"], ["增强尽职调查", "资金汇往英属维尔京群岛这一 EDD 管辖区，放款前必须获得合规签批。"], ["特权变更管控（ISS-04）", "一次生产数据清洗与汇款发生在同一分钟，而且所用工单没有 VP 批准。审批必须在操作之前，而不是之后。"], ["审计日志完整性与常驻权限", "一分钟后，审计日志被截断，用的是访问映射里显示的常驻管理员权限。日志应当防篡改，管理员权限应按需临时授予。"]],
-    victoryBlessing: "已解锁【合伙人的神秘祝福】：愿你的底稿永远平账，VLOOKUP 永不报 #N/A，报销永远秒批！"
+    debriefTitle: "复盘：审计、税务与咨询的行家会发现什么",
+    debriefIntro: "本案的每条线索都是一项真实的控制缺陷：审计会测试这些控制，税务会在每笔跨境付款中遇到它们，咨询负责设计和修复它们。无论你在哪条业务线，第一次进项目时都记住这几条。",
+    debrief: [["职责分离", "CEO 亲自批准了自己发起的 2,200 万美元汇款。付款审批应按授权制度交由财务负责，绝不能由受益人本人批准。咨询视角：在财务流程中设计清晰的审批矩阵，从源头杜绝此类问题。"], ["供应商主数据比对", "这笔款付给了“APEX Logistic Ltd”，用的却是“APEX Logistics Ltd”的供应商编号 V8824。少一个字母，是空壳公司的经典伎俩。务必核对名称、编号和银行信息是否与主数据一致。税务视角：收款方与发票不符，这笔支出既难以税前扣除，也无法取得合规的增值税发票。"], ["采购订单匹配", "收款名称没有对应的采购订单。付款无法与采购订单精确匹配，本身就是危险信号。咨询视角：订单、收货、发票“三单匹配”是采购到付款流程的标准控制。"], ["增强尽职调查", "资金汇往英属维尔京群岛这一 EDD 管辖区，放款前必须获得合规签批。税务视角：向低税地区付款，还涉及代扣代缴、转让定价和经济实质等问题。"], ["特权变更管控（ISS-04）", "一次生产数据清洗与汇款发生在同一分钟，而且所用工单没有 VP 批准。审批必须在操作之前，而不是之后。技术咨询会把这道关口嵌入系统发布流程。"], ["日志完整性与常驻权限", "一分钟后，审计日志被截断，用的是访问映射里显示的常驻管理员权限。日志应当防篡改，管理员权限应按需临时授予。法证与风险咨询团队依靠完整的日志还原事件经过。"]],
+    victoryBlessing: "已解锁【合伙人的神秘祝福】：愿你的底稿永远平账，申报永远赶在截止日前，客户方案一稿即过，VLOOKUP 永不报 #N/A，报销永远秒批！"
   }
 };
 const fmt = (s, vars) => String(s).replace(/\{(\w+)\}/g, (_, k) => vars && vars[k] !== undefined ? vars[k] : `{${k}}`);
@@ -2964,7 +2964,7 @@ function QuestView() {
       triggerEasterEggToast(t.haltJokeVance);
       return;
     }
-    if (['PARTNER', 'MANAGER', 'INTERN', 'DELOITTE', 'AUDITOR', 'ARTHURPENDELTON'].includes(userVal)) {
+    if (['PARTNER', 'MANAGER', 'INTERN', 'DELOITTE', 'AUDITOR', 'CONSULTANT', 'ADVISOR', 'ADVISER', 'TAX', 'ARTHURPENDELTON'].includes(userVal)) {
       triggerEasterEggToast(t.haltJokePartner);
       return;
     }

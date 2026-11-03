@@ -3640,11 +3640,14 @@ window.DLCanto = {
 
   var FORTUNES = {
     en: ['Your VLOOKUP will find a match on the first try.', 'A Partner will say “great slide” — and mean it.', 'The printer will work today. Don’t ask why.',
-      'You will find the right meeting room on the first attempt.', 'Today’s coffee is strong. Your deck is stronger.', 'Someone will reply-all with “thanks!” and it will actually be nice.'],
+      'You will find the right meeting room on the first attempt.', 'Today’s coffee is strong. Your deck is stronger.', 'Someone will reply-all with “thanks!” and it will actually be nice.',
+      'Your tax filing goes through on the first submission. No follow-up queries.', 'The client signs off your deck on version 1.', 'Every tick mark in your working papers ties out on the first pass.'],
     hans: ['今日运势：VLOOKUP 一次匹配成功，告别 #N/A。', '今日运势：合伙人会真心说一句「这页做得好」。', '今日运势：打印机今天不卡纸，别问为什么。',
-      '今日运势：第一次就找对会议室。', '今日运势：咖啡够浓，你的 PPT 更出彩。', '今日运势：有人回复全部「谢谢！」，而且真的很暖。'],
+      '今日运势：第一次就找对会议室。', '今日运势：咖啡够浓，你的 PPT 更出彩。', '今日运势：有人回复全部「谢谢！」，而且真的很暖。',
+      '今日运势：税务申报一次通过，没有补充问询。', '今日运势：客户方案第一版就签字确认。', '今日运势：底稿勾稽一次全对。'],
     hant: ['上上籤：VLOOKUP 一次就搵到，唔使見 #N/A。', '上上籤：Partner 會真心讚你一句「呢頁做得好」。', '上籤：部打印機今日唔會卡紙，唔好問點解。',
-      '上籤：一次就搵啱會議室，唔使行冤枉路。', '上上籤：今日杯咖啡夠濃，你份 deck 仲勁。', '中籤：有人 reply all「多謝！」，不過今次真係幾窩心。']
+      '上籤：一次就搵啱會議室，唔使行冤枉路。', '上上籤：今日杯咖啡夠濃，你份 deck 仲勁。', '中籤：有人 reply all「多謝！」，不過今次真係幾窩心。',
+      '上上籤：報稅一次過，冇追問。', '上上籤：客戶第一版就 sign off 份 deck。', '上籤：working paper 每個 tick 一次對晒。']
   };
   var lastF = -1;
 
@@ -3666,7 +3669,17 @@ window.DLCanto = {
       m: { en: 'Plot twist: logging off on time is also a professional skill.', hans: '按时下班，也是一种专业能力。', hant: '準時收工都係一種專業 😌' } },
     { re: /收工|下班|clock(ing)?\s*off|log(ging)?\s*off/i, emo: ['🎉', '🙌'],
       t: { en: 'Clocked off', hans: '下班快乐', hant: '收工！' },
-      m: { en: 'Great work today. Go home and rest!', hans: '今天辛苦了，好好休息！', hant: '今日辛苦晒，早啲返屋企休息 🙌' } }
+      m: { en: 'Great work today. Go home and rest!', hans: '今天辛苦了，好好休息！', hant: '今日辛苦晒，早啲返屋企休息 🙌' } },
+    // Service lines: Tax, Consulting and Audit each get a little nod.
+    { re: /报税|報稅|申报|申報|税务|稅務|\btax\b|deadline|截止日/i, emo: ['🧾', '📅', '✅'],
+      t: { en: 'Deadline mode', hans: '申报季生存模式', hant: '報稅季生存模式' },
+      m: { en: 'Filing deadline spotted. Pro tip: the day before the deadline is also a deadline.', hans: '检测到截止日。小贴士：截止日前一天，也是截止日。', hant: '見到 deadline。貼士：deadline 前一日，其實都係 deadline 嚟㗎 📅' } },
+    { re: /\bppt\b|\bdeck\b|slides|胶片|膠片|咨询|諮詢|consult/i, emo: ['📊', '✨', '🖊️'],
+      t: { en: 'Version 1 blessing', hans: '一稿过祝福', hant: '一稿過祝福' },
+      m: { en: 'Blessing applied: your next deck gets signed off on version 1. Results may vary by client.', hans: '祝福已送达：你的下一份方案第一版就过。效果因客户而异。', hant: '祝福送到：你下一份 deck 第一版就過。效果因客而異 😌' } },
+    { re: /底稿|勾稽|审计|審計|\baudit\b|tick ?mark/i, emo: ['✅', '🧮', '📒'],
+      t: { en: 'Everything ties out', hans: '全部勾稽一致', hant: '全部對得返' },
+      m: { en: 'Every number ties out and the senior smiles. A rare and beautiful moment.', hans: '每个数字都勾稽一致，项目高级顾问露出了微笑。罕见而美好的时刻。', hant: '每個數都對得返，senior 終於笑咗。難得嘅美好時刻 🧮' } }
   ];
 
   window.DLEgg = {
