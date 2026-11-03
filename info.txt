@@ -22,10 +22,10 @@ SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 [GAME]
 # GAME_SESSION: a label for this run. Change it for each event so the leaderboard starts empty.
 GAME_SESSION = Nov 3 Test
-# GAME_START: the moment the facilitator says "go" (ISO format with time zone).
+# GAME_START: the moment the facilitator says "go" (ISO format with time zone). E.g. 2026-11-04T11:00:00+08:00
 # Every team's 120-minute settlement clock counts down from here.
 # Leave blank to start each team's clock when its first member joins.
-GAME_START =
+GAME_START = 
 # Minutes before the rogue wire settles.
 SETTLEMENT_MINUTES = 120
 # ROLE_MODE = on  -> each player picks Forensic IT, Finance or Compliance and sees only that evidence.
@@ -36,7 +36,7 @@ ROLE_SWITCH_COOLDOWN = 300
 # Seconds added to the team's time for each wrong override answer.
 STRIKE_PENALTY_SECONDS = 60
 # Seconds added for hint 1, 2 and 3 of each override question (comma-separated).
-HINT_PENALTIES = 60, 120, 180
+HINT_PENALTIES = 600, 750, 900
 
 
 [DIRECTORY]
