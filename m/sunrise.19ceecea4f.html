@@ -566,6 +566,7 @@ const SCAN_TEXT = {
     leadOffline: 'You are the Commander on this phone. It will be confirmed with the game server when the connection is back.',
     leadTaken: 'Your team already has a Commander. Pick another role, or ask your facilitator to release it.',
     leadLost: 'Another phone is your team\'s Commander, so this phone can\'t enter the Halt codes. Pick another role.',
+    solveFirst: 'Solve code {n} first',
     haltLead: 'You are the Commander: only your phone can enter these codes. The evidence is with your team, so ask them.',
     haltNotLead: 'Only your team\'s Commander can enter these codes. Tell them what you found.'
   },
@@ -583,6 +584,7 @@ const SCAN_TEXT = {
     leadOffline: '本机已担任指挥官，网络恢复后会向游戏服务器确认。',
     leadTaken: '你们队已有指挥官。请选择其他角色，或请引导师释放该角色。',
     leadLost: '队内另一台手机是指挥官，本机无法提交终止代码。请选择其他角色。',
+    solveFirst: '请先完成第 {n} 个代码',
     haltLead: '你是指挥官：只有你的手机能提交这些代码。证据都在队友手里，多问问他们。',
     haltNotLead: '只有本队指挥官能提交这些代码。把你的发现告诉指挥官吧。'
   }
@@ -754,10 +756,10 @@ const dict = {
     close: "Close",
     cancel: "Cancel",
     lockoutTitle: "Security Firewall Engaged",
-    lockoutDesc: "Too many invalid attempts. Input frozen for:",
+    lockoutDesc: "Wrong code. Input frozen for:",
     badgeEnumWarning: "Identify the employee by full legal name (e.g. Ana Farah).",
     strikeCountLabel: "Strikes",
-    nextFreezeLabel: "Next freeze at",
+    nextFreezeLabel: "Next wrong answer freezes",
     groupNumLabel: "Group / Squad Number",
     groupNumPlaceholder: "e.g. Group 12",
     groupLabel: "Group",
@@ -783,7 +785,7 @@ const dict = {
     briefingTitle: "A wire is about to leave. Stop it.",
     briefingBody: "You're the newest associates on the Summit & Co. audit of FitVision. Overnight, a large payment was pushed out, and someone tried to erase the trail. It settles in {min} minutes. Find who covered it up, which payment it is, and the code that stops it.",
     chooseRole: "Choose your role",
-    roleHint: "IT, Finance and Compliance each see different evidence (any number of teammates per role). One teammate is the Commander, who enters the node passwords and the Halt codes for the team. Nobody can solve it alone, so talk.",
+    roleHint: "IT, Finance and Compliance each see different evidence (any number of teammates per role). One teammate is the Commander, who enters the node passwords and the Halt codes for the team. For 8 people we suggest 2 IT, 2 Finance, 3 Compliance and 1 Commander. Nobody can solve it alone, so talk.",
     roleIt: "Forensic IT",
     roleItDesc: "Server logs and the access map",
     roleFinance: "Finance",
@@ -851,7 +853,7 @@ const dict = {
     haltJokePassword: "Seriously? 'PASSWORD'? Even the DU Barn Wi-Fi has better security than that! (0 strikes added)",
     haltJokeCoffee: "Bribing the firewall with DU Barn cookies and coffee? Tempting… but it only accepts forensic codes! (0 strikes added)",
     // Hints & penalties
-    penaltyRule: "Fastest finish wins (timed from the official start). A wrong answer freezes the Halt for a while.",
+    penaltyRule: "Fastest finish wins (timed from the official start). Enter the codes in order. Every wrong code freezes the Halt, a little longer each time.",
     hintBtn: "Hint {n}",
     hintConfirm: "Tap again to show",
     hintLabel: "Hint {n}",
@@ -1010,10 +1012,10 @@ const dict = {
     close: "关闭",
     cancel: "取消",
     lockoutTitle: "安全防火墙已启动",
-    lockoutDesc: "无效尝试次数过多，输入已冻结：",
+    lockoutDesc: "代码错误，输入已冻结：",
     badgeEnumWarning: "请输入涉案员工的法定全名（例如 Ana Farah）。",
     strikeCountLabel: "告警次数",
-    nextFreezeLabel: "下次冻结于",
+    nextFreezeLabel: "下次答错冻结",
     groupNumLabel: "小组编号",
     groupNumPlaceholder: "例如 第 12 组",
     groupLabel: "小组",
@@ -1038,7 +1040,7 @@ const dict = {
     briefingTitle: "一笔汇款即将到账，拦住它。",
     briefingBody: "你们是 Summit & Co. 审计 FitVision 项目组的新成员。昨夜，一笔大额付款被汇出，有人还试图抹掉痕迹。这笔钱将在 {min} 分钟后到账。找出是谁掩盖了痕迹、是哪一笔付款，以及拦截它的代码。",
     chooseRole: "选择你的角色",
-    roleHint: "IT、财务、合规各自看到不同的证据（每个角色人数不限）。另有一名队员担任指挥官，为全队输入节点密码和终止代码。没有人能独自破案，请多沟通。",
+    roleHint: "IT、财务、合规各自看到不同的证据（每个角色人数不限）。另有一名队员担任指挥官，为全队输入节点密码和终止代码。8 人建议：IT 2 人、财务 2 人、合规 3 人、指挥官 1 人。没有人能独自破案，请多沟通。",
     roleIt: "取证 IT",
     roleItDesc: "服务器日志与访问权限映射",
     roleFinance: "财务",
@@ -1102,7 +1104,7 @@ const dict = {
     haltJokePlsFix: "凌晨一点在邮件里写 “Pls fix, thx” 也许管用，但防火墙只认真正的覆盖代码！（不计告警）",
     haltJokePassword: "认真的吗？输入 “PASSWORD”？连 DU 谷仓的公共 Wi-Fi 密码都比这复杂！（不计告警）",
     haltJokeCoffee: "想用 DU 谷仓的曲奇和咖啡贿赂防火墙？系统很心动……但只认取证代码！（不计告警）",
-    penaltyRule: "用时最短的队伍获胜（从统一开始时间计时）。答错会让终止面板冻结一段时间。",
+    penaltyRule: "用时最短的队伍获胜（从统一开始时间计时）。请按顺序输入代码。每次输错都会冻结终止面板，且一次比一次久。",
     hintBtn: "提示 {n}",
     hintConfirm: "再点一次查看",
     hintLabel: "提示 {n}",
@@ -2771,13 +2773,9 @@ function QuestView() {
       window.removeEventListener('storage', onStore);
     };
   }, [registered, sbClient, group, role, appData, loadingInfo]);
-  const getNextFreezeThreshold = strikes => {
-    if (strikes < 5) return 5;
-    if (strikes < 8) return 8;
-    if (strikes < 10) return 10;
-    if (strikes < 15) return 15;
-    return Math.ceil((strikes + 1) / 5) * 5;
-  };
+  const FREEZE_STEPS = [15, 30, 60, 120, 300]; // seconds, for the 1st, 2nd, 3rd, 4th, 5th+ wrong answer
+  const freezeFor = n => FREEZE_STEPS[Math.min(Math.max(n, 1), FREEZE_STEPS.length) - 1];
+  const getNextFreezeThreshold = strikes => formatClock(freezeFor(strikes + 1));
   const applyHaltStrike = (key, serverLogged = false) => {
     if (!serverLogged) logEvent('strike', key);
     if (config.strikePenaltySec > 0) {
@@ -2788,9 +2786,7 @@ function QuestView() {
     }
     const newStrikes = haltStrikes + 1;
     setHaltStrikes(newStrikes);
-    let freezeSecs = 0;
-    if (newStrikes === 5) freezeSecs = 30;else if (newStrikes === 8) freezeSecs = 60;else if (newStrikes === 10) freezeSecs = 120;else if (newStrikes === 15 || newStrikes > 15 && newStrikes % 5 === 0) freezeSecs = 300;
-    if (freezeSecs > 0) setHaltLockoutUntil(Date.now() + freezeSecs * 1000);
+    setHaltLockoutUntil(Date.now() + freezeFor(newStrikes) * 1000);
   };
   const go = tab => {
     setActiveTab(tab);
@@ -2998,6 +2994,7 @@ function QuestView() {
   // ─── Halt puzzles ───
   const handleVerifyPuzzle = async key => {
     if (haltLockoutTimer > 0 || verifyingPuzzleKey || !canSubmitHalt) return;
+    if (key === 'puzzle2' && !solvedPuzzles.puzzle1 || key === 'puzzle3' && !(solvedPuzzles.puzzle1 && solvedPuzzles.puzzle2)) return;
     const rawVal = (puzzleInputs[key] || '').trim();
     const userVal = rawVal.toUpperCase().replace(/[#\-_/]/g, '').replace(/\s+/g, '');
     if (key === 'puzzle1' && ['VICTORIAVANCE', 'VVANCE', 'VICTORIA'].includes(userVal)) {
@@ -3072,6 +3069,7 @@ function QuestView() {
       leadLost();
       return;
     }
+    if (res.order) return; // the database wants the earlier code first (no strike)
     if (res.ok) {
       setSolvedPuzzles(prev => ({
         ...prev,
@@ -4554,7 +4552,8 @@ function QuestView() {
     const isSolved = solvedPuzzles[puz.k];
     const hasError = puzzleErrors[puz.k];
     const isVerifyingThis = verifyingPuzzleKey === puz.k;
-    const disabled = haltLockoutTimer > 0 || isVerifyingThis || !canSubmitHalt;
+    const prevOk = idx === 0 || solvedPuzzles[puzzles[idx - 1].k]; // codes go in order
+    const disabled = haltLockoutTimer > 0 || isVerifyingThis || !canSubmitHalt || !prevOk;
     return /*#__PURE__*/React.createElement("div", {
       key: puz.k,
       className: `panel flex flex-col justify-between gap-4 rounded-2xl p-4 ${isSolved ? '!border-deloitte-green bg-deloitte-green/5' : ''}`
@@ -4579,7 +4578,9 @@ function QuestView() {
     }, /*#__PURE__*/React.createElement("input", {
       type: "text",
       "aria-label": puz.title,
-      placeholder: t.enter,
+      placeholder: prevOk ? t.enter : fmt(SX.solveFirst, {
+        n: idx
+      }),
       value: puzzleInputs[puz.k] || '',
       disabled: disabled,
       onChange: e => setPuzzleInputs(prev => ({
