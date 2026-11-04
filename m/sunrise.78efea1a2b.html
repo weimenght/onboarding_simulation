@@ -1261,13 +1261,18 @@ function parseInfoTxt(text) {
 }
 function readGameConfig(game) {
   const g = game || {};
-  const startMs = g.GAME_START ? Date.parse(g.GAME_START) : NaN;
+  let ev = null;
+  try {
+    ev = JSON.parse(localStorage.getItem('dl_event') || 'null');
+  } catch (e) {}
+  const evStart = ev && ev.start_at ? Date.parse(ev.start_at) : NaN;
+  const startMs = Number.isFinite(evStart) ? evStart : g.GAME_START ? Date.parse(g.GAME_START) : NaN;
   const minutes = parseInt(g.SETTLEMENT_MINUTES, 10);
   const cooldown = parseInt(g.ROLE_SWITCH_COOLDOWN, 10);
   const strikePen = parseInt(g.STRIKE_PENALTY_SECONDS, 10);
   const hintPens = String(g.HINT_PENALTIES || '').split(',').map(x => parseInt(x, 10)).filter(x => Number.isFinite(x) && x >= 0);
   return {
-    session: (g.GAME_SESSION || 'default').slice(0, 40),
+    session: (ev && ev.session || g.GAME_SESSION || 'default').slice(0, 40),
     startMs: Number.isFinite(startMs) ? startMs : null,
     limitSec: (Number.isFinite(minutes) && minutes > 0 ? minutes : 120) * 60,
     roleMode: (g.ROLE_MODE || 'on').toLowerCase() !== 'off',
@@ -2400,6 +2405,14 @@ function QuestView() {
     });
     if (ms) setTimeout(() => setSxToast(s => s && s.msg === msg ? null : s), ms);
   };
+  const [, setEvTick] = useState(0);
+  useEffect(() => {
+    const f = e => {
+      if (e.key === 'dl_event') setEvTick(x => x + 1);
+    };
+    window.addEventListener('storage', f);
+    return () => window.removeEventListener('storage', f);
+  }, []);
   const config = readGameConfig(appData && appData.game);
   const group = normalizeGroup(groupNumber);
   const nodeLockoutTimer = Math.max(0, Math.ceil((nodeLockoutUntil - now) / 1000));

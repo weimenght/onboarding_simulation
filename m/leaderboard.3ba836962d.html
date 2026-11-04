@@ -334,6 +334,15 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
         if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || !window.supabase) { statusKey = 'noSupabase'; render(); return; }
         const client = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+        const readEvent = async () => { try { const r = await client.rpc('dl_event'); return !r.error && r.data && r.data.session ? r.data : null; } catch (e) { return null; } };
+        const ev0 = await readEvent();
+        if (ev0) {
+            config.session = String(ev0.session).slice(0, 40);
+            const st = Date.parse(ev0.start_at || '');
+            config.startMs = Number.isFinite(st) ? st : config.startMs;
+            $('session').textContent = config.session + (config.startMs ? '' : '  ·  ⚠ No start time set / 未设置开始时间');
+        }
+        setInterval(async () => { const ev = await readEvent(); if (ev && (ev.session !== config.session || (Date.parse(ev.start_at || '') || null) !== config.startMs)) location.reload(); }, 120000);
 
         // Supabase returns at most 1000 rows per request, so read the whole session page by page.
         // Each sweep replaces the local copy, so a reset in the admin console clears the board too.

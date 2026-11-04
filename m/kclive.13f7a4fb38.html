@@ -327,7 +327,7 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
   <section class="sec">
     <h4 data-t="secSession"></h4>
     <div class="row"><span class="pill"><i class="fa-solid fa-tag"></i><span class="mono" id="sessName"></span></span><span class="grow"></span>
-      <button class="btn danger" id="newSess" type="button"><i class="fa-solid fa-flag-checkered"></i><span></span></button></div>
+      <button class="btn danger" id="newSess" type="button" hidden><i class="fa-solid fa-flag-checkered"></i><span></span></button></div>
     <p class="note" data-t="sessNote"></p>
   </section>
 
@@ -392,7 +392,7 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
       secRules: '答题规则', modeTeam: '全员可答', modeTeamD: '同队任意手机可答，队伍以第一份答案为准', modeDevice: '每队一台设备', modeDeviceD: '每队只有第一台加入的手机可以作答',
       ptsOk: '答对得分', ptsBad: '答错扣分', ansSec: '作答时间（秒）', cdSec: '倒计时（秒）', rebound: '首答错误后其他队伍可继续抢答', reboundD: '关闭时：第一个答案答错，本题立即结束',
       saveRules: '保存规则', rulesNote: '从下一道展示的题目起生效', secSession: '场次', newSess: '开始新场次', newSessArm: '确认开始新场次？',
-      sessNote: '新场次会清空当前轮次和加入码；之前的成绩保留在数据库，但不再计入本场。', secBank: '题库',
+      sessNote: '新场次请在管理后台「规模与重置 › 开始新场次」开始，它会同时设定 Sunrise 开始时间。之前的成绩保留在数据库，但不再计入本场。', secBank: '题库',
       bankNote: '共 {n} 题，来自管理后台 / 勤业智库题库。在管理后台「配置 → 勤业智库」修改题目，保存后这里自动更新。',
       roundPill: '第 {r} 轮 · {t}', noRound: '未设置轮次', qPill: '第 {i} / {n} 题', codeLabel: '加入码<small>学员门户输入</small>', codeLocked: '尝试过多<small>请换加入码</small>',
       stIdle: '待命', stQuestion: '已展示 · 等待开始', stLive: '抢答中', stRevealed: '已揭晓',
@@ -414,7 +414,7 @@ html[lang^="zh"] .sec h4 { letter-spacing: .04em; }
       secRules: 'Answer rules', modeTeam: 'Whole team', modeTeamD: 'Any phone in the team can answer; the team’s first answer counts', modeDevice: 'One phone per team', modeDeviceD: 'Only the first phone that joined can answer',
       ptsOk: 'Points for correct', ptsBad: 'Points off for wrong', ansSec: 'Answer time (s)', cdSec: 'Countdown (s)', rebound: 'Others can answer after a wrong first answer', reboundD: 'Off: a wrong first answer ends the question',
       saveRules: 'Save rules', rulesNote: 'Applies from the next question you show', secSession: 'Session', newSess: 'Start new session', newSessArm: 'Start a new session?',
-      sessNote: 'A new session clears the round and join code. Earlier scores stay in the database but no longer count.', secBank: 'Question bank',
+      sessNote: 'Start a new session in the Admin Console (Scale & Reset › Start new session); it also sets the Sunrise start time. Earlier scores stay in the database but no longer count.', secBank: 'Question bank',
       bankNote: '{n} questions from the admin console’s Knowledge Clash bank. Edit them in Admin › Config › Knowledge Clash; this screen updates when saved.',
       roundPill: 'Round {r} · {t}', noRound: 'No round set', qPill: 'Question {i} / {n}', codeLabel: 'Join code<small>enter in the hub</small>', codeLocked: 'Too many tries<small>make a new code</small>',
       stIdle: 'Standby', stQuestion: 'Shown · waiting to start', stLive: 'Answering', stRevealed: 'Revealed',

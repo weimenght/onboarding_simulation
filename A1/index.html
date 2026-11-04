@@ -350,13 +350,41 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
 <div id="frames"></div>
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script>window.DL_SPLIT = {"base":"../m/","files":{"hub":"hub.52edf2fa21.html","game":"game.fd9ba50717.html","sunrise":"sunrise.19ceecea4f.html","clue1":"clue1.7065f55350.html","clue2":"clue2.472b76012c.html","clue3":"clue3.60c8573343.html"}};</script>
+<script>window.DL_SPLIT = {"base":"../m/","files":{"hub":"hub.52edf2fa21.html","game":"game.fd9ba50717.html","sunrise":"sunrise.78efea1a2b.html","clue1":"clue1.7065f55350.html","clue2":"clue2.472b76012c.html","clue3":"clue3.60c8573343.html"}};</script>
 
 <script>
 (function () {
   'use strict';
   var SB_URL = 'https://pwnvkrrnxbpxignynvuh.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bnZrcnJueGJweGlnbnludnVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4ODU4OTIsImV4cCI6MjEwNzQ2MTg5Mn0.ArJ6pQkZu81lO0iWGC94xVMDcYgarzDBk00zqBmfMrQ';
+
+  // A participant's sign-in on this phone (team, nickname, game progress, consent) lasts 3 days from the first
+  // visit; after that the phone starts fresh, as for a new event. Language choice is kept.
+  var SIGNIN_KEY = 'dl_participant_since', SIGNIN_DAYS = 3;
+  var SUNRISE_KEYS = ['PROJECT_SUNRISE_STATE_V3', 'sunrise_unlocked', 'dl_sunrise_event_queue', 'dl_sunrise_node_queue', 'dl_sunrise_puzzle_queue',
+    'dl_sunrise_scan_queue', 'dl_sunrise_local_clues', 'dl_sunrise_lead_pending', 'dl_pending_scan', 'dl_scan_pass'];
+  var SIGNIN_KEYS = SUNRISE_KEYS.concat(['participant_team_num', 'participant_nickname', 'participant_avatar_id', 'participant_cohort_scale',
+    'participant_bc_style', 'PROJECT_SUNRISE_CLIENT', 'dl_kc_device', 'last_msg_post_ts', 'drush_player_name', 'deloitte_journey_progress',
+    'dl_links_seen', 'dl_egg_late', 'dl_consent', 'dl_event']);
+  function forget(keys) { keys.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} }); }
+  (function () {
+    try {
+      var since = +localStorage.getItem(SIGNIN_KEY) || 0;
+      if (since && Date.now() - since > SIGNIN_DAYS * 86400e3) { forget(SIGNIN_KEYS); since = 0; }
+      if (!since) localStorage.setItem(SIGNIN_KEY, String(Date.now()));
+    } catch (e) {}
+  })();
+  // Event session (set in the admin console): kept for Sunrise; a new session clears this phone's Sunrise progress.
+  function takeEvent(ev) {
+    if (!ev || !ev.session) return;
+    var prev = null; try { prev = JSON.parse(localStorage.getItem('dl_event') || 'null'); } catch (e) {}
+    if (prev && prev.session === ev.session && prev.start_at === ev.start_at) return;
+    try { localStorage.setItem('dl_event', JSON.stringify({ session: ev.session, start_at: ev.start_at || null })); } catch (e) {}
+    if (prev && prev.session && prev.session !== ev.session) {
+      forget(SUNRISE_KEYS);
+      if (/sunrise/.test(location.hash)) location.reload();
+    }
+  }
 
   // Pages the hub can open, each behind the super admin's switch.
   var PAGES = { hub: null, game: 'drush', sunrise: 'sunrise', clue1: 'node1', clue2: 'node2', clue3: 'node3' };
@@ -417,6 +445,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
       if (res.error) { if (/dl_pulse|PGRST202|42883|schema cache/i.test((res.error.message || '') + ' ' + (res.error.code || ''))) pulseOk = false; return false; }
       var d = res.data || {};
       pulseOk = true; pulse = { data: d, at: Date.now() };
+      takeEvent(d.event);
       setVis(d.vis || {});
       links = Array.isArray(d.links) ? d.links : [];
       store('dl_suite_links', JSON.stringify(links));

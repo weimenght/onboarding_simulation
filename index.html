@@ -729,7 +729,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.52edf2fa21.html","admin":"admin.e6fd057ee1.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.9bd8d4e474.html","fastpass36":"fastpass36.2e9ed65e83.html","fastpass48":"fastpass48.977c3c7595.html","game":"game.fd9ba50717.html","knowledge":"knowledge.88953a06cd.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.42fb77755e.html","kclive":"kclive.11f29e1209.html","sunrise":"sunrise.19ceecea4f.html","leaderboard":"leaderboard.9c90144ba8.html"}};</script>
+<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.52edf2fa21.html","admin":"admin.f6d812db31.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.9bd8d4e474.html","fastpass36":"fastpass36.2e9ed65e83.html","fastpass48":"fastpass48.977c3c7595.html","game":"game.fd9ba50717.html","knowledge":"knowledge.88953a06cd.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.42fb77755e.html","kclive":"kclive.13f7a4fb38.html","sunriseguide":"sunriseguide.b75d000a4b.html","sunrise":"sunrise.78efea1a2b.html","leaderboard":"leaderboard.3ba836962d.html"}};</script>
 
 <script>
 (function () {
@@ -773,7 +773,8 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     { id: 'signal', icon: 'fa-tower-broadcast', c: C.integrator, zh: '信号解密', en: 'D.Signal', dzh: '三轮解码，60 秒倒计时', den: 'Three decoding rounds on a 60-second clock' },
     { id: 'qr', icon: 'fa-qrcode', c: C.integrator, zh: '站点二维码', en: 'Station QR Codes', dzh: '六个站点的扫码入口', den: 'Scan-in codes for all six stations' },
     { id: 'fastpass', icon: 'fa-ticket', c: C.integrator, zh: 'FastPass 排程', en: 'FastPass', dzh: '24 / 36 / 48 队轮转排程', den: 'Rotation schedule for 24, 36 or 48 teams', vis: 'fastpass' },
-    { id: 'leaderboard', icon: 'fa-trophy', c: C.pioneer, zh: 'Sunrise 实时排行', en: 'Sunrise Live Board', dzh: '用时、罚时与结算倒计时（大屏）', den: 'Team time, penalties and settlement clock (big screen)' },
+    { id: 'leaderboard', icon: 'fa-trophy', c: C.pioneer, zh: 'Sunrise 实时排行', en: 'Sunrise Live Board', dzh: '用时、进度与结算倒计时（大屏）', den: 'Team time, progress and settlement clock (big screen)' },
+    { id: 'sunriseguide', icon: 'fa-chalkboard-user', c: C.pioneer, zh: 'Sunrise 玩法说明', en: 'Sunrise: How It Works', dzh: '分步讲解角色、节点、终止交易与胜负，可投屏', den: 'Step-by-step walkthrough of roles, nodes, the Halt and winning; ready to project' },
     { id: 'sunrise', icon: 'fa-sun', c: C.pioneer, zh: 'Sunrise 终端', en: 'Sunrise Terminal', dzh: '角色、节点、覆写谜题与复盘', den: 'Roles, nodes, override puzzles and debrief', vis: 'sunrise' },
     { id: 'clue1', icon: 'fa-1', c: C.pioneer, zh: '节点一 线索卡', en: 'Node 1 Clue Card', dzh: '第一关秘密问题与任务', den: 'Secret questions and tasks for node 1', vis: 'node1' },
     { id: 'clue2', icon: 'fa-2', c: C.pioneer, zh: '节点二 线索卡', en: 'Node 2 Clue Card', dzh: '第二关秘密问题与任务', den: 'Secret questions and tasks for node 2', vis: 'node2' },
@@ -785,22 +786,22 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     super: [
       { c: C.guardian, zh: '控制台', en: 'Control', dzh: '计分、广播与学员端开关', den: 'Scoring, broadcast and participant switches', ids: ['admin', 'visibility', 'links', 'hub'] },
       { c: C.integrator, zh: '互动站点', en: 'Stations', dzh: '站点大屏、计时与二维码', den: 'Station screens, timers and QR codes', ids: ['kclive', 'knowledge', 'signal', 'qr', 'fastpass'] },
-      { c: C.pioneer, zh: 'Project Sunrise', en: 'Project Sunrise', dzh: '终端、线索卡与实时排行', den: 'Terminal, clue cards and live ranking', ids: ['leaderboard', 'sunrise', 'clue1', 'clue2', 'clue3'] },
+      { c: C.pioneer, zh: 'Project Sunrise', en: 'Project Sunrise', dzh: '终端、线索卡与实时排行', den: 'Terminal, clue cards and live ranking', ids: ['sunriseguide', 'leaderboard', 'sunrise', 'clue1', 'clue2', 'clue3'] },
       { c: C.driver, zh: '学员页面单独打开', en: 'Participant pages', dzh: '不受开关限制，方便检查', den: 'Open directly to check them; switches do not apply here', ids: ['game', 'bc'] }
     ],
     host: [
       { c: C.warn, zh: '计分', en: 'Scoring', dzh: '录入本站成绩', den: 'Enter your station’s scores', ids: ['admin'] },
       { c: C.integrator, zh: '互动站点', en: 'Stations', dzh: '站点大屏、计时与二维码', den: 'Station screens, timers and QR codes', ids: ['kclive', 'knowledge', 'signal', 'qr', 'fastpass'] },
-      { c: C.pioneer, zh: 'Project Sunrise', en: 'Project Sunrise', dzh: '大屏实时排行', den: 'Live ranking for the big screen', ids: ['leaderboard'] },
+      { c: C.pioneer, zh: 'Project Sunrise', en: 'Project Sunrise', dzh: '玩法说明与大屏实时排行', den: 'Walkthrough and live ranking for the big screen', ids: ['sunriseguide', 'leaderboard'] },
       { c: C.driver, zh: '学员端', en: 'Participants', dzh: '查看学员当前看到的页面', den: 'See what participants see right now', ids: ['hub'] }
     ]
   };
-  var HOST_ROUTES = ['hub', 'admin', 'kclive', 'knowledge', 'signal', 'qr', 'fastpass', 'leaderboard'];
+  var HOST_ROUTES = ['hub', 'admin', 'kclive', 'knowledge', 'signal', 'qr', 'fastpass', 'leaderboard', 'sunriseguide'];
   var ALIAS = { fastpass24: 'fastpass', fastpass36: 'fastpass', fastpass48: 'fastpass' };
   var PATHS = {
     '': 'hub', 'a1': 'hub', 'hub': 'hub', 'index': 'hub', 'index.html': 'hub',
     'admin': 'admin', 'bc': 'bc', 'game': 'game', 'knowledge': 'knowledge', 'kclive': 'kclive', 'qr': 'qr',
-    'signal': 'signal', 'sunrise': 'sunrise', 'leaderboard': 'leaderboard',
+    'signal': 'signal', 'sunrise': 'sunrise', 'leaderboard': 'leaderboard', 'sunrise-guide': 'sunriseguide', 'sunriseguide': 'sunriseguide',
     'fastpass': 'fastpass', 'fastpass/24': 'fastpass24', 'fastpass/36': 'fastpass36', 'fastpass/48': 'fastpass48',
     'diyiguan': 'clue1', 'niveldos': 'clue2', 'sankyu': 'clue3'
   };
@@ -994,6 +995,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
       if (res.error) { if (/dl_pulse|PGRST202|42883|schema cache/i.test((res.error.message || '') + ' ' + (res.error.code || ''))) pulseOk = false; return false; }
       var d = res.data || {};
       pulseOk = true; pulse = { data: d, at: Date.now() };
+      try { if (d.event && d.event.session) localStorage.setItem('dl_event', JSON.stringify({ session: d.event.session, start_at: d.event.start_at || null })); } catch (e) {}
       visMeta.missing = false;
       setVis(d.vis || {});
       links = Array.isArray(d.links) ? d.links : [];

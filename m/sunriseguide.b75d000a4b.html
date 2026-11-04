@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><script>window.DL_MODULE="sunriseguide";</script><script src="rt.fa1846e13f.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/400.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/500.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/700.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-sc@5.2.9/900.css"><style data-dl="base">:root{--dl-sans:Aptos,"Aptos Display","Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Roboto,Arial,"Noto Sans SC","Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+::selection{background:rgba(134,188,37,.35);color:#fff}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Project Sunrise · 玩法说明 How it works</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* Staff walkthrough of Project Sunrise: one step per screen, built to be projected. No answers on any slide. */
+:root {
+  --ink: #070a10; --panel: #0f141d; --panel-2: #151b26; --line: rgba(255,255,255,.09); --line-2: rgba(255,255,255,.18);
+  --fg: #F3F5F7; --fg-2: #AEB6C1; --fg-3: #6B7480; --green: #86BC25;
+  --it: #67E8F9; --fin: #FCD34D; --comp: #C4B5FD; --cmd: #FDA4AF; --red: #F87171;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--ink); color: var(--fg); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+html[lang^="zh"] body { line-height: 1.55; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.app { min-height: 100%; display: flex; flex-direction: column; }
+header { display: flex; align-items: center; gap: 12px; padding: 14px clamp(16px, 4vw, 40px); border-bottom: 1px solid var(--line); }
+.brand { font-weight: 800; letter-spacing: .02em; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.brand i { color: #FBBF24; }
+.steps { display: flex; gap: 6px; flex: 1; justify-content: center; flex-wrap: wrap; }
+.steps button { border: 1px solid var(--line-2); background: transparent; color: var(--fg-3); border-radius: 999px; padding: 5px 11px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.steps button[aria-current="step"] { background: var(--green); color: #0b1018; border-color: var(--green); }
+.steps button.done { color: var(--fg-2); }
+main { flex: 1; display: flex; align-items: center; justify-content: center; padding: clamp(16px, 4vw, 48px); }
+.slide { width: min(1180px, 100%); animation: in .35s ease both; }
+@keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .slide { animation: none; } }
+.kicker { font-family: var(--mono); font-size: clamp(11px, 1.1vw, 14px); letter-spacing: .14em; text-transform: uppercase; color: var(--green); margin: 0 0 10px; }
+h1 { font-size: clamp(28px, 4.4vw, 60px); line-height: 1.12; margin: 0 0 14px; font-weight: 900; letter-spacing: -.01em; }
+h2 { font-size: clamp(24px, 3.2vw, 44px); line-height: 1.15; margin: 0 0 12px; font-weight: 900; }
+.lead { font-size: clamp(16px, 1.6vw, 22px); color: var(--fg-2); max-width: 64ch; margin: 0 0 26px; }
+.grid { display: grid; gap: 14px; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g3 { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .g2, .g4 { grid-template-columns: 1fr; } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: clamp(14px, 1.6vw, 22px); }
+.card h3 { margin: 0 0 6px; font-size: clamp(16px, 1.5vw, 21px); display: flex; align-items: center; gap: 10px; }
+.card p { margin: 0; color: var(--fg-2); font-size: clamp(14px, 1.2vw, 17px); }
+.card .tag { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; border-radius: 6px; padding: 2px 7px; border: 1px solid currentColor; opacity: .9; margin-left: auto; }
+.ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; flex: none; font-size: 17px; }
+.it { color: var(--it); } .fin { color: var(--fin); } .comp { color: var(--comp); } .cmd { color: var(--cmd); }
+.ic.it { background: rgba(103,232,249,.12); } .ic.fin { background: rgba(252,211,77,.12); } .ic.comp { background: rgba(196,181,253,.12); } .ic.cmd { background: rgba(253,164,175,.12); }
+.card.cmd-card { border-color: rgba(253,164,175,.45); background: linear-gradient(180deg, rgba(253,164,175,.07), var(--panel)); }
+.ask { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 18px; }
+@media (max-width: 760px) { .ask { grid-template-columns: 1fr; } }
+.ask .card { border-color: rgba(248,113,113,.35); }
+.ask .n { font-family: var(--mono); color: var(--red); font-weight: 800; font-size: 13px; letter-spacing: .1em; }
+.note { margin-top: 18px; color: var(--fg-3); font-size: clamp(13px, 1.1vw, 15px); display: flex; gap: 8px; align-items: flex-start; }
+.note i { color: var(--green); margin-top: 3px; }
+.flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 26px; margin: 8px 0 4px; list-style: none; padding: 0; }
+.flow li { position: relative; background: var(--panel); border: 1px solid var(--c, var(--line-2)); border-radius: 16px; padding: 16px; min-height: 132px; }
+.flow li + li::before { content: ""; position: absolute; left: -22px; top: 50%; width: 18px; height: 2px; background: var(--green); }
+.flow li + li::after { content: ""; position: absolute; left: -10px; top: calc(50% - 5px); border: 6px solid transparent; border-left-color: var(--green); }
+.flow .no { font-family: var(--mono); color: var(--fg-3); font-size: 13px; font-weight: 800; }
+.flow .i { color: var(--c); font-size: 18px; float: right; }
+.flow b { display: block; font-size: clamp(16px, 1.45vw, 20px); margin: 10px 0 4px; line-height: 1.25; }
+.flow span.s { color: var(--fg-2); font-size: clamp(13px, 1.1vw, 15px); }
+@media (max-width: 900px) { .flow { grid-template-columns: 1fr; gap: 12px; } .flow li { min-height: 0; } .flow li + li::before, .flow li + li::after { display: none; } }
+.freeze { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 0; }
+.freeze span { font-family: var(--mono); font-weight: 800; font-size: clamp(14px, 1.4vw, 19px); padding: 8px 12px; border-radius: 12px; background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.35); color: #FCA5A5; }
+.freeze em { font-style: normal; color: var(--fg-3); font-weight: 600; font-size: 12px; margin-right: 6px; }
+.split { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.split b { font-family: var(--mono); padding: 6px 12px; border-radius: 999px; border: 1px solid currentColor; font-size: clamp(13px, 1.2vw, 16px); }
+.check { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.check li { display: flex; gap: 10px; align-items: flex-start; color: var(--fg-2); font-size: clamp(14px, 1.25vw, 17px); }
+.check li i { color: var(--green); margin-top: 4px; flex: none; }
+.check b { color: var(--fg); }
+footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px clamp(16px, 4vw, 40px) calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); }
+.nav { border: 1px solid var(--line-2); background: var(--panel-2); border-radius: 12px; padding: 10px 18px; font-weight: 800; display: inline-flex; gap: 8px; align-items: center; }
+.nav.primary { background: var(--green); color: #0b1018; border-color: var(--green); }
+.nav:disabled { opacity: .35; cursor: default; }
+.count { font-family: var(--mono); color: var(--fg-3); font-size: 13px; }
+.lang[hidden] { display: none; }
+.lang { display: flex; border: 1px solid var(--line-2); border-radius: 10px; padding: 2px; }
+.lang button { border: 0; background: transparent; color: var(--fg-3); padding: 4px 9px; border-radius: 8px; font-size: 12px; font-weight: 800; }
+.lang button[aria-pressed="true"] { background: rgba(255,255,255,.12); color: var(--fg); }
+@media (max-width: 640px) { .steps { display: none; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><i class="fa-solid fa-sun"></i><span>Project Sunrise</span></div>
+    <nav class="steps" id="steps" aria-label="Steps"></nav>
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-l="en">EN</button><button type="button" data-l="zh">中</button></div>
+  </header>
+  <main id="stage" aria-live="polite"></main>
+  <footer>
+    <button class="nav" id="prev" type="button"><i class="fa-solid fa-arrow-left"></i><span></span></button>
+    <span class="count" id="count"></span>
+    <button class="nav primary" id="next" type="button"><span></span><i class="fa-solid fa-arrow-right"></i></button>
+  </footer>
+</div>
+<script>
+(function () {
+  'use strict';
+  // Language follows the suite (EN / 简; 繁 is converted on the page by the shared runtime).
+  var lang = (function () { try { if (window.DLH && DLH.lang) return DLH.lang() === 'en' ? 'en' : 'zh'; } catch (e) {} try { var l = localStorage.getItem('dl_lang'); if (l) return l === 'en' ? 'en' : 'zh'; } catch (e) {} return /^zh/i.test(navigator.language || 'zh') ? 'zh' : 'en'; })();
+  var T = {
+    en: {
+      prev: 'Back', next: 'Next', restart: 'Start again',
+      steps: ['Mission', 'Roles', 'Nodes', 'The Halt', 'Winning', 'Facilitators'],
+      s1k: 'Project Sunrise · briefing', s1h: 'Stop an illegal wire before it settles',
+      s1p: 'Teams are the newest associates on the Summit & Co. engagement for FitVision. Overnight a large payment was pushed out and someone tried to erase the trail. Before the settlement clock runs out, the team must work out three things:',
+      a1: 'Who', a1p: 'ran the unapproved data scrub that hid the trail', a2: 'Which', a2p: 'transaction is the illegal wire', a3: 'How', a3p: 'to stop it: the protocol action code',
+      s1n: 'Everything happens on phones. Each role sees different evidence, so nobody can solve it alone.',
+      s2k: 'Step 1 · teams and roles', s2h: 'Four roles, one Commander',
+      itH: 'Forensic IT', itP: 'Server logs and the infrastructure / access map.', finH: 'Finance', finP: 'The ledger, purchase orders and the vendor master.',
+      coH: 'Compliance', coP: 'Policy, change tickets, the EDD watchlist and the action protocol.', cmH: 'Commander', cmP: 'Sees no evidence. Enters the node passwords and the Halt codes for the whole team.',
+      any: 'any number', one: 'one per team',
+      s2n: 'Suggested split for 8 people:', s2n2: 'IT, Finance and Compliance phones never talk to the server: only the Commander’s phone counts on the live board.',
+      s3k: 'Step 2 · the three nodes', s3h: 'Find the NPC, scan, unlock',
+      f1: 'Find the NPC', f1s: 'at the node station', f2: 'Scan the QR', f2s: 'the owning role gets the clue', f3: 'Answer the key question', f3s: 'it is the node password', f4: 'Unlock evidence', f4s: 'on that role’s phones', f5: 'Commander enters it', f5s: 'all 3 open the Halt',
+      s3n: 'One scan per role is enough: the scanner shows their screen to role teammates. A phone that scans another role’s node is told who should scan it.',
+      s4k: 'Step 3 · the Halt', s4h: 'Three codes, in order, on the Commander’s phone',
+      h1: 'Code 1', h1p: 'Who ran the unapproved data scrub (full name)', h2: 'Code 2', h2p: 'The illegal wire’s transaction ID', h3: 'Code 3', h3p: 'The protocol action code that stops it',
+      fz: 'Every wrong code freezes the Halt, a little longer each time:', fzN: ['1st', '2nd', '3rd', '4th', '5th +'],
+      s4n: 'Codes 2 and 3 stay closed until the code before is solved. Hints are free and don’t affect time.',
+      s5k: 'Step 4 · winning', s5h: 'Fastest finish wins',
+      w1: 'One start time for everyone', w1p: 'Teams are timed from the official start set in the Admin Console (Scale & Reset › Start new session).',
+      w2: 'The clock stops at code 3', w2p: 'When the Commander enters the last code correctly, the team’s time is final. No penalty time is added.',
+      w3: 'Live board', w3p: 'Shows each team’s node and Halt progress and the finish order. Hints and secrets aren’t counted.',
+      w4: 'Settlement clock', w4p: 'The wire settles after the settlement time (120 min by default). Teams still going then don’t finish.',
+      s6k: 'Facilitator checklist', s6h: 'Before, during and after',
+      before: 'Before', during: 'During', after: 'After',
+      b1: '<b>Start new session</b> in the Admin Console with the real start time.', b2: 'Open the <b>Sunrise Live Board</b> on the big screen.', b3: 'Brief the room: <b>one Commander per team</b>, one scan per role.',
+      d1: 'Commander’s phone died? <b>Admin Console › Sunrise › Release</b>, then another phone takes the role.', d2: 'Around <b>45 minutes</b>: remind teams that hints are free.', d3: 'Phones that look stuck: reload the page; progress is kept on the phone.',
+      e1: 'Run the <b>debrief</b> on the finish screen: what Audit, Tax and Consulting would have caught.', e2: 'Participant data is deleted <b>one week</b> after the event.'
+    },
+    zh: {
+      prev: '上一步', next: '下一步', restart: '从头开始',
+      steps: ['任务', '角色', '节点', '终止交易', '胜负', '引导师'],
+      s1k: 'Project Sunrise · 任务简报', s1h: '在到账前拦截一笔非法汇款',
+      s1p: '各队是 Summit & Co. FitVision 项目组的新成员。昨夜，一笔大额付款被汇出，有人还试图抹掉痕迹。在结算倒计时结束前，全队要查明三件事：',
+      a1: '是谁', a1p: '执行了掩盖痕迹的未经批准数据清洗', a2: '哪一笔', a2p: '交易是非法汇款', a3: '怎么拦', a3p: '协议中的行动代码',
+      s1n: '全程在手机上进行。每个角色看到的证据都不同，没有人能独自破案。',
+      s2k: '第一步 · 队伍与角色', s2h: '四个角色，一名指挥官',
+      itH: '取证 IT', itP: '服务器日志与基础设施 / 访问映射。', finH: '财务', finP: '账本、采购订单与供应商主数据。',
+      coH: '合规', coP: '政策、变更工单、EDD 观察名单与行动协议。', cmH: '指挥官', cmP: '看不到任何证据，为全队输入节点密码和终止代码。',
+      any: '人数不限', one: '每队一人',
+      s2n: '8 人建议分工：', s2n2: 'IT、财务、合规的手机不连接服务器：只有指挥官的手机计入实时排行。',
+      s3k: '第二步 · 三个节点', s3h: '找到 NPC，扫码，解锁',
+      f1: '找到 NPC', f1s: '在节点站点', f2: '扫描二维码', f2s: '对应角色获得线索', f3: '回答密钥问题', f3s: '答案就是节点密码', f4: '解锁证据', f4s: '在该角色的手机上', f5: '指挥官输入密码', f5s: '三个都输入后开启终止面板',
+      s3n: '每个角色扫一次就够了：扫码的人把屏幕给同角色队友看。扫了别的角色节点的手机，会提示应由谁来扫。',
+      s4k: '第三步 · 终止交易', s4h: '三个代码，按顺序，在指挥官手机上输入',
+      h1: '代码 1', h1p: '谁执行了未经批准的数据清洗（全名）', h2: '代码 2', h2p: '非法汇款的交易编号', h3: '代码 3', h3p: '拦截汇款的协议行动代码',
+      fz: '每输错一次都会冻结终止面板，且一次比一次久：', fzN: ['第 1 次', '第 2 次', '第 3 次', '第 4 次', '第 5 次起'],
+      s4n: '前一个代码解开之前，代码 2 和 3 无法输入。提示免费，不影响用时。',
+      s5k: '第四步 · 胜负', s5h: '用时最短的队伍获胜',
+      w1: '统一开始时间', w1p: '各队都从管理后台设定的开始时间计时（规模与重置 › 开始新场次）。',
+      w2: '输对代码 3 即停表', w2p: '指挥官正确输入最后一个代码时，全队用时确定，不另加罚时。',
+      w3: '实时排行', w3p: '显示各队的节点与终止进度及完成名次。提示和彩蛋不计入。',
+      w4: '结算倒计时', w4p: '到达结算时间（默认 120 分钟）汇款即到账，届时未完成的队伍不计完成。',
+      s6k: '引导师清单', s6h: '开始前、进行中、结束后',
+      before: '开始前', during: '进行中', after: '结束后',
+      b1: '在管理后台<b>开始新场次</b>，填写真实开始时间。', b2: '在大屏打开 <b>Sunrise 实时排行</b>。', b3: '向全场说明：<b>每队一名指挥官</b>，每个角色扫一次码。',
+      d1: '指挥官手机没电？<b>管理后台 › Sunrise › 释放</b>，再由另一台手机担任。', d2: '约 <b>45 分钟</b>时，提醒各队提示免费。', d3: '手机看起来卡住：刷新页面即可，进度保存在手机上。',
+      e1: '用完成页面做<b>复盘</b>：审计、税务与咨询的行家会发现什么。', e2: '学员数据在活动结束<b>一周后</b>删除。'
+    }
+  };
+  function t(k) { return (T[lang] && T[lang][k]) != null ? T[lang][k] : T.zh[k]; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function $(id) { return document.getElementById(id); }
+
+  function flow() {
+    // The node steps as an ordered list of cards (arrows between them; stacked on narrow screens).
+    var items = [['f1', 'f1s', 'fa-person-walking', '#AEB6C1'], ['f2', 'f2s', 'fa-qrcode', '#67E8F9'], ['f3', 'f3s', 'fa-key', '#FCD34D'], ['f4', 'f4s', 'fa-folder-open', '#C4B5FD'], ['f5', 'f5s', 'fa-user-shield', '#FDA4AF']];
+    return '<ol class="flow">' + items.map(function (it, i) {
+      return '<li style="--c:' + it[3] + '"><i class="i fa-solid ' + it[2] + '"></i><span class="no">0' + (i + 1) + '</span><b>' + esc(t(it[0])) + '</b><span class="s">' + esc(t(it[1])) + '</span></li>';
+    }).join('') + '</ol>';
+  }
+  function role(cls, icon, h, p, tag, extra) {
+    return '<div class="card ' + (extra || '') + '"><h3><span class="ic ' + cls + '"><i class="fa-solid ' + icon + '"></i></span><span class="' + cls + '">' + esc(h) + '</span><span class="tag ' + cls + '">' + esc(tag) + '</span></h3><p>' + esc(p) + '</p></div>';
+  }
+  var SLIDES = [
+    function () {
+      return '<p class="kicker">' + esc(t('s1k')) + '</p><h1>' + esc(t('s1h')) + '</h1><p class="lead">' + esc(t('s1p')) + '</p>' +
+        '<div class="ask">' + [['a1', 'a1p', '01'], ['a2', 'a2p', '02'], ['a3', 'a3p', '03']].map(function (a) {
+          return '<div class="card"><div class="n">' + a[2] + '</div><h3>' + esc(t(a[0])) + '</h3><p>' + esc(t(a[1])) + '</p></div>';
+        }).join('') + '</div><p class="note"><i class="fa-solid fa-mobile-screen"></i><span>' + esc(t('s1n')) + '</span></p>';
+    },
+    function () {
+      return '<p class="kicker">' + esc(t('s2k')) + '</p><h2>' + esc(t('s2h')) + '</h2>' +
+        '<div class="grid g4">' + role('it', 'fa-microchip', t('itH'), t('itP'), t('any')) + role('fin', 'fa-coins', t('finH'), t('finP'), t('any')) +
+        role('comp', 'fa-scale-balanced', t('coH'), t('coP'), t('any')) + role('cmd', 'fa-user-shield', t('cmH'), t('cmP'), t('one'), 'cmd-card') + '</div>' +
+        '<div class="split"><span class="count" style="align-self:center">' + esc(t('s2n')) + '</span><b class="it">2 × ' + esc(t('itH')) + '</b><b class="fin">2 × ' + esc(t('finH')) + '</b><b class="comp">3 × ' + esc(t('coH')) + '</b><b class="cmd">1 × ' + esc(t('cmH')) + '</b></div>' +
+        '<p class="note"><i class="fa-solid fa-wifi"></i><span>' + esc(t('s2n2')) + '</span></p>';
+    },
+    function () {
+      return '<p class="kicker">' + esc(t('s3k')) + '</p><h2>' + esc(t('s3h')) + '</h2>' + flow() + '<p class="note"><i class="fa-solid fa-qrcode"></i><span>' + esc(t('s3n')) + '</span></p>';
+    },
+    function () {
+      var steps = [15, 30, 60, 120, 300].map(function (s, i) { return '<span><em>' + esc(t('fzN')[i]) + '</em>' + (s < 60 ? s + ' s' : (s / 60) + ' min') + '</span>'; }).join('');
+      return '<p class="kicker">' + esc(t('s4k')) + '</p><h2>' + esc(t('s4h')) + '</h2>' +
+        '<div class="ask">' + [['h1', 'h1p'], ['h2', 'h2p'], ['h3', 'h3p']].map(function (a, i) {
+          return '<div class="card"><div class="n">' + esc(t(a[0])) + (i ? ' <i class="fa-solid fa-lock" style="color:#6B7480;margin-left:6px"></i>' : '') + '</div><p style="margin-top:6px;color:#F3F5F7;font-weight:700">' + esc(t(a[1])) + '</p></div>';
+        }).join('') + '</div>' +
+        '<p class="lead" style="margin-bottom:8px">' + esc(t('fz')) + '</p><div class="freeze">' + steps + '</div>' +
+        '<p class="note"><i class="fa-solid fa-lightbulb"></i><span>' + esc(t('s4n')) + '</span></p>';
+    },
+    function () {
+      return '<p class="kicker">' + esc(t('s5k')) + '</p><h2>' + esc(t('s5h')) + '</h2><div class="grid g2">' +
+        [['w1', 'w1p', 'fa-flag-checkered'], ['w2', 'w2p', 'fa-stopwatch'], ['w3', 'w3p', 'fa-trophy'], ['w4', 'w4p', 'fa-hourglass-half']].map(function (w) {
+          return '<div class="card"><h3><span class="ic" style="background:rgba(134,188,37,.12);color:#86BC25"><i class="fa-solid ' + w[2] + '"></i></span>' + esc(t(w[0])) + '</h3><p>' + esc(t(w[1])) + '</p></div>';
+        }).join('') + '</div>';
+    },
+    function () {
+      var col = function (h, keys, icon) { return '<div class="card"><h3><span class="ic" style="background:rgba(134,188,37,.12);color:#86BC25"><i class="fa-solid ' + icon + '"></i></span>' + esc(t(h)) + '</h3><ul class="check">' + keys.map(function (k) { return '<li><i class="fa-solid fa-check"></i><span>' + t(k) + '</span></li>'; }).join('') + '</ul></div>'; };
+      return '<p class="kicker">' + esc(t('s6k')) + '</p><h2>' + esc(t('s6h')) + '</h2><div class="grid g3">' +
+        col('before', ['b1', 'b2', 'b3'], 'fa-list-check') + col('during', ['d1', 'd2', 'd3'], 'fa-person-running') + col('after', ['e1', 'e2'], 'fa-comments') + '</div>';
+    }
+  ];
+  var i = 0;
+  try { var saved = +sessionStorage.getItem('sunrise_guide_step'); if (saved >= 0 && saved < SLIDES.length) i = saved; } catch (e) {}
+  function render() {
+    document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN';
+    $('stage').innerHTML = '<section class="slide" aria-roledescription="slide">' + SLIDES[i]() + '</section>';
+    $('steps').innerHTML = t('steps').map(function (s, k) { return '<button type="button" data-i="' + k + '"' + (k === i ? ' aria-current="step"' : '') + (k < i ? ' class="done"' : '') + '>' + (k + 1) + ' · ' + esc(s) + '</button>'; }).join('');
+    $('prev').disabled = i === 0; $('prev').lastChild.textContent = t('prev');
+    $('next').firstChild.textContent = i === SLIDES.length - 1 ? t('restart') : t('next');
+    $('count').textContent = (i + 1) + ' / ' + SLIDES.length;
+    document.querySelectorAll('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-l') === lang)); });
+    try { sessionStorage.setItem('sunrise_guide_step', String(i)); } catch (e) {}
+  }
+  function go(n) { i = (n + SLIDES.length) % SLIDES.length; render(); }
+  $('prev').onclick = function () { if (i > 0) go(i - 1); };
+  $('next').onclick = function () { go(i + 1); };
+  $('steps').onclick = function (e) { var b = e.target.closest('button[data-i]'); if (b) go(+b.getAttribute('data-i')); };
+  document.querySelector('.lang').onclick = function (e) {
+    var b = e.target.closest('button[data-l]'); if (!b) return;
+    lang = b.getAttribute('data-l');
+    try { if (window.DLH && DLH.setLang) DLH.setLang(lang === 'en' ? 'en' : (DLH.lastZh ? DLH.lastZh() : 'zh-Hans'), window); else localStorage.setItem('dl_lang', lang === 'en' ? 'en' : 'zh-Hans'); } catch (err) {}
+    render();
+  };
+  document.addEventListener('keydown', function (e) {
+    if (e.target && /input|textarea/i.test(e.target.tagName)) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); if (i > 0) go(i - 1); }
+  });
+  try { if (window.DLH && DLH.onLang) DLH.onLang(function () { var l = DLH.lang() === 'en' ? 'en' : 'zh'; if (l !== lang) { lang = l; render(); } }, window); } catch (e) {}
+  if (window.DLH && DLH.lang) document.querySelector('.lang').hidden = true; // the suite's EN / 简 / 繁 switch drives this page
+  render();
+})();
+</script>
+</body>
+</html>
