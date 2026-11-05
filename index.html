@@ -264,6 +264,134 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 }
 </style>
 <script>(function () {
+  // DeloitteLand day modes, by Beijing time (UTC+8, no daylight saving), all from the Deloitte palette:
+  //   Morning    08:00–11:59  Deloitte Green on a dawn green-black, sun / coffee / seedling icons
+  //   Afternoon  12:00–17:59  Teal on deep teal with light rays, cloud-sun / briefcase / chart icons
+  //   Off hours  18:00–07:59  Blue on navy with stars, moon / star / mug icons
+  // Preview any mode with ?band=am|pm|off (or localStorage dl_band_preview). Used by the suite shell,
+  // the participant site and the participant portal (hub); the portal's Tailwind "deloitte-green"
+  // and "deloitte-teal" read --dl-accent-rgb / --dl-accent2-rgb, so it follows the mode too.
+  var BANDS = {
+    am:  { accent: '134 188 37', accent2: '67 176 42', deep: '4 106 56',  ink: '6 14 9',  glow: '38 137 13', glow2: '0 151 169', theme: '#060e09',
+           icons: ['fa-sun', 'fa-mug-hot', 'fa-seedling'], hours: '08–12',
+           name: { en: 'Morning', hans: '上午', hant: '早晨' }, hi: { en: 'Good morning', hans: '早上好', hant: '早晨！' } },
+    pm:  { accent: '0 171 171', accent2: '0 151 169', deep: '0 118 128', ink: '4 14 17', glow: '0 118 128', glow2: '111 194 180', theme: '#040e11',
+           icons: ['fa-cloud-sun', 'fa-briefcase', 'fa-chart-line'], hours: '12–18',
+           name: { en: 'Afternoon', hans: '下午', hant: '下晝' }, hi: { en: 'Good afternoon', hans: '下午好', hant: '午安！' } },
+    off: { accent: '98 181 229', accent2: '0 163 224', deep: '1 33 105', ink: '4 9 24', glow: '1 33 105', glow2: '0 118 168', theme: '#040918',
+           icons: ['fa-moon', 'fa-star', 'fa-mug-saucer'], hours: '18–08',
+           name: { en: 'Off hours', hans: '下班时间', hant: '收工時間' }, hi: { en: 'Good evening — see you tomorrow', hans: '晚上好，明天见', hant: '收工喇，聽日見！' } }
+  };
+  function bandNow() {
+    try { var f = new URLSearchParams(location.search).get('band') || localStorage.getItem('dl_band_preview'); if (BANDS[f]) return f; } catch (e) {}
+    try { if (window.parent !== window && parent.DLBand) return parent.DLBand.now(); } catch (e) {}
+    var h = (new Date().getUTCHours() + 8) % 24;
+    return h >= 8 && h < 12 ? 'am' : h >= 12 && h < 18 ? 'pm' : 'off';
+  }
+  function lang() {
+    var l = '';
+    try { l = (window.DLLang && DLLang.get && DLLang.get()) || (window.DLH && DLH.lang && DLH.lang()) || ''; } catch (e) {}
+    l = l || document.documentElement.lang || '';
+    return /^en/i.test(l) ? 'en' : /Hant|HK|TW/i.test(l) ? 'hant' : /^zh/i.test(l) ? 'hans' : 'en';
+  }
+  var MOD = window.DL_MODULE || (document.getElementById('frames') ? 'participant' : 'shell');
+
+  var CSS = [
+    // shared: motif layer and chip
+    '.dl-motif{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}',
+    '.dl-motif i{position:absolute;color:rgb(var(--dl-accent-rgb));opacity:.1;transition:opacity .6s}',
+    '.dl-motif i:nth-child(1){font-size:220px;right:-40px;top:-30px}',
+    '.dl-motif i:nth-child(2){font-size:120px;left:-24px;bottom:12%;transform:rotate(-12deg)}',
+    '.dl-motif i:nth-child(3){font-size:90px;right:12%;bottom:-20px;transform:rotate(10deg)}',
+    'html[data-dl-band="off"] .dl-motif::before{content:"";position:absolute;inset:0;background-image:radial-gradient(1px 1px at 12% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 32% 8%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 58% 22%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 76% 12%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 88% 34%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 22% 42%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 44% 36%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 66% 48%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 8% 64%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 94% 70%,#fff 50%,transparent 51%);opacity:.55}',
+    'html[data-dl-band="pm"] .dl-motif::before{content:"";position:absolute;inset:-20%;background:repeating-linear-gradient(115deg,rgb(var(--dl-glow2-rgb) / .05) 0 40px,transparent 40px 120px)}',
+    'html[data-dl-band="am"] .dl-motif::before{content:"";position:absolute;width:520px;height:520px;right:-160px;top:-200px;border-radius:50%;background:radial-gradient(circle,rgb(var(--dl-accent-rgb) / .22),transparent 65%)}',
+    '.dl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap;color:rgb(var(--dl-accent-rgb));background:rgb(var(--dl-accent-rgb) / .12);border:1px solid rgb(var(--dl-accent-rgb) / .4)}',
+    '.dl-chip small{font-weight:600;opacity:.75;font-family:var(--mono,ui-monospace,monospace)}',
+    '.dl-hello{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:clamp(15px,2.4vw,19px);font-weight:800;color:rgb(var(--dl-accent-rgb))}',
+    '.dl-hello i{font-size:1.2em}'
+  ];
+  var CSS_SHELL = [
+    ':root{--green:rgb(var(--dl-accent-rgb));--green-dk:rgb(var(--dl-deep-rgb));--driver:rgb(var(--dl-accent-rgb));--ink:rgb(var(--dl-ink-rgb))}',
+    'html,body{background:radial-gradient(1100px 560px at 88% -12%,rgb(var(--dl-glow2-rgb) / .55),transparent 62%),radial-gradient(900px 480px at -12% 4%,rgb(var(--dl-glow-rgb) / .6),transparent 62%),linear-gradient(180deg,rgb(var(--dl-deep-rgb) / .35),transparent 55%),rgb(var(--dl-ink-rgb))!important;background-attachment:fixed!important}',
+    '.page{position:relative;z-index:1;background:transparent!important}',
+    '.lang-seg button[aria-pressed="true"]{background:rgb(var(--dl-accent-rgb))!important;color:rgb(var(--dl-ink-rgb))!important}',
+    '.pill-btn:hover{border-color:rgb(var(--dl-accent-rgb) / .6)}',
+    '::selection{background:rgb(var(--dl-accent-rgb) / .35)}'
+  ];
+  var CSS_HUB = [
+    'body{background:radial-gradient(700px 420px at 100% -5%,rgb(var(--dl-glow2-rgb) / .5),transparent 62%),radial-gradient(600px 360px at -10% 10%,rgb(var(--dl-glow-rgb) / .55),transparent 62%),linear-gradient(180deg,rgb(var(--dl-deep-rgb) / .35),transparent 50%),rgb(var(--dl-ink-rgb))!important;background-attachment:fixed!important}',
+    '.dl-motif{z-index:-1}',
+    'header.sticky{background:rgb(var(--dl-ink-rgb) / .88)!important}',
+    '.dl-chip{height:24px;padding:0 8px;font-size:10px}'
+  ];
+  function css(list, id) {
+    if (document.getElementById(id)) return;
+    var s = document.createElement('style'); s.id = id; s.textContent = list.join('\n');
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  var current = null;
+  function vars(b) {
+    var p = BANDS[b], s = document.documentElement.style;
+    ['accent', 'accent2', 'deep', 'ink', 'glow', 'glow2'].forEach(function (k) { s.setProperty('--dl-' + k + '-rgb', p[k]); });
+    s.setProperty('--dl-accent', 'rgb(' + p.accent + ')');
+    document.documentElement.setAttribute('data-dl-band', b);
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (!m && document.head) { m = document.createElement('meta'); m.name = 'theme-color'; document.head.appendChild(m); }
+    if (m) m.setAttribute('content', p.theme);
+  }
+  function chipHtml(p, L) { return '<i class="fa-solid ' + p.icons[0] + '"></i>' + p.name[L] + ' <small>' + p.hours + '</small>'; }
+  var lastL = null;
+  function decorate() {
+    if (!document.body) return;
+    var b = current, p = BANDS[b], L = lang();
+    if (MOD === 'participant') return; // the portal page inside it is decorated itself
+    var motif = document.querySelector('body > .dl-motif');
+    if (!motif) { motif = document.createElement('div'); motif.className = 'dl-motif'; motif.setAttribute('aria-hidden', 'true'); document.body.insertBefore(motif, document.body.firstChild); }
+    if (motif.getAttribute('data-b') !== b) { motif.setAttribute('data-b', b); motif.innerHTML = p.icons.map(function (ic) { return '<i class="fa-solid ' + ic + '"></i>'; }).join(''); }
+    if (MOD === 'shell') {
+      document.querySelectorAll('.page .top').forEach(function (top) {
+        var c = top.querySelector('.dl-chip');
+        if (!c) { c = document.createElement('span'); c.className = 'dl-chip'; var r = top.querySelector('.top-r') || top; if (r === top) top.insertBefore(c, top.lastElementChild); else r.insertBefore(c, r.firstChild); }
+        c.innerHTML = chipHtml(p, L); c.setAttribute('data-no-hant', '');
+      });
+      var h = document.querySelector('#pg-start .start-h');
+      if (h) {
+        var hi = document.getElementById('dlHello');
+        if (!hi) { hi = document.createElement('p'); hi.id = 'dlHello'; hi.className = 'dl-hello'; hi.style.gridRow = '2'; hi.style.alignSelf = 'end'; h.parentNode.insertBefore(hi, h); }
+        hi.innerHTML = '<i class="fa-solid ' + p.icons[0] + '"></i><span>' + p.hi[L] + '</span>'; hi.setAttribute('data-no-hant', '');
+      }
+    } else if (MOD === 'hub') {
+      // Header logo icon follows the mode, and a small chip sits by the title.
+      var logo = document.querySelector('header [onclick="handleDotEggClick()"] i.fa-solid');
+      if (logo) { BANDS.am.icons.concat(BANDS.pm.icons, BANDS.off.icons, ['fa-rocket']).forEach(function (c) { logo.classList.remove(c); }); logo.classList.add(p.icons[0]); }
+      var title = document.querySelector('header .font-black.text-base');
+      var holder = title && title.parentNode;
+      if (holder && holder.parentNode) {
+        var c2 = document.getElementById('dlHubChip');
+        if (!c2) { c2 = document.createElement('span'); c2.id = 'dlHubChip'; c2.className = 'dl-chip'; holder.parentNode.insertBefore(c2, holder.nextSibling); }
+        c2.innerHTML = chipHtml(p, L); c2.setAttribute('data-no-hant', ''); c2.title = p.hi[L];
+      }
+    }
+    lastL = L;
+  }
+  function apply() {
+    var b = bandNow();
+    if (b !== current) { current = b; vars(b); try { window.dispatchEvent(new CustomEvent('dl-band', { detail: b })); } catch (e) {} decorate(); }
+    else if (lang() !== lastL) decorate();
+  }
+  window.DLBand = { now: bandNow, apply: apply, palettes: BANDS };
+  css(CSS, 'dl-daymode');
+  if (MOD === 'shell') css(CSS_SHELL, 'dl-daymode-shell');
+  if (MOD === 'hub') css(CSS_HUB, 'dl-daymode-hub');
+  apply();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { decorate(); });
+  setInterval(apply, 2000);
+  window.addEventListener('hashchange', function () { setTimeout(decorate, 50); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) apply(); });
+})();
+</script><script>(function () {
   // One language setting for the whole site: 'en', 'zh-Hans' or 'zh-Hant' (Hong Kong).
   // First visit follows the browser; a choice made anywhere is remembered and passed to every page.
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
@@ -729,7 +857,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.0e313513c2.html","admin":"admin.f098ace791.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.9bd8d4e474.html","fastpass36":"fastpass36.2e9ed65e83.html","fastpass48":"fastpass48.977c3c7595.html","game":"game.3a556ec842.html","knowledge":"knowledge.88953a06cd.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.42fb77755e.html","kclive":"kclive.13f7a4fb38.html","sunriseguide":"sunriseguide.b75d000a4b.html","sunrise":"sunrise.78efea1a2b.html","sunrisesandbox":"sunrisesandbox.d3eb7073a7.html","leaderboard":"leaderboard.3ba836962d.html"}};</script>
+<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.14901f0e48.html","admin":"admin.f098ace791.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.9bd8d4e474.html","fastpass36":"fastpass36.2e9ed65e83.html","fastpass48":"fastpass48.977c3c7595.html","game":"game.3a556ec842.html","knowledge":"knowledge.88953a06cd.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.42fb77755e.html","kclive":"kclive.13f7a4fb38.html","sunriseguide":"sunriseguide.b75d000a4b.html","sunrise":"sunrise.78efea1a2b.html","sunrisesandbox":"sunrisesandbox.d3eb7073a7.html","leaderboard":"leaderboard.3ba836962d.html"}};</script>
 
 <script>
 (function () {
