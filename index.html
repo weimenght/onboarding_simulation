@@ -729,7 +729,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.52edf2fa21.html","admin":"admin.f6d812db31.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.9bd8d4e474.html","fastpass36":"fastpass36.2e9ed65e83.html","fastpass48":"fastpass48.977c3c7595.html","game":"game.fd9ba50717.html","knowledge":"knowledge.88953a06cd.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.42fb77755e.html","kclive":"kclive.13f7a4fb38.html","sunriseguide":"sunriseguide.b75d000a4b.html","sunrise":"sunrise.78efea1a2b.html","leaderboard":"leaderboard.3ba836962d.html"}};</script>
+<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.da3406c99e.html","admin":"admin.e27887eb88.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.9bd8d4e474.html","fastpass36":"fastpass36.2e9ed65e83.html","fastpass48":"fastpass48.977c3c7595.html","game":"game.fd9ba50717.html","knowledge":"knowledge.88953a06cd.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.42fb77755e.html","kclive":"kclive.13f7a4fb38.html","sunriseguide":"sunriseguide.b75d000a4b.html","sunrise":"sunrise.78efea1a2b.html","leaderboard":"leaderboard.3ba836962d.html"}};</script>
 
 <script>
 (function () {
@@ -784,7 +784,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   ];
   var STAFF_GROUPS = {
     super: [
-      { c: C.guardian, zh: '控制台', en: 'Control', dzh: '计分、广播与学员端开关', den: 'Scoring, broadcast and participant switches', ids: ['admin', 'visibility', 'links', 'hub'] },
+      { c: C.guardian, zh: '控制台', en: 'Control', dzh: '准备、计分、学员门户、成绩与重置', den: 'Set up, scoring, participant portal, results and reset', ids: ['admin', 'hub'] },
       { c: C.integrator, zh: '互动站点', en: 'Stations', dzh: '站点大屏、计时与二维码', den: 'Station screens, timers and QR codes', ids: ['kclive', 'knowledge', 'signal', 'qr', 'fastpass'] },
       { c: C.pioneer, zh: 'Project Sunrise', en: 'Project Sunrise', dzh: '终端、线索卡与实时排行', den: 'Terminal, clue cards and live ranking', ids: ['sunriseguide', 'leaderboard', 'sunrise', 'clue1', 'clue2', 'clue3'] },
       { c: C.driver, zh: '学员页面单独打开', en: 'Participant pages', dzh: '不受开关限制，方便检查', den: 'Open directly to check them; switches do not apply here', ids: ['game', 'bc'] }
@@ -1362,13 +1362,10 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
       if (route === 'login') { navigate('staff'); return; }
       showPage('staff'); renderStaff(); return;
     }
-    if (route === 'visibility') {
-      if (staffRole() !== 'super') { if (!staffRole()) { pendingNext = route; showPage('login'); } else { toast(t('noAccess')); navigate('staff'); } return; }
-      showPage('visibility'); renderVis(); loadVis(); return;
-    }
-    if (route === 'links') {
-      if (staffRole() !== 'super') { if (!staffRole()) { pendingNext = route; showPage('login'); } else { toast(t('noAccess')); navigate('staff'); } return; }
-      showPage('links'); linksMeta.ok = ''; linksMeta.err = ''; renderLinks(); loadAllLinks(); return;
+    // Switches and Push links now live in the Admin Console (Run tab); old links land there.
+    if (route === 'visibility' || route === 'links') {
+      try { sessionStorage.setItem('dl_admin_focus', route === 'links' ? 'dlLinks' : 'dlSwitches'); } catch (e) {}
+      navigate('admin'); return;
     }
     var base = ALIAS[route] || route;
     // Website: participants use the participant portal (/A1/), a separate page with no staff code,
