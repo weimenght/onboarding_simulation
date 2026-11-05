@@ -184,6 +184,23 @@ canvas.sepia{filter:sepia(.75) contrast(1.05)}
 @media (prefers-reduced-motion:reduce){
   .title,.newbest{animation:none}
 }
+
+#introModal .sheet{max-width:380px}
+#introModal .intro-b{padding:22px 18px 8px;text-align:center;min-height:250px;display:flex;flex-direction:column;align-items:center;gap:12px}
+#introModal .intro-art{font-size:44px;line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.4));animation:introBob 1.6s ease-in-out infinite}
+@keyframes introBob{50%{transform:translateY(-6px)}}
+#introModal .intro-h{font:13px var(--pixel);color:var(--green);line-height:1.6;letter-spacing:.5px}
+#introModal .intro-p{font-size:14px;line-height:1.6;color:#e5e7eb;margin:0}
+#introModal .intro-p b.g{color:var(--green)}#introModal .intro-p b.c{color:#67e8f9}#introModal .intro-p b.r{color:#fb7185}#introModal .intro-p b.y{color:#fcd34d}
+#introModal .intro-dots{display:flex;gap:6px;justify-content:center;padding:6px 0 2px}
+#introModal .intro-dots i{width:7px;height:7px;border-radius:2px;background:rgba(255,255,255,.2)}
+#introModal .intro-dots i.on{background:var(--green);width:18px}
+#introModal .intro-f{padding:12px 16px 16px;display:flex;gap:8px}
+#introModal .intro-f .btn.ghost{flex:0 0 auto;width:auto;padding:13px 16px}
+#introModal .intro-card{animation:introIn .25s ease}
+@keyframes introIn{from{opacity:0;transform:translateX(14px)}}
+@media (prefers-reduced-motion:reduce){#introModal .intro-art,#introModal .intro-card{animation:none}}
+.intro-again{all:unset;cursor:pointer;display:block;margin-top:10px;font-size:12px;color:#67e8f9;text-decoration:underline;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -306,6 +323,9 @@ canvas.sepia{filter:sepia(.75) contrast(1.05)}
 </div>
 
 <!-- Help -->
+<div class="modal" id="introModal" role="dialog" aria-modal="true" aria-label="D-Rush">
+  <div class="sheet"><div id="introBody"></div><div class="intro-f"><button class="btn ghost" id="introSkip" type="button"></button><button class="btn primary" id="introNext" type="button"></button></div></div>
+</div>
 <div class="modal" id="helpModal">
   <div class="sheet">
     <div class="sheet-h"><span class="g">🎮 <span data-i18n="helpTitle">ONBOARDING BRIEFING</span></span><button class="close-x" data-close="helpModal">✕</button></div>
@@ -1758,7 +1778,7 @@ $('quizOverlay').addEventListener('click', () => { if (quiz && quiz.done) closeQ
    ============================================================ */
 function show(id) { $(id).classList.add('show'); }
 function hide(id) { $(id).classList.remove('show'); }
-const anyModal = () => ['lbModal', 'helpModal', 'achModal'].some((id) => $(id).classList.contains('show'));
+const anyModal = () => ['lbModal', 'helpModal', 'achModal', 'introModal'].some((id) => $(id).classList.contains('show'));
 function applyCanvasFx() {
   canvas.classList.toggle('green', settings.mode === 'green');
   canvas.classList.toggle('sepia', settings.mode !== 'green' && run.outfit === 'victorian' && state !== 'START');
@@ -2034,7 +2054,26 @@ function openModal(id) {
   if (id === 'lbModal') { syncTabs(); fetchLb(); }
   if (id === 'achModal') renderAch();
 }
-function closeAllModals() { ['lbModal', 'helpModal', 'achModal'].forEach(hide); }
+function closeAllModals() { ['lbModal', 'helpModal', 'achModal', 'introModal'].forEach(hide); }
+
+const INTRO = {"CARDS":{"en":[{"art":"🏃","h":"RUN YOUR CAREER","p":"Tap the <b class=\"g\">top half</b> to jump (hold for higher). Tap the <b class=\"c\">bottom half</b> to slide.<br>Run from Day 1 to Partner. Every promotion makes you faster."},{"art":"🟢 🤝 ☕","h":"GRAB & DODGE","p":"Grab <b class=\"g\">green dots</b>, high-five buddies and coaches, sip coffee.<br>Dodge <b class=\"r\">#REF!</b>, <b class=\"r\">FINAL_v7.pptx</b> and slide under <b class=\"c\">reply-all storms</b>."},{"art":"📜","h":"THE FINE PRINT","p":"Everything in this game is <b class=\"y\">made up</b>. Deadlines don’t bounce. Partners don’t wait in corridors to high-five you. Nobody gets promoted every 30 seconds.<br><br>And a top score here <b class=\"y\">won’t get you promoted</b> in real life. Sorry.<br><br><b class=\"g\">Except the pop quizzes and tips.</b> Those are real, and might actually help you on Monday."}],"zh":[{"art":"🏃","h":"冲刺你的职业生涯","p":"点<b class=\"g\">上半屏</b>起跳（长按跳更高），点<b class=\"c\">下半屏</b>滑行。<br>从入职第一天一路跑到合伙人，每次晋升都会更快。"},{"art":"🟢 🤝 ☕","h":"收集与躲避","p":"收集<b class=\"g\">绿点</b>，和伙伴、导师击掌，喝杯咖啡。<br>躲开 <b class=\"r\">#REF!</b>、<b class=\"r\">FINAL_v7.pptx</b>，滑过<b class=\"c\">全员回复风暴</b>。"},{"art":"📜","h":"免责声明","p":"游戏里的一切都是<b class=\"y\">编的</b>：截止日期不会弹跳，合伙人不会在走廊等着和你击掌，也没有人每 30 秒晋升一次。<br><br>在这里拿最高分，现实中也<b class=\"y\">不会因此升职</b>。抱歉。<br><br><b class=\"g\">只有快问快答和小贴士是真的</b>，说不定周一就用得上。"}]},"UI":{"en":{"next":"NEXT","skip":"Skip","go":"GOT IT — LET’S RUN","again":"Show the intro again"},"zh":{"next":"下一步","skip":"跳过","go":"明白了，开跑！","again":"重新查看新手引导"}}};
+let introStep = 0;
+function renderIntro() {
+  const L = settings.lang === 'zh' ? 'zh' : 'en', cards = INTRO.CARDS[L], c = cards[introStep], u = INTRO.UI[L], last = introStep === cards.length - 1;
+  $('introBody').innerHTML = '<div class="intro-card intro-b"><div class="intro-art">' + c.art + '</div><div class="intro-h">' + c.h + '</div><p class="intro-p">' + c.p + '</p></div>' +
+    '<div class="intro-dots">' + cards.map((_, i) => '<i class="' + (i === introStep ? 'on' : '') + '"></i>').join('') + '</div>';
+  $('introSkip').textContent = u.skip; $('introSkip').style.display = last ? 'none' : '';
+  $('introNext').textContent = last ? u.go : u.next;
+}
+function openIntro() { introStep = 0; renderIntro(); closeAllModals(); show('introModal'); }
+function closeIntro() { hide('introModal'); LS.set('drush_intro_v1', '1'); }
+$('introNext').addEventListener('click', (e) => { e.stopPropagation(); const n = INTRO.CARDS.en.length; if (introStep < n - 1) { introStep++; renderIntro(); Sfx.unlock(); Sfx.play('dot', introStep); } else closeIntro(); });
+$('introSkip').addEventListener('click', (e) => { e.stopPropagation(); closeIntro(); });
+$('introModal').addEventListener('click', (e) => e.stopPropagation());
+{ const again = document.createElement('button'); again.type = 'button'; again.className = 'intro-again'; again.id = 'introAgain';
+  $('helpBody').parentNode.insertBefore(again, $('helpBody').nextSibling);
+  again.addEventListener('click', () => { hide('helpModal'); openIntro(); }); }
+
 function syncTabs() { $('tabGlobal').classList.toggle('on', lbTab === 'global'); $('tabLocal').classList.toggle('on', lbTab === 'local'); }
 function syncButtons() {
   $('btnSound').textContent = settings.sound ? '🔊' : '🔇';
@@ -2046,6 +2085,8 @@ function applyLang() {
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
   $('helpBody').innerHTML = t('help');
+  if ($('introAgain')) $('introAgain').textContent = INTRO.UI[settings.lang === 'zh' ? 'zh' : 'en'].again;
+  if ($('introModal').classList.contains('show')) renderIntro();
   syncButtons(); refreshStartStats();
   for (const k in hudCache) delete hudCache[k];
   updateHUD();
@@ -2103,6 +2144,7 @@ function boot() {
 }
 if (window.DL_TEST) window.__drush = (src) => eval('(' + src + ')');
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+if (LS.get('drush_intro_v1', '') !== '1') setTimeout(openIntro, 350);
 })();
 </script>
 </body>

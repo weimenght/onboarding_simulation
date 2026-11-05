@@ -64,7 +64,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
   var MOD = window.DL_MODULE || (document.getElementById('frames') ? 'participant' : 'shell');
 
   var CSS = [
-    // shared: motif layer and chip
+    // shared: motif layer and greeting
     '.dl-motif{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}',
     '.dl-motif i{position:absolute;color:rgb(var(--dl-accent-rgb));opacity:.1;transition:opacity .6s}',
     '.dl-motif i:nth-child(1){font-size:220px;right:-40px;top:-30px}',
@@ -73,8 +73,6 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
     'html[data-dl-band="off"] .dl-motif::before{content:"";position:absolute;inset:0;background-image:radial-gradient(1px 1px at 12% 18%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 32% 8%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 58% 22%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 76% 12%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 88% 34%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 22% 42%,#fff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 44% 36%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 66% 48%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 8% 64%,#fff 50%,transparent 51%),radial-gradient(1px 1px at 94% 70%,#fff 50%,transparent 51%);opacity:.55}',
     'html[data-dl-band="pm"] .dl-motif::before{content:"";position:absolute;inset:-20%;background:repeating-linear-gradient(115deg,rgb(var(--dl-glow2-rgb) / .05) 0 40px,transparent 40px 120px)}',
     'html[data-dl-band="am"] .dl-motif::before{content:"";position:absolute;width:520px;height:520px;right:-160px;top:-200px;border-radius:50%;background:radial-gradient(circle,rgb(var(--dl-accent-rgb) / .22),transparent 65%)}',
-    '.dl-chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap;color:rgb(var(--dl-accent-rgb));background:rgb(var(--dl-accent-rgb) / .12);border:1px solid rgb(var(--dl-accent-rgb) / .4)}',
-    '.dl-chip small{font-weight:600;opacity:.75;font-family:var(--mono,ui-monospace,monospace)}',
     '.dl-hello{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:clamp(15px,2.4vw,19px);font-weight:800;color:rgb(var(--dl-accent-rgb))}',
     '.dl-hello i{font-size:1.2em}'
   ];
@@ -90,7 +88,6 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
     'body{background:radial-gradient(700px 420px at 100% -5%,rgb(var(--dl-glow2-rgb) / .5),transparent 62%),radial-gradient(600px 360px at -10% 10%,rgb(var(--dl-glow-rgb) / .55),transparent 62%),linear-gradient(180deg,rgb(var(--dl-deep-rgb) / .35),transparent 50%),rgb(var(--dl-ink-rgb))!important;background-attachment:fixed!important}',
     '.dl-motif{z-index:-1}',
     'header.sticky{background:rgb(var(--dl-ink-rgb) / .88)!important}',
-    '.dl-chip{height:24px;padding:0 8px;font-size:10px}'
   ];
   function css(list, id) {
     if (document.getElementById(id)) return;
@@ -108,7 +105,6 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
     if (!m && document.head) { m = document.createElement('meta'); m.name = 'theme-color'; document.head.appendChild(m); }
     if (m) m.setAttribute('content', p.theme);
   }
-  function chipHtml(p, L) { return '<i class="fa-solid ' + p.icons[0] + '"></i>' + p.name[L] + ' <small>' + p.hours + '</small>'; }
   var lastL = null;
   function decorate() {
     if (!document.body) return;
@@ -118,11 +114,6 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
     if (!motif) { motif = document.createElement('div'); motif.className = 'dl-motif'; motif.setAttribute('aria-hidden', 'true'); document.body.insertBefore(motif, document.body.firstChild); }
     if (motif.getAttribute('data-b') !== b) { motif.setAttribute('data-b', b); motif.innerHTML = p.icons.map(function (ic) { return '<i class="fa-solid ' + ic + '"></i>'; }).join(''); }
     if (MOD === 'shell') {
-      document.querySelectorAll('.page .top').forEach(function (top) {
-        var c = top.querySelector('.dl-chip');
-        if (!c) { c = document.createElement('span'); c.className = 'dl-chip'; var r = top.querySelector('.top-r') || top; if (r === top) top.insertBefore(c, top.lastElementChild); else r.insertBefore(c, r.firstChild); }
-        c.innerHTML = chipHtml(p, L); c.setAttribute('data-no-hant', '');
-      });
       var h = document.querySelector('#pg-start .start-h');
       if (h) {
         var hi = document.getElementById('dlHello');
@@ -130,16 +121,9 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
         hi.innerHTML = '<i class="fa-solid ' + p.icons[0] + '"></i><span>' + p.hi[L] + '</span>'; hi.setAttribute('data-no-hant', '');
       }
     } else if (MOD === 'hub') {
-      // Header logo icon follows the mode, and a small chip sits by the title.
-      var logo = document.querySelector('header [onclick="handleDotEggClick()"] i.fa-solid');
+      // Header logo icon follows the mode.
+      var logo = document.querySelector('header [aria-label="Good Vibes"] i.fa-solid');
       if (logo) { BANDS.am.icons.concat(BANDS.pm.icons, BANDS.off.icons, ['fa-rocket']).forEach(function (c) { logo.classList.remove(c); }); logo.classList.add(p.icons[0]); }
-      var title = document.querySelector('header .font-black.text-base');
-      var holder = title && title.parentNode;
-      if (holder && holder.parentNode) {
-        var c2 = document.getElementById('dlHubChip');
-        if (!c2) { c2 = document.createElement('span'); c2.id = 'dlHubChip'; c2.className = 'dl-chip'; holder.parentNode.insertBefore(c2, holder.nextSibling); }
-        c2.innerHTML = chipHtml(p, L); c2.setAttribute('data-no-hant', ''); c2.title = p.hi[L];
-      }
     }
     lastL = L;
   }
@@ -478,7 +462,7 @@ body { font-family: Aptos, "Segoe UI Variable Text", "Segoe UI", -apple-system, 
 <div id="frames"></div>
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script>window.DL_SPLIT = {"base":"../m/","files":{"hub":"hub.14901f0e48.html","game":"game.3a556ec842.html","sunrise":"sunrise.78efea1a2b.html","clue1":"clue1.7065f55350.html","clue2":"clue2.472b76012c.html","clue3":"clue3.60c8573343.html"}};</script>
+<script>window.DL_SPLIT = {"base":"../m/","files":{"hub":"hub.285642f4aa.html","game":"game.5ba5d443d3.html","sunrise":"sunrise.78efea1a2b.html","clue1":"clue1.7065f55350.html","clue2":"clue2.472b76012c.html","clue3":"clue3.60c8573343.html"}};</script>
 
 <script>
 (function () {
