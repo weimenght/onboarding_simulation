@@ -3816,6 +3816,80 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   }, 250);
 })();
 </script><script>(function () {
+  // Admin Console > Settings > Danger zone: clear the D-Rush global leaderboard (table "leaderboard").
+  // Admins only (the database allows delete for admins only). Players' own best scores and the
+  // "this device" list stay on their phones; the portal's D-Rush card shows "Be the first" again.
+  var TX = {
+    zh: { title: '清空 D-Rush 排行榜', desc: '删除全球榜上的全部 D-Rush 成绩。学员手机上的个人最佳和本机记录不受影响。',
+          count: '当前 {n} 条成绩 · 最高分 {top}', none: '排行榜为空', loading: '正在读取…', btn: '清空 D-Rush 排行榜', busy: '正在清空…',
+          confirm: '确定要删除 D-Rush 全球排行榜上的全部 {n} 条成绩吗？此操作无法撤销。\nDelete all {n} D-Rush scores from the global leaderboard? This can’t be undone.',
+          done: '已清空 {n} 条成绩', err: '操作失败，请重试', denied: '仅管理员可清空', partial: '仍有 {n} 条未删除，请确认使用管理员账号' },
+    en: { title: 'Clear the D-Rush leaderboard', desc: 'Deletes every D-Rush score on the global board. Players’ own best scores and “this device” lists stay on their phones.',
+          count: '{n} scores now · top {top}', none: 'The leaderboard is empty', loading: 'Loading…', btn: 'Clear D-Rush leaderboard', busy: 'Clearing…',
+          confirm: 'Delete all {n} D-Rush scores from the global leaderboard? This can’t be undone.\n确定要删除 D-Rush 全球排行榜上的全部 {n} 条成绩吗？',
+          done: 'Cleared {n} scores', err: 'That didn’t work. Try again', denied: 'Only admins can clear it', partial: '{n} scores are still there. Check you’re signed in as an admin' }
+  };
+  function L() { try { return currentLang === 'en' ? 'en' : 'zh'; } catch (e) { return 'zh'; } }
+  function tx(k, v) { var s = TX[L()][k]; if (v) for (var x in v) s = s.split('{' + x + '}').join(v[x]); return s; }
+  function sb() { try { return supabaseClient; } catch (e) { return null; } }
+  function isAdmin() { try { return currentUserRole === 'admin'; } catch (e) { return false; } }
+  function num(n) { return Number(n || 0).toLocaleString(); }
+
+  var box = document.createElement('div');
+  box.id = 'dlDrushClear';
+  box.className = 'p-3.5 rounded-xl bg-black/40 border border-white/10 flex flex-col sm:flex-row sm:items-center gap-3';
+  var st = { n: null, top: 0, busy: false, msg: '', bad: false };
+
+  function render() {
+    var line = st.msg ? st.msg : st.n === null ? tx('loading') : st.n === 0 ? tx('none') : tx('count', { n: num(st.n), top: num(st.top) });
+    box.innerHTML = '<div class="flex-1 min-w-0 space-y-1"><div class="text-xs font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-person-running text-deloitte-green"></i>' + tx('title') + '</div>' +
+      '<p class="text-[11px] text-gray-400 leading-normal">' + tx('desc') + '</p>' +
+      '<p data-drush-status class="text-[11px] font-semibold ' + (st.bad ? 'text-rose-300' : 'text-deloitte-green') + '">' + line + '</p></div>' +
+      '<button type="button" data-drush-clear class="button-press shrink-0 px-3.5 py-2 rounded-lg bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-xs font-bold flex items-center justify-center gap-1.5"' +
+      (st.busy || st.n === 0 ? ' disabled style="opacity:.5"' : '') + '><i class="fa-solid fa-trash-can"></i>' + tx(st.busy ? 'busy' : 'btn') + '</button>';
+  }
+  function load() {
+    var c = sb(); if (!c) { render(); return; }
+    c.from('leaderboard').select('score', { count: 'exact' }).order('score', { ascending: false }).limit(1).then(function (r) {
+      if (!r.error) { st.n = r.count || 0; st.top = r.data && r.data[0] ? r.data[0].score : 0; }
+      render();
+    }, render);
+  }
+  box.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-drush-clear]') : null;
+    if (!b || st.busy) return;
+    if (!isAdmin()) { st.msg = tx('denied'); st.bad = true; render(); return; }
+    var c = sb(); if (!c) return;
+    if (!confirm(tx('confirm', { n: num(st.n) }))) return;
+    st.busy = true; st.msg = ''; st.bad = false; render();
+    c.from('leaderboard').delete({ count: 'exact' }).gte('id', 0).then(function (r) {
+      st.busy = false;
+      if (r.error) { st.bad = true; st.msg = /42501|permission/i.test(String(r.error.message + r.error.code)) ? tx('denied') : tx('err'); render(); return; }
+      var gone = r.count || 0;
+      // Row security turns a non-admin delete into "0 rows", so read the count back.
+      c.from('leaderboard').select('id', { count: 'exact', head: true }).then(function (q) {
+        st.n = q.count || 0; st.top = 0;
+        if (st.n > 0) { st.bad = true; st.msg = tx('partial', { n: num(st.n) }); } else st.msg = tx('done', { n: num(gone) });
+        render();
+      }, function () { st.msg = tx('done', { n: num(gone) }); render(); });
+    }, function () { st.busy = false; st.bad = true; st.msg = tx('err'); render(); });
+  });
+
+  function mount() {
+    var zone = document.querySelector('#dlDanger > div') || document.getElementById('panel-reset');
+    if (!zone) return false;
+    zone.insertBefore(box, zone.firstChild);
+    return true;
+  }
+  if (!mount()) document.addEventListener('DOMContentLoaded', mount);
+  document.addEventListener('dl:tab', function (e) { if (e.detail === 'settings') { st.msg = ''; st.bad = false; load(); } });
+  var danger = document.getElementById('dlDanger');
+  if (danger) danger.addEventListener('toggle', function () { if (danger.open) load(); });
+  var origLang = window.setLanguage;
+  if (typeof origLang === 'function') window.setLanguage = function () { var r = origLang.apply(this, arguments); render(); return r; };
+  render();
+})();
+</script><script>(function () {
   // Admin console easter eggs, per language (Cantonese humour in 繁). The console itself stays standard wording.
   // 1) Daily quote: one pool per language.  2) Konami code ↑↑↓↓←→←→BA: Partner Mode.  3) Tap the quote icon 7×: office cat.
   function L() {

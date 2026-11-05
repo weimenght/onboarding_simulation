@@ -413,10 +413,11 @@ const T = {
 <li><b class="c">Reply-all storm</b> — slide under</li>
 <li><b class="r">Moving deadline</b> — bounces, time your jump</li></ul>
 <h4>Career path</h4><ul>
-<li>Distance earns promotions. Make <b class="y">Partner at 1845m</b>.</li>
+<li>Score earns promotions: A1 1k · A2 4k · Senior Consultant 10k · Manager 20k · Senior Manager 35k · Director 60k · <b class="y">Partner 100k</b>. Every 100k after that adds a Partner ★.</li>
+<li>Each promotion makes you run <b class="y">faster</b>, and after Partner the pace keeps climbing.</li>
 <li><b>Busy Season</b> is faster with ×1.5 score, then <b>Annual Leave</b> gives you a breather.</li>
 <li>The office clock runs too. After 18:00, expect more emails.</li></ul>
-<h4>Secrets</h4><ul><li>16 achievements, 9 of them hidden easter eggs. Open 🏅 for hints. Egg bonuses work once per sprint.</li></ul>`
+<h4>Secrets</h4><ul><li>23 achievements, 15 of them hidden easter eggs. Open 🏅 for hints. Egg bonuses work once per sprint.</li></ul>`
   },
   zh: {
     sub: '校招新人跑酷', kScore: '积分', kBest: '最佳', kRank: '职级', kDist: '冲刺',
@@ -474,10 +475,11 @@ const T = {
 <li><b class="c">全员回复风暴</b> — 滑行通过</li>
 <li><b class="r">提前的截止日</b> — 会弹跳，把握时机</li></ul>
 <h4>职业路径</h4><ul>
-<li>跑得越远晋升越高，<b class="y">1845米晋升合伙人</b>。</li>
+<li>积分决定晋升：A1 1千 · A2 4千 · 高级顾问 1万 · 经理 2万 · 高级经理 3.5万 · 总监 6万 · <b class="y">合伙人 10万</b>，之后每 10 万分多一颗合伙人之星 ★。</li>
+<li>每次晋升都会<b class="y">跑得更快</b>，成为合伙人之后还会继续加速。</li>
 <li><b>忙季</b>速度更快、积分×1.5，之后是<b>年假</b>休整。</li>
 <li>办公室时钟也在走，18:00 之后邮件会更多。</li></ul>
-<h4>秘密</h4><ul><li>共16个成就，其中9个是隐藏彩蛋。打开 🏅 查看提示。彩蛋奖励每局限一次。</li></ul>`
+<h4>秘密</h4><ul><li>共23个成就，其中15个是隐藏彩蛋。打开 🏅 查看提示。彩蛋奖励每局限一次。</li></ul>`
   }
 };
 const t = (k) => (T[settings.lang][k] !== undefined ? T[settings.lang][k] : T.en[k]);
@@ -535,8 +537,8 @@ const QUIZ = [
 
 const ACH = [
   { id: 'first', e: '🎓', n: { en: 'Day One', zh: '入职第一天' }, d: { en: 'Finish your first sprint.', zh: '完成第一次冲刺。' } },
-  { id: 'manager', e: '📈', n: { en: 'Making Manager', zh: '晋升经理' }, d: { en: 'Reach Manager (700m).', zh: '跑到经理职级（700米）。' } },
-  { id: 'partner', e: '👔', n: { en: 'Partner Track', zh: '合伙人之路' }, d: { en: 'Make Partner at 1845m.', zh: '在1845米晋升合伙人。' } },
+  { id: 'manager', e: '📈', n: { en: 'Making Manager', zh: '晋升经理' }, d: { en: 'Reach Manager (20,000 pts).', zh: '晋升到经理（20,000分）。' } },
+  { id: 'partner', e: '👔', n: { en: 'Partner Track', zh: '合伙人之路' }, d: { en: 'Make Partner (100,000 pts).', zh: '晋升合伙人（100,000分）。' } },
   { id: 'combo', e: '🟢', n: { en: 'Green Dot Streak', zh: '绿点连击' }, d: { en: 'Hit a 25× dot combo.', zh: '达成25连击。' } },
   { id: 'quiz', e: '🧠', n: { en: 'Knowledge Sharer', zh: '知识分享者' }, d: { en: 'Answer 5 pop quizzes correctly (all-time).', zh: '累计答对5道快问快答。' } },
   { id: 'buddy', e: '🤝', n: { en: 'Buddy System', zh: '伙伴体系' }, d: { en: 'Meet 4 buddies, coaches or partners in one sprint.', zh: '单局遇到4位伙伴、导师或合伙人。' } },
@@ -555,6 +557,49 @@ const ACH = [
 /* ============================================================
    AUDIO (tiny WebAudio synth — no library, iOS/Android safe)
    ============================================================ */
+TIPS.push(
+  { en: "Lock your screen every time you step away: Windows key + L, or Ctrl + Cmd + Q on a Mac.", zh: "离开座位就锁屏：Windows 按 Win + L，Mac 按 Ctrl + Cmd + Q。" },
+  { en: "In Excel, press F4 while editing a formula to cycle a reference through $A$1, A$1, $A1 and A1.", zh: "Excel 编辑公式时按 F4，可在 $A$1、A$1、$A1、A1 之间切换引用方式。" },
+  { en: "Alt + = adds a SUM for the cells above. Ctrl + ` shows every formula on the sheet.", zh: "Alt + = 一键对上方单元格求和；Ctrl + ` 显示工作表里的所有公式。" },
+  { en: "Ctrl + arrow keys jump to the edge of your data. Add Shift to select everything on the way.", zh: "Ctrl + 方向键跳到数据边缘，再加 Shift 可一路选中。" },
+  { en: "Before you hit send: check the recipients, the attachment, and every number in the email.", zh: "发送前检查三件事：收件人、附件，以及邮件里的每一个数字。" },
+  { en: "MECE: group your points so they don’t overlap and nothing important is left out.", zh: "MECE 原则：要点之间不重叠，整体上不遗漏。" },
+  { en: "Every meeting invite needs a goal and an agenda. If it has neither, it could be an email.", zh: "每个会议邀请都要写明目的和议程；两者都没有，也许发封邮件就够了。" },
+  { en: "Ask for feedback you can use: “What is one thing I should do differently next time?”", zh: "请求可落地的反馈：“下次我最应该改进的一件事是什么？”" },
+  { en: "Never paste client data into tools the firm hasn’t approved, including public AI chatbots.", zh: "不要把客户数据粘贴到公司未批准的工具里，包括公共 AI 聊天工具。" },
+  { en: "A suspicious email asks you to act fast? Don’t click. Report it.", zh: "可疑邮件催你马上操作？别点链接，直接上报。" },
+  { en: "Meet someone new? Note their name, their team and one thing you talked about.", zh: "认识新同事后，记下他的名字、团队和你们聊过的一件事。" },
+  { en: "Block focus time in your calendar for deep work, and protect it like a client meeting.", zh: "在日历里预留专注时间做深度工作，像对待客户会议一样守住它。" },
+  { en: "Reply within a day, even if it is only “Got it, I’ll come back by Thursday.”", zh: "一天内回复，哪怕只是“收到，周四前回复你”。" },
+  { en: "Have lunch away from your desk, with people. It is how you learn what the org chart doesn’t say.", zh: "离开工位和同事一起吃午饭，组织架构图上没写的事，往往在饭桌上听到。" }
+);
+QUIZ.push(
+  { q: { en: "You leave your desk for a quick coffee. What do you do with your laptop?", zh: "你要离开座位去倒杯咖啡，笔记本电脑怎么处理？" }, a: [{ en: "Lock the screen first", zh: "先锁屏" }, { en: "Leave it open, it’s only two minutes", zh: "开着就行，就两分钟" }], ex: { en: "An unlocked screen is an open door to client data.", zh: "不锁屏，等于给客户数据开了门。" } },
+  { q: { en: "An urgent email asks you to “verify your password” through a link.", zh: "一封紧急邮件要你点链接“验证密码”。" }, a: [{ en: "Don’t click; report it as phishing", zh: "不点链接，按钓鱼邮件上报" }, { en: "Click it quickly so your account isn’t locked", zh: "赶紧点开，免得账号被锁" }], ex: { en: "Urgency is the classic phishing trick. Reporting protects everyone.", zh: "制造紧迫感是钓鱼邮件的惯用手法，上报能保护所有人。" } },
+  { q: { en: "Excel: what does F4 do while you edit a formula?", zh: "Excel：编辑公式时按 F4 有什么作用？" }, a: [{ en: "Switches between absolute and relative references", zh: "在绝对引用和相对引用之间切换" }, { en: "Saves the file", zh: "保存文件" }, { en: "Inserts a new sheet", zh: "插入新工作表" }], ex: { en: "F4 cycles $A$1 → A$1 → $A1 → A1.", zh: "F4 依次切换 $A$1 → A$1 → $A1 → A1。" } },
+  { q: { en: "Excel: what does Alt + = do?", zh: "Excel：Alt + = 是什么功能？" }, a: [{ en: "AutoSum", zh: "自动求和" }, { en: "Insert a row", zh: "插入一行" }, { en: "Open the formula bar", zh: "打开编辑栏" }], ex: { en: "It adds a SUM for the cells above or to the left.", zh: "它会对上方或左侧的单元格自动求和。" } },
+  { q: { en: "Excel: which shortcut shows all formulas on the sheet?", zh: "Excel：哪个快捷键可以显示整张表的公式？" }, a: [{ en: "Ctrl + `", zh: "Ctrl + `" }, { en: "Ctrl + F", zh: "Ctrl + F" }, { en: "Ctrl + Z", zh: "Ctrl + Z" }], ex: { en: "Press it again to go back to values.", zh: "再按一次即可切回数值显示。" } },
+  { q: { en: "What does MECE stand for?", zh: "MECE 是什么意思？" }, a: [{ en: "Mutually Exclusive, Collectively Exhaustive", zh: "相互独立，完全穷尽" }, { en: "Most Efficient, Cheapest Execution", zh: "最高效、最便宜的执行" }, { en: "Measure Everything, Check Everything", zh: "全部测量，全部检查" }], ex: { en: "No overlaps, no gaps: the backbone of a clear structure.", zh: "不重叠、不遗漏，是清晰结构的基础。" } },
+  { q: { en: "A client offers you an expensive gift after a project.", zh: "项目结束后，客户要送你一份贵重礼物。" }, a: [{ en: "Check the gifts policy and tell your senior first", zh: "先查礼品政策并告知主管" }, { en: "Accept it quietly, it would be rude to refuse", zh: "悄悄收下，拒绝不礼貌" }], ex: { en: "Gifts can affect independence and trust. When in doubt, ask.", zh: "礼品可能影响独立性与信任，拿不准就先问。" } },
+  { q: { en: "In a crowded lift, a teammate starts talking about a client by name.", zh: "在拥挤的电梯里，同事开始点名讨论某个客户。" }, a: [{ en: "Suggest you pick it up back at the office", zh: "提议回办公室再聊" }, { en: "Join in, nobody here knows the client", zh: "一起聊，这里没人认识客户" }], ex: { en: "Confidentiality applies in lifts, taxis, restaurants and group chats too.", zh: "保密义务在电梯、出租车、餐厅和群聊里同样适用。" } },
+  { q: { en: "You want to use a public AI chatbot to summarise a client report.", zh: "你想用公共 AI 聊天工具总结一份客户报告。" }, a: [{ en: "Only use firm-approved tools for client data", zh: "客户数据只用公司批准的工具" }, { en: "Fine, as long as you delete the chat afterwards", zh: "可以，用完把对话删掉就行" }], ex: { en: "Once pasted, data may leave the firm’s control. Follow the approved-tools policy.", zh: "一旦粘贴，数据可能就脱离了公司的管控，请遵守已批准工具的规定。" } },
+  { q: { en: "You realise you will miss tomorrow’s deadline.", zh: "你发现明天的截止日期赶不上了。" }, a: [{ en: "Tell your senior today, with a new time and what’s done", zh: "今天就告诉主管，说明进度和新的完成时间" }, { en: "Hand it in late and explain afterwards", zh: "晚交，事后再解释" }], ex: { en: "A warning a day early is a plan. A surprise on the day is a problem.", zh: "提前一天预警是计划，当天才说就是问题。" } },
+  { q: { en: "Your senior’s review comments change your whole approach. You…", zh: "主管的复核意见推翻了你的整个思路，你会……" }, a: [{ en: "Ask to understand the reasoning, then update it", zh: "先理解背后的理由，再修改" }, { en: "Ignore the comments you disagree with", zh: "忽略你不同意的意见" }], ex: { en: "Understand first; if you still disagree, discuss it with evidence.", zh: "先理解；如果仍有不同看法，用事实去沟通。" } },
+  { q: { en: "Excel: Ctrl + arrow key does what?", zh: "Excel：Ctrl + 方向键的作用是？" }, a: [{ en: "Jumps to the edge of the data", zh: "跳到数据区域的边缘" }, { en: "Selects the whole sheet", zh: "选中整张工作表" }, { en: "Moves the sheet tab", zh: "移动工作表标签" }], ex: { en: "Add Shift to select the range on the way.", zh: "同时按 Shift 可一路选中区域。" } },
+  { q: { en: "You are invited to set up a team meeting. What goes in the invite?", zh: "你负责发起一个团队会议，邀请里应写什么？" }, a: [{ en: "The goal, an agenda and any pre-read", zh: "会议目的、议程和需要提前阅读的材料" }, { en: "Just the title, people can ask", zh: "只写标题，有问题大家会问" }], ex: { en: "A clear goal makes a shorter, better meeting.", zh: "目标清晰，会议更短、更有效。" } }
+);
+ACH.push(
+  { id: 'equity', e: '🌟', n: { en: 'Equity Partner', zh: '权益合伙人' }, d: { en: 'Earn a Partner star (200,000 pts).', zh: '获得一颗合伙人之星（200,000分）。' } },
+  { id: 'breather', egg: 1, e: '🧘', n: { en: 'Take a Breather', zh: '喘口气' }, d: { en: 'Paused for 30 seconds, then came back stronger.', zh: '暂停30秒后满血回归。' }, h: { en: 'Real breaks count. Pause for a while, then come back.', zh: '真正的休息也算数：暂停一会儿再回来。' } },
+  { id: 'inbox', egg: 1, e: '📭', n: { en: 'Inbox Zero', zh: '收件箱清零' }, d: { en: 'Dodged 10 reply-all storms in one sprint.', zh: '单局躲过10次全员回复风暴。' }, h: { en: 'Survive enough reply-alls in one sprint.', zh: '单局里躲过足够多的全员回复。' } },
+  { id: 'fullhouse', egg: 1, e: '🫶', n: { en: 'Full Network', zh: '人脉全开' }, d: { en: 'Met a buddy, a coach and a partner in one sprint.', zh: '单局遇到伙伴、导师和合伙人。' }, h: { en: 'Some sprints, you meet everyone who matters.', zh: '有些冲刺里，你会遇到所有关键的人。' } },
+  { id: 'hattrick', egg: 1, e: '🎓', n: { en: 'Hat Trick', zh: '帽子戏法' }, d: { en: 'Answered 3 pop quizzes right in one sprint.', zh: '单局答对3道快问快答。' }, h: { en: 'Know your stuff three times in a row.', zh: '一局之内，连续三次答对。' } },
+  { id: 'lunch', egg: 1, e: '🍱', n: { en: 'Lunch Break', zh: '午休时光' }, d: { en: 'Played between 12:00 and 14:00.', zh: '在中午12点到下午2点之间游玩。' }, h: { en: 'There is a time of day for a quick game (and for eating).', zh: '一天中总有适合玩一局（和吃饭）的时候。' } },
+  { id: 'service', egg: 1, e: '🏢', n: { en: 'Line of Service', zh: '业务线' }, d: { en: 'Played as Audit, Tax or Consulting.', zh: '以审计、税务或咨询为昵称游玩。' }, h: { en: 'Name yourself after a business line.', zh: '用一条业务线给自己起名。' } }
+);
+Object.assign(T.en, {"paceUp":"⚡ pace up","starSub":"Partner star · +1845 · ⚡ pace up","breather":"🧘 Took a real break: +300 and a fresh coffee","inboxZero":"📭 INBOX ZERO! +1000","fullhouse":"🫶 Full network: buddy, coach and partner! +800","hattrick":"🎓 Hat trick: 3 quizzes right! +1000","lunch":"🍱 Lunch-break sprint! Remember to actually eat.","svcAudit":"🔍 Audit & Assurance: tick and tie!","svcTax":"🧾 Tax: every number has a rule.","svcConsulting":"💡 Consulting: frameworks ready!"});
+Object.assign(T.zh, {"paceUp":"⚡ 提速","starSub":"合伙人之星 · +1845 · ⚡ 提速","breather":"🧘 好好休息了一下：+300，再来杯咖啡","inboxZero":"📭 收件箱清零！+1000","fullhouse":"🫶 人脉全开：伙伴、导师、合伙人！+800","hattrick":"🎓 帽子戏法：连答对3题！+1000","lunch":"🍱 午休冲刺！记得好好吃饭。","svcAudit":"🔍 审计鉴证：逐项核对！","svcTax":"🧾 税务：每个数字都有依据。","svcConsulting":"💡 咨询：框架已就位！"});
+
 const Sfx = {
   ctx: null, master: null, nb: null,
   unlock() {
@@ -699,7 +744,7 @@ let H = 270, FLOOR = H - 46;
 const STEP = 1000 / 60;
 const BASE_SPEED = 3.4, MAX_SPEED = 8.6, RAMP = 0.0031;
 const GRAV = 0.62, GRAV_HOLD = 0.46, JUMP_V = -9.7;
-const RANK_AT = [0, 90, 240, 450, 700, 1000, 1400, 1845];
+
 
 const LOCS = [
   { en: 'Hong Kong', zh: '香港', sky: ['#030712', '#002776', '#004F59'], far: '#0d1c30', near: '#0a131e', win: ['#86BC25', '#38BDF8', '#F59E0B'], ground: '#111720', accent: '#86BC25' },
@@ -779,8 +824,21 @@ let quiz = null;
 function freshRun() {
   return { rank: 0, eggs: {}, buddies: 0, close: 0, maxCombo: 0, outfit: '', rainbow: false, emailBoost: false, nightOwl: false, sixpm: false, partner: false, gold: false, newAch: [], startHour: 9 };
 }
-function rankIndex(d) { let i = 0; for (let k = 0; k < RANK_AT.length; k++) if (d >= RANK_AT[k]) i = k; return i; }
-const rankName = (i, lang) => T[lang || settings.lang].ranks[i];
+function rankIndex() { let i = 0; while (i < 400 && score >= levelAt(i + 1)) i++; return i; }
+const LEVEL_AT = [0, 1000, 4000, 10000, 20000, 35000, 60000, 100000];
+const LEVEL_PACE = [3.4, 3.6, 3.9, 4.4, 5.1, 6.0, 7.2, 8.6];
+const STAR_EVERY = 100000, STAR_PACE = 0.6, PACE_MAX = 12;
+const PARTNER_LEVEL = LEVEL_AT.length - 1;
+const levelAt = (i) => (i <= PARTNER_LEVEL ? LEVEL_AT[i] : LEVEL_AT[PARTNER_LEVEL] + (i - PARTNER_LEVEL) * STAR_EVERY);
+const paceAt = (i) => (i <= PARTNER_LEVEL ? LEVEL_PACE[i] : Math.min(PACE_MAX, LEVEL_PACE[PARTNER_LEVEL] + (i - PARTNER_LEVEL) * STAR_PACE));
+let pace = BASE_SPEED;
+// Pace for the current score: rises through each level and eases in, so a bonus never jolts the runner.
+function targetPace() {
+  const i = rankIndex(), lo = levelAt(i), hi = levelAt(i + 1);
+  const k = clamp((score - lo) / (hi - lo), 0, 1);
+  return paceAt(i) + (paceAt(i + 1) - paceAt(i)) * k;
+}
+const rankName = (i, lang) => { const r = T[lang || settings.lang].ranks; return i < r.length ? r[i] : r[r.length - 1] + ' ★' + (i - r.length + 2); };
 const comboMult = () => 1 + Math.min(combo, 40) * 0.1;
 
 /* ============================================================
@@ -1065,7 +1123,7 @@ function chooseObstacle() {
   if (dist > 140) pool.push(['SCOPE', 6]);
   if (dist > 260) pool.push(['DREF', 4]);
   if (dist > 380) pool.push(['DEADLINE', 5]);
-  if (dist > 480) pool.push(['COMBO', 4]);
+  if (dist > 480) pool.push(['COMBO', 4 + Math.max(0, run.rank - 4) * 2]);
   return pickWeighted(pool);
 }
 function pickPower() {
@@ -1100,7 +1158,7 @@ function spawnPattern() {
   }
   const busy = phase.type === 'BUSY';
   const minGap = sp * air + 70;
-  const gap = extra + minGap + Math.random() * sp * (busy ? 14 : 34);
+  const gap = extra + minGap + Math.random() * sp * (busy ? 14 : Math.max(14, 34 - 2 * run.rank));
   spawnGap = gap;
   const lastEnd = x + extra + lastW, nextStart = x + gap;
   const mid = (lastEnd + nextStart) / 2;
@@ -1123,7 +1181,8 @@ function hit(a, b, pad = 4) {
    ============================================================ */
 function stepWorld() {
   const phaseMul = phase.type === 'BUSY' ? 1.12 : phase.type === 'LEAVE' ? 0.92 : 1;
-  speed = Math.min(MAX_SPEED, BASE_SPEED + dist * RAMP) * phaseMul;
+  const tp = targetPace(); pace += clamp(tp - pace, -0.004, 0.004);
+  speed = pace * phaseMul;
   const dm = speed * 0.06;
   dist += dm; scroll += speed;
   score += dm * 5 * (phase.type === 'BUSY' ? 1.5 : 1);
@@ -1142,9 +1201,10 @@ function stepWorld() {
   const ri = rankIndex(dist);
   if (ri > run.rank) {
     run.rank = ri;
-    const isPartner = ri === RANK_AT.length - 1;
-    banner(t('promoted'), isPartner ? `${rankName(ri)} · ${t('partnerSub')}` : rankName(ri));
-    addScore(isPartner ? 1845 : 200, P.x + 8, P.y - 10, '#F59E0B');
+    const isPartner = ri === PARTNER_LEVEL, star = ri > PARTNER_LEVEL;
+    banner(t('promoted'), isPartner ? `${rankName(ri)} · ${t('partnerSub')}` : star ? `${rankName(ri)} · ${t('starSub')}` : `${rankName(ri)} · ${t('paceUp')}`);
+    addScore(isPartner || star ? 1845 : 200, P.x + 8, P.y - 10, '#F59E0B');
+    if (star) unlock('equity');
     Sfx.play('promo'); buzz([30, 40, 30]);
     burst(P.x + 8, P.y, '#F59E0B', 16);
     if (ri >= 4) unlock('manager');
@@ -1163,6 +1223,8 @@ function stepWorld() {
     const n = npcs[i]; n.update(speed);
     if (!n.met && hit(P, n, 2)) {
       n.met = true; run.buddies++;
+      (run.kinds = run.kinds || {})[n.kind] = 1;
+      if (run.kinds.BUDDY && run.kinds.COACH && run.kinds.PARTNER) setTimeout(() => eggBonus('fullhouse', 800, 'fullhouse', '#86BC25'), 700);
       const pts = n.kind === 'PARTNER' ? 800 : n.kind === 'COACH' ? 400 : 250;
       addScore(pts, n.x + 9, n.y - 4, n.kind === 'PARTNER' ? '#F59E0B' : '#86BC25');
       if (n.kind === 'COACH') P.shield = true;
@@ -1187,6 +1249,7 @@ function stepWorld() {
     }
     if (!o.passed && o.x + o.w < P.x) {
       o.passed = true; addScore(40);
+      if (o.type === 'EMAIL' && (run.mails = (run.mails || 0) + 1) >= 10) eggBonus('inbox', 1000, 'inboxZero', '#38BDF8');
       if (o.minGap <= 7 && P.invuln <= 0 && coffee <= 0) {
         run.close++; addScore(60, P.x + 8, P.y - 6, '#FCD34D');
         floatText(t('closeCall'), P.x + 8, P.y - 16, '#FCD34D');
@@ -1412,6 +1475,7 @@ function answerQuiz(ai) {
   if (right) {
     addScore(500, P.x + 8, P.y - 10, '#FCD34D');
     stats.quizRight++; saveStats();
+    if ((run.quizRight = (run.quizRight || 0) + 1) >= 3) eggBonus('hattrick', 1000, 'hattrick', '#FCD34D');
     if (stats.quizRight >= 5) unlock('quiz');
     Sfx.play('good'); buzz(25);
   } else { Sfx.play('bad'); buzz(50); }
@@ -1455,7 +1519,7 @@ function startGame() {
   run.nightOwl = hr >= 23 || hr < 5;
   randomizeSession(run.nightOwl);
 
-  score = 0; dist = 0; speed = BASE_SPEED; coffee = 0; magnet = 0; combo = 0; comboT = 0; shake = 0;
+  score = 0; dist = 0; speed = BASE_SPEED; pace = BASE_SPEED; coffee = 0; magnet = 0; combo = 0; comboT = 0; shake = 0;
   spawnGap = 260; phase = { type: 'NORMAL', t: 0 }; nextBusyAt = 330;
   next = { npc: 60, quiz: 140, power: 100 };
   obstacles.length = items.length = npcs.length = particles.length = floats.length = 0;
@@ -1472,7 +1536,12 @@ function startGame() {
   const N = nm.toUpperCase().replace(/[\s_.-]+/g, '');
   if (N === '1845' || N === 'WELCH' || N === 'WILLIAMWELCHDELOITTE') { run.outfit = 'victorian'; setTimeout(() => toast(t('outfit1845')), 300); unlock('since1845'); }
   else if (N.includes('DELOITTE') || N === 'GREENDOT') { run.outfit = 'green'; setTimeout(() => toast(t('outfitGreen')), 300); unlock('greendot'); }
+  else {
+    const svc = { AUDIT: 'Audit', '审计': 'Audit', '審計': 'Audit', TAX: 'Tax', '税务': 'Tax', '稅務': 'Tax', CONSULTING: 'Consulting', '咨询': 'Consulting', '諮詢': 'Consulting' }[N];
+    if (svc) { run.look.tie = { Audit: '#38BDF8', Tax: '#F59E0B', Consulting: '#E879F9' }[svc]; setTimeout(() => toast(t('svc' + svc)), 300); unlock('service'); }
+  }
   if (run.nightOwl) { setTimeout(() => toast(t('nightOwl')), 600); unlock('nightowl'); }
+  if (hr >= 12 && hr < 14) { setTimeout(() => toast(t('lunch')), 600); unlock('lunch'); }
   if (now.getDay() === 5 && hr >= 18) { run.emailBoost = true; setTimeout(() => toast(t('friday')), 900); unlock('friday'); }
   applyCanvasFx();
   updateHUD();
@@ -1508,10 +1577,12 @@ function showGameOver() {
 
 function togglePause(force) {
   if (state === 'PLAYING' && force !== false) {
-    state = 'PAUSED'; show('pauseOverlay'); $('btnPause').textContent = '▶';
+    state = 'PAUSED'; show('pauseOverlay'); $('btnPause').textContent = '▶'; run.pausedAt = performance.now();
     input.jumpHeld = input.slideHeld = false;
   } else if (state === 'PAUSED' && force !== true) {
     state = 'PLAYING'; hide('pauseOverlay'); $('btnPause').textContent = '❚❚'; lastT = 0;
+    if (run.pausedAt && performance.now() - run.pausedAt >= 30000) { coffee = Math.max(coffee, 180); eggBonus('breather', 300, 'breather', '#38BDF8'); }
+    run.pausedAt = 0;
   }
 }
 function quitRun() { hide('pauseOverlay'); deathType = 'QUIT'; showGameOver(); }
@@ -1531,6 +1602,12 @@ function eggOnce(id) {
   if (state !== 'PLAYING') { toast(t('startFirst')); return false; }
   if (run.eggs[id]) { toast(t('onceRun')); return false; }
   run.eggs[id] = true; return true;
+}
+function eggOnceAny(id) { if (run.eggs[id]) return false; run.eggs[id] = true; return true; }
+function eggBonus(id, pts, msg, color) {
+  if (!eggOnceAny(id)) return;
+  if (pts) addScore(pts, P.x + 8, P.y - 10, color || '#F59E0B');
+  toast(t(msg)); Sfx.play('egg'); buzz([30, 30, 60]); burst(P.x + 8, P.y + 10, color || '#F59E0B', 16); unlock(id);
 }
 function eggExec() {
   if (!eggOnce('exec')) return;
@@ -1764,6 +1841,7 @@ function boot() {
   requestAnimationFrame(loop);
   setTimeout(getSupa, 1200); // warm up the leaderboard connection without blocking first paint
 }
+if (window.DL_TEST) window.__drush = (src) => eval('(' + src + ')');
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
 </script>
