@@ -47,6 +47,7 @@ window.DLCanto = {
     '众行致远，为我们组点赞': '眾行致遠，我哋組最掂！',
     '绿点能量拉满，全员加速中': '綠點能量爆燈，全組加速中',
     '写句加油（全场可见）或点击上方快捷短语...': '寫句打氣説話（全場睇到），或者撳上面嘅快捷短語…',
+    '写句加油（全场可见）...': '寫句打氣説話（全場睇到）…',
     '写句加油或点击上方快捷短语...': '寫句打氣説話（全場睇到），或者撳上面嘅快捷短語…',
     '每分钟可发 1 条友善留言': '每分鐘可以留 1 句友善説話',
     '每分钟可发 1 条留言': '每分鐘可以留 1 句説話',
@@ -647,12 +648,7 @@ window.DLCanto = {
           </button>
         </div>
 
-        <!-- One-Tap Positive Quick Cheer Chips -->
-        <div id="quickCheerChipsContainer" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          <!-- Rendered dynamically via JS -->
-        </div>
-
-        <input id="msgContent" type="text" placeholder="写句加油（全场可见）或点击上方快捷短语..." maxlength="100" required
+        <input id="msgContent" type="text" placeholder="写句加油（全场可见）..." maxlength="100" required
           oninput="hideModerationAlert()"
           class="w-full h-10 bg-black/60 border border-white/15 focus:border-teal-400 focus:outline-none rounded-lg px-3 text-xs text-white placeholder-gray-600 transition-colors">
 
@@ -1253,7 +1249,7 @@ window.DLCanto = {
         msgBoardTitle: "大家都在聊",
         msgBoardSub: "给队友打气，分享你的现场高光时刻",
         msgCountFormat: (n) => `${n} 条留言`,
-        msgPlaceholder: "写句加油（全场可见）或点击上方快捷短语...",
+        msgPlaceholder: "写句加油（全场可见）...",
         msgFriendlyTip: "每分钟可发 1 条友善留言",
         msgBlockedNotice: "请保持友善，也请勿留下联系方式或客户信息，换句话试试吧",
         msgCooldownWait: (s) => `休息 ${s} 秒后就能再发啦`,
@@ -1353,7 +1349,7 @@ window.DLCanto = {
         msgBoardTitle: "Community Wall",
         msgBoardSub: "Cheer for your team and share the fun",
         msgCountFormat: (n) => `${n} msgs`,
-        msgPlaceholder: "Write a shoutout (everyone can see it) or tap a quick cheer...",
+        msgPlaceholder: "Write a shoutout (everyone can see it)...",
         msgFriendlyTip: "1 friendly post per minute",
         msgBlockedNotice: "Keep it positive, and please leave out contact details and client info",
         msgCooldownWait: (s) => `Ready to post again in ${s}s`,
@@ -1718,6 +1714,7 @@ window.DLCanto = {
             const key = line.slice(0, eqIdx).trim();
             const valPart = line.slice(eqIdx + 1).trim();
             if (!key || !valPart) continue;
+            if (key === 'msgPlaceholder' && /快捷|quick cheer/i.test(valPart)) continue;
 
             if (key === 'BLOCKED_WORDS') {
               const words = valPart.split(',').map(w => w.trim().toLowerCase()).filter(Boolean);
@@ -1950,7 +1947,7 @@ window.DLCanto = {
       const card = document.getElementById('teamGateCard');
 
       const val = parseInt(teamInput.value, 10);
-      if (String(teamInput.value).trim() === '404' && window.DLEgg) { DLEgg.team404(); return; }
+      if (window.DLEgg && DLEgg.team(String(teamInput.value).trim())) return;
       const nickVal = (nickInput.value || '').trim();
 
       if (isNaN(val) || val < 1 || val > currentCohortScale) {
@@ -2468,11 +2465,12 @@ window.DLCanto = {
       const textEl = document.getElementById('energyBoosterText');
       const list = ENERGY_TIPS[currentLang] || ENERGY_TIPS.zh;
       if (textEl) {
-        textEl.textContent = list[Math.floor(Math.random() * list.length)];
+        if (window.DLEgg && DLEgg.vibe && Math.random() < 0.8) DLEgg.vibe(textEl);
+        else { textEl.removeAttribute('data-no-hant'); textEl.textContent = list[Math.floor(Math.random() * list.length)]; }
       }
       if (toast) {
         toast.classList.remove('hidden');
-        setTimeout(() => toast.classList.add('hidden'), 4500);
+        clearTimeout(window.dlVibeT); window.dlVibeT = setTimeout(() => toast.classList.add('hidden'), 6500);
       }
     }
 
@@ -2749,7 +2747,7 @@ window.DLCanto = {
       if (input) input.classList.remove('border-amber-400');
     }
 
-    function renderQuickCheerChips() {
+    function renderQuickCheerChips() { return;
       const container = document.getElementById('quickCheerChipsContainer');
       if (!container) return;
       const list = QUICK_CHEERS[currentLang] || QUICK_CHEERS.zh;
@@ -3598,7 +3596,8 @@ window.DLCanto = {
 })();
 </script><script>(function () {
   // Participant portal easter eggs, written per language: English, 简体, and Cantonese for 繁 (Hong Kong).
-  // Triggers: tap the green dot 5×, tap the footer, wall keywords, team number 404, opening the portal after hours.
+  // Triggers: tap the green dot 5× (neon mode), tap the footer, wall keywords, team numbers 404 / 0 / 888 / 1845,
+  // opening the portal at lunch time or after hours.
   function L() {
     try { var l = window.DLH && DLH.lang ? DLH.lang() : null; if (l) return l === 'en' ? 'en' : l === 'zh-Hant' ? 'hant' : 'hans'; } catch (e) {}
     return typeof currentLang !== 'undefined' && currentLang === 'en' ? 'en' : 'hans';
@@ -3621,6 +3620,12 @@ window.DLCanto = {
     '.dl-rain span{position:absolute;top:-48px;font-size:28px;animation:dlFall linear forwards}' +
     '@keyframes dlFall{to{transform:translateY(110vh) rotate(25deg)}}' +
     '.dl-toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:85;max-width:min(92vw,420px);padding:12px 16px;border-radius:16px;background:rgba(10,16,20,.96);border:1px solid rgba(134,188,37,.5);color:#E6EAF0;font-size:13px;font-weight:700;line-height:1.45;box-shadow:0 12px 40px rgba(0,0,0,.5)}';
+  // Neon Green Dot mode (5 taps on the dot): glowing, pulsing cards, green headings and faint scan lines.
+  css.textContent += 'body.matrix-active .card-shadow{border-color:rgba(134,188,37,.85)!important;animation:dlNeon 1.6s ease-in-out infinite}' +
+    '@keyframes dlNeon{0%,100%{box-shadow:0 0 10px rgba(134,188,37,.25),0 0 0 1px rgba(134,188,37,.35)}50%{box-shadow:0 0 30px rgba(134,188,37,.75),0 0 0 1px rgba(134,188,37,.95)}}' +
+    'body.matrix-active h1,body.matrix-active h2{color:#b6f047!important;text-shadow:0 0 10px rgba(134,188,37,.85)}' +
+    'body.matrix-active::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:70;background:repeating-linear-gradient(0deg,rgba(134,188,37,.06) 0 2px,transparent 2px 4px)}' +
+    '@media (prefers-reduced-motion:reduce){body.matrix-active .card-shadow{animation:none;box-shadow:0 0 22px rgba(134,188,37,.6)}}';
   document.head.appendChild(css);
   function rain(emojis, n) {
     if (reduced) return;
@@ -3679,10 +3684,65 @@ window.DLCanto = {
       m: { en: 'Blessing applied: your next deck gets signed off on version 1. Results may vary by client.', hans: '祝福已送达：你的下一份方案第一版就过。效果因客户而异。', hant: '祝福送到：你下一份 deck 第一版就過。效果因客而異 😌' } },
     { re: /底稿|勾稽|审计|審計|\baudit\b|tick ?mark/i, emo: ['✅', '🧮', '📒'],
       t: { en: 'Everything ties out', hans: '全部勾稽一致', hant: '全部對得返' },
-      m: { en: 'Every number ties out and the senior smiles. A rare and beautiful moment.', hans: '每个数字都勾稽一致，项目高级顾问露出了微笑。罕见而美好的时刻。', hant: '每個數都對得返，senior 終於笑咗。難得嘅美好時刻 🧮' } }
+      m: { en: 'Every number ties out and the senior smiles. A rare and beautiful moment.', hans: '每个数字都勾稽一致，项目高级顾问露出了微笑。罕见而美好的时刻。', hant: '每個數都對得返，senior 終於笑咗。難得嘅美好時刻 🧮' } },
+    { re: /on mute|unmute|静音|靜音|开麦|開咪|听得到吗|聽唔聽到/i, emo: ['🔇', '🎙️', '🙉'],
+      t: { en: 'You’re on mute', hans: '你开静音了', hant: '你 mute 咗呀' },
+      m: { en: 'You were on mute for the whole joke. It was a great joke. Nobody will ever know.', hans: '刚才那个笑话你全程静音了。很好笑，可惜没人听到。', hant: '頭先個笑話你成段 mute 咗。好好笑㗎，可惜冇人聽到 🙉' } },
+    { re: /per my last email|as per my|如上封邮件|如上封郵件|根据上一封|根據上一封/i, emo: ['📧', '🙂', '📎'],
+      t: { en: 'Per my last email', hans: '如上封邮件所述', hant: '如上一封電郵所講' },
+      m: { en: 'Translation: “I have already told you this, and I am being very, very polite.”', hans: '翻译：“我已经说过了，现在只是非常非常有礼貌。”', hant: '翻譯：「我講咗喇，而家只係好有禮貌咁再講多次。」🙂' } },
+    { re: /#ref!?|#n\/a|vlookup|xlookup|excel/i, emo: ['📗', '🔢', '🧮'],
+      t: { en: 'Spreadsheet spirit', hans: '表格之魂', hant: 'Excel 之魂' },
+      m: { en: 'A #REF! somewhere just fixed itself. Coincidence? The spreadsheet gods are pleased.', hans: '某个 #REF! 刚刚自己好了。巧合吗？表格之神很满意。', hant: '某個 #REF! 啱啱自己好返。係咪巧合？Excel 之神好滿意 📗' } },
+    { re: /对齐|對齊|拉齐|拉齊|\bsync\b|align/i, emo: ['📐', '🤝', '📏'],
+      t: { en: 'Alignment achieved', hans: '对齐成功', hant: '對齊晒' },
+      m: { en: 'Let’s schedule a sync to align on how we align. 15 minutes, camera optional.', hans: '建议约个会，对齐一下我们怎么对齐。15 分钟，摄像头可关。', hant: '不如約個 sync，傾下點樣 align。15 分鐘，鏡頭可以唔開 📐' } },
+    { re: /午饭|午飯|食饭|食飯|吃饭|吃飯|\blunch\b|饿|餓|hungry/i, emo: ['🍱', '🍜', '🥟', '🍔'],
+      t: { en: 'Lunch radar', hans: '干饭雷达', hant: '搵食雷達' },
+      m: { en: 'Lunch radar activated. Proven fact: teams that eat together debug together.', hans: '干饭雷达已开启。经验证：一起吃饭的团队，解决问题也更快。', hant: '搵食雷達開咗！實證：一齊食飯嘅組，解難都快啲 🍱' } },
+    { re: /\bbug\b|报错|報錯|崩了|死机|死機|crash/i, emo: ['🐛', '🪲', '🐞'],
+      t: { en: 'It’s a feature', hans: '这是特性', hant: '呢個係 feature' },
+      m: { en: 'That’s not a bug, it’s an undocumented feature. Please raise it with IT anyway.', hans: '这不是 bug，是还没写进文档的特性。不过还是记得报给 IT。', hant: '呢個唔係 bug，係未寫入文件嘅 feature。不過都記得報俾 IT 🐛' } },
+    { re: /星期五|周五|週五|friday|tgif/i, emo: ['🎉', '🕺', '💃'],
+      t: { en: 'Friday energy', hans: '周五能量', hant: 'Friday 能量' },
+      m: { en: 'Friday detected. Productivity: questionable. Mood: excellent.', hans: '检测到周五：效率存疑，心情满分。', hant: '偵測到星期五：效率存疑，心情爆燈 🕺' } },
+    { re: /1845/, emo: ['🎩', '📜', '🕰️'],
+      t: { en: 'Since 1845', hans: '始于1845', hant: '始於1845' },
+      m: { en: '1845: the year the firm was founded, and roughly the age of the oldest spreadsheet on the shared drive.', hans: '1845：公司创立那年，也大概是共享盘里最老那张表格的年纪。', hant: '1845：公司成立嗰年，大概亦都係 shared drive 入面最老嗰份 Excel 嘅年紀 🎩' } }
   ];
 
+  // Good Vibes (the ✨ wand in the header): a random quirky line about A1 life and professional services work.
+  var VIBES = [
+    { en: 'A1 rule #1: there is always one more tab in the spreadsheet.', hans: 'A1 第一定律：表格里永远还有一个你没看到的工作表。', hant: 'A1 第一定律：個 Excel 永遠仲有一個你未睇到嘅 tab。' },
+    { en: '“Quick question” is never quick. Budget 45 minutes.', hans: '“问个小问题”从来都不小，请预留 45 分钟。', hant: '「問少少嘢」從來都唔少，請預留 45 分鐘。' },
+    { en: 'Behind every great deck is an analyst who aligned 400 text boxes by hand.', hans: '每份漂亮的 PPT 背后，都有一位手动对齐了 400 个文本框的分析师。', hant: '每份靚 deck 背後，都有個人手對齊咗 400 個 text box 嘅 analyst。' },
+    { en: 'Version history: v1, v2, v2_final, v2_final_REAL, v3_use_this_one.', hans: '版本历史：v1、v2、v2_最终版、v2_最终版_真的、v3_用这个。', hant: '版本紀錄：v1、v2、v2_final、v2_final_真係final、v3_用呢個。' },
+    { en: '“Let’s take this offline” means a new meeting. With a pre-read.', hans: '“我们线下再聊”的意思是：又一个会，还要提前读材料。', hant: '「我哋 offline 再傾」即係：再開多個會，仲要預先睇資料。' },
+    { en: 'Ctrl + S is not a shortcut. It is a lifestyle.', hans: 'Ctrl + S 不是快捷键，是一种生活方式。', hant: 'Ctrl + S 唔係快捷鍵，係一種生活態度。' },
+    { en: 'The client said “small change”. Bring snacks.', hans: '客户说“小改一下”。请备好零食。', hant: '客戶話「改少少」。請準備定零食。' },
+    { en: 'Every A1 has said “I’ll just quickly fix the formatting” and lost an afternoon.', hans: '每个 A1 都说过“我就快速调一下格式”，然后一下午就没了。', hant: '每個 A1 都講過「我快快手執下 format」，然後成個下晝就冇咗。' },
+    { en: '“Can you see my screen?” Average: 9 times a day.', hans: '“能看到我的屏幕吗？”平均每天说 9 次。', hant: '「睇唔睇到我個 mon？」平均每日講 9 次。' },
+    { en: 'The printer can smell fear. Print early.', hans: '打印机能闻到你的紧张，请提前打印。', hant: '部打印機聞到你緊張㗎，早啲印。' },
+    { en: 'Tick, tie, tick, tie. Auditors call it cardio.', hans: '勾稽、核对、再勾稽。审计人管这叫有氧运动。', hant: 'Tick、tie、tick、tie。做 audit 嘅叫佢做帶氧運動。' },
+    { en: 'Tax people don’t meet deadlines. Deadlines meet tax people.', hans: '不是税务人赶截止日，是截止日来找税务人。', hant: '唔係做稅嘅追 deadline，係 deadline 追住做稅嘅人。' },
+    { en: 'Consultants never lose things. They “de-prioritise” them.', hans: '咨询顾问从不弄丢东西，只是“调低了优先级”。', hant: 'Consultant 從來唔會整唔見嘢，只係「降低咗優先次序」。' },
+    { en: 'You are not behind. You are “in progress”.', hans: '你没有落后，你只是“进行中”。', hant: '你唔係落後，你只係「進行中」。' },
+    { en: 'A good recap email is worth three meetings. A great one cancels them.', hans: '一封好的会议纪要顶三个会，一封很好的能直接取消它们。', hant: '一封好嘅 recap email 抵三個會，一封好正嘅可以直接取消晒佢哋。' },
+    { en: 'Your senior also googled that acronym once.', hans: '你的主管当年也偷偷搜过这个缩写。', hant: '你個 senior 當年都偷偷 google 過呢個縮寫。' },
+    { en: 'KPI of the week: have lunch with someone you just met.', hans: '本周 KPI：和一个刚认识的同事吃顿午饭。', hant: '今個星期 KPI：同一個啱啱識嘅同事食餐晏。' },
+    { en: 'Status update: on track (emotionally).', hans: '进度更新：按计划推进（情绪上）。', hant: '進度更新：跟緊計劃（情緒上）。' },
+    { en: 'Reply-all is a superpower. Use it never.', hans: '“回复全部”是一种超能力，请永远不要使用。', hant: '「Reply all」係超能力，請永遠唔好用。' },
+    { en: 'Meeting room booked, Wi-Fi works, projector on first try. Buy a lottery ticket.', hans: '会议室订到了、Wi-Fi 能连、投影一次成功——今天可以去买彩票。', hant: '會議室訂到、Wi-Fi 連到、投影機一次開到——今日去買六合彩啦。' },
+    { en: 'Day 1: “What does WIP mean?” Day 30: “Let me WIP that for you.”', hans: '第 1 天：“WIP 是什么？”第 30 天：“我先 WIP 一下。”', hant: '第 1 日：「WIP 係咩？」第 30 日：「我 WIP 咗先俾你。」' },
+    { en: 'Nobody knows who “Book1.xlsx” belongs to. Nobody dares to delete it.', hans: '没人知道“工作簿1.xlsx”是谁的，也没人敢删。', hant: '冇人知「Book1.xlsx」係邊個嘅，亦冇人夠膽 delete。' }
+  ];
+  var lastV = -1;
+
   window.DLEgg = {
+    vibe: function (el) {
+      var i; do { i = Math.floor(Math.random() * VIBES.length); } while (i === lastV && VIBES.length > 1);
+      lastV = i; setText(el, pick(VIBES[i])); return true;
+    },
     dot: function (on) {
       confetti(); rain(['💚', '🟢'], 16);
       modal(pick({ en: 'Neon Green Dot', hans: '绿点霓虹模式', hant: '綠點霓虹模式' }), on
@@ -3704,12 +3764,28 @@ window.DLCanto = {
       }
       return false;
     },
+    team: function (v) {
+      if (v === '404') { this.team404(); return true; }
+      if (v === '0' || v === '00') { rain(['🕵️', '🎭'], 14); modal(pick({ en: 'Team 0', hans: '第 0 组', hant: '第 0 組' }), pick({ en: 'Team 0 is the facilitators’ secret team. Membership: invitation only, snacks included.', hans: '第 0 组是引导师的秘密小组：仅限邀请，零食管够。', hant: '第 0 組係引導師嘅秘密組：要邀請先入到，零食任食 🕵️' })); return true; }
+      if (v === '888') { rain(['🧧', '💰', '✨'], 22); confetti(); modal(pick({ en: 'Lucky 888', hans: '发发发', hant: '發發發' }), pick({ en: 'Triple eight, triple luck. Sadly the teams only go up to ' + (typeof currentCohortScale !== 'undefined' ? currentCohortScale : 36) + '.', hans: '888，好运加倍！可惜组号最多只到 ' + (typeof currentCohortScale !== 'undefined' ? currentCohortScale : 36) + '。', hant: '888，發發發！可惜組號最多得 ' + (typeof currentCohortScale !== 'undefined' ? currentCohortScale : 36) + ' 咋 🧧' })); return true; }
+      if (v === '1845') { rain(['🎩', '🕰️'], 14); modal(pick({ en: 'Team 1845', hans: '第 1845 组', hant: '第 1845 組' }), pick({ en: 'Team 1845 started in London, used quill pens and still finished on time. Pick a team number from this century.', hans: '第 1845 组在伦敦起步，用羽毛笔也准时交付。请选一个本世纪的组号。', hant: '第 1845 組喺倫敦起步，用羽毛筆都準時交貨。揀返個今個世紀嘅組號啦 🎩' })); return true; }
+      return false;
+    },
     team404: function () {
       var max = typeof currentCohortScale !== 'undefined' ? currentCohortScale : 36;
       modal(pick({ en: '404 · Team not found', hans: '404 · 查无此组', hant: '404 · 搵唔到呢組' }),
         pick({ en: 'Nice try! Teams go from 1 to ' + max + '.', hans: '好玩！不过组号是 1 到 ' + max + ' 哦。', hant: '好嘢，識玩！不過組號係 1 至 ' + max + ' 喎 🤖' }));
     }
   };
+
+  // Lunch time (Beijing time, 12:00-13:30): a nudge to go eat, once a day.
+  try {
+    var n2 = new Date(), h2 = (n2.getUTCHours() + 8) % 24, m2 = n2.getUTCMinutes(), d2 = new Date(n2.getTime() + 8 * 3600e3).toISOString().slice(0, 10);
+    if ((h2 === 12 || (h2 === 13 && m2 < 30)) && localStorage.getItem('dl_egg_lunch') !== d2) {
+      localStorage.setItem('dl_egg_lunch', d2);
+      setTimeout(function () { toast(pick({ en: '🍱 It’s lunch time. The portal will still be here — your noodles won’t.', hans: '🍱 午饭时间到！门户不会跑，面条会坨。', hant: '🍱 食飯時間！個 portal 唔會走，碗麵就會淋 🍜' })); }, 2500);
+    }
+  } catch (e) {}
 
   // After hours (Beijing time): a kind word, once a day.
   try {

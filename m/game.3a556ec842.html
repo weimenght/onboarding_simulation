@@ -66,7 +66,7 @@ canvas.green{filter:grayscale(1) sepia(1) hue-rotate(45deg) saturate(3.5) bright
 canvas.sepia{filter:sepia(.75) contrast(1.05)}
 .crt{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.28) 50%);background-size:100% 4px;opacity:.4;z-index:5}
 .pause-fab{position:absolute;top:6px;right:6px;z-index:15;width:36px;height:36px;border-radius:10px;background:rgba(0,0,0,.55);border:1px solid var(--line);color:#fff;font-size:13px;display:grid;place-items:center;cursor:pointer;touch-action:manipulation}
-.toast{position:absolute;top:8px;left:50%;transform:translate(-50%,-160%);z-index:16;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.9);border:1px solid rgba(134,188,37,.7);color:var(--green);font-size:11px;font-weight:800;transition:transform .22s ease;max-width:78%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.toast{position:absolute;top:8px;left:50%;transform:translate(-50%,-160%);z-index:16;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.9);border:1px solid rgba(134,188,37,.7);color:var(--green);font-size:11px;font-weight:800;transition:transform .22s ease;max-width:86%;white-space:normal;text-align:center;line-height:1.35;border-radius:14px;pointer-events:none}
 .toast.show{transform:translate(-50%,0)}
 .banner{position:absolute;left:0;right:0;top:30%;z-index:14;text-align:center;pointer-events:none;opacity:0;padding:0 10px}
 .banner .b1{font:14px var(--pixel);color:var(--gold);text-shadow:2px 2px 0 #000;line-height:1.5}
@@ -413,7 +413,7 @@ const T = {
 <li><b class="c">Reply-all storm</b> — slide under</li>
 <li><b class="r">Moving deadline</b> — bounces, time your jump</li></ul>
 <h4>Career path</h4><ul>
-<li>Score earns promotions: A1 1k · A2 4k · Senior Consultant 10k · Manager 20k · Senior Manager 35k · Director 60k · <b class="y">Partner 100k</b>. Every 100k after that adds a Partner ★.</li>
+<li>Score earns promotions: A1 1k · A2 4k · Senior Consultant 10k · Manager 25k · Senior Manager 45k · Director 80k · <b class="y">Partner 150k</b>. Every 150k after that adds a Partner ★.</li>
 <li>Each promotion makes you run <b class="y">faster</b>, and after Partner the pace keeps climbing.</li>
 <li><b>Busy Season</b> is faster with ×1.5 score, then <b>Annual Leave</b> gives you a breather.</li>
 <li>The office clock runs too. After 18:00, expect more emails.</li></ul>
@@ -475,7 +475,7 @@ const T = {
 <li><b class="c">全员回复风暴</b> — 滑行通过</li>
 <li><b class="r">提前的截止日</b> — 会弹跳，把握时机</li></ul>
 <h4>职业路径</h4><ul>
-<li>积分决定晋升：A1 1千 · A2 4千 · 高级顾问 1万 · 经理 2万 · 高级经理 3.5万 · 总监 6万 · <b class="y">合伙人 10万</b>，之后每 10 万分多一颗合伙人之星 ★。</li>
+<li>积分决定晋升：A1 1千 · A2 4千 · 高级顾问 1万 · 经理 2.5万 · 高级经理 4.5万 · 总监 8万 · <b class="y">合伙人 15万</b>，之后每 15 万分多一颗合伙人之星 ★。</li>
 <li>每次晋升都会<b class="y">跑得更快</b>，成为合伙人之后还会继续加速。</li>
 <li><b>忙季</b>速度更快、积分×1.5，之后是<b>年假</b>休整。</li>
 <li>办公室时钟也在走，18:00 之后邮件会更多。</li></ul>
@@ -537,8 +537,8 @@ const QUIZ = [
 
 const ACH = [
   { id: 'first', e: '🎓', n: { en: 'Day One', zh: '入职第一天' }, d: { en: 'Finish your first sprint.', zh: '完成第一次冲刺。' } },
-  { id: 'manager', e: '📈', n: { en: 'Making Manager', zh: '晋升经理' }, d: { en: 'Reach Manager (20,000 pts).', zh: '晋升到经理（20,000分）。' } },
-  { id: 'partner', e: '👔', n: { en: 'Partner Track', zh: '合伙人之路' }, d: { en: 'Make Partner (100,000 pts).', zh: '晋升合伙人（100,000分）。' } },
+  { id: 'manager', e: '📈', n: { en: 'Making Manager', zh: '晋升经理' }, d: { en: 'Reach Manager (25,000 pts).', zh: '晋升到经理（25,000分）。' } },
+  { id: 'partner', e: '👔', n: { en: 'Partner Track', zh: '合伙人之路' }, d: { en: 'Make Partner (150,000 pts).', zh: '晋升合伙人（150,000分）。' } },
   { id: 'combo', e: '🟢', n: { en: 'Green Dot Streak', zh: '绿点连击' }, d: { en: 'Hit a 25× dot combo.', zh: '达成25连击。' } },
   { id: 'quiz', e: '🧠', n: { en: 'Knowledge Sharer', zh: '知识分享者' }, d: { en: 'Answer 5 pop quizzes correctly (all-time).', zh: '累计答对5道快问快答。' } },
   { id: 'buddy', e: '🤝', n: { en: 'Buddy System', zh: '伙伴体系' }, d: { en: 'Meet 4 buddies, coaches or partners in one sprint.', zh: '单局遇到4位伙伴、导师或合伙人。' } },
@@ -589,7 +589,7 @@ QUIZ.push(
   { q: { en: "You are invited to set up a team meeting. What goes in the invite?", zh: "你负责发起一个团队会议，邀请里应写什么？" }, a: [{ en: "The goal, an agenda and any pre-read", zh: "会议目的、议程和需要提前阅读的材料" }, { en: "Just the title, people can ask", zh: "只写标题，有问题大家会问" }], ex: { en: "A clear goal makes a shorter, better meeting.", zh: "目标清晰，会议更短、更有效。" } }
 );
 ACH.push(
-  { id: 'equity', e: '🌟', n: { en: 'Equity Partner', zh: '权益合伙人' }, d: { en: 'Earn a Partner star (200,000 pts).', zh: '获得一颗合伙人之星（200,000分）。' } },
+  { id: 'equity', e: '🌟', n: { en: 'Equity Partner', zh: '权益合伙人' }, d: { en: 'Earn a Partner star (300,000 pts).', zh: '获得一颗合伙人之星（300,000分）。' } },
   { id: 'breather', egg: 1, e: '🧘', n: { en: 'Take a Breather', zh: '喘口气' }, d: { en: 'Paused for 30 seconds, then came back stronger.', zh: '暂停30秒后满血回归。' }, h: { en: 'Real breaks count. Pause for a while, then come back.', zh: '真正的休息也算数：暂停一会儿再回来。' } },
   { id: 'inbox', egg: 1, e: '📭', n: { en: 'Inbox Zero', zh: '收件箱清零' }, d: { en: 'Dodged 10 reply-all storms in one sprint.', zh: '单局躲过10次全员回复风暴。' }, h: { en: 'Survive enough reply-alls in one sprint.', zh: '单局里躲过足够多的全员回复。' } },
   { id: 'fullhouse', egg: 1, e: '🫶', n: { en: 'Full Network', zh: '人脉全开' }, d: { en: 'Met a buddy, a coach and a partner in one sprint.', zh: '单局遇到伙伴、导师和合伙人。' }, h: { en: 'Some sprints, you meet everyone who matters.', zh: '有些冲刺里，你会遇到所有关键的人。' } },
@@ -600,6 +600,8 @@ ACH.push(
 Object.assign(T.en, {"paceUp":"⚡ pace up","starSub":"Partner star · +1845 · ⚡ pace up","breather":"🧘 Took a real break: +300 and a fresh coffee","inboxZero":"📭 INBOX ZERO! +1000","fullhouse":"🫶 Full network: buddy, coach and partner! +800","hattrick":"🎓 Hat trick: 3 quizzes right! +1000","lunch":"🍱 Lunch-break sprint! Remember to actually eat.","svcAudit":"🔍 Audit & Assurance: tick and tie!","svcTax":"🧾 Tax: every number has a rule.","svcConsulting":"💡 Consulting: frameworks ready!"});
 Object.assign(T.zh, {"paceUp":"⚡ 提速","starSub":"合伙人之星 · +1845 · ⚡ 提速","breather":"🧘 好好休息了一下：+300，再来杯咖啡","inboxZero":"📭 收件箱清零！+1000","fullhouse":"🫶 人脉全开：伙伴、导师、合伙人！+800","hattrick":"🎓 帽子戏法：连答对3题！+1000","lunch":"🍱 午休冲刺！记得好好吃饭。","svcAudit":"🔍 审计鉴证：逐项核对！","svcTax":"🧾 税务：每个数字都有依据。","svcConsulting":"💡 咨询：框架已就位！"});
 
+const NPC_SAY = {"BUDDY":[{"en":"Lunch later?","zh":"等下一起吃饭？"},{"en":"You got this!","zh":"你可以的！"},{"en":"Milk tea run?","zh":"奶茶走起？"},{"en":"Saved you a seat","zh":"给你留了座"},{"en":"Which room?!","zh":"哪个会议室？！"},{"en":"Printer is free!","zh":"打印机空了！"}],"COACH":[{"en":"Quick sync?","zh":"快速对齐一下？"},{"en":"Great question!","zh":"好问题！"},{"en":"Circle back?","zh":"回头再聊？"},{"en":"Feedback time","zh":"来点反馈"},{"en":"Proud of you","zh":"为你骄傲"},{"en":"Did you save?","zh":"保存了吗？"}],"PARTNER":[{"en":"Big picture?","zh":"看大局！"},{"en":"Love the energy","zh":"这股劲不错"},{"en":"Let’s take it offline","zh":"线下再聊"},{"en":"Any updates?","zh":"有进展吗？"},{"en":"Nice deck!","zh":"PPT 不错！"},{"en":"You’re on mute","zh":"你开静音了"}]};
+const FUNNY = {"reasons":{"en":{"REF":["Your VLOOKUP returned #N/A, then #REF!, then you.","Someone deleted column C. It was you.","The model was fine until you touched it. Classic."],"DREF":["Two #REF!s walked into a model. The model left.","Circular reference detected. You are now part of it."],"FILE":["Saved as FINAL_FINAL_v8_USE_THIS.pptx. It did not help.","Opened the wrong version. Presented it. Confidently."],"SCOPE":["“Just one small addition.” Famous last words.","The scope grew. You did not grow fast enough."],"EMAIL":["Someone replied-all “please remove me”. 400 people followed.","Buried under 312 unread emails, all titled “Re: Re: Fwd: quick one”."],"DEADLINE":["The deadline was yesterday. It was always yesterday.","The deadline moved. You did not."]},"zh":{"REF":["VLOOKUP 先返回 #N/A，又返回 #REF!，然后是你。","有人删了 C 列。是你。","模型本来好好的，直到你动了它。"],"DREF":["两个 #REF! 走进了模型，模型走了。","检测到循环引用：你已成为其中一环。"],"FILE":["另存为 FINAL_最终_v8_用这个.pptx，并没有用。","打开了错误版本，还自信地讲完了。"],"SCOPE":["“就加一个小需求。”——著名遗言。","需求长大了，你没跟上。"],"EMAIL":["有人回复全部“请把我移出群”，400 人跟上了。","被 312 封“回复：回复：转发：小事一件”淹没。"],"DEADLINE":["截止日是昨天，它一直都是昨天。","截止日动了，你没动。"]}},"promo":{"en":["","📊 A1: you now own the Excel file. Forever.","📧 A2: unlocked being cc’d on everything.","🗣️ Senior Consultant: you may now say “let’s take this offline”.","📅 Manager: your calendar is now 110% booked.","🔤 Senior Manager: you speak fluent acronym.","🅿️ Director: you have a parking space. Somewhere.","🔭 Partner: you are now allowed to say “big picture”.","🌴 Still running? Have you considered annual leave?"],"zh":["","📊 A1：这个 Excel 从此归你了，永久。","📧 A2：解锁“所有邮件都抄送你”。","🗣️ 高级顾问：你可以说“我们线下再聊”了。","📅 经理：你的日历已排满 110%。","🔤 高级经理：你已精通缩写语。","🅿️ 总监：你有车位了，在某个地方。","🔭 合伙人：你终于可以说“看大局”了。","🌴 还在跑？考虑一下年假？"]},"pause":{"en":["Aligning on next steps with the engagement team…","Your laptop is installing 37 updates…","Looking for a free meeting room…","Waiting for the printer to forgive you…","Unmuting… unmuting… there.","Refilling coffee. Priorities."],"zh":["喝杯咖啡，理清思路再出发…","电脑正在安装 37 个更新…","正在寻找空闲会议室…","等待打印机原谅你…","正在取消静音…好了。","续杯咖啡中，优先级最高。"]}};
 const Sfx = {
   ctx: null, master: null, nb: null,
   unlock() {
@@ -786,10 +788,196 @@ function makeLayer(color, wins, minH, maxH, seed, winAlpha) {
   }
   return c;
 }
+
+/* ---------- scenery ---------- */
+let scene = 'CITY', sceneMix = 0, leaveKind = 'BEACH', markLayer = null, sceneLayers = {};
+const SCENE_NAME = { BUSY: { en: 'Office · 23:47', zh: '办公室 · 23:47', icon: '🌃' }, BEACH: { en: 'Beach leave', zh: '海边年假', icon: '🏖️' }, MOUNTAIN: { en: 'Mountain leave', zh: '山野年假', icon: '🏔️' } };
+function layerCanvas() { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; }
+// City landmark silhouettes, drawn on their own slow layer.
+function buildMark() {
+  const [c, g] = layerCanvas(), col = loc.near, lit = loc.win[0], F = FLOOR;
+  const R = (x, y, w, h, k) => { g.fillStyle = k || col; g.fillRect(x, y, w, h); };
+  const X = 300;
+  switch (loc.en) {
+    case 'Hong Kong': // tall tapering tower with a crown, and a twin
+      R(X, F - 230, 30, 230); R(X + 4, F - 246, 22, 16); R(X + 8, F - 258, 14, 12); R(X + 2, F - 262, 3, 16); R(X + 25, F - 262, 3, 16);
+      R(X + 44, F - 170, 26, 170); R(X + 48, F - 182, 18, 12); R(X + 56, F - 196, 2, 14);
+      for (let y = F - 220; y < F - 10; y += 12) { R(X + 6, y, 18, 2, lit); }
+      break;
+    case 'Shanghai': // tower with two spheres and a spire
+      R(X + 14, F - 220, 6, 220); R(X + 4, F - 150, 4, 150); R(X + 26, F - 150, 4, 150);
+      g.fillStyle = col; g.beginPath(); g.arc(X + 17, F - 140, 18, 0, 7); g.fill(); g.beginPath(); g.arc(X + 17, F - 215, 11, 0, 7); g.fill();
+      g.fillStyle = '#F472B6'; g.beginPath(); g.arc(X + 17, F - 140, 6, 0, 7); g.fill(); g.beginPath(); g.arc(X + 17, F - 215, 4, 0, 7); g.fill();
+      R(X + 16, F - 260, 2, 40);
+      R(X + 60, F - 200, 30, 200); R(X + 64, F - 214, 22, 14);
+      break;
+    case 'Beijing': // gate with curved double roof
+      R(X - 20, F - 120, 130, 120); R(X - 30, F - 132, 150, 12, '#7c2d12'); R(X - 38, F - 137, 10, 5, '#7c2d12'); R(X + 118, F - 137, 10, 5, '#7c2d12');
+      R(X - 4, F - 170, 98, 38); R(X - 16, F - 180, 122, 10, '#7c2d12'); R(X - 24, F - 185, 10, 5, '#7c2d12'); R(X + 104, F - 185, 10, 5, '#7c2d12');
+      for (let i = 0; i < 5; i++) R(X + 2 + i * 20, F - 112, 10, 112, '#991b1b');
+      R(X + 38, F - 164, 18, 22, '#FBBF24');
+      break;
+    case 'Singapore': // three towers carrying a long sky deck
+      for (let i = 0; i < 3; i++) R(X + i * 34, F - 170, 22, 170);
+      R(X - 14, F - 182, 116, 10); R(X + 94, F - 180, 14, 4);
+      for (let i = 0; i < 3; i++) for (let y = F - 160; y < F - 10; y += 10) R(X + i * 34 + 4, y, 14, 2, lit);
+      break;
+    case 'London': // clock tower and a big wheel
+      R(X, F - 190, 22, 190); R(X - 3, F - 200, 28, 10); R(X + 4, F - 226, 14, 26); R(X + 9, F - 240, 4, 14);
+      g.fillStyle = '#FCD34D'; g.beginPath(); g.arc(X + 11, F - 172, 7, 0, 7); g.fill();
+      g.strokeStyle = col; g.lineWidth = 3; g.beginPath(); g.arc(X + 110, F - 80, 62, 0, 7); g.stroke(); g.lineWidth = 1;
+      for (let a = 0; a < 12; a++) { g.beginPath(); g.moveTo(X + 110, F - 80); g.lineTo(X + 110 + Math.cos(a * 0.52) * 62, F - 80 + Math.sin(a * 0.52) * 62); g.stroke(); }
+      R(X + 100, F - 80, 6, 80); R(X + 114, F - 80, 6, 80);
+      break;
+    default: // New York: stepped tower with a spire
+      R(X, F - 160, 50, 160); R(X + 8, F - 196, 34, 36); R(X + 15, F - 222, 20, 26); R(X + 21, F - 240, 8, 18); R(X + 24, F - 270, 2, 30);
+      for (let y = F - 150; y < F - 10; y += 10) R(X + 6, y, 38, 2, lit);
+  }
+  markLayer = c;
+}
+// Office at night: back windows on the city, desks with glowing monitors, lamps and mugs.
+function buildOffice() {
+  const [c, g] = layerCanvas(), F = FLOOR;
+  for (let x = 0; x < W; x += 120) {
+    g.fillStyle = '#1e293b'; g.fillRect(x + 10, F - 24, 84, 5); g.fillRect(x + 14, F - 19, 4, 19); g.fillRect(x + 86, F - 19, 4, 19);
+    g.fillStyle = '#0f172a'; g.fillRect(x + 26, F - 48, 30, 22); g.fillRect(x + 39, F - 26, 4, 3);
+    g.fillStyle = (x / 120) % 2 ? '#38bdf8' : '#86BC25'; g.globalAlpha = 0.85; g.fillRect(x + 28, F - 46, 26, 18); g.globalAlpha = 0.18; g.fillRect(x + 18, F - 56, 46, 34); g.globalAlpha = 1;
+    g.fillStyle = '#e2e8f0'; for (let k = 0; k < 4; k++) g.fillRect(x + 31, F - 43 + k * 4, 6 + ((x + k * 7) % 14), 1);
+    g.fillStyle = '#f8fafc'; g.fillRect(x + 66, F - 31, 6, 7); g.fillStyle = '#7c2d12'; g.fillRect(x + 67, F - 30, 4, 2);
+    g.fillStyle = '#475569'; g.fillRect(x + 80, F - 46, 2, 22); g.fillRect(x + 74, F - 50, 12, 4);
+    g.fillStyle = 'rgba(253,230,138,0.22)'; g.beginPath(); g.moveTo(x + 74, F - 46); g.lineTo(x + 66, F - 24); g.lineTo(x + 96, F - 24); g.lineTo(x + 86, F - 46); g.fill();
+    g.fillStyle = '#334155'; g.fillRect(x + 100, F - 30, 12, 4); g.fillRect(x + 104, F - 26, 3, 26); g.fillRect(x + 108, F - 44, 4, 14);
+  }
+  sceneLayers.BUSY = c;
+}
+function buildBeach() {
+  const [c, g] = layerCanvas(), F = FLOOR;
+  for (let x = 0; x < W; x += 160) {
+    // palm tree
+    g.fillStyle = '#92400e'; for (let k = 0; k < 10; k++) g.fillRect(x + 20 + k, F - 14 - k * 9, 5, 10);
+    g.fillStyle = '#15803d'; const tx = x + 30, ty = F - 104;
+    [[-26, 6], [-14, -4], [0, -8], [14, -4], [26, 6]].forEach(([dx, dy]) => { g.fillRect(tx + Math.min(0, dx), ty + dy, Math.abs(dx) + 4, 5); g.fillRect(tx + dx - 2, ty + dy + 4, 4, 6); });
+    g.fillStyle = '#78350f'; g.fillRect(tx - 2, ty + 2, 5, 5);
+    // parasol and towel
+    g.fillStyle = '#e2e8f0'; g.fillRect(x + 104, F - 40, 2, 40);
+    for (let k = 0; k < 6; k++) { g.fillStyle = k % 2 ? '#f43f5e' : '#f8fafc'; g.fillRect(x + 82 + k * 8, F - 46 + Math.abs(k - 2.5) * 2, 8, 6); }
+    g.fillStyle = '#38bdf8'; g.fillRect(x + 116, F - 4, 26, 3);
+  }
+  sceneLayers.BEACH = c;
+}
+function buildMountain() {
+  const [c, g] = layerCanvas(), F = FLOOR, r = mulberry(4242);
+  for (let x = -40; x < W + 40; x += 34 + Math.floor(r() * 30)) {
+    const h = 26 + r() * 30;
+    g.fillStyle = '#14532d'; g.beginPath(); g.moveTo(x, F); g.lineTo(x + 12, F - h); g.lineTo(x + 24, F); g.fill();
+    g.fillStyle = '#166534'; g.beginPath(); g.moveTo(x + 3, F - h * 0.45); g.lineTo(x + 12, F - h); g.lineTo(x + 21, F - h * 0.45); g.fill();
+    g.fillStyle = '#713f12'; g.fillRect(x + 11, F - 5, 3, 5);
+  }
+  sceneLayers.MOUNTAIN = c;
+  const [m, mg] = layerCanvas();
+  for (let x = -60, i = 0; x < W + 60; x += 120, i++) {
+    const h = 120 + (i % 3) * 40;
+    mg.fillStyle = '#475569'; mg.beginPath(); mg.moveTo(x, F); mg.lineTo(x + 90, F - h); mg.lineTo(x + 180, F); mg.fill();
+    mg.fillStyle = '#f8fafc'; mg.beginPath(); mg.moveTo(x + 66, F - h * 0.74); mg.lineTo(x + 90, F - h); mg.lineTo(x + 114, F - h * 0.74); mg.lineTo(x + 100, F - h * 0.7); mg.lineTo(x + 90, F - h * 0.78); mg.lineTo(x + 80, F - h * 0.7); mg.fill();
+  }
+  sceneLayers.PEAKS = m;
+}
+function sceneScroll(layer, k) { const o = Math.floor((scroll * k) % W); ctx.drawImage(layer, -o, 0); ctx.drawImage(layer, W - o, 0); }
+function drawScene(kind) {
+  if (!sceneLayers.BUSY) { buildOffice(); buildBeach(); buildMountain(); }
+  const F = FLOOR;
+  if (kind === 'BUSY') {
+    const g = ctx.createLinearGradient(0, 0, 0, F); g.addColorStop(0, '#020617'); g.addColorStop(1, '#0b1430');
+    ctx.fillStyle = g; ctx.fillRect(-10, -10, W + 20, F + 10);
+    ctx.globalAlpha *= 0.9; sceneScroll(farLayer, 0.12); ctx.globalAlpha = sceneMix;
+    // window frames of the office
+    ctx.fillStyle = '#0f172a'; const wo = Math.floor((scroll * 0.3) % 96);
+    for (let x = -wo; x < W; x += 96) ctx.fillRect(x, 0, 6, F);
+    ctx.fillRect(0, F - 70, W, 5); ctx.fillRect(0, 0, W, 8);
+    // wall clock, 23:47
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(30, 22, 22, 22); ctx.fillStyle = '#0f172a'; ctx.fillRect(32, 24, 18, 18);
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(40, 27, 2, 7); ctx.fillRect(40, 33, 6, 2);
+    drawText('23:47', 41, 56, '#F43F5E', 6);
+    sceneScroll(sceneLayers.BUSY, 0.55);
+  } else if (kind === 'BEACH') {
+    const g = ctx.createLinearGradient(0, 0, 0, F); g.addColorStop(0, '#0ea5e9'); g.addColorStop(0.6, '#7dd3fc'); g.addColorStop(1, '#fde68a');
+    ctx.fillStyle = g; ctx.fillRect(-10, -10, W + 20, F + 10);
+    ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.arc(W - 90, 56, 22, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)'; const co = (scroll * 0.05) % (W + 80);
+    for (const [cx, cy] of [[60, 50], [220, 36], [380, 64]]) { const x = ((cx - co + W + 80) % (W + 80)) - 40; ctx.fillRect(x, cy, 34, 8); ctx.fillRect(x + 8, cy - 5, 18, 6); }
+    ctx.fillStyle = '#0284c7'; ctx.fillRect(-10, F - 46, W + 20, 34);
+    ctx.fillStyle = '#0369a1'; ctx.fillRect(-10, F - 46, W + 20, 4);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)'; const wv = Math.floor((scroll * 0.25) % 40);
+    for (let x = -wv; x < W; x += 40) { ctx.fillRect(x, F - 30 + ((x / 40) % 2) * 6, 14, 2); }
+    ctx.fillStyle = '#fcd34d'; ctx.fillRect(-10, F - 12, W + 20, 12);
+    sceneScroll(sceneLayers.BEACH, 0.55);
+  } else if (kind === 'MOUNTAIN') {
+    const g = ctx.createLinearGradient(0, 0, 0, F); g.addColorStop(0, '#38bdf8'); g.addColorStop(1, '#e0f2fe');
+    ctx.fillStyle = g; ctx.fillRect(-10, -10, W + 20, F + 10);
+    ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(80, 50, 16, 0, 7); ctx.fill();
+    sceneScroll(sceneLayers.PEAKS, 0.12);
+    ctx.fillStyle = '#65a30d'; ctx.fillRect(-10, F - 18, W + 20, 18);
+    sceneScroll(sceneLayers.MOUNTAIN, 0.55);
+  }
+}
+const SCENE_GROUND = { BUSY: ['#111827', '#F43F5E'], BEACH: ['#e7c27d', '#38bdf8'], MOUNTAIN: ['#3f6212', '#a3e635'] };
+function stepScene() {
+  const target = phase.type === 'BUSY' ? 'BUSY' : phase.type === 'LEAVE' ? leaveKind : 'CITY';
+  if (target !== 'CITY') { if (scene !== target && sceneMix > 0.05) sceneMix = Math.max(0, sceneMix - 1 / 30); else { scene = target; sceneMix = Math.min(1, sceneMix + 1 / 45); } }
+  else sceneMix = Math.max(0, sceneMix - 1 / 45);
+}
+// A promotion moves you to another city office.
+function transferCity() {
+  const others = LOCS.filter((l) => l !== loc);
+  loc = others[Math.floor(Math.random() * others.length)];
+  buildBackdrop();
+  return loc;
+}
+
+/* ---------- celebrations ---------- */
+const fx = [];
+let flashT = 0, celebT = 0;
+const FX_COLORS = ['#86BC25', '#F59E0B', '#38BDF8', '#F472B6', '#FCD34D', '#E879F9', '#F8FAFC'];
+function celebrate(big) {
+  flashT = big ? 16 : 10; celebT = big ? 360 : 200;
+  const n = big ? 120 : 70;
+  for (let i = 0; i < n; i++) fx.push({ k: 'c', x: Math.random() * W, y: -10 - Math.random() * 80, vx: rand(-0.6, 0.6), vy: rand(0.8, 2), w: 2 + Math.floor(Math.random() * 3), h: 3 + Math.floor(Math.random() * 3), c: big && i % 2 ? '#FCD34D' : FX_COLORS[i % FX_COLORS.length], life: 150 + Math.random() * 60, ph: Math.random() * 6 });
+  const rockets = big ? 6 : 3;
+  for (let i = 0; i < rockets; i++) fx.push({ k: 'r', x: 80 + Math.random() * (W - 160), y: FLOOR, vy: -6.5 - Math.random() * 2, fuse: 26 + i * 9 + Math.random() * 10, c: FX_COLORS[(i * 3) % FX_COLORS.length], life: 999 });
+  if (fx.length > 600) fx.splice(0, fx.length - 600);
+  try { Sfx.seq([523, 659, 784, 1047, 0, 784, 1047, 1319], 0.085); setTimeout(() => Sfx.play('egg'), 700); } catch (e) {}
+}
+function updateFx() {
+  if (flashT > 0) flashT--; if (celebT > 0) celebT--;
+  for (let i = fx.length - 1; i >= 0; i--) {
+    const p = fx[i];
+    if (p.k === 'r') {
+      p.y += p.vy; p.vy += 0.08;
+      if (--p.fuse <= 0) {
+        for (let k = 0; k < 34; k++) { const a = k / 34 * Math.PI * 2, v = 1.4 + Math.random() * 1.8; fx.push({ k: 's', x: p.x, y: p.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, c: Math.random() < 0.3 ? '#F8FAFC' : p.c, life: 40 + Math.random() * 20 }); }
+        try { Sfx.play('smash'); } catch (e) {}
+        fx.splice(i, 1); continue;
+      }
+    } else if (p.k === 's') { p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.vx *= 0.98; }
+    else { p.x += p.vx + Math.sin(frame * 0.08 + p.ph) * 0.4; p.y += p.vy; }
+    if (--p.life <= 0 || p.y > H + 10) fx.splice(i, 1);
+  }
+}
+function drawFx() {
+  for (const p of fx) {
+    if (p.k === 'r') { ctx.fillStyle = p.c; ctx.fillRect(Math.floor(p.x), Math.floor(p.y), 2, 5); ctx.fillStyle = 'rgba(253,230,138,0.6)'; ctx.fillRect(Math.floor(p.x), Math.floor(p.y) + 5, 2, 4); }
+    else if (p.k === 's') { ctx.globalAlpha = Math.min(1, p.life / 20); ctx.fillStyle = p.c; ctx.fillRect(Math.floor(p.x), Math.floor(p.y), 2, 2); }
+    else { ctx.globalAlpha = Math.min(1, p.life / 30); ctx.fillStyle = p.c; const flip = Math.sin(frame * 0.2 + p.ph) > 0; ctx.fillRect(Math.floor(p.x), Math.floor(p.y), flip ? p.w : 1, p.h); }
+  }
+  ctx.globalAlpha = 1;
+  if (flashT > 0) { ctx.fillStyle = 'rgba(255,255,255,' + (flashT / 16 * 0.45) + ')'; ctx.fillRect(0, 0, W, H); }
+}
+
 function buildBackdrop() {
   const seed = LOCS.indexOf(loc) * 977 + 13;
   farLayer = makeLayer(loc.far, loc.win, 70, Math.max(90, Math.min(190, FLOOR - 40)), seed, 0.45);
   nearLayer = makeLayer(loc.near, loc.win, 36, 110, seed + 7, 0.9);
+  buildMark();
   skyGrad = ctx.createLinearGradient(0, 0, 0, FLOOR);
   skyGrad.addColorStop(0, loc.sky[0]); skyGrad.addColorStop(0.55, loc.sky[1]); skyGrad.addColorStop(1, loc.sky[2]);
   const r = mulberry(seed + 99);
@@ -821,13 +1009,61 @@ const obstacles = [], items = [], npcs = [], particles = [], floats = [];
 const input = { jumpHeld: false, slideHeld: false, jumpBuf: 0 };
 let quiz = null;
 
+// The next runner is chosen ahead, so the start screen shows who you will play.
+var pendingLook = null;
+function pickOne(a) { return a[Math.floor(Math.random() * a.length)]; }
+function makeLook() {
+  // Women and men in equal numbers; each has its own set of hairstyles (one includes a headscarf).
+  const woman = Math.random() < 0.5;
+  const style = pickOne(woman ? ['ponytail', 'bun', 'long', 'bob', 'curly', 'pixie', 'hijab'] : ['short', 'buzz', 'quiff', 'curly', 'manbun', 'bald']);
+  return {
+    woman, style,
+    skin: pickOne(['#f3c299', '#fcd5b5', '#d49a6a', '#8d5524', '#ffdbac', '#c68642', '#5c3a1e']),
+    hair: pickOne(['#2d1d14', '#111827', '#b45309', '#f59e0b', '#7c2d12', '#4b2e1e', '#9ca3af']),
+    scarf: pickOne(['#0f766e', '#7c3aed', '#38bdf8', '#be185d', '#94a3b8', '#d6c7a1']),
+    suit: pickOne(['#002776', '#1E232A', '#004F59', '#374151', '#1e1b4b', '#7f1d1d', '#3f3f46']),
+    tie: pickOne(['#86BC25', '#38BDF8', '#F59E0B', '#EF4444', '#10B981', '#E879F9']),
+    neck: woman ? pickOne(['tie', 'collar', 'collar']) : pickOne(['tie', 'tie', 'collar']),
+    skirt: woman && Math.random() < 0.5,
+    glasses: Math.random() < 0.25,
+    bag: Math.random() < 0.5 ? 'BACKPACK' : 'BRIEFCASE'
+  };
+}
+// Hair (and headscarf) standing up / sliding; the runner faces right, so the back of the head is on the left.
+function drawHair(L, px, py, lp, hair) {
+  const f = (c, x, y, w, h) => { ctx.fillStyle = c; ctx.fillRect(px + x, py + y, w, h); };
+  const bob = lp % 2;
+  switch (L.style) {
+    case 'buzz': f(hair, 4, 2, 10, 3); break;
+    case 'bald': f(L.skin, 4, 2, 10, 3); f('rgba(255,255,255,0.35)', 7, 3, 3, 1); break;
+    case 'quiff': f(hair, 3, 1, 11, 4); f(hair, 9, -1, 6, 3); break;
+    case 'curly': f(hair, 2, -1, 13, 6); f(hair, 1, 1, 3, 7); f(hair, 3, -2, 3, 2); f(hair, 8, -2, 3, 2); f(hair, 12, -1, 3, 2); break;
+    case 'manbun': f(hair, 3, 0, 11, 5); f(hair, 0, -2, 5, 5); break;
+    case 'ponytail': f(hair, 3, 0, 11, 5); f(hair, 2, 3, 3, 4); f(hair, -2, 4 + bob, 4, 3); f(hair, -4, 6 + bob, 3, 5); break;
+    case 'bun': f(hair, 3, 0, 11, 5); f(hair, 2, 3, 3, 5); f(hair, 0, -3, 6, 5); break;
+    case 'long': f(hair, 3, 0, 11, 5); f(hair, 2, 3, 4, 13); f(hair, 1, 9, 3, 6); break;
+    case 'bob': f(hair, 3, 0, 11, 5); f(hair, 2, 3, 4, 8); f(hair, 13, 4, 1, 4); break;
+    case 'pixie': f(hair, 3, 0, 11, 4); f(hair, 10, 2, 5, 2); f(hair, 2, 3, 3, 4); break;
+    case 'hijab': f(L.scarf, 2, -1, 13, 6); f(L.scarf, 2, 4, 4, 10); f(L.scarf, 3, 11, 12, 3); break;
+    default: f(hair, 3, 0, 11, 5);
+  }
+}
+function drawHairSlide(L, px, py, hair) {
+  const f = (c, x, y, w, h) => { ctx.fillStyle = c; ctx.fillRect(px + x, py + y, w, h); };
+  if (L.style === 'hijab') { f(L.scarf, 18, -1, 10, 5); f(L.scarf, 16, 2, 4, 7); return; }
+  if (L.style === 'bald') return;
+  f(hair, 20, 0, 7, L.style === 'buzz' ? 2 : 4);
+  if (L.style === 'ponytail' || L.style === 'long') f(hair, 13, 1, 7, 3);
+  if (L.style === 'bun' || L.style === 'manbun') f(hair, 16, -2, 5, 4);
+  if (L.style === 'curly') { f(hair, 18, -2, 10, 4); f(hair, 17, 1, 3, 4); }
+}
 function freshRun() {
-  return { rank: 0, eggs: {}, buddies: 0, close: 0, maxCombo: 0, outfit: '', rainbow: false, emailBoost: false, nightOwl: false, sixpm: false, partner: false, gold: false, newAch: [], startHour: 9 };
+  return { look: pendingLook || (pendingLook = makeLook()), rank: 0, eggs: {}, buddies: 0, close: 0, maxCombo: 0, outfit: '', rainbow: false, emailBoost: false, nightOwl: false, sixpm: false, partner: false, gold: false, newAch: [], startHour: 9 };
 }
 function rankIndex() { let i = 0; while (i < 400 && score >= levelAt(i + 1)) i++; return i; }
-const LEVEL_AT = [0, 1000, 4000, 10000, 20000, 35000, 60000, 100000];
+const LEVEL_AT = [0, 1000, 4000, 10000, 25000, 45000, 80000, 150000];
 const LEVEL_PACE = [3.4, 3.6, 3.9, 4.4, 5.1, 6.0, 7.2, 8.6];
-const STAR_EVERY = 100000, STAR_PACE = 0.6, PACE_MAX = 12;
+const STAR_EVERY = 150000, STAR_PACE = 0.6, PACE_MAX = 12;
 const PARTNER_LEVEL = LEVEL_AT.length - 1;
 const levelAt = (i) => (i <= PARTNER_LEVEL ? LEVEL_AT[i] : LEVEL_AT[PARTNER_LEVEL] + (i - PARTNER_LEVEL) * STAR_EVERY);
 const paceAt = (i) => (i <= PARTNER_LEVEL ? LEVEL_PACE[i] : Math.min(PACE_MAX, LEVEL_PACE[PARTNER_LEVEL] + (i - PARTNER_LEVEL) * STAR_PACE));
@@ -899,17 +1135,29 @@ const P = {
       ctx.fillStyle = '#fff'; ctx.fillRect(px + 4, py + 5, 5, 4);
       ctx.fillStyle = tie; ctx.fillRect(px + 7, py + 7, 6, 3);
       ctx.fillStyle = skin; ctx.fillRect(px + 18, py + 2, 8, 7);
-      ctx.fillStyle = hair; ctx.fillRect(px + 20, py, 7, 4);
+      if (run.look) drawHairSlide(run.look, px, py, hair); else { ctx.fillStyle = hair; ctx.fillRect(px + 20, py, 7, 4); }
       ctx.fillStyle = '#1e293b'; ctx.fillRect(px + 10, py + 12, 8, 5);
       if (run.outfit === 'victorian') { ctx.fillStyle = '#111'; ctx.fillRect(px + 20, py - 7, 8, 7); ctx.fillRect(px + 18, py - 1, 12, 2); }
     } else {
       const lp = Math.floor(this.run) % 4;
-      ctx.fillStyle = hair; ctx.fillRect(px + 3, py, 11, 5);
-      ctx.fillStyle = skin; ctx.fillRect(px + 4, py + 4, 10, 8);
+      const LK = run.look || { style: 'short', skin };
+      if (LK.style === 'hijab') {
+        // Headscarf framing the face, draped to the shoulders.
+        ctx.fillStyle = LK.scarf; ctx.fillRect(px + 2, py - 1, 13, 15); ctx.fillRect(px + 1, py + 5, 3, 9);
+        ctx.fillStyle = skin; ctx.fillRect(px + 7, py + 4, 7, 7);
+        ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fillRect(px + 4, py, 8, 1);
+      } else {
+        if (LK.style === 'long' || LK.style === 'bob') drawHair(LK, px, py, lp, hair);
+        ctx.fillStyle = skin; ctx.fillRect(px + 4, py + 4, 10, 8);
+        if (LK.style !== 'long' && LK.style !== 'bob') drawHair(LK, px, py, lp, hair);
+        else { ctx.fillStyle = hair; ctx.fillRect(px + 3, py, 11, 5); }
+      }
       ctx.fillStyle = '#0a0e14'; ctx.fillRect(px + 11, py + 6, 2, 2);
+      if (LK.glasses) { ctx.fillStyle = '#0a0e14'; ctx.fillRect(px + 9, py + 5, 6, 1); ctx.fillStyle = 'rgba(186,230,253,0.55)'; ctx.fillRect(px + 10, py + 6, 4, 2); }
       ctx.fillStyle = suit; ctx.fillRect(px + 2, py + 12, 13, 11);
-      ctx.fillStyle = '#fff'; ctx.fillRect(px + 6, py + 12, 5, 7);
-      ctx.fillStyle = tie; ctx.fillRect(px + 7, py + 13, 3, 7);
+      ctx.fillStyle = '#fff'; ctx.fillRect(px + 6, py + 12, 5, LK.neck === 'collar' ? 4 : 7);
+      ctx.fillStyle = tie;
+      if (LK.neck === 'collar') { ctx.fillRect(px + 8, py + 16, 2, 2); } else ctx.fillRect(px + 7, py + 13, 3, 7);
       if (run.look && run.look.bag === 'BACKPACK') {
         const by = this.grounded ? py + 14 + (lp % 2) : py + 10;
         ctx.fillStyle = '#374151'; ctx.fillRect(px - 4, by, 7, 8);
@@ -925,6 +1173,11 @@ const P = {
       else if (lp === 1) { ctx.fillRect(px, py + 23, 4, 7); ctx.fillRect(px + 11, py + 23, 4, 9); }
       else if (lp === 2) { ctx.fillRect(px + 3, py + 23, 4, 7); ctx.fillRect(px + 8, py + 23, 4, 8); }
       else { ctx.fillRect(px + 6, py + 23, 4, 9); ctx.fillRect(px + 1, py + 23, 4, 6); }
+      if (run.look && run.look.skirt) { ctx.fillStyle = suit; ctx.fillRect(px + 1, py + 22, 15, 5); }
+      if (celebT > 0 && run.outfit !== 'victorian') {
+        ctx.fillStyle = celebT % 20 < 10 ? '#F472B6' : '#FCD34D'; ctx.fillRect(px + 7, py - 4, 6, 4); ctx.fillRect(px + 8, py - 8, 4, 4); ctx.fillRect(px + 9, py - 11, 2, 3);
+        ctx.fillStyle = '#F8FAFC'; ctx.fillRect(px + 9, py - 13, 2, 2); ctx.fillRect(px + 8, py - 3, 2, 1);
+      }
       if (run.outfit === 'victorian') {
         ctx.fillStyle = '#111'; ctx.fillRect(px + 4, py - 8, 10, 8); ctx.fillRect(px + 1, py - 1, 16, 2);
         ctx.fillStyle = '#7c2d12'; ctx.fillRect(px + 4, py - 3, 10, 2);
@@ -1075,12 +1328,14 @@ class Npc {
     const r = Math.random();
     this.kind = r < 0.15 ? 'PARTNER' : r < 0.45 ? 'COACH' : 'BUDDY';
     this.x = x; this.y = FLOOR - 34; this.w = 18; this.h = 34; this.met = false; this.dead = false;
+    this.say = pickOne(NPC_SAY[this.kind]);
   }
   update(sp) { this.x -= sp; if (this.x < -60) this.dead = true; }
   draw() {
     const x = Math.floor(this.x), y = Math.floor(this.y);
     const c = { BUDDY: ['#38BDF8', '#004F59', '#86BC25', '#475569'], COACH: ['#a3e635', '#1E3A5F', '#38BDF8', '#78350f'], PARTNER: ['#F59E0B', '#002776', '#F59E0B', '#cbd5e1'] }[this.kind];
-    if (!this.met) drawText(`[${this.kind}]`, x + 9, y - 8 + Math.sin(frame * 0.1) * 1.5, c[0], 5);
+    if (!this.met && this.x < W - 20) { const s = this.say[settings.lang] || this.say.en; setFont(settings.lang === 'zh' ? 8 : 6); const tw = Math.ceil(ctx.measureText(s).width) + 8, by = y - 24 + Math.sin(frame * 0.1) * 1.5; ctx.fillStyle = 'rgba(248,250,252,0.95)'; ctx.fillRect(Math.floor(x + 9 - tw / 2), Math.floor(by), tw, 13); ctx.fillRect(x + 7, Math.floor(by + 13), 3, 3); drawText(s, x + 9, Math.floor(by + 10), '#0a0e14', settings.lang === 'zh' ? 8 : 6); drawText(`[${this.kind}]`, x + 9, y - 6, c[0], 5); }
+    else if (!this.met) drawText(`[${this.kind}]`, x + 9, y - 8 + Math.sin(frame * 0.1) * 1.5, c[0], 5);
     else drawText('✓', x + 9, y - 8, '#86BC25', 7);
     ctx.fillStyle = c[3]; ctx.fillRect(x + 3, y, 12, 5);
     ctx.fillStyle = '#e8b48a'; ctx.fillRect(x + 4, y + 4, 10, 8);
@@ -1157,15 +1412,16 @@ function spawnPattern() {
     if (!o.fly && type !== 'DEADLINE' && Math.random() < 0.45) dotArc(x + o.w / 2);
   }
   const busy = phase.type === 'BUSY';
-  const minGap = sp * air + 70;
+  const minGap = sp * air + Math.max(24, 70 - 6 * run.rank);
   const gap = extra + minGap + Math.random() * sp * (busy ? 14 : Math.max(14, 34 - 2 * run.rank));
   spawnGap = gap;
   const lastEnd = x + extra + lastW, nextStart = x + gap;
   const mid = (lastEnd + nextStart) / 2;
   if (nextStart - lastEnd < 110) return;
-  if (dist >= next.npc) { npcs.push(new Npc(mid - 9)); next.npc = dist + 120 + Math.random() * 90; }
-  else if (dist >= next.quiz) { items.push(new Item('QUIZ', mid - 6, FLOOR - 34)); next.quiz = dist + 260 + Math.random() * 160; }
-  else if (dist >= next.power) { items.push(new Item(pickPower(), mid - 6, FLOOR - 32)); next.power = dist + 100 + Math.random() * 110; }
+  const safeK = (pace / BASE_SPEED) * (1 + 0.1 * run.rank);
+  if (dist >= next.npc) { npcs.push(new Npc(mid - 9)); next.npc = dist + (120 + Math.random() * 90) * safeK; }
+  else if (dist >= next.quiz) { items.push(new Item('QUIZ', mid - 6, FLOOR - 34)); next.quiz = dist + (260 + Math.random() * 160) * (pace / BASE_SPEED); }
+  else if (dist >= next.power) { items.push(new Item(pickPower(), mid - 6, FLOOR - 32)); next.power = dist + (100 + Math.random() * 110) * safeK; }
   else if (Math.random() < 0.55 && nextStart - lastEnd > 150) dotLine(mid - 44, 5);
 }
 
@@ -1187,14 +1443,15 @@ function stepWorld() {
   dist += dm; scroll += speed;
   score += dm * 5 * (phase.type === 'BUSY' ? 1.5 : 1);
 
+  stepScene();
   if (coffee > 0) coffee--;
   if (magnet > 0) magnet--;
   if (comboT > 0) comboT--; else combo = 0;
   if (shake > 0) shake *= 0.85;
 
   // Phases: Busy Season -> Annual Leave -> Normal
-  if (phase.type === 'NORMAL' && dist >= nextBusyAt) { phase = { type: 'BUSY', t: 60 * 18 }; banner(t('busy'), t('busySub')); Sfx.play('power'); buzz(40); }
-  else if (phase.type === 'BUSY' && --phase.t <= 0) { phase = { type: 'LEAVE', t: 60 * 6 }; banner(t('leave'), t('leaveSub')); Sfx.play('good'); }
+  if (phase.type === 'NORMAL' && dist >= nextBusyAt) { phase = { type: 'BUSY', t: 60 * 18 }; banner(t('busy'), `🌃 ${t('busySub')}`); Sfx.play('power'); buzz(40); }
+  else if (phase.type === 'BUSY' && --phase.t <= 0) { leaveKind = Math.random() < 0.5 ? 'BEACH' : 'MOUNTAIN'; phase = { type: 'LEAVE', t: 60 * 8 }; banner(t('leave'), `${SCENE_NAME[leaveKind].icon} ${SCENE_NAME[leaveKind][settings.lang]} · ${t('leaveSub')}`); Sfx.play('good'); }
   else if (phase.type === 'LEAVE' && --phase.t <= 0) { phase = { type: 'NORMAL', t: 0 }; nextBusyAt = dist + 380; }
 
   // Promotions
@@ -1205,8 +1462,11 @@ function stepWorld() {
     banner(t('promoted'), isPartner ? `${rankName(ri)} · ${t('partnerSub')}` : star ? `${rankName(ri)} · ${t('starSub')}` : `${rankName(ri)} · ${t('paceUp')}`);
     addScore(isPartner || star ? 1845 : 200, P.x + 8, P.y - 10, '#F59E0B');
     if (star) unlock('equity');
-    Sfx.play('promo'); buzz([30, 40, 30]);
-    burst(P.x + 8, P.y, '#F59E0B', 16);
+    setTimeout(() => toast(FUNNY.promo[settings.lang][Math.min(ri, FUNNY.promo[settings.lang].length - 1)]), 1400);
+    Sfx.play('promo'); buzz([30, 40, 30, 40, 80]);
+    burst(P.x + 8, P.y, '#F59E0B', 24);
+    celebrate(ri >= PARTNER_LEVEL);
+    { const to = transferCity(); setTimeout(() => toast(`📍 ${settings.lang === 'zh' ? '调任' : 'Transferred to'} ${to[settings.lang]}${settings.lang === 'zh' ? '办公室' : ' office'}!`), 2600); }
     if (ri >= 4) unlock('manager');
     if (isPartner) unlock('partner');
   }
@@ -1300,6 +1560,7 @@ function officeHour() { return (run.startHour + dist / 110) % 24; }
 
 function tick() {
   frame++;
+  updateFx();
   updateWeather();
   if (state === 'PLAYING') stepWorld();
   else if (state === 'DYING') { updateParticles(); shake *= 0.9; if (--dyingT <= 0) showGameOver(); }
@@ -1330,6 +1591,7 @@ function render() {
   if (weather.type === 'SUNSET') { const g = ctx.createLinearGradient(0, FLOOR - 120, 0, FLOOR); g.addColorStop(0, 'rgba(251,146,60,0)'); g.addColorStop(1, 'rgba(251,146,60,0.35)'); ctx.fillStyle = g; ctx.fillRect(0, FLOOR - 120, W, 120); }
 
   const fo = Math.floor((scroll * 0.2) % W);
+  if (markLayer) { const mo = Math.floor((scroll * 0.08) % (W * 2)); ctx.globalAlpha = 0.9; ctx.drawImage(markLayer, -mo, 0); ctx.drawImage(markLayer, W * 2 - mo, 0); ctx.globalAlpha = 1; }
   ctx.globalAlpha = 0.7; ctx.drawImage(farLayer, -fo, 0); ctx.drawImage(farLayer, W - fo, 0); ctx.globalAlpha = 1;
   const no = Math.floor((scroll * 0.55) % W);
   ctx.drawImage(nearLayer, -no, 0); ctx.drawImage(nearLayer, W - no, 0);
@@ -1339,9 +1601,11 @@ function render() {
   if (weather.type === 'RAIN') { ctx.strokeStyle = 'rgba(147,197,253,0.45)'; ctx.lineWidth = 1; ctx.beginPath(); for (const p of weatherP) { ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.vx, p.y + p.l); } ctx.stroke(); }
   else if (weather.type === 'SPARKLE') { ctx.fillStyle = 'rgba(134,188,37,0.75)'; for (const p of weatherP) ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.s, p.s); }
 
+  if (sceneMix > 0 && scene !== 'CITY') { ctx.globalAlpha = sceneMix; drawScene(scene); ctx.globalAlpha = 1; }
   // ground
-  ctx.fillStyle = loc.ground; ctx.fillRect(-10, FLOOR, W + 20, H - FLOOR + 10);
-  ctx.fillStyle = phase.type === 'BUSY' && frame % 30 < 15 ? '#F43F5E' : loc.accent; ctx.fillRect(-10, FLOOR, W + 20, 3);
+  const sg = sceneMix > 0.5 && SCENE_GROUND[scene];
+  ctx.fillStyle = sg ? sg[0] : loc.ground; ctx.fillRect(-10, FLOOR, W + 20, H - FLOOR + 10);
+  ctx.fillStyle = phase.type === 'BUSY' && frame % 30 < 15 ? '#F43F5E' : sg ? sg[1] : loc.accent; ctx.fillRect(-10, FLOOR, W + 20, 3);
   ctx.fillStyle = '#1e293b'; ctx.fillRect(-10, FLOOR + 3, W + 20, 2);
   ctx.fillStyle = 'rgba(255,255,255,0.06)';
   const go = Math.floor(scroll % 32);
@@ -1355,6 +1619,7 @@ function render() {
   ctx.globalAlpha = 1;
   for (const f of floats) { ctx.globalAlpha = Math.min(1, f.life / 15); drawText(f.text, Math.floor(f.x), Math.floor(f.y), f.color, 6); }
   ctx.globalAlpha = 1;
+  drawFx();
   if (state === 'DYING') { ctx.fillStyle = `rgba(225,29,72,${dyingT / 45 * 0.35})`; ctx.fillRect(0, 0, W, H); }
   ctx.restore();
 }
@@ -1400,7 +1665,7 @@ function updateHUD() {
   const hr = state === 'START' ? 9 : officeHour();
   setText('hudClock', `${String(Math.floor(hr)).padStart(2, '0')}:${String(Math.floor((hr % 1) * 60)).padStart(2, '0')}`);
   setText('hudCombo', combo >= 3 ? fmt(t('combo'), { m: comboMult().toFixed(1), c: combo }) : '');
-  setText('hudLoc', `${weather.icon} ${loc[settings.lang]} · ${weather[settings.lang]}`);
+  setText('hudLoc', sceneMix > 0.5 && SCENE_NAME[scene] ? `${SCENE_NAME[scene].icon} ${SCENE_NAME[scene][settings.lang]}` : `${weather.icon} ${loc[settings.lang]} · ${weather[settings.lang]}`);
   const p = [];
   const pt = t('pills');
   if (coffee > 0) p.push(`<span class="pill" style="color:#86BC25;border-color:#86BC25">${fmt(pt.coffee, { s: Math.ceil(coffee / 60) })}</span>`);
@@ -1508,18 +1773,12 @@ function startGame() {
   Sfx.unlock();
 
   run = freshRun();
-  run.look = {
-    skin: ['#f3c299', '#fcd5b5', '#d49a6a', '#8d5524', '#ffdbac'][Math.floor(Math.random() * 5)],
-    hair: ['#2d1d14', '#111827', '#b45309', '#f59e0b', '#7c2d12'][Math.floor(Math.random() * 5)],
-    suit: ['#002776', '#1E232A', '#004F59', '#374151', '#1e1b4b'][Math.floor(Math.random() * 5)],
-    tie: ['#86BC25', '#38BDF8', '#F59E0B', '#EF4444', '#10B981'][Math.floor(Math.random() * 5)],
-    bag: Math.random() < 0.5 ? 'BACKPACK' : 'BRIEFCASE'
-  };
+  run.look = pendingLook || makeLook(); pendingLook = makeLook();
   const now = new Date(), hr = now.getHours();
   run.nightOwl = hr >= 23 || hr < 5;
   randomizeSession(run.nightOwl);
 
-  score = 0; dist = 0; speed = BASE_SPEED; pace = BASE_SPEED; coffee = 0; magnet = 0; combo = 0; comboT = 0; shake = 0;
+  score = 0; dist = 0; speed = BASE_SPEED; pace = BASE_SPEED; scene = 'CITY'; sceneMix = 0; fx.length = 0; flashT = celebT = 0; coffee = 0; magnet = 0; combo = 0; comboT = 0; shake = 0;
   spawnGap = 260; phase = { type: 'NORMAL', t: 0 }; nextBusyAt = 330;
   next = { npc: 60, quiz: 140, power: 100 };
   obstacles.length = items.length = npcs.length = particles.length = floats.length = 0;
@@ -1561,7 +1820,8 @@ function showGameOver() {
   unlock('first');
   const isBest = final > bestScore;
   if (isBest) { bestScore = final; LS.set('drush_fg_high', String(final)); }
-  $('goReason').textContent = t('reasons')[deathType] || t('reasons').QUIT;
+  const why = (FUNNY.reasons[settings.lang] || {})[deathType];
+  $('goReason').textContent = why && Math.random() < 0.65 ? pickOne(why) : (t('reasons')[deathType] || t('reasons').QUIT);
   $('goScore').textContent = final.toLocaleString();
   $('goDist').textContent = d + 'm';
   $('goRank').textContent = rankName(ri);
@@ -1577,7 +1837,7 @@ function showGameOver() {
 
 function togglePause(force) {
   if (state === 'PLAYING' && force !== false) {
-    state = 'PAUSED'; show('pauseOverlay'); $('btnPause').textContent = '▶'; run.pausedAt = performance.now();
+    state = 'PAUSED'; show('pauseOverlay'); $('btnPause').textContent = '▶'; run.pausedAt = performance.now(); { const ps = document.querySelector('#pauseOverlay [data-i18n="pauseSub"]'); if (ps) ps.textContent = pickOne(FUNNY.pause[settings.lang]); }
     input.jumpHeld = input.slideHeld = false;
   } else if (state === 'PAUSED' && force !== true) {
     state = 'PLAYING'; hide('pauseOverlay'); $('btnPause').textContent = '❚❚'; lastT = 0;
