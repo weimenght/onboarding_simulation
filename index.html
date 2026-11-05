@@ -729,7 +729,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
 
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.da3406c99e.html","admin":"admin.e27887eb88.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.9bd8d4e474.html","fastpass36":"fastpass36.2e9ed65e83.html","fastpass48":"fastpass48.977c3c7595.html","game":"game.fd9ba50717.html","knowledge":"knowledge.88953a06cd.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.42fb77755e.html","kclive":"kclive.13f7a4fb38.html","sunriseguide":"sunriseguide.b75d000a4b.html","sunrise":"sunrise.78efea1a2b.html","leaderboard":"leaderboard.3ba836962d.html"}};</script>
+<script>window.DL_SPLIT = {"base":"m/","files":{"hub":"hub.da3406c99e.html","admin":"admin.febbeefee9.html","bc":"bc.056acb4c8a.html","clue1":"clue1.7065f55350.html","fastpass24":"fastpass24.9bd8d4e474.html","fastpass36":"fastpass36.2e9ed65e83.html","fastpass48":"fastpass48.977c3c7595.html","game":"game.fd9ba50717.html","knowledge":"knowledge.88953a06cd.html","clue2":"clue2.472b76012c.html","qr":"qr.872cb1e108.html","clue3":"clue3.60c8573343.html","signal":"signal.42fb77755e.html","kclive":"kclive.13f7a4fb38.html","sunriseguide":"sunriseguide.b75d000a4b.html","sunrise":"sunrise.78efea1a2b.html","sunrisesandbox":"sunrisesandbox.d3eb7073a7.html","leaderboard":"leaderboard.3ba836962d.html"}};</script>
 
 <script>
 (function () {
@@ -765,7 +765,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   var C = { driver: '#86BC25', integrator: '#14B8A6', pioneer: '#00A3E0', guardian: '#A855F7', warn: '#F59E0B' };
   var MODS = [
     { id: 'hub', icon: 'fa-house-signal', c: C.driver, zh: 'DeloitteLand 学员门户', en: 'DeloitteLand Hub', dzh: '学员看到的页面（按开关显示）', den: 'What participants see, filtered by the switches' },
-    { id: 'admin', icon: 'fa-sliders', c: C.guardian, zh: '管理后台', en: 'Admin Console', dzh: '计分、Sunrise 成绩、广播、排程与重置', den: 'Scoring, Sunrise scores, broadcast, schedule and reset', dzhHost: '站点计分与 Sunrise 成绩录入', denHost: 'Station scoring and Sunrise score entry' },
+    { id: 'admin', icon: 'fa-sliders', c: C.guardian, zh: '管理后台', en: 'Admin Console', dzh: '计分、学员端、成绩与设置', den: 'Scores, participant portal, results and settings', dzhHost: '站点计分与 Sunrise 成绩录入', denHost: 'Station scoring and Sunrise score entry' },
     { id: 'links', icon: 'fa-link', c: C.pioneer, zh: '推送链接', en: 'Push links', dzh: '向学员门户发送链接，点击即在新标签页打开', den: 'Send links to the participant hub; they open in a new tab', page: true },
     { id: 'visibility', icon: 'fa-toggle-on', c: C.guardian, zh: '学员端开关', en: 'Switches', dzh: '节点一至三线索卡与勤业智库抢答', den: 'Node 1–3 clue cards and Knowledge Clash', page: true },
     { id: 'kclive', icon: 'fa-bolt', c: C.integrator, zh: '勤业智库 · 抢答大屏', en: 'Knowledge Clash Live', dzh: '大屏出题、3-2-1 开始，学员用手机抢答', den: 'Questions on the big screen, 3-2-1 start, teams buzz in on phones' },
@@ -775,6 +775,7 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
     { id: 'fastpass', icon: 'fa-ticket', c: C.integrator, zh: 'FastPass 排程', en: 'FastPass', dzh: '24 / 36 / 48 队轮转排程', den: 'Rotation schedule for 24, 36 or 48 teams', vis: 'fastpass' },
     { id: 'leaderboard', icon: 'fa-trophy', c: C.pioneer, zh: 'Sunrise 实时排行', en: 'Sunrise Live Board', dzh: '用时、进度与结算倒计时（大屏）', den: 'Team time, progress and settlement clock (big screen)' },
     { id: 'sunriseguide', icon: 'fa-chalkboard-user', c: C.pioneer, zh: 'Sunrise 玩法说明', en: 'Sunrise: How It Works', dzh: '分步讲解角色、节点、终止交易与胜负，可投屏', den: 'Step-by-step walkthrough of roles, nodes, the Halt and winning; ready to project' },
+    { id: 'sunrisesandbox', icon: 'fa-flask-vial', c: C.warn, zh: 'Sunrise 沙盒', en: 'Sunrise Sandbox', dzh: '演示用：假密码、无角色、不冻结，不写入游戏数据', den: 'For demos: fake codes, no roles, no freeze, nothing saved to the game' },
     { id: 'sunrise', icon: 'fa-sun', c: C.pioneer, zh: 'Sunrise 终端', en: 'Sunrise Terminal', dzh: '角色、节点、覆写谜题与复盘', den: 'Roles, nodes, override puzzles and debrief', vis: 'sunrise' },
     { id: 'clue1', icon: 'fa-1', c: C.pioneer, zh: '节点一 线索卡', en: 'Node 1 Clue Card', dzh: '第一关秘密问题与任务', den: 'Secret questions and tasks for node 1', vis: 'node1' },
     { id: 'clue2', icon: 'fa-2', c: C.pioneer, zh: '节点二 线索卡', en: 'Node 2 Clue Card', dzh: '第二关秘密问题与任务', den: 'Secret questions and tasks for node 2', vis: 'node2' },
@@ -784,24 +785,24 @@ html[lang^="zh"] .sw-sec { letter-spacing: .04em; }
   ];
   var STAFF_GROUPS = {
     super: [
-      { c: C.guardian, zh: '控制台', en: 'Control', dzh: '准备、计分、学员门户、成绩与重置', den: 'Set up, scoring, participant portal, results and reset', ids: ['admin', 'hub'] },
+      { c: C.guardian, zh: '控制台', en: 'Control', dzh: '计分、学员端、成绩与设置', den: 'Scores, participant portal, results and settings', ids: ['admin', 'hub'] },
       { c: C.integrator, zh: '互动站点', en: 'Stations', dzh: '站点大屏、计时与二维码', den: 'Station screens, timers and QR codes', ids: ['kclive', 'knowledge', 'signal', 'qr', 'fastpass'] },
-      { c: C.pioneer, zh: 'Project Sunrise', en: 'Project Sunrise', dzh: '终端、线索卡与实时排行', den: 'Terminal, clue cards and live ranking', ids: ['sunriseguide', 'leaderboard', 'sunrise', 'clue1', 'clue2', 'clue3'] },
+      { c: C.pioneer, zh: 'Project Sunrise', en: 'Project Sunrise', dzh: '终端、线索卡与实时排行', den: 'Terminal, clue cards and live ranking', ids: ['sunriseguide', 'sunrisesandbox', 'leaderboard', 'sunrise', 'clue1', 'clue2', 'clue3'] },
       { c: C.driver, zh: '学员页面单独打开', en: 'Participant pages', dzh: '不受开关限制，方便检查', den: 'Open directly to check them; switches do not apply here', ids: ['game', 'bc'] }
     ],
     host: [
       { c: C.warn, zh: '计分', en: 'Scoring', dzh: '录入本站成绩', den: 'Enter your station’s scores', ids: ['admin'] },
       { c: C.integrator, zh: '互动站点', en: 'Stations', dzh: '站点大屏、计时与二维码', den: 'Station screens, timers and QR codes', ids: ['kclive', 'knowledge', 'signal', 'qr', 'fastpass'] },
-      { c: C.pioneer, zh: 'Project Sunrise', en: 'Project Sunrise', dzh: '玩法说明与大屏实时排行', den: 'Walkthrough and live ranking for the big screen', ids: ['sunriseguide', 'leaderboard'] },
+      { c: C.pioneer, zh: 'Project Sunrise', en: 'Project Sunrise', dzh: '玩法说明、演示沙盒与大屏实时排行', den: 'Walkthrough, demo sandbox and live ranking for the big screen', ids: ['sunriseguide', 'sunrisesandbox', 'leaderboard'] },
       { c: C.driver, zh: '学员端', en: 'Participants', dzh: '查看学员当前看到的页面', den: 'See what participants see right now', ids: ['hub'] }
     ]
   };
-  var HOST_ROUTES = ['hub', 'admin', 'kclive', 'knowledge', 'signal', 'qr', 'fastpass', 'leaderboard', 'sunriseguide'];
+  var HOST_ROUTES = ['hub', 'admin', 'kclive', 'knowledge', 'signal', 'qr', 'fastpass', 'leaderboard', 'sunriseguide', 'sunrisesandbox'];
   var ALIAS = { fastpass24: 'fastpass', fastpass36: 'fastpass', fastpass48: 'fastpass' };
   var PATHS = {
     '': 'hub', 'a1': 'hub', 'hub': 'hub', 'index': 'hub', 'index.html': 'hub',
     'admin': 'admin', 'bc': 'bc', 'game': 'game', 'knowledge': 'knowledge', 'kclive': 'kclive', 'qr': 'qr',
-    'signal': 'signal', 'sunrise': 'sunrise', 'leaderboard': 'leaderboard', 'sunrise-guide': 'sunriseguide', 'sunriseguide': 'sunriseguide',
+    'signal': 'signal', 'sunrise': 'sunrise', 'leaderboard': 'leaderboard', 'sunrise-guide': 'sunriseguide', 'sunriseguide': 'sunriseguide', 'sunrise-sandbox': 'sunrisesandbox', 'sunrisesandbox': 'sunrisesandbox',
     'fastpass': 'fastpass', 'fastpass/24': 'fastpass24', 'fastpass/36': 'fastpass36', 'fastpass/48': 'fastpass48',
     'diyiguan': 'clue1', 'niveldos': 'clue2', 'sankyu': 'clue3'
   };
